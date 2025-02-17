@@ -7,6 +7,7 @@ import { useDisclosure } from '@mantine/hooks';
 import paths from '@/paths';
 import { createClient } from '@/utils/supabase/client';
 import classes from './Header.module.css';
+import { logout } from '@/actions/auth/logout';
 
 export default function Header() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
@@ -36,9 +37,7 @@ export default function Header() {
   }, []);
 
   const handleLogout = async () => {
-    const supabase = createClient();
-    const { error } = await supabase.auth.signOut();
-    if (!error) {setUser(null)};
+    await logout();
   };
 
   return (
