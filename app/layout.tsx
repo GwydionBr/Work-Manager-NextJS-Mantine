@@ -3,6 +3,7 @@ import '@mantine/core/styles.css';
 import React from 'react';
 import { ColorSchemeScript, mantineHtmlProps, MantineProvider } from '@mantine/core';
 import { theme } from '../theme';
+import Header from '@/components/Header/Header';
 
 export const metadata = {
   title: 'Work Manager',
@@ -21,7 +22,10 @@ export default function RootLayout({ children }: { children: any }) {
         />
       </head>
       <body>
-        <MantineProvider theme={theme}>{children}</MantineProvider>
+        <MantineProvider theme={theme}>
+          <Header />
+          {children}
+          </MantineProvider>
       </body>
     </html>
   );
