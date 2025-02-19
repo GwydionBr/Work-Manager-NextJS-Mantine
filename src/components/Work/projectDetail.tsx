@@ -6,8 +6,7 @@ type ProjectDetailProps = {
   project: Tables<'timerProject'> | null;
 };
 
-export default function ProjectDetail( { project } : ProjectDetailProps) {
-
+export default function ProjectDetail({ project }: ProjectDetailProps) {
   if (!project) {
     return null;
   }

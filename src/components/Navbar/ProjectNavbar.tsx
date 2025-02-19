@@ -5,15 +5,12 @@ import type { Tables } from '@/db.types';
 import paths from '@/paths';
 import classes from './Navbar.module.css';
 
-
 type ListProjectsProps = {
   projects: Tables<'timerProject'>[];
 };
 
-
-export  default function ProjectNavbar({ projects }: ListProjectsProps) {
+export default function ProjectNavbar({ projects }: ListProjectsProps) {
   const pathname = usePathname();
-
 
   const links = projects.map((project) => (
     <Link

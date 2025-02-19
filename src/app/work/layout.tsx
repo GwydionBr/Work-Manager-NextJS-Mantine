@@ -1,19 +1,19 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import ProjectNavbar from '@/components/Navbar/ProjectNavbar';
 import * as actions from '@/actions';
+import ProjectNavbar from '@/components/Navbar/ProjectNavbar';
 import type { Tables } from '@/db.types';
 
 export default function WorkLayout({ children }: { children: any }) {
-  const [projects, setProjects] = useState<Tables<'timerProject'>[]>([])
+  const [projects, setProjects] = useState<Tables<'timerProject'>[]>([]);
 
   useEffect(() => {
     actions.getProjects().then((response) => {
       if (!response.success) {
         return null;
       }
-  
+
       setProjects(response.data);
     });
   }, []);
@@ -26,4 +26,4 @@ export default function WorkLayout({ children }: { children: any }) {
       {children}
     </div>
   );
-};
+}

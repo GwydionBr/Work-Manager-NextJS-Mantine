@@ -1,14 +1,25 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Anchor, Button, Checkbox, Divider, Group, Paper, PaperProps, PasswordInput, Stack, Text, TextInput } from '@mantine/core';
+import {
+  Anchor,
+  Button,
+  Checkbox,
+  Divider,
+  Group,
+  Paper,
+  PaperProps,
+  PasswordInput,
+  Stack,
+  Text,
+  TextInput,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { upperFirst, useToggle } from '@mantine/hooks';
+import login from '@/src/actions/auth/email/loginEmail';
+import signup from '@/src/actions/auth/email/signupEmail';
+import signInWithGithub from '@/src/actions/auth/github/signInWithGithub';
 import GithubButton from '../SocialButtons/GithubButton';
-import signInWithGithub from '@/actions/auth/github/signInWithGithub';
-import login from '@/actions/auth/email/loginEmail';
-import signup from '@/actions/auth/email/signupEmail';
-
 
 type AuthType = 'login' | 'register';
 
@@ -57,7 +68,9 @@ export default function AuthenticationForm({
         Welcome to Mantine, {type} with
       </Text>
       <Group grow mb="md" mt="md">
-        <GithubButton radius="xl" onClick={handleGithub}>Github</GithubButton>
+        <GithubButton radius="xl" onClick={handleGithub}>
+          Github
+        </GithubButton>
       </Group>
       <Divider label="Or continue with email" labelPosition="center" my="lg" />
       <form onSubmit={form.onSubmit(handleSubmit)}>

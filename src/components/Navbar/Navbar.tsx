@@ -2,11 +2,16 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { IconDeviceDesktopAnalytics, IconGauge, IconHome2, IconSettings, IconUser } from '@tabler/icons-react';
+import {
+  IconDeviceDesktopAnalytics,
+  IconGauge,
+  IconHome2,
+  IconSettings,
+  IconUser,
+} from '@tabler/icons-react';
 import { Tooltip, UnstyledButton } from '@mantine/core';
 import paths from '@/paths';
 import classes from './Navbar.module.css';
-
 
 const mainLinksMockdata = [
   { icon: IconHome2, label: 'Home', to: paths.home() },
