@@ -22,7 +22,19 @@ const paths = {
     financesPage() {
       return '/finances';
     },
-  }
+  },
+
+  account: {
+    accountPage() {
+      return '/account';
+    },
+  },
+
+  settings: {
+    settingsPage() {
+      return '/settings';
+    },
+  },
 };
 
 export default paths;

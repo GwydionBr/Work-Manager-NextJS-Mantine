@@ -8,6 +8,7 @@ import paths from '@/paths';
 import { createClient } from '@/utils/supabase/client';
 import classes from './Header.module.css';
 import { logout } from '@/actions/auth/logout';
+import UserCard from '@/components/UserCard/Usercard';
 
 export default function Header() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
@@ -59,7 +60,7 @@ export default function Header() {
 
           <Group visibleFrom="sm">
             {user ? (
-              <Button onClick={handleLogout}>Logout</Button>
+              <UserCard />
             ) : (
               <>
                 <Button component={Link} href={paths.auth.login()} variant="default">
