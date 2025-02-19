@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { IconDeviceDesktopAnalytics, IconGauge, IconHome2, IconSettings, IconUser } from '@tabler/icons-react';
 import { Tooltip, UnstyledButton } from '@mantine/core';
-import classes from './Navbar.module.css';
-import Link from 'next/link';
 import paths from '@/paths';
+import classes from './Navbar.module.css';
 
 
 const mainLinksMockdata = [
@@ -16,9 +16,8 @@ const mainLinksMockdata = [
   { icon: IconSettings, label: 'Settings', to: paths.settings.settingsPage() },
 ];
 
-
 export default function Navbar() {
-  const [active, setActive] = useState('Home');
+  const pathname = usePathname();
 
   const mainLinks = mainLinksMockdata.map((link) => (
     <Tooltip
@@ -30,9 +29,10 @@ export default function Navbar() {
     >
       <Link href={link.to}>
         <UnstyledButton
-          onClick={() => setActive(link.label)}
           className={classes.mainLink}
-          data-active={link.label === active || undefined}
+          data-active={
+            link.to === pathname || (link.to !== '/' && pathname.startsWith(link.to)) || undefined
+          }
         >
           <link.icon size={22} stroke={1.5} />
         </UnstyledButton>
@@ -40,15 +40,12 @@ export default function Navbar() {
     </Tooltip>
   ));
 
-
   return (
-      <div className={classes.wrapper}>
-        <div className={classes.aside}>
-          <div className={classes.logo}>
-            WM
-          </div>
-          {mainLinks}
-        </div>
+    <div className={classes.wrapper}>
+      <div className={classes.aside}>
+        <div className={classes.logo}>WM</div>
+        {mainLinks}
       </div>
+    </div>
   );
 }

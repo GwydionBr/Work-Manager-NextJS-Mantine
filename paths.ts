@@ -16,6 +16,11 @@ const paths = {
     workPage() {
       return '/work';
     },
+
+    workDetailsPage(projectId: string) {
+      return `/work/${projectId}`;
+    },
+
   },
 
   finances: {
