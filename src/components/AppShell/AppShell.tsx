@@ -12,7 +12,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       navbar={{
         width: { base: 65 },
         breakpoint: 'sm',
-        collapsed: { mobile: !opened },
+        collapsed: { mobile: !opened }
       }}
       padding="md"
     >
@@ -22,7 +22,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           WM Logo
         </Group>
       </AppShell.Header>
-      <AppShell.Navbar>
+      <AppShell.Navbar style={{ height: '100%' }}>
         <Navbar />
       </AppShell.Navbar>
       <AppShell.Main>{children}</AppShell.Main>
