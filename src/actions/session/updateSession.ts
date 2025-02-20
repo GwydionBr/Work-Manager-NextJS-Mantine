@@ -9,7 +9,7 @@ interface UpdateSessionProps {
   updateSession: TablesUpdate<'timerSession'>;
 }
 
-export async function updateProject({ updateSession }: UpdateSessionProps): Promise<SessionResponse> {
+export async function updateSession({ updateSession }: UpdateSessionProps): Promise<SessionResponse> {
   const supabase = await createClient();
 
   const { data, error } = await supabase

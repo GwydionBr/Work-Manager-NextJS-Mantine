@@ -8,7 +8,7 @@ interface DeleteProjectProps {
   sessionId: string;
 }
 
-export async function deleteProject({ sessionId }: DeleteProjectProps): Promise<DeleteResponse> {
+export async function deleteSession({ sessionId }: DeleteProjectProps): Promise<DeleteResponse> {
   const supabase = await createClient();
 
   const { error } = await supabase

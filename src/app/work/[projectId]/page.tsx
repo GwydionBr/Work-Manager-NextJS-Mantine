@@ -19,7 +19,7 @@ export default function Project({ params }: ProjectProps) {
 
   useEffect(() => {
     (async () => {
-      const { data, error, success } = await actions.getSessionByProjectId({ projectId });
+      const { data, error, success } = await actions.getProjectSessions({ projectId });
       if (!success) {
         console.error(error);
         return;

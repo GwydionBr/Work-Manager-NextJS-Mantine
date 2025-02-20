@@ -4,7 +4,7 @@ import type { SessionListResponse } from '@/types/action.types';
 import { createClient } from '@/utils/supabase/server';
 
 
-export async function getSessionByProjectId(): Promise<SessionListResponse> {
+export async function getAllSessions(): Promise<SessionListResponse> {
   const supabase = await createClient();
 
   const {

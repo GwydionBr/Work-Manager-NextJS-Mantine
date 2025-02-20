@@ -11,7 +11,7 @@ export default function WorkLayout({ children }: { children: any }) {
   const [projects, setProjects] = useState<Tables<'timerProject'>[]>([]);
 
   useEffect(() => {
-    actions.getProjects().then((response) => {
+    actions.getAllProjects().then((response) => {
       if (!response.success) {
         return null;
       }

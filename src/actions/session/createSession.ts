@@ -9,7 +9,7 @@ interface CreateProjectProps {
   session: Tables<'timerSession'>;
 }
 
-export async function createProject({ session }: CreateProjectProps): Promise<SessionResponse> {
+export async function createSession({ session }: CreateProjectProps): Promise<SessionResponse> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
