@@ -2,16 +2,14 @@
 
 import { IconCalendar, IconClock, IconFolder } from '@tabler/icons-react';
 import { Accordion, Card, Group, ScrollArea, Text } from '@mantine/core';
-import type { Tables } from '@/db.types';
+import type { Tables } from '@/types/db.types';
 import SessionRow from './SessionRow';
-
 
 interface SessionListProps {
   sessions: Tables<'timerSession'>[];
 }
 
 export default function SessionList({ sessions }: SessionListProps) {
-
   const groupedSessions = groupSessions(sessions);
 
   return (
@@ -104,7 +102,9 @@ export default function SessionList({ sessions }: SessionListProps) {
 function groupSessions(sessions: Tables<'timerSession'>[]) {
   return sessions.reduce(
     (acc, session) => {
-      if (!session.start_time) {return acc};
+      if (!session.start_time) {
+        return acc;
+      }
       const startTime = new Date(session.start_time);
       const year = startTime.getFullYear();
       const month = startTime.getMonth() + 1;
@@ -122,7 +122,6 @@ function groupSessions(sessions: Tables<'timerSession'>[]) {
     {} as Record<number, Record<number, Record<number, Record<string, Tables<'timerSession'>[]>>>>
   );
 }
-
 
 function formatDate(date: Date) {
   return date.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });

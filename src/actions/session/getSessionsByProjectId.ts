@@ -1,44 +1,43 @@
 'use server';
 
-import { Tables } from '@/db.types'
-import {createClient} from '@/utils/supabase/server';
+import type { ServerSessionListResponse } from '@/types/action.types';
+import { createClient } from '@/utils/supabase/server';
 
-interface SupabaseResponse {
-  data: Tables<"timerSession">[];
-  error: string | null;
-  success: boolean;
-}
 
-interface getSessionByProjectIdProps {
+interface getSessionsByProjectIdProps {
   projectId: string;
 }
 
-export async function getSessionByProjectId({projectId}: getSessionByProjectIdProps): Promise<SupabaseResponse> {
+export async function getSessionsByProjectId({
+  projectId,
+}: getSessionsByProjectIdProps): Promise<ServerSessionListResponse> {
   const supabase = await createClient();
-  
+
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   if (!user) {
     return {
-      data: [],
-      error: "User not found",
+      data: null,
+      error: 'User not found',
       success: false,
     };
   }
 
-  const {data, error} = await supabase
-    .from("timerSession")
-    .select('active_seconds, currency, end_time, id, paused_seconds, project_id, salary, start_time, user_id')
+  const { data, error } = await supabase
+    .from('timerSession')
+    .select(
+      'active_seconds, currency, end_time, id, paused_seconds, project_id, salary, start_time, user_id'
+    )
     .eq('project_id', projectId);
 
   if (error) {
     return {
-      data: [],
+      data: null,
       error: error.message,
       success: false,
-    }
+    };
   }
 
   return {

@@ -1,14 +1,10 @@
 'use server';
 
-import type { ServerProjectResponse } from '@/types/action.types';
+import type { ServerSessionListResponse } from '@/types/action.types';
 import { createClient } from '@/utils/supabase/server';
 
 
-interface getProjectProps {
-  id: string;
-}
-
-export async function getProjectById({ id }: getProjectProps): Promise<ServerProjectResponse> {
+export async function getSessionByProjectId(): Promise<ServerSessionListResponse> {
   const supabase = await createClient();
 
   const {
@@ -24,10 +20,11 @@ export async function getProjectById({ id }: getProjectProps): Promise<ServerPro
   }
 
   const { data, error } = await supabase
-    .from('timerProject')
-    .select('*')
-    .eq('id', id)
-    .maybeSingle();
+    .from('timerSession')
+    .select(
+      'active_seconds, currency, end_time, id, paused_seconds, project_id, salary, start_time, user_id'
+    )
+    .eq('user_id', user.id);
 
   if (error) {
     return {

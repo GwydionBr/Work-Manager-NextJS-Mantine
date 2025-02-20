@@ -1,6 +1,6 @@
 import { IconClock } from '@tabler/icons-react';
 import { Card, Group, Text } from '@mantine/core';
-import type { Tables } from '@/db.types';
+import type { Tables } from '@/types/db.types';
 import { formatTime } from '@/utils/workHelperFunctions';
 
 interface SessionRowProps {

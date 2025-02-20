@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Title } from '@mantine/core';
-import type { Tables } from '@/db.types';
 import paths from '@/paths';
+import type { Tables } from '@/types/db.types';
 import classes from './Navbar.module.css';
 
 type ListProjectsProps = {

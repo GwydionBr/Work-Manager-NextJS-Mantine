@@ -1,6 +1,6 @@
 'use client';
 
-import type { Tables } from '@/db.types';
+import type { Tables } from '@/types/db.types';
 
 type ProjectDetailProps = {
   project: Tables<'timerProject'> | null;

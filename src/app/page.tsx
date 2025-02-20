@@ -1,9 +1,7 @@
-import Test from '@/components/test';
+import { Title } from '@mantine/core';
 
 export default function HomePage() {
   return (
-    <>
-      <Test />
-    </>
+    <Title order={1}>Home Page</Title>
   );
 }

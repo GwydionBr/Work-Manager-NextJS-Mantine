@@ -5,8 +5,7 @@ import { Flex, Grid } from '@mantine/core';
 import * as actions from '@/actions';
 import ProjectNavbar from '@/components/Navbar/ProjectNavbar';
 import TimeTrackerComponent from '@/components/TimeTracker/TimeTrackerComponent';
-import type { Tables } from '@/db.types';
-
+import type { Tables } from '@/types/db.types';
 
 export default function WorkLayout({ children }: { children: any }) {
   const [projects, setProjects] = useState<Tables<'timerProject'>[]>([]);
