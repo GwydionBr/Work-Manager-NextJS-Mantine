@@ -1,10 +1,10 @@
 'use server';
 
-import type { ServerSessionListResponse } from '@/types/action.types';
+import type { SessionListResponse } from '@/types/action.types';
 import { createClient } from '@/utils/supabase/server';
 
 
-export async function getSessionByProjectId(): Promise<ServerSessionListResponse> {
+export async function getSessionByProjectId(): Promise<SessionListResponse> {
   const supabase = await createClient();
 
   const {
@@ -21,9 +21,7 @@ export async function getSessionByProjectId(): Promise<ServerSessionListResponse
 
   const { data, error } = await supabase
     .from('timerSession')
-    .select(
-      'active_seconds, currency, end_time, id, paused_seconds, project_id, salary, start_time, user_id'
-    )
+    .select()
     .eq('user_id', user.id);
 
   if (error) {

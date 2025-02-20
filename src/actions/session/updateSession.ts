@@ -1,22 +1,22 @@
 'use server';
 
-import type { SessionListResponse } from '@/types/action.types';
+import type { SessionResponse } from '@/types/action.types';
+import type { TablesUpdate } from "@/types/db.types";
 import { createClient } from '@/utils/supabase/server';
 
 
-interface getSessionsByProjectIdProps {
-  projectId: string;
+interface UpdateSessionProps {
+  updateSession: TablesUpdate<'timerSession'>;
 }
 
-export async function getSessionsByProjectId({
-  projectId,
-}: getSessionsByProjectIdProps): Promise<SessionListResponse> {
+export async function updateProject({ updateSession }: UpdateSessionProps): Promise<SessionResponse> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from('timerSession')
+    .update(updateSession)
     .select()
-    .eq('project_id', projectId);
+    .single();
 
   if (error) {
     return {

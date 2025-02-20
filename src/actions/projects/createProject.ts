@@ -1,22 +1,22 @@
 'use server';
 
-import type { SessionListResponse } from '@/types/action.types';
+import type { ProjectResponse } from '@/types/action.types';
+import type { Tables } from '@/types/db.types';
 import { createClient } from '@/utils/supabase/server';
 
 
-interface getSessionsByProjectIdProps {
-  projectId: string;
+interface CreateProjectProps {
+  project: Tables<'timerProject'>;
 }
 
-export async function getSessionsByProjectId({
-  projectId,
-}: getSessionsByProjectIdProps): Promise<SessionListResponse> {
+export async function createProject({ project }: CreateProjectProps): Promise<ProjectResponse> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from('timerSession')
+    .from('timerProject')
+    .insert(project)
     .select()
-    .eq('project_id', projectId);
+    .single();;
 
   if (error) {
     return {

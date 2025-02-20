@@ -71,7 +71,7 @@ export type Database = {
         Update: {
           amount?: number
           date?: string
-          id?: number
+          id: number
           user_id?: string
         }
         Relationships: []
@@ -101,7 +101,7 @@ export type Database = {
           amount?: number
           description?: string | null
           end_date?: string | null
-          id?: number
+          id: number
           monthly?: boolean
           start_date?: string
           title?: string
@@ -122,7 +122,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          id?: number
+          id: number
           name?: string | null
         }
         Relationships: []
@@ -149,7 +149,7 @@ export type Database = {
         Update: {
           currency?: string | null
           description?: string
-          id?: string
+          id: string
           is_favorite?: boolean | null
           salary?: number
           title?: string
@@ -184,7 +184,7 @@ export type Database = {
           active_seconds?: number | null
           currency?: string | null
           end_time?: string
-          id?: string
+          id: string
           paused_seconds?: number | null
           project_id?: string | null
           salary?: number | null

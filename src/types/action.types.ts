@@ -1,5 +1,6 @@
 import { Tables } from '@/types/db.types';
 
+
 // Error Response
 interface ErrorResponse {
   success: false;
@@ -7,6 +8,16 @@ interface ErrorResponse {
   error: string;
 }
 
+// Delete Success Response
+interface DeleteSuccessResponse {
+  success: true;
+  data: null;
+  error: null;
+}
+export type DeleteResponse = DeleteSuccessResponse | ErrorResponse;
+
+
+// Session Responses
 
 // Session List Success Response
 interface SessionListSuccesResponse {
@@ -14,7 +25,7 @@ interface SessionListSuccesResponse {
   data: Tables<'timerSession'>[];
   error: null;
 }
-export type ServerSessionListResponse = SessionListSuccesResponse | ErrorResponse;
+export type SessionListResponse = SessionListSuccesResponse | ErrorResponse;
 
 
 // Session Succes Response
@@ -23,8 +34,28 @@ interface SessionSuccesResponse {
   data: Tables<'timerSession'>;
   error: null;
 }
-export type ServerSessionResponse = SessionSuccesResponse | ErrorResponse;
+export type SessionResponse = SessionSuccesResponse | ErrorResponse;
+// Update Session Success Response
 
+
+interface UpdateSessionSuccessResponse {
+  success: true;
+  data: Tables<'timerSession'>;
+  error: null;
+}
+export type UpdateSessionResponse = UpdateSessionSuccessResponse | ErrorResponse;
+
+
+// Delete Session Success Response
+interface DeleteSessionSuccessResponse {
+  success: true;
+  data: null;
+  error: null;
+}
+export type DeleteSessionResponse = DeleteSessionSuccessResponse | ErrorResponse;
+
+
+// Project Responses
 
 // Project List Success Response
 interface ProjectListSuccesResponse {
@@ -32,7 +63,7 @@ interface ProjectListSuccesResponse {
   data: Tables<'timerProject'>[];
   error: null;
 }
-export type ServerProjectListResponse = ProjectListSuccesResponse | ErrorResponse;
+export type ProjectListResponse = ProjectListSuccesResponse | ErrorResponse;
 
 
 // Project Success Response
@@ -41,4 +72,22 @@ interface ProjectSuccesResponse {
   data: Tables<'timerProject'>;
   error: null;
 }
-export type ServerProjectResponse = ProjectSuccesResponse | ErrorResponse;
+export type ProjectResponse = ProjectSuccesResponse | ErrorResponse;
+
+
+// Update Project Success Response
+interface UpdateProjectSuccessResponse {
+  success: true;
+  data: Tables<'timerProject'>;
+  error: null;
+}
+export type UpdateProjectResponse = UpdateProjectSuccessResponse | ErrorResponse;
+
+
+// Create Project Success Response
+interface CreateProjectSuccessResponse {
+  success: true;
+  data: Tables<'timerProject'>;
+  error: null;
+}
+export type CreateProjectResponse = CreateProjectSuccessResponse | ErrorResponse;

@@ -1,21 +1,20 @@
 'use server';
 
-import type { ProjectResponse } from '@/types/action.types';
+import type { DeleteResponse } from '@/types/action.types';
 import { createClient } from '@/utils/supabase/server';
 
 
-interface getProjectProps {
-  id: string;
+interface DeleteProjectProps {
+  projectId: string;
 }
 
-export async function getProjectById({ id }: getProjectProps): Promise<ProjectResponse> {
+export async function deleteProject({ projectId }: DeleteProjectProps): Promise<DeleteResponse> {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from('timerProject')
-    .select('*')
-    .eq('id', id)
-    .maybeSingle();
+    .delete()
+    .eq('id', projectId);
 
   if (error) {
     return {
@@ -26,7 +25,7 @@ export async function getProjectById({ id }: getProjectProps): Promise<ProjectRe
   }
 
   return {
-    data,
+    data: null,
     error: null,
     success: true,
   };

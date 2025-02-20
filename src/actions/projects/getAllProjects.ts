@@ -1,10 +1,10 @@
 'use server';
 
-import type { ServerProjectListResponse } from '@/types/action.types';
+import type { ProjectListResponse } from '@/types/action.types';
 import { createClient } from '@/utils/supabase/server';
 
 
-export async function getProjects(): Promise<ServerProjectListResponse> {
+export async function getAllProjects(): Promise<ProjectListResponse> {
   const supabase = await createClient();
 
   const {
@@ -19,7 +19,10 @@ export async function getProjects(): Promise<ServerProjectListResponse> {
     };
   }
 
-  const { data, error } = await supabase.from('timerProject').select('*').eq('user_id', user.id);
+  const { data, error } = await supabase
+    .from('timerProject')
+    .select('*')
+    .eq('user_id', user.id);
 
   if (error) {
     return {
