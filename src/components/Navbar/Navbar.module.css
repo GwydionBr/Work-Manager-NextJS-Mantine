@@ -23,8 +23,11 @@
 
 .main {
   flex: 1;
-  height: 95vh;
+  height: 100vh;
   background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
+  position: fixed;
+  width: 200px;
+  border-right: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
 }
 
 .mainLink {

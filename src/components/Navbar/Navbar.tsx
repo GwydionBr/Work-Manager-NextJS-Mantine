@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { IconDeviceDesktopAnalytics, IconGauge, IconHome2, IconSettings, IconUser } from '@tabler/icons-react';
-import { Flex, Stack, Tooltip, UnstyledButton, Text } from '@mantine/core';
+import { Flex, Stack, Text, Tooltip, UnstyledButton } from '@mantine/core';
 import SchemeToggle from '@/components/SchemeToggle/SchemeToggle';
 import paths from '@/paths';
 import classes from './Navbar.module.css';
@@ -14,7 +14,6 @@ interface LinkData {
   label: string;
   to: string;
 }
-
 
 const mainLinksData = [
   { icon: IconHome2, label: 'Home', to: paths.home() },
@@ -59,15 +58,20 @@ export default function Navbar() {
   const profileLinks = createLinks(profileLinksData);
 
   return (
-    <Flex direction="column" align="center" justify="flex-start" style={{ height: '100%' }} >
+    <Flex direction="column" align="center" justify="flex-start" style={{ height: '100%' }}>
       <Text p="lg">WM</Text>
-      <Flex align="center" direction="column" justify="space-between" style={{ height: '100%' }} pb={50} pt={20}>
+      <Flex
+        align="center"
+        direction="column"
+        justify="space-between"
+        style={{ height: '100%' }}
+        pb={50}
+        pt={20}
+      >
         <Stack gap="xs">{mainLinks}</Stack>
         <Stack gap="xl" justify="space-between">
           <SchemeToggle />
-          <Stack gap="xs">
-            {profileLinks}
-          </Stack>
+          <Stack gap="xs">{profileLinks}</Stack>
         </Stack>
       </Flex>
     </Flex>
