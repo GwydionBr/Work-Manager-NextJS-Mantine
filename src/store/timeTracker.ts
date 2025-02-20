@@ -2,14 +2,14 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 
-// Enum für den Timer-Zustand
+
 enum TimerState {
   Stopped = "stopped",
   Running = "running",
   Paused = "paused",
 }
 
-// Typ für den TimeTracker-Store
+
 interface TimeTrackerState {
   moneyEarned: string;
   activeTime: string;
@@ -43,7 +43,6 @@ const formatTime = (seconds: number): string => {
 
 let animationFrameId: number | null = null;
 
-// Zustand-Store mit Persistenz und Timer-Logik
 export const useTimeTracker = create(
   persist<TimeTrackerState>(
     (set, get) => ({

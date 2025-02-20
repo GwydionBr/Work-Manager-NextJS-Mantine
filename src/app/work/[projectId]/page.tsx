@@ -30,11 +30,11 @@ export default function Project({ params }: ProjectProps) {
       setSessions(data);
 
       const currentProject = await actions.getProjectById({ id: projectId });
-      if (!currentProject.success) {
+      if (!currentProject.success || !currentProject.data) {
         console.error(currentProject.error);
         return;
       }
-      configureProject(projectId, currentProject.data.title, currentProject.data.currency, currentProject.data.salary);
+      configureProject(projectId, currentProject.data.title, currentProject.data.currency || "$", currentProject.data.salary);
 
 
 
