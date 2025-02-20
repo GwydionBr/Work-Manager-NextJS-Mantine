@@ -1,16 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
 import { Button, Card, Text } from '@mantine/core';
-import { useTimeTracker } from '@/store/timeTracker'; 
-import { Tables } from '@/db.types';
+import { useTimeTracker } from '@/store/timeTracker';
 
-interface TimeTrackerProps {
-  project: Tables<'timerProject'> | null;
-}
 
-export default function TimeTrackerComponent({ project }: TimeTrackerProps) {
+export default function TimeTrackerComponent() {
   const {
+    projectTitle,
     moneyEarned,
     activeTime,
     pausedTime,
@@ -19,25 +15,13 @@ export default function TimeTrackerComponent({ project }: TimeTrackerProps) {
     pauseTimer,
     resumeTimer,
     stopTimer,
-    configureProject,
   } = useTimeTracker();
-
-  useEffect(() => {
-    if (project) {
-      configureProject(project.id, project.title, project.currency || "$", project.salary);
-    }
-  }, [project]);
-
-  if (!project) {
-    return null;
-  }
-
 
 
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Text size="xl" pb={20}>
-        {project.title}
+        {projectTitle}
       </Text>
       <Text size="lg">💰 Geld verdient: {moneyEarned} $</Text>
       <Text>⏱ Aktive Zeit: {activeTime}</Text>
@@ -50,6 +34,7 @@ export default function TimeTrackerComponent({ project }: TimeTrackerProps) {
       <Button onClick={pauseTimer} disabled={state !== 'running'} color="yellow" mt="sm">
         Pause
       </Button>
+    
       <Button onClick={resumeTimer} disabled={state !== 'paused'} color="blue" mt="sm">
         Weiter
       </Button>

@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import * as actions from '@/actions';
 import ProjectNavbar from '@/components/Navbar/ProjectNavbar';
 import type { Tables } from '@/db.types';
+import TimeTrackerComponent from '@/components/TimeTracker/TimeTrackerComponent';
+import { Grid } from '@mantine/core';
 
 export default function WorkLayout({ children }: { children: any }) {
   const [projects, setProjects] = useState<Tables<'timerProject'>[]>([]);
@@ -19,11 +21,16 @@ export default function WorkLayout({ children }: { children: any }) {
   }, []);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'row', height: '100vh' }}>
-      <div style={{ width: '250px' }}>
+    <Grid justify="space-between" >
+      <Grid.Col span={2}>
         <ProjectNavbar projects={projects} />
-      </div>
-      {children}
-    </div>
+      </Grid.Col>
+      <Grid.Col span={6}>
+        {children}
+      </Grid.Col>
+      <Grid.Col span={3}>
+        <TimeTrackerComponent />
+      </Grid.Col>
+    </Grid>
   );
 }

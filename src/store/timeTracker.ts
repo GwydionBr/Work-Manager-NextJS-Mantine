@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+
 // Enum für den Timer-Zustand
 enum TimerState {
   Stopped = "stopped",
@@ -63,6 +64,9 @@ export const useTimeTracker = create(
       storedPausedSeconds: 0,
 
       configureProject: (projectId, projectTitle, currency, salary) => {
+
+        if (get().state !== TimerState.Stopped) {return}
+
         set({
           projectId,
           projectTitle,
@@ -73,7 +77,6 @@ export const useTimeTracker = create(
           pausedTime: "00:00",
           state: TimerState.Stopped,
         });
-        console.log(`Projekt konfiguriert: ${projectTitle} (${currency} ${salary}/h)`);
       },
 
 
@@ -158,27 +161,20 @@ export const useTimeTracker = create(
 
         set({
           state: TimerState.Stopped,
-          moneyEarned: "0.00",
-          activeTime: "00:00",
-          pausedTime: "00:00",
+          moneyEarned: '0.00',
+          activeTime: '00:00',
+          pausedTime: '00:00',
           activeSeconds: 0,
           pausedSeconds: 0,
           startTime: null,
           tempStartTime: null,
+          storedActiveSeconds: 0,
+          storedPausedSeconds: 0,
         });
       },
 
       resetTimer: () => {
-        set({
-          state: TimerState.Stopped,
-          moneyEarned: "0.00",
-          activeTime: "00:00",
-          pausedTime: "00:00",
-          activeSeconds: 0,
-          pausedSeconds: 0,
-          startTime: null,
-          tempStartTime: null,
-        });
+        
       },
     }),
 
