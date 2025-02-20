@@ -28,19 +28,34 @@ export default function TimeTrackerComponent() {
       <Text>⏸ Pausierte Zeit: {pausedTime}</Text>
       <Text>📌 Status: {state}</Text>
 
-      <Button onClick={startTimer} disabled={state !== 'stopped'} color="green" mt="sm">
-        Start
-      </Button>
-      <Button onClick={pauseTimer} disabled={state !== 'running'} color="yellow" mt="sm">
-        Pause
-      </Button>
-    
-      <Button onClick={resumeTimer} disabled={state !== 'paused'} color="blue" mt="sm">
-        Weiter
-      </Button>
-      <Button onClick={stopTimer} disabled={state === 'stopped'} color="red" mt="sm">
-        Stop
-      </Button>
+      {
+        state === 'stopped' && (
+          <Button onClick={startTimer} color="green" mt="sm">
+            Start
+          </Button>
+        )
+      }
+      {
+        state === 'running' && (
+          <Button onClick={pauseTimer} color="yellow" mt="sm">
+            Pause
+          </Button>
+        )
+      }
+      {
+        state === 'paused' && (
+          <Button onClick={resumeTimer} color="blue" mt="sm">
+            Weiter
+          </Button>
+        )
+      }
+      {
+        state !== 'stopped' && (
+          <Button onClick={stopTimer} color="red" mt="sm">
+            Stop
+          </Button>
+        )
+      }
     </Card>
   );
 }

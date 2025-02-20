@@ -1,6 +1,7 @@
 import { IconClock } from '@tabler/icons-react';
 import { Card, Group, Text } from '@mantine/core';
 import type { Tables } from '@/db.types';
+import { formatTime } from '@/utils/workHelperFunctions';
 
 interface SessionRowProps {
   session: Tables<'timerSession'>;
@@ -16,7 +17,7 @@ export default function SessionRow({ session }: SessionRowProps) {
         </Text>
       </Group>
       <Text size="sm" color="dimmed">
-        Active: {session.active_seconds}s | Paused: {session.paused_seconds}s
+        Active: {formatTime(session.active_seconds)} | Paused: {formatTime(session.paused_seconds)}
       </Text>
     </Card>
   );

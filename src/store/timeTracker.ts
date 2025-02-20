@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
+import { formatTime } from "@/utils/workHelperFunctions";
 
 
 enum TimerState {
@@ -34,12 +34,6 @@ interface TimeTrackerState {
   resetTimer: () => void;
   configureProject: (projectId: string, projectTitle: string, currency: string, salary: number) => void;
 }
-
-const formatTime = (seconds: number): string => {
-  const min = Math.floor(seconds / 60);
-  const sec = seconds % 60;
-  return `${min.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
-};
 
 let animationFrameId: number | null = null;
 
