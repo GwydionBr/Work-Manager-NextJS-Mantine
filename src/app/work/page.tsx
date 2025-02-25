@@ -1,23 +1,26 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useTimeTracker } from '@/store/timeTrackerStore';
-import paths from '@/utils/paths';
+import { Stack, Center } from '@mantine/core';
+import ProjectHeader from '@/components/Work/Project/ProjectHeader';
+import SessionList from '@/components/Work/Session/SessionList';
+import { useWorkStore } from '@/store/workManagerStore';
 
 export default function WorkPage() {
-  const router = useRouter();
-  const { projectId } = useTimeTracker();
 
-  useEffect(() => {
-    if (projectId) {
-      router.push(paths.work.workDetailsPage(projectId));
-    }
-  }, [projectId, router]);
+  const { activeProject } = useWorkStore();
+
+  if (!activeProject) {
+    return (
+      <Center>
+          Please select a project
+      </Center>
+    );
+  }
 
   return (
-    <>
-      <p>Kein Projekt ausgewählt.</p>
-    </>
+    <Stack align="center">
+      <ProjectHeader  />
+      <SessionList sessions={activeProject.sessions} />
+    </Stack>
   );
 }

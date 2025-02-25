@@ -1,26 +1,34 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Title } from '@mantine/core';
-import { useWorkStore } from '@/store/workManagerStore';
-import paths from '@/utils/paths';
+import { Box, Title } from '@mantine/core';
+import { useTimeTracker } from '@/store/timeTrackerStore';
+import { useWorkStore, type TimerProject } from '@/store/workManagerStore';
 import classes from './Navbar.module.css';
 
 
 export default function ProjectNavbar() {
-  const pathname = usePathname();
-  const { projects } = useWorkStore();
+  const { projects, activeProject, setActiveProject } = useWorkStore();
+  const { configureProject } = useTimeTracker();
+
+  function handleSelection(timerProject: TimerProject) {
+    setActiveProject(timerProject.project.id);
+    configureProject(
+      timerProject.project.id,
+      timerProject.project.title,
+      timerProject.project.currency,
+      timerProject.project.salary
+    );
+  }
 
   const links = projects.map((timerProject) => (
-    <Link
+    <Box
       className={classes.link}
-      data-active={pathname === paths.work.workDetailsPage(timerProject.project.id) || undefined}
-      href={paths.work.workDetailsPage(timerProject.project.id)}
+      data-active={timerProject === activeProject || undefined}
       key={timerProject.project.id}
+      onClick={() => handleSelection(timerProject)}
     >
       {timerProject.project.title}
-    </Link>
+    </Box>
   ));
 
   return (

@@ -5,7 +5,7 @@ import * as actions from '@/actions';
 import { Tables, TablesUpdate } from '@/types/db.types';
 
 
-interface TimerProject {
+export interface TimerProject {
   project: Tables<'timerProject'>;
   sessions: Tables<'timerSession'>[];
 }
