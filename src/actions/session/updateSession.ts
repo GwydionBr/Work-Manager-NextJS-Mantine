@@ -7,11 +7,11 @@ import paths from '@/utils/paths';
 import { createClient } from '@/utils/supabase/server';
 
 interface UpdateSessionProps {
-  session: TablesUpdate<'timerSession'>;
+  updateSession: TablesUpdate<'timerSession'>;
 }
 
 export async function updateSession({
-  session: updateSession,
+  updateSession: updateSession,
 }: UpdateSessionProps): Promise<SessionResponse> {
   const supabase = await createClient();
 

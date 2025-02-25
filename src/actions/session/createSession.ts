@@ -1,12 +1,12 @@
 'use server';
 
 import type { SessionResponse } from '@/types/action.types';
-import type { Tables } from '@/types/db.types';
+import type { TablesInsert } from '@/types/db.types';
 import { createClient } from '@/utils/supabase/server';
 
 
 interface CreateProjectProps {
-  session: Tables<'timerSession'>;
+  session: TablesInsert<'timerSession'>;
 }
 
 export async function createSession({ session }: CreateProjectProps): Promise<SessionResponse> {

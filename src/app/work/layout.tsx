@@ -1,25 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Flex, Grid } from '@mantine/core';
-import * as actions from '@/actions';
 import ProjectNavbar from '@/components/Navbar/ProjectNavbar';
 import TimeTrackerComponent from '@/components/TimeTracker/TimeTrackerComponent';
-import { Tables } from '@/types/db.types';
+import { useWorkStore } from '@/store/workManagerStore';
 
 
-export default function WorkLayout({ children }: { children: any }) {
-  const [projects, setProjects] = useState<Tables<"timerProject">[]>([]);
+export default function WorkLayout({ children }: { children: React.ReactNode }) {
+  
+  const { projects, fetchProjects } = useWorkStore();
+
   useEffect(() => {
     fetchProjects();
   }, []);
 
-  async function fetchProjects() {
-    const { data, success } = await actions.getAllProjects();
-    if (!success) {return};
-    setProjects(data);
-  }
-  
 
   return (
     <Grid justify="space-between">

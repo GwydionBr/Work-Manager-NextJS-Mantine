@@ -138,13 +138,13 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          currency?: string | null
+          currency: string | null
           description: string
           id: string
-          is_favorite?: boolean | null
+          is_favorite: boolean | null
           salary: number
           title: string
-          user_id?: string
+          user_id: string
         }
         Update: {
           currency?: string | null
@@ -170,15 +170,15 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          active_seconds?: number | null
-          currency?: string | null
+          active_seconds: number | null
+          currency: string | null
           end_time: string
           id?: string
-          paused_seconds?: number | null
-          project_id?: string | null
-          salary?: number | null
-          start_time?: string | null
-          user_id?: string
+          paused_seconds: number | null
+          project_id: string | null
+          salary: number | null
+          start_time: string | null
+          user_id: string
         }
         Update: {
           active_seconds?: number | null

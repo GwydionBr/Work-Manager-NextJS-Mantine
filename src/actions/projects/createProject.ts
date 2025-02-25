@@ -1,12 +1,12 @@
 'use server';
 
 import type { ProjectResponse } from '@/types/action.types';
-import type { Tables } from '@/types/db.types';
+import type { TablesInsert } from '@/types/db.types';
 import { createClient } from '@/utils/supabase/server';
 
 
 interface CreateProjectProps {
-  project: Tables<'timerProject'>;
+  project: TablesInsert<'timerProject'>;
 }
 
 export async function createProject({ project }: CreateProjectProps): Promise<ProjectResponse> {
