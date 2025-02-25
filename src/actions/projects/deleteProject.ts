@@ -11,15 +11,30 @@ interface DeleteProjectProps {
 export async function deleteProject({ projectId }: DeleteProjectProps): Promise<DeleteResponse> {
   const supabase = await createClient();
 
-  const { error } = await supabase
+  const sessionResponse = await supabase
+    .from('timerSession')
+    .delete()
+    .eq('project_id', projectId);
+
+
+  if (sessionResponse.error) {
+    return {
+      data: null,
+      error: sessionResponse.error.message,
+      success: false,
+    };
+  }
+
+  const projectResponse = await supabase
     .from('timerProject')
     .delete()
     .eq('id', projectId);
 
-  if (error) {
+
+  if (projectResponse.error) {
     return {
       data: null,
-      error: error.message,
+      error: projectResponse.error.message,
       success: false,
     };
   }

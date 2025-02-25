@@ -17,6 +17,7 @@ interface WorkStore {
   fetchData: () => Promise<void>;
   setActiveProject: (id: string) => Promise<void>;
   updateProject: (project: TablesUpdate<'timerProject'>) => Promise<boolean>;
+  deleteProject: (id: string) => Promise<boolean>;
 }
 
 export const useWorkStore = create<WorkStore>((set, get) => ({
@@ -57,7 +58,7 @@ export const useWorkStore = create<WorkStore>((set, get) => ({
 
     set({ activeProject: project });
   },
-  
+
 
   updateProject: async (project) => {
     const { projects } = get();
@@ -82,5 +83,21 @@ export const useWorkStore = create<WorkStore>((set, get) => ({
     set({ activeProject: updatedProjects.find((p) => p.project.id === project.id) });
 
     return true;
-  }
+  },
+
+
+  deleteProject: async (id) => {
+    const { projects } = get();
+    const deletedProject = await actions.deleteProject({projectId: id});
+
+    if (!deletedProject.success) {
+      return false;
+    }
+
+    const updatedProjects = projects.filter((p) => p.project.id !== id);
+    set({ projects: updatedProjects });
+    set({ activeProject: null });
+
+    return true;
+  },
 }));
