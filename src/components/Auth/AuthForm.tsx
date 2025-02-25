@@ -16,9 +16,7 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { upperFirst, useToggle } from '@mantine/hooks';
-import login from '@/src/actions/auth/email/loginEmail';
-import signup from '@/src/actions/auth/email/signupEmail';
-import signInWithGithub from '@/src/actions/auth/github/signInWithGithub';
+import { login, signup, signInWithGithub} from '@/actions';
 import GithubButton from '../SocialButtons/GithubButton';
 
 type AuthType = 'login' | 'register';

@@ -13,3 +13,10 @@ export { getProjectSessions } from './session/getProjectSessions';
 export { createSession } from './session/createSession';
 export { deleteSession } from './session/deleteSession';
 export { updateSession } from './session/updateSession';
+
+// Auth Actions
+
+export { login } from './auth/email/loginEmail';
+export { logout } from './auth/logout';
+export { signup } from './auth/email/signupEmail';
+export { signInWithGithub } from './auth/github/signInWithGithub';

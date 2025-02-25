@@ -1,20 +1,24 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import type { SessionResponse } from '@/types/action.types';
-import type { TablesUpdate } from "@/types/db.types";
+import type { TablesUpdate } from '@/types/db.types';
+import paths from '@/utils/paths';
 import { createClient } from '@/utils/supabase/server';
 
-
 interface UpdateSessionProps {
-  updateSession: TablesUpdate<'timerSession'>;
+  session: TablesUpdate<'timerSession'>;
 }
 
-export async function updateSession({ updateSession }: UpdateSessionProps): Promise<SessionResponse> {
+export async function updateSession({
+  session: updateSession,
+}: UpdateSessionProps): Promise<SessionResponse> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from('timerSession')
     .update(updateSession)
+    .eq('id', updateSession.id)
     .select()
     .single();
 
@@ -25,6 +29,8 @@ export async function updateSession({ updateSession }: UpdateSessionProps): Prom
       success: false,
     };
   }
+
+  revalidatePath(paths.work.workDetailsPage(updateSession.project_id));
 
   return {
     data,

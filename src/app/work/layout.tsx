@@ -1,24 +1,25 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Flex, Grid } from '@mantine/core';
 import * as actions from '@/actions';
 import ProjectNavbar from '@/components/Navbar/ProjectNavbar';
 import TimeTrackerComponent from '@/components/TimeTracker/TimeTrackerComponent';
-import type { Tables } from '@/types/db.types';
+import { Tables } from '@/types/db.types';
+
 
 export default function WorkLayout({ children }: { children: any }) {
-  const [projects, setProjects] = useState<Tables<'timerProject'>[]>([]);
-
+  const [projects, setProjects] = useState<Tables<"timerProject">[]>([]);
   useEffect(() => {
-    actions.getAllProjects().then((response) => {
-      if (!response.success) {
-        return null;
-      }
-
-      setProjects(response.data);
-    });
+    fetchProjects();
   }, []);
+
+  async function fetchProjects() {
+    const { data, success } = await actions.getAllProjects();
+    if (!success) {return};
+    setProjects(data);
+  }
+  
 
   return (
     <Grid justify="space-between">
@@ -26,7 +27,9 @@ export default function WorkLayout({ children }: { children: any }) {
         <ProjectNavbar projects={projects} />
       </Grid.Col>
       <Grid.Col span={6} p={40}>
-        <Flex justify="center">{children}</Flex>
+        <Flex justify="center">
+          {children}
+        </Flex>
       </Grid.Col>
       <Grid.Col span={3}>
         <Flex

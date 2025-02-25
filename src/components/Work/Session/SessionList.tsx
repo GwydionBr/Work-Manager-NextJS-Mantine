@@ -3,7 +3,7 @@
 import { IconCalendar, IconClock, IconFolder } from '@tabler/icons-react';
 import { Accordion, Card, Group, ScrollArea, Text } from '@mantine/core';
 import type { Tables } from '@/types/db.types';
-import SessionRow from './SessionRow';
+import SessionRow from '@/components/Work/Session/SessionRow';
 
 interface SessionListProps {
   sessions: Tables<'timerSession'>[];

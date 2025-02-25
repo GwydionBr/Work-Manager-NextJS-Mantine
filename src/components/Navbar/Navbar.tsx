@@ -2,12 +2,17 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { IconDeviceDesktopAnalytics, IconGauge, IconHome2, IconSettings, IconUser } from '@tabler/icons-react';
+import {
+  IconDeviceDesktopAnalytics,
+  IconGauge,
+  IconHome2,
+  IconSettings,
+  IconUser,
+} from '@tabler/icons-react';
 import { Flex, Stack, Text, Tooltip, UnstyledButton } from '@mantine/core';
 import SchemeToggle from '@/components/SchemeToggle/SchemeToggle';
-import paths from '@/paths';
+import paths from '@/utils/paths';
 import classes from './Navbar.module.css';
-
 
 interface LinkData {
   icon: React.ElementType;
@@ -18,12 +23,12 @@ interface LinkData {
 const mainLinksData = [
   { icon: IconHome2, label: 'Home', to: paths.home() },
   { icon: IconGauge, label: 'Work', to: paths.work.workPage() },
-  { icon: IconDeviceDesktopAnalytics, label: 'Analytics', to: paths.finances.financesPage() }
+  { icon: IconDeviceDesktopAnalytics, label: 'Analytics', to: paths.finances.financesPage() },
 ];
 
 const profileLinksData = [
   { icon: IconUser, label: 'Account', to: paths.account.accountPage() },
-  { icon: IconSettings, label: 'Settings', to: paths.settings.settingsPage() }
+  { icon: IconSettings, label: 'Settings', to: paths.settings.settingsPage() },
 ];
 
 export default function Navbar() {

@@ -1,11 +1,12 @@
 'use client';
 
 import { use, useEffect, useState } from 'react';
-import { Group } from '@mantine/core';
+import { Stack } from '@mantine/core';
 import * as actions from '@/actions';
-import SessionList from '@/components/Work/SessionList';
-import { useTimeTracker } from '@/store/timeTracker';
-import type { Tables } from '@/types/db.types';
+import ProjectHeader from '@/components/Work/Project/ProjectHeader';
+import SessionList from '@/components/Work/Session/SessionList';
+import { Tables } from '@/types/db.types';
+
 
 interface ProjectProps {
   params: Promise<{ projectId: string }>;
@@ -13,36 +14,29 @@ interface ProjectProps {
 
 export default function Project({ params }: ProjectProps) {
   const { projectId } = use(params);
-  const [sessions, setSessions] = useState<Tables<'timerSession'>[]>([]);
-
-  const { configureProject } = useTimeTracker();
+  const [sessions, setSessions] = useState<Tables<"timerSession">[]>([]);
+  const [project, setProject] = useState<Tables<'timerProject'> | null>(null);
 
   useEffect(() => {
-    (async () => {
-      const { data, error, success } = await actions.getProjectSessions({ projectId });
-      if (!success) {
-        console.error(error);
-        return;
-      }
-      setSessions(data);
+      fetchData();
+    }, []);
 
-      const currentProject = await actions.getProjectById({ id: projectId });
-      if (!currentProject.success) {
-        console.error(currentProject.error);
-        return;
+    async function fetchData() {
+      const sessionsResponse = await actions.getProjectSessions({ projectId });
+      if (sessionsResponse.success) {
+        setSessions(sessionsResponse.data);
       }
-      configureProject(
-        projectId,
-        currentProject.data.title,
-        currentProject.data.currency || '$',
-        currentProject.data.salary
-      );
-    })();
-  }, [projectId]);
+
+      const projectResponse = await actions.getProjectById({ id: projectId });
+      if (projectResponse.success) {
+        setProject(projectResponse.data);
+      }
+    }
 
   return (
-    <Group>
+    <Stack align="center">
+      <ProjectHeader project={project}  />
       <SessionList sessions={sessions} />
-    </Group>
+    </Stack>
   );
 }

@@ -12,7 +12,7 @@ interface AuthFormData {
   terms: boolean
 }
 
-export default async function login(authFormData: AuthFormData) {
+export async function login(authFormData: AuthFormData) {
   const supabase = await createClient()
 
   // type-casting here for convenience

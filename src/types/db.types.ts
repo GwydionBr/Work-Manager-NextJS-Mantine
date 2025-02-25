@@ -129,7 +129,7 @@ export type Database = {
       }
       timerProject: {
         Row: {
-          currency: string | null
+          currency: string 
           description: string
           id: string
           is_favorite: boolean | null
@@ -186,7 +186,7 @@ export type Database = {
           end_time?: string
           id: string
           paused_seconds?: number | null
-          project_id?: string | null
+          project_id: string
           salary?: number | null
           start_time?: string | null
           user_id?: string

@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Box, Burger, Button, Divider, Drawer, Group, ScrollArea } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import UserCard from '@/components/UserCard/UserCard';
 import { logout } from '@/actions/auth/logout';
-import paths from '@/paths';
+import UserCard from '@/components/UserCard/UserCard';
+import paths from '@/utils/paths';
 import { createClient } from '@/utils/supabase/client';
 import classes from './Header.module.css';
 

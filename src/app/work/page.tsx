@@ -2,8 +2,8 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTimeTracker } from '@/store/timeTracker';
-import paths from '@/paths';
+import { useTimeTracker } from '@/store/timeTrackerStore';
+import paths from '@/utils/paths';
 
 export default function WorkPage() {
   const router = useRouter();
@@ -11,9 +11,9 @@ export default function WorkPage() {
 
   useEffect(() => {
     if (projectId) {
-      router.push(paths.work.workDetailsPage(projectId)); 
+      router.push(paths.work.workDetailsPage(projectId));
     }
-  }, [projectId, router]); 
+  }, [projectId, router]);
 
   return (
     <>

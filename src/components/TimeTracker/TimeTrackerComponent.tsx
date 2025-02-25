@@ -1,8 +1,7 @@
 'use client';
 
 import { Button, Card, Text } from '@mantine/core';
-import { useTimeTracker } from '@/store/timeTracker';
-
+import { useTimeTracker } from '@/store/timeTrackerStore';
 
 export default function TimeTrackerComponent() {
   const {
@@ -17,7 +16,6 @@ export default function TimeTrackerComponent() {
     stopTimer,
   } = useTimeTracker();
 
-
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Text size="xl" pb={20}>
@@ -28,34 +26,26 @@ export default function TimeTrackerComponent() {
       <Text>⏸ Pausierte Zeit: {pausedTime}</Text>
       <Text>📌 Status: {state}</Text>
 
-      {
-        state === 'stopped' && (
-          <Button onClick={startTimer} color="green" mt="sm">
-            Start
-          </Button>
-        )
-      }
-      {
-        state === 'running' && (
-          <Button onClick={pauseTimer} color="yellow" mt="sm">
-            Pause
-          </Button>
-        )
-      }
-      {
-        state === 'paused' && (
-          <Button onClick={resumeTimer} color="blue" mt="sm">
-            Weiter
-          </Button>
-        )
-      }
-      {
-        state !== 'stopped' && (
-          <Button onClick={stopTimer} color="red" mt="sm">
-            Stop
-          </Button>
-        )
-      }
+      {state === 'stopped' && (
+        <Button onClick={startTimer} color="green" mt="sm">
+          Start
+        </Button>
+      )}
+      {state === 'running' && (
+        <Button onClick={pauseTimer} color="yellow" mt="sm">
+          Pause
+        </Button>
+      )}
+      {state === 'paused' && (
+        <Button onClick={resumeTimer} color="blue" mt="sm">
+          Weiter
+        </Button>
+      )}
+      {state !== 'stopped' && (
+        <Button onClick={stopTimer} color="red" mt="sm">
+          Stop
+        </Button>
+      )}
     </Card>
   );
 }

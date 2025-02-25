@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 
 import { createClient } from '@/utils/supabase/server'
 
-export default async function signInWithGithub() {
+export async function signInWithGithub() {
   const supabase = await createClient()
   const provider = 'github'
 
