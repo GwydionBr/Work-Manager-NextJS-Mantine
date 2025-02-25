@@ -44,6 +44,10 @@ export const useWorkStore = create<WorkStore>((set, get) => ({
       projects: projectsData,
       timerSessions: timerSessions.data
     });
+
+    if (projectsData.length > 0 && !get().activeProject) {
+      set({ activeProject: projectsData[0] });
+    }
   },
 
 
