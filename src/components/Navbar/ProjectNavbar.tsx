@@ -24,7 +24,7 @@ export default function ProjectNavbar() {
   const links = projects.map((timerProject) => (
     <Box
       className={classes.link}
-      data-active={timerProject === activeProject || undefined}
+      data-active={timerProject.project.id === activeProject?.project.id || undefined}
       key={timerProject.project.id}
       onClick={() => handleSelection(timerProject)}
     >
