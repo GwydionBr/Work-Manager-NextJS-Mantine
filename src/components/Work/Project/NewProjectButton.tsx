@@ -6,7 +6,6 @@ import { useDisclosure } from '@mantine/hooks';
 import ProjectForm from '@/components/Work/Project/ProjectForm';
 import { useWorkStore } from '@/store/workManagerStore';
 
-
 export default function NewProjectButton() {
   const [opened, { open, close }] = useDisclosure(false);
   const { addProject } = useWorkStore();
@@ -17,13 +16,11 @@ export default function NewProjectButton() {
     salary: number;
     currency: string;
   }) {
-
     const success = await addProject({ ...values });
     if (success) {
       close();
     }
   }
-
 
   return (
     <>
@@ -31,14 +28,14 @@ export default function NewProjectButton() {
         <Flex direction="column" gap="xl">
           <ProjectForm
             initialValues={{
-              title: '',
-              description: '',
+              title: "",
+              description: "",
               salary: 0,
-              currency: '$',
+              currency: "$",
             }}
             onSubmit={handleSubmit}
             onCancel={close}
-            existingProject={false}
+            newProject
           />
         </Flex>
       </Drawer>

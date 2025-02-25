@@ -3,9 +3,9 @@
 import { Pencil, Trash2 } from 'lucide-react';
 import { ActionIcon, Button, Drawer, Flex } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { useWorkStore } from '@/store/workManagerStore';
-import DeleteProjectModal from '@/components/Work/Project/deleteProjectModal';
+import DeleteProjectModal from '@/components/Work/Project/DeleteProjectModal';
 import ProjectForm from '@/components/Work/Project/ProjectForm';
+import { useWorkStore } from '@/store/workManagerStore';
 
 export default function EditProjectButton() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -19,10 +19,14 @@ export default function EditProjectButton() {
     salary: number;
     currency: string;
   }) {
-    if (!activeProject) {return};
+    if (!activeProject) {
+      return;
+    }
 
     const success = await updateProject({ id: activeProject.project.id, ...values });
-    if (success) {close()};
+    if (success) {
+      close();
+    }
   }
 
   async function handleDelete() {
@@ -35,7 +39,9 @@ export default function EditProjectButton() {
     }
   }
 
-  if (!activeProject) {return null};
+  if (!activeProject) {
+    return null;
+  }
 
   return (
     <>
@@ -50,7 +56,7 @@ export default function EditProjectButton() {
             }}
             onSubmit={handleSubmit}
             onCancel={close}
-            existingProject
+            newProject={false}
           />
           <Button
             leftSection={<Trash2 size={18} />}
