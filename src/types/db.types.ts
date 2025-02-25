@@ -140,11 +140,11 @@ export type Database = {
         Insert: {
           currency: string | null
           description: string
-          id: string
-          is_favorite: boolean | null
+          id?: string
+          is_favorite?: boolean | null
           salary: number
           title: string
-          user_id: string
+          user_id?: string
         }
         Update: {
           currency?: string | null

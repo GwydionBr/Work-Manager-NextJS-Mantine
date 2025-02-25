@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import * as actions from '@/actions';
-import { Tables, TablesUpdate } from '@/types/db.types';
+import { Tables, TablesInsert, TablesUpdate } from '@/types/db.types';
 
 
 export interface TimerProject {
@@ -18,6 +18,7 @@ interface WorkStore {
   setActiveProject: (id: string) => Promise<void>;
   updateProject: (project: TablesUpdate<'timerProject'>) => Promise<boolean>;
   deleteProject: (id: string) => Promise<boolean>;
+  addProject: (project: TablesInsert<'timerProject'>) => Promise<boolean>;
 }
 
 export const useWorkStore = create<WorkStore>((set, get) => ({
@@ -104,4 +105,19 @@ export const useWorkStore = create<WorkStore>((set, get) => ({
 
     return true;
   },
+
+  addProject: async (project) => {
+    const { projects } = get();
+    const newProject = await actions.createProject({ project });
+
+    if (!newProject.success) {
+      return false;
+    }
+
+    set({ 
+      projects: [...projects, { project: newProject.data, sessions: [] }],
+      activeProject: { project: newProject.data, sessions: [] } 
+    });
+    return true;
+  }
 }));

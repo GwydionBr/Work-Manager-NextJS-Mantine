@@ -1,8 +1,9 @@
 'use client';
 
-import { Box, Title } from '@mantine/core';
+import { Box, Group, Text } from '@mantine/core';
 import { useTimeTracker } from '@/store/timeTrackerStore';
 import { useWorkStore, type TimerProject } from '@/store/workManagerStore';
+import NewProjectButton from '../Work/Project/NewProjectButton';
 import classes from './Navbar.module.css';
 
 
@@ -33,9 +34,10 @@ export default function ProjectNavbar() {
 
   return (
     <div className={classes.main}>
-      <Title order={4} className={classes.title}>
-        Projects
-      </Title>
+      <Group className={classes.title} align="center" justify='space-between'>
+        <Text>Projects</Text>
+        <NewProjectButton />
+      </Group>
 
       {links}
     </div>
