@@ -9,17 +9,17 @@ import { useWorkStore } from '@/store/workManagerStore';
 
 export default function WorkLayout({ children }: { children: React.ReactNode }) {
   
-  const { projects, fetchProjects } = useWorkStore();
+  const { fetchData } = useWorkStore();
 
   useEffect(() => {
-    fetchProjects();
+    fetchData();
   }, []);
 
 
   return (
     <Grid justify="space-between">
       <Grid.Col span={2}>
-        <ProjectNavbar projects={projects} />
+        <ProjectNavbar />
       </Grid.Col>
       <Grid.Col span={6} p={40}>
         <Flex justify="center">

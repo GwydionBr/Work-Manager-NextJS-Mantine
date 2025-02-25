@@ -3,26 +3,23 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Title } from '@mantine/core';
-import type { Tables } from '@/types/db.types';
+import { useWorkStore } from '@/store/workManagerStore';
 import paths from '@/utils/paths';
 import classes from './Navbar.module.css';
 
 
-type ListProjectsProps = {
-  projects: Tables<'timerProject'>[];
-};
-
-export default function ProjectNavbar({ projects }: ListProjectsProps) {
+export default function ProjectNavbar() {
   const pathname = usePathname();
+  const { projects } = useWorkStore();
 
-  const links = projects.map((project) => (
+  const links = projects.map((timerProject) => (
     <Link
       className={classes.link}
-      data-active={pathname === paths.work.workDetailsPage(project.id) || undefined}
-      href={paths.work.workDetailsPage(project.id)}
-      key={project.id}
+      data-active={pathname === paths.work.workDetailsPage(timerProject.project.id) || undefined}
+      href={paths.work.workDetailsPage(timerProject.project.id)}
+      key={timerProject.project.id}
     >
-      {project.title}
+      {timerProject.project.title}
     </Link>
   ));
 

@@ -2,20 +2,21 @@
 
 import { create } from 'zustand';
 import * as actions from '@/actions';
-import { Tables, TablesInsert, TablesUpdate } from '@/types/db.types';
+import { Tables, TablesUpdate } from '@/types/db.types';
+
+
+interface TimerProject {
+  project: Tables<'timerProject'>;
+  sessions: Tables<'timerSession'>[];
+}
 
 interface WorkStore {
-  projects: Tables<'timerProject'>[];
-  activeProject: Tables<'timerProject'> | null;
+  projects: TimerProject[];
+  activeProject: TimerProject | null;
   timerSessions: Tables<'timerSession'>[];
-  fetchProjects: () => Promise<void>;
-  fetchSessions: () => Promise<void>;
-  createProject: (data: TablesInsert<'timerProject'>) => Promise<void>;
-  createSession: (data: TablesInsert<'timerSession'>) => Promise<void>;
-  updateProject: (data: TablesUpdate<'timerProject'>) => Promise<void>;
-  updateSession: (data: TablesUpdate<'timerSession'>) => Promise<void>;
-  deleteProject: (id: string) => Promise<void>;
-  deleteSession: (id: string) => Promise<void>;
+  fetchData: () => Promise<void>;
+  setActiveProject: (id: string) => Promise<void>;
+  updateProject: (project: TablesUpdate<'timerProject'>) => Promise<boolean>;
 }
 
 export const useWorkStore = create<WorkStore>((set, get) => ({
@@ -23,73 +24,63 @@ export const useWorkStore = create<WorkStore>((set, get) => ({
   activeProject: null,
   timerSessions: [],
 
-  async fetchProjects() {
-    await actions.getAllProjects().then(({ data, success }) => {
-      if (!success) {
-        return;
-      }
-      set({ projects: data });
-    });
-  },
-  async fetchSessions() {
-    await actions.getAllSessions().then(({ data, success }) => {
-      if (!success) {
-        return;
-      }
-      set({ timerSessions: data });
+  async fetchData() {
+    const [projects, timerSessions] = await Promise.all([
+      actions.getAllProjects(),
+      actions.getAllSessions(),
+    ]);
+
+    if (!projects.success || !timerSessions.success) {
+      return;
+    }
+
+    const projectsData = projects.data.map((project) => ({
+      project,
+      sessions: timerSessions.data.filter((session) => session.project_id === project.id),
+    }));
+
+    set({
+      projects: projectsData,
+      timerSessions: timerSessions.data
     });
   },
 
-  async createSession(data) {
-    await actions.createSession({ session: data }).then(({ success }) => {
-      if (!success) {
-        return;
-      }
-      get().fetchSessions();
-    });
-  },
 
-  async createProject(data) {
-    await actions.createProject({ project: data }).then(({ success }) => {
-      if (!success) {
-        return;
-      }
-      get().fetchProjects();
-    });
-  },
-  async updateProject(data) {
-    await actions.updateProject({ updateProject: data }).then(({ success }) => {
-      if (!success) {
-        return;
-      }
-      get().fetchProjects();
-    });
-  },
+  async setActiveProject(id: string) {
 
-  async updateSession(data) {
-    await actions.updateSession({ updateSession: data }).then(({ success }) => {
-      if (!success) {
-        return;
-      }
-      get().fetchSessions();
-    });
-  },
+    const { projects } = get();
+    const project = projects.find((p) => p.project.id === id);
 
-  async deleteProject(id: string) {
-    await actions.deleteProject({ projectId: id }).then(({ success }) => {
-      if (!success) {
-        return;
-      }
-      get().fetchProjects();
-    });
-  },
+    if (!project) {
+      return;
+    }
 
-  async deleteSession(id: string) {
-    await actions.deleteSession({ sessionId: id }).then(({ success }) => {
-      if (!success) {
-        return;
-      }
-      get().fetchSessions();
-    });
+    set({ activeProject: project });
   },
+  
+
+  updateProject: async (project) => {
+    const { projects } = get();
+    const updatedProject = await actions.updateProject({ updateProject: project });
+
+    if (!updatedProject.success) {
+      return false;
+    }
+
+    const updatedProjects = projects.map((p) => {
+      if (p.project.id === project.id) {
+        return {
+          project: updatedProject.data,
+          sessions: p.sessions,
+        };
+      }
+
+      return p;
+    });
+
+    set({ projects: updatedProjects });
+    set({ activeProject: updatedProjects.find((p) => p.project.id === project.id) });
+
+    return true;
+  }
 }));

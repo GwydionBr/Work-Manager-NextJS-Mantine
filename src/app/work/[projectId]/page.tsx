@@ -1,11 +1,10 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+import { use, useEffect } from 'react';
 import { Stack } from '@mantine/core';
-import * as actions from '@/actions';
 import ProjectHeader from '@/components/Work/Project/ProjectHeader';
 import SessionList from '@/components/Work/Session/SessionList';
-import { Tables } from '@/types/db.types';
+import { useWorkStore } from '@/store/workManagerStore';
 
 
 interface ProjectProps {
@@ -14,29 +13,20 @@ interface ProjectProps {
 
 export default function Project({ params }: ProjectProps) {
   const { projectId } = use(params);
-  const [sessions, setSessions] = useState<Tables<"timerSession">[]>([]);
-  const [project, setProject] = useState<Tables<'timerProject'> | null>(null);
+  const { activeProject, setActiveProject } = useWorkStore();
 
   useEffect(() => {
-      fetchData();
-    }, []);
+    setActiveProject(projectId);
+    }, [projectId]);
 
-    async function fetchData() {
-      const sessionsResponse = await actions.getProjectSessions({ projectId });
-      if (sessionsResponse.success) {
-        setSessions(sessionsResponse.data);
-      }
-
-      const projectResponse = await actions.getProjectById({ id: projectId });
-      if (projectResponse.success) {
-        setProject(projectResponse.data);
-      }
+    if (!activeProject) {
+      return null;
     }
 
   return (
     <Stack align="center">
-      <ProjectHeader project={project}  />
-      <SessionList sessions={sessions} />
+      <ProjectHeader  />
+      <SessionList sessions={activeProject.sessions} />
     </Stack>
   );
 }

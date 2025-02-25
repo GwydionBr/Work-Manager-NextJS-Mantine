@@ -3,8 +3,6 @@
 import type { ProjectResponse } from '@/types/action.types';
 import type { TablesUpdate } from "@/types/db.types";
 import { createClient } from '@/utils/supabase/server';
-import { revalidatePath } from 'next/cache';
-import paths from '@/utils/paths';
 
 
 interface UpdateProjectProps {
@@ -28,9 +26,6 @@ export async function updateProject({ updateProject }: UpdateProjectProps) : Pro
       success: false,
     };
   }
-
-  revalidatePath(paths.work.workDetailsPage(updateProject.id));
-  revalidatePath(paths.work.workPage());
 
   return {
     data,

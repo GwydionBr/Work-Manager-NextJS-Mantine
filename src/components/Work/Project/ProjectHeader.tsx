@@ -2,28 +2,28 @@
 
 import { Group, Stack, Text, Title } from '@mantine/core';
 import EditProjectButton from '@/components/Work/Project/EditProjectButton';
-import { Tables } from '@/types/db.types';
+import { useWorkStore } from '@/store/workManagerStore';
 import { formatMoney } from '@/utils/workHelperFunctions';
 
 
-interface ProjectHeaderProps {
-  project: Tables<'timerProject'> | null;
-}
+export default function ProjectHeader() {
 
-export default function ProjectHeader({ project }: ProjectHeaderProps) {
+  const { activeProject } = useWorkStore();
 
-  if (!project) {
+  if (!activeProject) {
     return null;
   }
 
   return (
     <Stack align="center">
       <Group align="center">
-        <Title order={1}>{project.title}</Title>
-        <Text>{formatMoney(project.salary, project.currency ?? '$')}</Text>
-        <EditProjectButton project={project}/>
+        <Title order={1}>{activeProject.project.title}</Title>
+        <Text>
+          {formatMoney(activeProject.project.salary, activeProject.project.currency ?? '$')}
+        </Text>
+        <EditProjectButton />
       </Group>
-      <Text>{project.description}</Text>
+      <Text>{activeProject.project.description}</Text>
     </Stack>
   );
 }

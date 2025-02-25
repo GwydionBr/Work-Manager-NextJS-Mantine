@@ -1,42 +1,57 @@
 'use client';
 
+import { useEffect } from 'react';
 import { IconEdit } from '@tabler/icons-react';
 import { ActionIcon, Button, Drawer, NumberInput, Stack, Textarea, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import { Tables } from '@/types/db.types';
-import * as actions from '@/actions';
+import { useWorkStore } from '@/store/workManagerStore';
 
-
-interface EditProjectButtonProps {
-  project: Tables<'timerProject'>;
-}
-
-export default function EditProjectButton({ project }: EditProjectButtonProps) {
-  const [opened, { open, close }] = useDisclosure(false)
+export default function EditProjectButton() {
+  const [opened, { open, close }] = useDisclosure(false);
+  const { activeProject, updateProject } = useWorkStore();
 
   const form = useForm({
     initialValues: {
-      title: project.title,
-      description: project.description,
-      salary: project.salary,
-      currency: project.currency ?? '',
+      title: '',
+      description: '',
+      salary: 0,
+      currency: '',
     },
-
     validate: {
       title: (value) => (value.trim().length === 0 ? 'Title is required' : null),
       salary: (value) => (value < 0 ? 'Salary must be positive' : null),
     },
   });
 
-  async function handleSubmit(values: typeof form.values) {
-    const newProject = { ...project, ...values };
-    const success = await actions.updateProject({ updateProject: newProject });
+  // Effekt, um die Formularwerte zu aktualisieren, wenn sich activeProject ändert
+  useEffect(() => {
+    if (activeProject) {
+      form.setValues({
+        title: activeProject.project.title,
+        description: activeProject.project.description,
+        salary: activeProject.project.salary,
+        currency: activeProject.project.currency ?? '',
+      });
+      form.resetDirty(); // Setzt den Dirty-Status des Formulars zurück
+    }
+  }, [activeProject]);
+
+  async function handleSubmit(values: { title: string; description: string; salary: number; currency: string }) {
+    if (!activeProject) {
+      return;
+    }
+    const newProject = { id: activeProject.project.id, ...values };
+    const success = updateProject(newProject);
     if (!success) {
       return;
     }
-    close(); 
-  };
+    close();
+  }
+
+  if (!activeProject) {
+    return null;
+  }
 
   return (
     <>
@@ -59,7 +74,6 @@ export default function EditProjectButton({ project }: EditProjectButtonProps) {
               placeholder="USD, EUR, etc."
               {...form.getInputProps('currency')}
             />
-
             <Button type="submit">Save Changes</Button>
           </Stack>
         </form>
