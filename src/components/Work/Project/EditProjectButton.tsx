@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { IconEdit } from '@tabler/icons-react';
+import { Pencil, Trash2 } from 'lucide-react';
 import { ActionIcon, Button, Drawer, Flex, Modal, NumberInput, Stack, Textarea, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
@@ -100,7 +100,7 @@ export default function EditProjectButton() {
               </Button>
             </Stack>
           </form>
-          <Button color="red" variant="filled" onClick={openDeleteModal}>
+          <Button leftSection={<Trash2 size={18}/>} color="red" variant="filled" onClick={openDeleteModal}>
             Delete
           </Button>
         </Flex>
@@ -123,8 +123,8 @@ export default function EditProjectButton() {
         </Flex>
       </Modal>
 
-      <ActionIcon aria-label="Edit project" onClick={open} size="sm">
-        <IconEdit />
+      <ActionIcon variant="transparent" aria-label="Edit project" onClick={open} size="sm" color="teal">
+        <Pencil />
       </ActionIcon>
     </>
   );
