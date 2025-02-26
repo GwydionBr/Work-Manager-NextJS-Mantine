@@ -2,12 +2,11 @@
 
 import { Group, Stack, Text, Title } from '@mantine/core';
 import EditProjectButton from '@/components/Work/Project/EditProjectButton';
-import { useWorkStore } from '@/store/workManagerStore';
+import NewSessionButton from '@/components/Work/Session/NewSessionButton';
+import { useWorkStore } from '@/stores/workManagerStore';
 import { formatMoney } from '@/utils/workHelperFunctions';
 
-
 export default function ProjectHeader() {
-
   const { activeProject } = useWorkStore();
 
   if (!activeProject) {
@@ -24,6 +23,7 @@ export default function ProjectHeader() {
         <EditProjectButton />
       </Group>
       <Text>{activeProject.project.description}</Text>
+      <NewSessionButton />
     </Stack>
   );
 }

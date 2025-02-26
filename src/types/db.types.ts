@@ -170,14 +170,14 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          active_seconds: number | null
-          currency: string | null
+          active_seconds: number 
+          currency: string 
           end_time: string
           id?: string
-          paused_seconds: number | null
-          project_id: string | null
-          salary: number | null
-          start_time: string | null
+          paused_seconds: number 
+          project_id: string 
+          salary: number 
+          start_time: string 
           user_id: string
         }
         Update: {

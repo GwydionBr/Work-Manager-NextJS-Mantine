@@ -19,6 +19,7 @@ interface WorkStore {
   updateProject: (project: TablesUpdate<'timerProject'>) => Promise<boolean>;
   deleteProject: (id: string) => Promise<boolean>;
   addProject: (project: TablesInsert<'timerProject'>) => Promise<boolean>;
+  addTimerSession: (session: TablesInsert<'timerSession'>) => Promise<boolean>;
 }
 
 export const useWorkStore = create<WorkStore>((set, get) => ({
@@ -119,5 +120,33 @@ export const useWorkStore = create<WorkStore>((set, get) => ({
       activeProject: { project: newProject.data, sessions: [] } 
     });
     return true;
-  }
+  },
+
+  addTimerSession: async (session) => {
+    const { timerSessions, projects, activeProject } = get();
+    const newSession = await actions.createSession({ session });
+
+    if (!newSession.success) {
+      return false;
+    }
+
+    const updatedSessions = [...timerSessions, newSession.data];
+    const updatedProjects = projects.map((p) => {
+      if (p.project.id === session.project_id) {
+      return {
+        project: p.project,
+        sessions: [...p.sessions, newSession.data],
+      };
+      }
+      return p;
+    });
+
+    set({ timerSessions: updatedSessions, projects: updatedProjects });
+
+    if (activeProject?.project.id === session.project_id) {
+      set({ activeProject: updatedProjects.find((p) => p.project.id === session.project_id) });
+    }
+
+    return true;
+  },
 }));

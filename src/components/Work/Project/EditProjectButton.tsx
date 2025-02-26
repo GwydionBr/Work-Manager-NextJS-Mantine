@@ -5,7 +5,7 @@ import { ActionIcon, Button, Drawer, Flex } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import DeleteProjectModal from '@/components/Work/Project/DeleteProjectModal';
 import ProjectForm from '@/components/Work/Project/ProjectForm';
-import { useWorkStore } from '@/store/workManagerStore';
+import { useWorkStore } from '@/stores/workManagerStore';
 
 export default function EditProjectButton() {
   const [opened, { open, close }] = useDisclosure(false);

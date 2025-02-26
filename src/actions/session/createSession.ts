@@ -19,6 +19,7 @@ export async function createSession({ session }: CreateProjectProps): Promise<Se
     .single();
 
   if (error) {
+    console.log('Error creating session:', error.message);
     return {
       data: null,
       error: error.message,

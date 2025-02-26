@@ -1,16 +1,16 @@
 'use client';
 
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { formatTime } from "@/utils/workHelperFunctions";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { TablesInsert } from '@/types/db.types';
+import { formatTime } from '@/utils/workHelperFunctions';
 
 
 enum TimerState {
-  Stopped = "stopped",
-  Running = "running",
-  Paused = "paused",
+  Stopped = 'stopped',
+  Running = 'running',
+  Paused = 'paused',
 }
-
 
 interface TimeTrackerState {
   moneyEarned: string;
@@ -33,8 +33,15 @@ interface TimeTrackerState {
   pauseTimer: () => void;
   resumeTimer: () => void;
   stopTimer: () => void;
+  getCurrentSession: () => TablesInsert<'timerSession'>;
   resetTimer: () => void;
-  configureProject: (projectId: string, projectTitle: string, currency: string, salary: number) => void;
+  configureProject: (
+    projectId: string,
+    projectTitle: string,
+    currency: string,
+    salary: number,
+    userId: string
+  ) => void;
 }
 
 let animationFrameId: number | null = null;
@@ -42,15 +49,15 @@ let animationFrameId: number | null = null;
 export const useTimeTracker = create(
   persist<TimeTrackerState>(
     (set, get) => ({
-      moneyEarned: "0.00",
-      activeTime: "00:00",
-      pausedTime: "00:00",
+      moneyEarned: '0.00',
+      activeTime: '00:00',
+      pausedTime: '00:00',
       state: TimerState.Stopped,
-      projectTitle: "",
-      currency: "$",
+      projectTitle: '',
+      currency: '$',
       salary: 0,
-      projectId: "",
-      userId: "",
+      projectId: '',
+      userId: '',
       startTime: null,
       tempStartTime: null,
       activeSeconds: 0,
@@ -58,25 +65,30 @@ export const useTimeTracker = create(
       storedActiveSeconds: 0,
       storedPausedSeconds: 0,
 
-      configureProject: (projectId, projectTitle, currency, salary) => {
 
-        if (get().state !== TimerState.Stopped) {return}
+      configureProject: (projectId, projectTitle, currency, salary, userId) => {
+        if (get().state !== TimerState.Stopped) {
+          return;
+        }
 
         set({
           projectId,
           projectTitle,
           currency,
           salary,
-          moneyEarned: "0.00",
-          activeTime: "00:00",
-          pausedTime: "00:00",
+          userId,
+          moneyEarned: '0.00',
+          activeTime: '00:00',
+          pausedTime: '00:00',
           state: TimerState.Stopped,
         });
       },
 
 
       startTimer: () => {
-        if (get().state !== TimerState.Stopped || get().projectTitle === "") {return};
+        if (get().state !== TimerState.Stopped || get().projectTitle === '') {
+          return;
+        }
 
         set({
           state: TimerState.Running,
@@ -86,9 +98,13 @@ export const useTimeTracker = create(
 
         // Running-Timer-Loop
         const updateLoop = () => {
-          if (get().state !== TimerState.Running) {return};
+          if (get().state !== TimerState.Running) {
+            return;
+          }
 
-          const newActiveSeconds = Math.floor((Date.now() - (get().tempStartTime ?? 0)) / 1000) + get().storedActiveSeconds;
+          const newActiveSeconds =
+            Math.floor((Date.now() - (get().tempStartTime ?? 0)) / 1000) +
+            get().storedActiveSeconds;
           set({
             activeSeconds: newActiveSeconds,
             activeTime: formatTime(newActiveSeconds),
@@ -99,21 +115,27 @@ export const useTimeTracker = create(
         updateLoop();
       },
 
+
       pauseTimer: () => {
-        if (get().state !== TimerState.Running) {return};
+        if (get().state !== TimerState.Running) {
+          return;
+        }
 
         set({
           state: TimerState.Paused,
           storedActiveSeconds: get().activeSeconds,
           tempStartTime: Date.now(),
-
         });
 
         // Paused-Timer-Loop
         const updateLoop = () => {
-          if (get().state !== TimerState.Paused) {return};
+          if (get().state !== TimerState.Paused) {
+            return;
+          }
 
-          const newPausedSeconds = Math.floor((Date.now() - (get().tempStartTime ?? 0)) / 1000) + get().storedPausedSeconds;
+          const newPausedSeconds =
+            Math.floor((Date.now() - (get().tempStartTime ?? 0)) / 1000) +
+            get().storedPausedSeconds;
           set({
             pausedSeconds: newPausedSeconds,
             pausedTime: formatTime(newPausedSeconds),
@@ -121,12 +143,13 @@ export const useTimeTracker = create(
           animationFrameId = requestAnimationFrame(updateLoop);
         };
         updateLoop();
-
       },
 
 
       resumeTimer: () => {
-        if (get().state !== TimerState.Paused) {return};
+        if (get().state !== TimerState.Paused) {
+          return;
+        }
 
         set({
           state: TimerState.Running,
@@ -136,9 +159,13 @@ export const useTimeTracker = create(
 
         // Running-Timer-Loop
         const updateLoop = () => {
-          if (get().state !== TimerState.Running) {return};
+          if (get().state !== TimerState.Running) {
+            return;
+          }
 
-          const newActiveSeconds = Math.floor((Date.now() - (get().tempStartTime ?? 0)) / 1000) + get().storedActiveSeconds;
+          const newActiveSeconds =
+            Math.floor((Date.now() - (get().tempStartTime ?? 0)) / 1000) +
+            get().storedActiveSeconds;
           set({
             activeSeconds: newActiveSeconds,
             activeTime: formatTime(newActiveSeconds),
@@ -151,8 +178,12 @@ export const useTimeTracker = create(
 
 
       stopTimer: () => {
-        if (get().state === TimerState.Stopped) {return};
-        if (animationFrameId) {cancelAnimationFrame(animationFrameId)};
+        if (get().state === TimerState.Stopped) {
+          return;
+        }
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+        }
 
         set({
           state: TimerState.Stopped,
@@ -168,11 +199,25 @@ export const useTimeTracker = create(
         });
       },
 
-      resetTimer: () => {
-        
+
+      getCurrentSession: () => {
+        const newTimerSession: TablesInsert<'timerSession'> = {
+          user_id: get().userId,
+          project_id: get().projectId,
+          start_time: new Date(get().startTime ?? 0).toISOString(),
+          end_time: new Date().toISOString(),
+          active_seconds: get().activeSeconds,
+          paused_seconds: get().pausedSeconds,
+          salary: get().salary,
+          currency: get().currency,
+        };
+
+        return newTimerSession;
       },
+
+      resetTimer: () => {},
     }),
 
-    { name: "time-tracker-storage" }
+    { name: 'time-tracker-storage' }
   )
 );

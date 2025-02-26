@@ -4,7 +4,7 @@ import { Plus } from 'lucide-react';
 import { ActionIcon, Drawer, Flex } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import ProjectForm from '@/components/Work/Project/ProjectForm';
-import { useWorkStore } from '@/store/workManagerStore';
+import { useWorkStore } from '@/stores/workManagerStore';
 
 export default function NewProjectButton() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -24,14 +24,14 @@ export default function NewProjectButton() {
 
   return (
     <>
-      <Drawer opened={opened} onClose={close} title="Edit Project" size="md" padding="md">
+      <Drawer opened={opened} onClose={close} title="Add Project" size="md" padding="md">
         <Flex direction="column" gap="xl">
           <ProjectForm
             initialValues={{
-              title: "",
-              description: "",
+              title: '',
+              description: '',
               salary: 0,
-              currency: "$",
+              currency: '$',
             }}
             onSubmit={handleSubmit}
             onCancel={close}
