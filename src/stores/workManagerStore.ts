@@ -19,6 +19,7 @@ interface WorkStore {
   addProject: (project: TablesInsert<'timerProject'>) => Promise<boolean>;
   addTimerSession: (session: TablesInsert<'timerSession'>) => Promise<boolean>;
   updateProject: (project: TablesUpdate<'timerProject'>) => Promise<boolean>;
+  updateTimerSession: (session: TablesUpdate<'timerSession'>) => Promise<boolean>;
   deleteProject: (id: string) => Promise<boolean>;
   deleteTimerSession: (id: string) => Promise<boolean>;
 }
@@ -172,5 +173,40 @@ export const useWorkStore = create<WorkStore>((set, get) => ({
     }
 
     return true;
-  }
+  },
+
+  updateTimerSession: async (session) => {
+    const { timerSessions, projects, activeProject } = get();
+    const updatedSession = await actions.updateSession({ updateSession: session });
+
+    if (!updatedSession.success) {
+      return false;
+    }
+
+    const updatedSessions = timerSessions.map((s) => {
+      if (s.id === session.id) {
+        return updatedSession.data;
+      }
+      return s;
+    });
+
+    const updatedProjects = projects.map((p) => {
+      const updatedSessions = p.sessions.map((s) => {
+        if (s.id === session.id) {
+          return updatedSession.data;
+        }
+        return s;
+      });
+
+      return { project: p.project, sessions: updatedSessions };
+    });
+
+    set({ timerSessions: updatedSessions, projects: updatedProjects });
+
+    if (activeProject) {
+      set({ activeProject: updatedProjects.find((p) => p.project.id === activeProject.project.id) });
+    }
+
+    return true;
+  },
 }));

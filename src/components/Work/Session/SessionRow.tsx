@@ -7,7 +7,8 @@ import { ActionIcon, Card, Group, Stack, Text } from '@mantine/core';
 import { useWorkStore } from '@/stores/workManagerStore';
 import type { Tables } from '@/types/db.types';
 import { formatTime } from '@/utils/workHelperFunctions';
-import DeleteSessionModal from './DeleteSessionModal';
+import DeleteSessionModal from '@/components/Work/Session/DeleteSessionModal';
+import EditSessionButton from '@/components/Work/Session/EditSessionButton';
 
 
 interface SessionRowProps {
@@ -45,6 +46,7 @@ export default function SessionRow({ session }: SessionRowProps) {
             </Text>
           </Stack>
           <Group>
+            <EditSessionButton timerSession={session} />
             <ActionIcon onClick={() => setDeleteModalOpened(true)} color="red" variant="transparent">
               <Trash2 size={20} />
             </ActionIcon>
