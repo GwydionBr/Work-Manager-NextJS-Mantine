@@ -4,7 +4,6 @@ import { create } from 'zustand';
 import * as actions from '@/actions';
 import { Tables, TablesInsert, TablesUpdate } from '@/types/db.types';
 
-
 export interface TimerProject {
   project: Tables<'timerProject'>;
   sessions: Tables<'timerSession'>[];
@@ -15,7 +14,7 @@ interface WorkStore {
   activeProject: TimerProject | null;
   timerSessions: Tables<'timerSession'>[];
   fetchData: () => Promise<void>;
-  setActiveProject: (id: string) => Promise<void>;
+  setActiveProject: (id: string) => void;
   addProject: (project: TablesInsert<'timerProject'>) => Promise<boolean>;
   addTimerSession: (session: TablesInsert<'timerSession'>) => Promise<boolean>;
   updateProject: (project: TablesUpdate<'timerProject'>) => Promise<boolean>;
@@ -23,6 +22,21 @@ interface WorkStore {
   deleteProject: (id: string) => Promise<boolean>;
   deleteTimerSession: (id: string) => Promise<boolean>;
 }
+
+const updateStore = (
+  set: any,
+  get: any,
+  updatedProjects: TimerProject[],
+  updatedSessions: Tables<'timerSession'>[]
+) => {
+  set({ projects: updatedProjects, timerSessions: updatedSessions });
+  const activeProject = get().activeProject;
+  if (activeProject) {
+    set({
+      activeProject: updatedProjects.find((p) => p.project.id === activeProject.project.id) || null,
+    });
+  }
+};
 
 export const useWorkStore = create<WorkStore>((set, get) => ({
   projects: [],
@@ -35,178 +49,89 @@ export const useWorkStore = create<WorkStore>((set, get) => ({
       actions.getAllSessions(),
     ]);
 
-    if (!projects.success || !timerSessions.success) {
-      return;
-    }
+    if (!projects.success || !timerSessions.success) {return};
 
     const projectsData = projects.data.map((project) => ({
       project,
       sessions: timerSessions.data.filter((session) => session.project_id === project.id),
     }));
 
-    set({
-      projects: projectsData,
-      timerSessions: timerSessions.data
-    });
-
-    if (projectsData.length > 0 && !get().activeProject) {
-      set({ activeProject: projectsData[0] });
-    }
+    updateStore(set, get, projectsData, timerSessions.data);
   },
 
-
-  async setActiveProject(id: string) {
-
-    const { projects } = get();
-    const project = projects.find((p) => p.project.id === id);
-
-    if (!project) {
-      return;
-    }
-
-    set({ activeProject: project });
+  setActiveProject(id) {
+    const project = get().projects.find((p) => p.project.id === id);
+    if (project) {set({ activeProject: project })};
   },
 
-
-  updateProject: async (project) => {
-    const { projects } = get();
+  async updateProject(project) {
     const updatedProject = await actions.updateProject({ updateProject: project });
+    if (!updatedProject.success) {return false};
 
-    if (!updatedProject.success) {
-      return false;
-    }
-
-    const updatedProjects = projects.map((p) => {
-      if (p.project.id === project.id) {
-        return {
-          project: updatedProject.data,
-          sessions: p.sessions,
-        };
-      }
-
-      return p;
-    });
-
-    set({ projects: updatedProjects });
-    set({ activeProject: updatedProjects.find((p) => p.project.id === project.id) });
-
+    const updatedProjects = get().projects.map((p) =>
+      p.project.id === project.id ? { project: updatedProject.data, sessions: p.sessions } : p
+    );
+    updateStore(set, get, updatedProjects, get().timerSessions);
     return true;
   },
 
+  async deleteProject(id) {
+    const deleted = await actions.deleteProject({ projectId: id });
+    if (!deleted.success) {return false};
 
-  deleteProject: async (id) => {
-    const { projects } = get();
-    const deletedProject = await actions.deleteProject({projectId: id});
-
-    if (!deletedProject.success) {
-      return false;
-    }
-
-    const updatedProjects = projects.filter((p) => p.project.id !== id);
-    set({ projects: updatedProjects });
-    set({ activeProject: null });
-
+    const updatedProjects = get().projects.filter((p) => p.project.id !== id);
+    updateStore(set, get, updatedProjects, get().timerSessions);
     return true;
   },
 
-  addProject: async (project) => {
-    const { projects } = get();
+  async addProject(project) {
     const newProject = await actions.createProject({ project });
+    if (!newProject.success) {return false};
 
-    if (!newProject.success) {
-      return false;
-    }
-
-    set({ 
-      projects: [...projects, { project: newProject.data, sessions: [] }],
-      activeProject: { project: newProject.data, sessions: [] } 
-    });
+    const updatedProjects = [...get().projects, { project: newProject.data, sessions: [] }];
+    updateStore(set, get, updatedProjects, get().timerSessions);
     return true;
   },
 
-  addTimerSession: async (session) => {
-    const { timerSessions, projects, activeProject } = get();
+  async addTimerSession(session) {
     const newSession = await actions.createSession({ session });
+    if (!newSession.success) {return false};
 
-    if (!newSession.success) {
-      return false;
-    }
-
-    const updatedSessions = [...timerSessions, newSession.data];
-    const updatedProjects = projects.map((p) => {
-      if (p.project.id === session.project_id) {
-      return {
-        project: p.project,
-        sessions: [...p.sessions, newSession.data],
-      };
-      }
-      return p;
-    });
-
-    set({ timerSessions: updatedSessions, projects: updatedProjects });
-
-    if (activeProject?.project.id === session.project_id) {
-      set({ activeProject: updatedProjects.find((p) => p.project.id === session.project_id) });
-    }
-
+    const updatedSessions = [...get().timerSessions, newSession.data];
+    const updatedProjects = get().projects.map((p) =>
+      p.project.id === session.project_id
+        ? { project: p.project, sessions: [...p.sessions, newSession.data] }
+        : p
+    );
+    updateStore(set, get, updatedProjects, updatedSessions);
     return true;
   },
 
-  deleteTimerSession: async (id) => {
-    const { timerSessions, projects, activeProject } = get();
-    const deletedSession = await actions.deleteSession({ sessionId: id });
+  async deleteTimerSession(id) {
+    const deleted = await actions.deleteSession({ sessionId: id });
+    if (!deleted.success) {return false};
 
-    if (!deletedSession.success) {
-      return false;
-    }
-
-    const updatedSessions = timerSessions.filter((s) => s.id !== id);
-    const updatedProjects = projects.map((p) => {
-      const updatedSessions = p.sessions.filter((s) => s.id !== id);
-      return { project: p.project, sessions: updatedSessions };
-    });
-
-    set({ timerSessions: updatedSessions, projects: updatedProjects });
-
-    if (activeProject) {
-      set({ activeProject: updatedProjects.find((p) => p.project.id === activeProject.project.id) });
-    }
-
+    const updatedSessions = get().timerSessions.filter((s) => s.id !== id);
+    const updatedProjects = get().projects.map((p) => ({
+      project: p.project,
+      sessions: p.sessions.filter((s) => s.id !== id),
+    }));
+    updateStore(set, get, updatedProjects, updatedSessions);
     return true;
   },
 
-  updateTimerSession: async (session) => {
-    const { timerSessions, projects, activeProject } = get();
+  async updateTimerSession(session) {
     const updatedSession = await actions.updateSession({ updateSession: session });
+    if (!updatedSession.success) {return false};
 
-    if (!updatedSession.success) {
-      return false;
-    }
-
-    const updatedSessions = timerSessions.map((s) => {
-      if (s.id === session.id) {
-        return updatedSession.data;
-      }
-      return s;
-    });
-
-    const updatedProjects = projects.map((p) => {
-      const updatedSessions = p.sessions.map((s) => {
-        if (s.id === session.id) {
-          return updatedSession.data;
-        }
-        return s;
-      });
-
-      return { project: p.project, sessions: updatedSessions };
-    });
-
-    set({ timerSessions: updatedSessions, projects: updatedProjects });
-
-    if (activeProject) {
-      set({ activeProject: updatedProjects.find((p) => p.project.id === activeProject.project.id) });
-    }
-
+    const updatedSessions = get().timerSessions.map((s) =>
+      s.id === session.id ? updatedSession.data : s
+    );
+    const updatedProjects = get().projects.map((p) => ({
+      project: p.project,
+      sessions: p.sessions.map((s) => (s.id === session.id ? updatedSession.data : s)),
+    }));
+    updateStore(set, get, updatedProjects, updatedSessions);
     return true;
   },
 }));
