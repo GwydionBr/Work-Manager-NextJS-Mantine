@@ -26,6 +26,7 @@ export default function TimeTrackerComponent() {
   async function submitTimer() {
       setErrorMessage(null);
       const newSession = getCurrentSession();
+      // round time to minutes
       pauseTimer();
       const result = await addTimerSession(newSession);
       if (result) {

@@ -38,6 +38,7 @@ const updateStore = (
   }
 };
 
+
 export const useWorkStore = create<WorkStore>((set, get) => ({
   projects: [],
   activeProject: null,
@@ -55,6 +56,10 @@ export const useWorkStore = create<WorkStore>((set, get) => ({
       project,
       sessions: timerSessions.data.filter((session) => session.project_id === project.id),
     }));
+
+    if (projectsData.length !== 0) {
+      set({ activeProject: projectsData[0] });
+    }
 
     updateStore(set, get, projectsData, timerSessions.data);
   },
