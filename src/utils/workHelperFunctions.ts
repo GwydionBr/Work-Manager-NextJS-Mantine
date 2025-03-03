@@ -1,7 +1,24 @@
 export function formatTime(seconds: number): string {
-  const min = Math.floor(seconds / 60);
-  const sec = seconds % 60;
-  return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.ceil((seconds % 3600) / 60);
+
+  if (hours === 0) {
+    return `${minutes} min`;
+  }
+
+  return `${hours}h - ${minutes}min`;
+}
+
+export function formatTimeSpan(start: Date, end: Date): string {
+  return `${formatDateTime(start)} - ${formatDateTime(end)}`;
+}
+
+export function formatDateTime(date: Date) {
+  return date.toLocaleString('de-DE', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false, 
+  });
 }
 
 export function formatMoney(amount: number, currency: string): string {
@@ -31,4 +48,16 @@ export function getWeekNumber(date: Date) {
   const firstJan = new Date(date.getFullYear(), 0, 1);
   const diff = date.getTime() - firstJan.getTime();
   return Math.ceil((diff / (1000 * 60 * 60 * 24) + firstJan.getDay() + 1) / 7);
+}
+
+
+export function formatSecondsToTime(seconds: number) {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.ceil((seconds % 3600) / 60);
+
+  if (hours === 0) {
+    return `${minutes}m`;
+  }
+
+  return `${hours}h ${minutes}m`;
 }

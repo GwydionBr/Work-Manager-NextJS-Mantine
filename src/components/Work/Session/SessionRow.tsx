@@ -5,11 +5,11 @@ import { IconClock } from '@tabler/icons-react';
 import { Trash2 } from 'lucide-react';
 import { ActionIcon, Card, Group, Stack, Text } from '@mantine/core';
 import { useHover } from '@mantine/hooks';
+import DeleteSessionModal from '@/components/Work/Session/DeleteSessionModal';
+import EditSessionButton from '@/components/Work/Session/EditSessionButton';
 import { useWorkStore } from '@/stores/workManagerStore';
 import type { Tables } from '@/types/db.types';
 import { formatTime } from '@/utils/workHelperFunctions';
-import DeleteSessionModal from '@/components/Work/Session/DeleteSessionModal';
-import EditSessionButton from '@/components/Work/Session/EditSessionButton';
 import * as helper from '@/utils/workHelperFunctions';
 
 
@@ -35,35 +35,39 @@ export default function SessionRow({ session }: SessionRowProps) {
 
   return (
     <>
-      <Card shadow="xs" withBorder p="sm" mt="sm" radius={20} ref={ref}> 
+      <Card shadow="xs" withBorder p="sm" mt="sm" radius={20} ref={ref}>
         <Group justify="space-between">
-          <Stack gap="xs">
-            <Group>
-              <IconClock size={14} color="gray" />
-              <Text>
-                {session.start_time
-                  ? new Date(session.start_time).toLocaleTimeString()
-                  : 'No start time'}
-              </Text>
-            </Group>
-            <Text size="sm" c="dimmed">
-              Active: {formatTime(session.active_seconds)} | Paused:{' '}
-              {formatTime(session.paused_seconds)}
-            </Text>
-          </Stack>
-          <Text>
-            {helper.formatMoney(earnings, session.currency)}
-          </Text>
-          {
-            hovered && (
+          <Group gap="xl">
+            <Stack gap="xs">
+              <Group>
+                <IconClock size={14} color="gray" />
+                <Text>
+                  {helper.formatTimeSpan(new Date(session.start_time), new Date(session.end_time))}
+                </Text>
+              </Group>
+              <Group>
+                <Text size="sm" c="teal">
+                  Active: {formatTime(session.active_seconds)}
+                </Text>
+                <Text size="sm" c="dimmed">
+                  Paused: {formatTime(session.paused_seconds)}
+                </Text>
+              </Group>
+            </Stack>
+            {hovered && (
               <Group>
                 <EditSessionButton timerSession={session} />
-                <ActionIcon onClick={() => setDeleteModalOpened(true)} color="red" variant="transparent">
+                <ActionIcon
+                  onClick={() => setDeleteModalOpened(true)}
+                  color="red"
+                  variant="transparent"
+                >
                   <Trash2 size={20} />
                 </ActionIcon>
               </Group>
-            )
-          }
+            )}
+          </Group>
+          <Text>{helper.formatMoney(earnings, session.currency)}</Text>
         </Group>
       </Card>
 
