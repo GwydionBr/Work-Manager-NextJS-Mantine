@@ -10,6 +10,7 @@ import type { Tables } from '@/types/db.types';
 import { formatTime } from '@/utils/workHelperFunctions';
 import DeleteSessionModal from '@/components/Work/Session/DeleteSessionModal';
 import EditSessionButton from '@/components/Work/Session/EditSessionButton';
+import * as helper from '@/utils/workHelperFunctions';
 
 
 interface SessionRowProps {
@@ -30,7 +31,7 @@ export default function SessionRow({ session }: SessionRowProps) {
     }
   }
 
-  const earnings = (session.active_seconds * session.salary / 3600).toFixed(2);
+  const earnings =Number((session.active_seconds * session.salary / 3600).toFixed(2));
 
   return (
     <>
@@ -51,7 +52,7 @@ export default function SessionRow({ session }: SessionRowProps) {
             </Text>
           </Stack>
           <Text>
-            {earnings} {session.currency}
+            {helper.formatMoney(earnings, session.currency)}
           </Text>
           {
             hovered && (

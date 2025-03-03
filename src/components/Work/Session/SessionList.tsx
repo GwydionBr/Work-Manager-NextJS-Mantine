@@ -5,6 +5,7 @@ import { Accordion, Card, Group, ScrollArea, Text } from '@mantine/core';
 import SessionRow from '@/components/Work/Session/SessionRow';
 import { useWorkStore } from '@/stores/workManagerStore';
 import type { Tables } from '@/types/db.types';
+import * as helper from '@/utils/workHelperFunctions';
 
 
 const Radius = 20;
@@ -54,7 +55,7 @@ export default function SessionList() {
                     <Accordion.Item value={String(monthData.totalEarnings)}>
                       <Accordion.Control icon={<IconFolder size={18} color="blue" />}>
                         <Group>
-                          {formatMonth(Number(month))}
+                          {helper.formatMonth(Number(month))}
                           {
                             monthData.totalEarnings.length > 0 && (
                               <Text size="sm" c="dimmed">
@@ -97,7 +98,7 @@ export default function SessionList() {
                                   >
                                     <Group>
                                       <IconClock size={16} color="green" />
-                                      <Text>{formatDate(new Date(day))}</Text>
+                                      <Text>{helper.formatDate(new Date(day))}</Text>
                                       <Text>{formatEarnings(dayData.totalEarnings)}</Text>
                                     </Group>
                                     {dayData.sessions.map((session) => (
@@ -160,7 +161,7 @@ function groupSessions(sessions: Tables<'timerSession'>[]): { year: number; data
       const startTime = new Date(session.start_time);
       const year = startTime.getFullYear();
       const month = startTime.getMonth() + 1;
-      const week = getWeekNumber(startTime);
+      const week = helper.getWeekNumber(startTime);
       const day = startTime.toISOString().split('T')[0];
 
       const earnings: Earnings = {
@@ -227,19 +228,6 @@ function addEarnings(existingEarnings: Earnings[], newEarnings: Earnings): Earni
 }
 
 function formatEarnings(earnings: Earnings[]): string {
-  return earnings.map((e) => `${e.amount.toFixed(2)} ${e.currency}`).join(', ');
+  return earnings.map((e) => helper.formatEarningsAmount(e.amount, e.currency)).join(', ');
 }
 
-function formatDate(date: Date) {
-  return date.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
-}
-
-function formatMonth(month: number) {
-  return new Date(2023, month - 1, 1).toLocaleString(undefined, { month: 'long' });
-}
-
-function getWeekNumber(date: Date) {
-  const firstJan = new Date(date.getFullYear(), 0, 1);
-  const diff = date.getTime() - firstJan.getTime();
-  return Math.ceil((diff / (1000 * 60 * 60 * 24) + firstJan.getDay() + 1) / 7);
-}
