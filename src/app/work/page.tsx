@@ -13,9 +13,9 @@ export default function WorkPage() {
   }
 
   return (
-    <Stack align="center">
+    <Stack align="center" w="100%">
       <ProjectHeader />
-      <SessionList />
+      <SessionList/>
     </Stack>
   );
 }

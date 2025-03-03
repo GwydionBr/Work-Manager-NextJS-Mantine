@@ -18,8 +18,8 @@ export default function WorkLayout({ children }: { children: React.ReactNode }) 
       <Grid.Col span={2}>
         <ProjectNavbar />
       </Grid.Col>
-      <Grid.Col span={6} p={40}>
-        <Flex justify="center">{children}</Flex>
+      <Grid.Col span={7}>
+        {children}
       </Grid.Col>
       <Grid.Col span={3}>
         <Flex
