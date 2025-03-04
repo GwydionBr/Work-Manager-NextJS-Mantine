@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
 import { IconClock } from '@tabler/icons-react';
-import { Trash2 } from 'lucide-react';
-import { ActionIcon, Card, Group, Stack, Text } from '@mantine/core';
-import { useHover } from '@mantine/hooks';
+import { Card, Group, Stack, Text } from '@mantine/core';
+import { useDisclosure, useHover } from '@mantine/hooks';
+import DeleteButton from '@/components/Work/Buttons/DeleteButton';
+import EditButton from '@/components/Work/Buttons/EditButton';
 import DeleteSessionModal from '@/components/Work/Session/DeleteSessionModal';
-import EditSessionButton from '@/components/Work/Session/EditSessionButton';
+import TimerSessionDrawer from '@/components/Work/Session/TimerSessionDrawer';
 import { useWorkStore } from '@/stores/workManagerStore';
 import type { Tables } from '@/types/db.types';
 import { formatTime } from '@/utils/workHelperFunctions';
@@ -18,20 +18,20 @@ interface SessionRowProps {
 }
 
 export default function SessionRow({ session }: SessionRowProps) {
-  const [deleteModalOpened, setDeleteModalOpened] = useState(false);
+  const [deleteModalOpened, deleteModalHandler] = useDisclosure(false);
+  const [editDrawerOpened, editDrawerHandler] = useDisclosure(false);
   const { deleteTimerSession } = useWorkStore();
 
   const { hovered, ref } = useHover();
 
   async function handleDelete() {
     const success = await deleteTimerSession(session.id);
-    if (success
-    ) {
-    setDeleteModalOpened(false);
+    if (success) {
+      deleteModalHandler.close();
     }
   }
 
-  const earnings =Number((session.active_seconds * session.salary / 3600).toFixed(2));
+  const earnings = Number(((session.active_seconds * session.salary) / 3600).toFixed(2));
 
   return (
     <>
@@ -56,14 +56,8 @@ export default function SessionRow({ session }: SessionRowProps) {
             </Stack>
             {hovered && (
               <Group>
-                <EditSessionButton timerSession={session} />
-                <ActionIcon
-                  onClick={() => setDeleteModalOpened(true)}
-                  color="red"
-                  variant="transparent"
-                >
-                  <Trash2 size={20} />
-                </ActionIcon>
+                <EditButton onClick={() => editDrawerHandler.open()} />
+                <DeleteButton onClick={() => deleteModalHandler.open()} />
               </Group>
             )}
           </Group>
@@ -71,9 +65,15 @@ export default function SessionRow({ session }: SessionRowProps) {
         </Group>
       </Card>
 
+      <TimerSessionDrawer
+        timerSession={session}
+        opened={editDrawerOpened}
+        close={() => editDrawerHandler.close()}
+      />
+
       <DeleteSessionModal
         opened={deleteModalOpened}
-        onClose={() => setDeleteModalOpened(false)}
+        onClose={() => deleteModalHandler.close()}
         onDelete={handleDelete}
       />
     </>

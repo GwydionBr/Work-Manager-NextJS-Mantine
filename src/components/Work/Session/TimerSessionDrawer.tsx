@@ -1,18 +1,17 @@
 'use client';
 
-import { Pencil } from 'lucide-react';
-import { ActionIcon, Drawer, Flex } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { Drawer, Flex } from '@mantine/core';
 import SessionForm from '@/components/Work/Session/SessionForm';
-import { useWorkStore } from '@/stores/workManagerStore';
 import { Tables } from '@/types/db.types';
+import { useWorkStore } from '@/stores/workManagerStore';
 
 interface TimerSessionModalProps {
   timerSession: Tables<'timerSession'>;
+  opened: boolean;
+  close: () => void;
 }
 
-export default function EditSessionButton({ timerSession }: TimerSessionModalProps) {
-  const [opened, { open, close }] = useDisclosure(false);
+export default function TimerSessionDrawer({ timerSession, opened, close }: TimerSessionModalProps) {
   const { updateTimerSession } = useWorkStore();
 
   async function handleSubmit(values: {
@@ -42,7 +41,6 @@ export default function EditSessionButton({ timerSession }: TimerSessionModalPro
   }
 
   return (
-    <>
       <Drawer opened={opened} onClose={close} title="Edit Timer-Session" size="md" padding="md">
         <Flex direction="column" gap="xl">
           <SessionForm
@@ -59,16 +57,5 @@ export default function EditSessionButton({ timerSession }: TimerSessionModalPro
           />
         </Flex>
       </Drawer>
-
-      <ActionIcon
-        variant="transparent"
-        aria-label="Edit timerSession"
-        onClick={open}
-        size="sm"
-        color="teal"
-      >
-        <Pencil />
-      </ActionIcon>
-    </>
   );
 }

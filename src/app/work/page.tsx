@@ -13,7 +13,7 @@ export default function WorkPage() {
   }
 
   return (
-    <Stack align="center" w="100%">
+    <Stack pt="xl" align="center" w="100%">
       <ProjectHeader />
       <SessionList/>
     </Stack>
