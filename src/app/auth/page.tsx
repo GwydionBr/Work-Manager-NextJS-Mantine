@@ -1,10 +1,11 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Center } from '@mantine/core';
 import AuthenticationForm from '@/components/Auth/AuthForm';
 
-export default function AuthPage() {
+function AuthPageContent() {
   const searchParams = useSearchParams();
   const defaultType = (searchParams.get('defaultType') as 'login' | 'register') || 'login';
 
@@ -12,5 +13,13 @@ export default function AuthPage() {
     <Center>
       <AuthenticationForm defaultType={defaultType} withBorder />
     </Center>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={<Center>Loading...</Center>}>
+      <AuthPageContent />
+    </Suspense>
   );
 }

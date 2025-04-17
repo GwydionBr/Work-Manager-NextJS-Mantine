@@ -15,7 +15,7 @@ export async function getProjectById({ id }: getProjectProps): Promise<ProjectRe
     .from('timerProject')
     .select('*')
     .eq('id', id)
-    .maybeSingle();
+    .single();
 
   if (error) {
     return {
