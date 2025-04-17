@@ -3,18 +3,19 @@
 import { IconCalendar, IconClock, IconFolder } from '@tabler/icons-react';
 import { Accordion, Card, Group, ScrollArea, Text } from '@mantine/core';
 import SessionRow from '@/components/Work/Session/SessionRow';
-import { useWorkStore } from '@/stores/workManagerStore';
 import type { Tables } from '@/types/db.types';
 import * as helper from '@/utils/workHelperFunctions';
 
 
 const Radius = 20;
 
+interface SessionListProps {
+  sessions: Tables<'timerSession'>[];
+}
 
-export default function SessionList() {
-  const { activeProject } = useWorkStore();
+export default function SessionList({ sessions }: SessionListProps) {
 
-  const groupedSessions = groupSessions(activeProject ? activeProject.sessions : []);
+  const groupedSessions = groupSessions(sessions);
 
   return (
     <ScrollArea w="100%">

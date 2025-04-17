@@ -5,6 +5,7 @@ import ProjectHeader from '@/components/Work/Project/ProjectHeader';
 import SessionList from '@/components/Work/Session/SessionList';
 import { useWorkStore } from '@/stores/workManagerStore';
 
+
 export default function WorkPage() {
   const { activeProject } = useWorkStore();
 
@@ -14,8 +15,8 @@ export default function WorkPage() {
 
   return (
     <Stack pt="xl" align="center" w="100%">
-      <ProjectHeader />
-      <SessionList/>
+      <ProjectHeader project={activeProject}/>
+      <SessionList sessions={activeProject.sessions}/>
     </Stack>
   );
 }

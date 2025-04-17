@@ -3,26 +3,26 @@
 import { Group, Stack, Text, Title } from '@mantine/core';
 import EditProjectButton from '@/components/Work/Project/EditProjectButton';
 import NewSessionButton from '@/components/Work/Session/NewSessionButton';
-import { useWorkStore } from '@/stores/workManagerStore';
+import { type TimerProject } from '@/stores/workManagerStore';
 import { formatMoney } from '@/utils/workHelperFunctions';
 
-export default function ProjectHeader() {
-  const { activeProject } = useWorkStore();
 
-  if (!activeProject) {
-    return null;
-  }
+interface ProjectHeaderProps {
+  project: TimerProject;
+}
+
+export default function ProjectHeader({ project }: ProjectHeaderProps) {
 
   return (
     <Stack align="center">
       <Group align="center">
-        <Title order={1}>{activeProject.project.title}</Title>
+        <Title order={1}>{project.project.title}</Title>
         <Text>
-          {formatMoney(activeProject.project.salary, activeProject.project.currency ?? '$')}
+          {formatMoney(project.project.salary, project.project.currency ?? '$')}
         </Text>
         <EditProjectButton />
       </Group>
-      <Text>{activeProject.project.description}</Text>
+      <Text>{project.project.description}</Text>
       <NewSessionButton />
     </Stack>
   );
