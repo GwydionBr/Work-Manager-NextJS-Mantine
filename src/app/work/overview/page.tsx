@@ -1,9 +1,10 @@
-import { Container, Title } from '@mantine/core';
+import { Container } from '@mantine/core';
+import Header from '@/components/Header/Header';
 
 export default function WorkOverviewPage() {
   return (
     <Container>
-      <Title order={1}>Work Overview</Title>
+      <Header headerTitle="Work Overview" />
     </Container>
   );
 }

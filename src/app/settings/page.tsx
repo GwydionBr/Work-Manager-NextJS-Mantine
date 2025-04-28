@@ -1,11 +1,12 @@
 import SchemeButtonGroup from "@/components/SchemeToggle/SchemeButtonGroup";
 import classes from "./Settings.module.css";
-import { Group, Title, Text } from "@mantine/core";
+import { Group, Text } from "@mantine/core";
+import Header from "@/components/Header/Header";
 
 export default function SettingsPage() {
   return (
     <div className={classes.settingsMainContainer}>
-      <Title order={1} pb="xl">Settings Page</Title>
+      <Header headerTitle="Settings Page" />
       <Group>
         <Text>Choose your color scheme</Text>
         <SchemeButtonGroup />

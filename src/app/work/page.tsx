@@ -1,11 +1,11 @@
 'use client';
 
 import { Center, Stack } from '@mantine/core';
-import ProjectHeader from '@/components/Work/Project/ProjectHeader';
 import SessionList from '@/components/Work/Session/SessionList';
 import { useWorkStore } from '@/stores/workManagerStore';
-
-
+import EditProjectButton from '@/components/Work/Project/EditProjectButton';
+import Header from '@/components/Header/Header';
+import { formatMoney } from '@/utils/workHelperFunctions';
 export default function WorkPage() {
   const { activeProject } = useWorkStore();
 
@@ -13,9 +13,15 @@ export default function WorkPage() {
     return <Center>Please select a project</Center>;
   }
 
+  const description = formatMoney(activeProject.project.salary, activeProject.project.currency ?? "$");
+
   return (
-    <Stack pt="xl" align="center" w="100%">
-      <ProjectHeader project={activeProject}/>
+    <Stack align="center" w="100%">
+      <Header
+        headerTitle={activeProject.project.title}
+        description={description}
+        actions={<EditProjectButton />}
+    />
       <SessionList sessions={activeProject.sessions}/>
     </Stack>
   );
