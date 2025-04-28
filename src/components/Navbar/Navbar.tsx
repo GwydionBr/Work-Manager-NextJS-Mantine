@@ -10,9 +10,10 @@ import {
   IconUser,
 } from '@tabler/icons-react';
 import { Flex, Stack, Text, Tooltip, UnstyledButton } from '@mantine/core';
-import SchemeToggle from '@/components/SchemeToggle/SchemeToggle';
+import SchemeToggle from '@/components/SchemeToggle/SchemeToggleButton';
 import paths from '@/utils/paths';
 import classes from './Navbar.module.css';
+
 
 interface LinkData {
   icon: React.ElementType;
