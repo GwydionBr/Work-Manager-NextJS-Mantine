@@ -2,12 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import {
-  ActionIcon,
   Group,
   Space,
   Stack,
   Text,
-  useComputedColorScheme,
   useMantineColorScheme,
 } from '@mantine/core';
 import { useColorScheme } from '@mantine/hooks';
@@ -19,7 +17,6 @@ export default function SchemeToggle() {
   useEffect(() => setMounted(true), []);
 
   const { colorScheme: currentColorScheme, setColorScheme } = useMantineColorScheme();
-  const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
   const colorScheme = useColorScheme();
 
   if (!mounted) {

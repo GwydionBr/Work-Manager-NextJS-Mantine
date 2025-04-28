@@ -8,7 +8,7 @@ export default function SettingsPage() {
     <div className={classes.settingsMainContainer}>
       <Header headerTitle="Settings Page" />
       <Group>
-        <Text>Choose your color scheme</Text>
+        <Text pt="xl">Choose your color scheme</Text>
         <SchemeButtonGroup />
       </Group>
     </div>

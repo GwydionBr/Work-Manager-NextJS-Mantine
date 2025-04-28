@@ -1,18 +1,27 @@
-import { Text, Title } from "@mantine/core";
+import { Text, Title, Stack, Group } from "@mantine/core";
 import classes from "./Header.module.css";
 
 interface HeaderProps {
-  headerTitle?  : string;
+  headerTitle?: string;
   description?: string;
-  actions?: React.ReactNode;
+  primaryButton?: React.ReactNode;
+  secondaryButton?: React.ReactNode;
 }
 
-export default function Header({ headerTitle, description, actions }: HeaderProps) {
+export default function Header({
+  headerTitle,
+  description,
+  primaryButton,
+  secondaryButton,
+}: HeaderProps) {
   return (
-    <div className={classes.headerContainer}>
-      <Title order={1}>{headerTitle}</Title>
-      {description && <Text>{description}</Text>}
-      {actions && actions}
-    </div>
+      <Stack align="center" justify="center" py="xl">
+        <Group>
+          <Title order={1}>{headerTitle}</Title>
+          {description && <Text>{description}</Text>}
+          {primaryButton && primaryButton}
+        </Group>
+        {secondaryButton && secondaryButton}
+      </Stack>
   );
 }
