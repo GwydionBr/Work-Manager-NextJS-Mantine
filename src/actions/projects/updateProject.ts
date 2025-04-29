@@ -15,7 +15,7 @@ export async function updateProject({ updateProject }: UpdateProjectProps) : Pro
   const { data, error } = await supabase
     .from("timerProject")
     .update(updateProject)
-    .eq("id", updateProject.id)
+    .eq("id", updateProject.id!)
     .select()
     .single();
 

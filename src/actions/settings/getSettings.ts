@@ -2,14 +2,6 @@ import { createClient } from "@/utils/supabase/server";
 import { SettingsResponse } from "@/types/action.types_new";
 import { Tables } from "@/types/db.types";
 
-interface Settings {
-  id: string;
-  user_id: string;
-  default_currency: string;
-  rounding_amount: string;
-  rounding_direction: string;
-}
-
 export async function getSettings(): Promise<SettingsResponse> {
   const supabase = await createClient();
   const {

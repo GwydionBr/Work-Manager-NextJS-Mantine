@@ -18,7 +18,7 @@ export async function updateSession({
   const { data, error } = await supabase
     .from('timerSession')
     .update(updateSession)
-    .eq('id', updateSession.id)
+    .eq('id', updateSession.id!)
     .select()
     .single();
 
@@ -30,7 +30,7 @@ export async function updateSession({
     };
   }
 
-  revalidatePath(paths.work.workDetailsPage(updateSession.project_id));
+  revalidatePath(paths.work.workDetailsPage(updateSession.project_id!));
 
   return {
     data,
