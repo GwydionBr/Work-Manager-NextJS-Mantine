@@ -4,312 +4,448 @@ export type Json =
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[]
+  | Json[];
 
 export type Database = {
   graphql_public: {
     Tables: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Views: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Functions: {
       graphql: {
         Args: {
-          operationName?: string
-          query?: string
-          variables?: Json
-          extensions?: Json
-        }
-        Returns: Json
-      }
-    }
+          operationName?: string;
+          query?: string;
+          variables?: Json;
+          extensions?: Json;
+        };
+        Returns: Json;
+      };
+    };
     Enums: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
+      [_ in never]: never;
+    };
+  };
   public: {
     Tables: {
-      generalUserSettings: {
+      expense: {
         Row: {
-          default_currency: string
-          id: string
-          rounding_option: string
-          user_id: string
-        }
+          amount: number;
+          currency: string;
+          date: string;
+          id: number;
+          title: string;
+          user_id: string;
+        };
         Insert: {
-          default_currency?: string
-          id?: string
-          rounding_option?: string
-          user_id: string
-        }
+          amount: number;
+          currency?: string;
+          date: string;
+          id?: number;
+          title?: string;
+          user_id?: string;
+        };
         Update: {
-          default_currency?: string
-          id?: string
-          rounding_option?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      payout: {
+          amount?: number;
+          currency?: string;
+          date?: string;
+          id?: number;
+          title?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      income: {
         Row: {
-          amount: number
-          date: string
-          id: number
-          user_id: string
-        }
+          amount: number;
+          currency: string;
+          date: string;
+          id: number;
+          title: string;
+          user_id: string;
+        };
         Insert: {
-          amount: number
-          date: string
-          id?: number
-          user_id?: string
-        }
+          amount: number;
+          currency?: string;
+          date: string;
+          id?: number;
+          title: string;
+          user_id?: string;
+        };
         Update: {
-          amount?: number
-          date?: string
-          id: number
-          user_id?: string
-        }
-        Relationships: []
-      }
-      spending: {
+          amount?: number;
+          currency?: string;
+          date?: string;
+          id?: number;
+          title?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      profiles: {
         Row: {
-          amount: number
-          description: string | null
-          end_date: string | null
-          id: number
-          monthly: boolean
-          start_date: string
-          title: string
-          user_id: string
-        }
+          avatar_url: string | null;
+          full_name: string | null;
+          id: string;
+          updated_at: string | null;
+          username: string;
+          website: string | null;
+        };
         Insert: {
-          amount: number
-          description?: string | null
-          end_date?: string | null
-          id?: number
-          monthly: boolean
-          start_date: string
-          title: string
-          user_id?: string
-        }
+          avatar_url?: string | null;
+          full_name?: string | null;
+          id: string;
+          updated_at?: string | null;
+          username?: string;
+          website?: string | null;
+        };
         Update: {
-          amount?: number
-          description?: string | null
-          end_date?: string | null
-          id: number
-          monthly?: boolean
-          start_date?: string
-          title?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      test: {
+          avatar_url?: string | null;
+          full_name?: string | null;
+          id?: string;
+          updated_at?: string | null;
+          username?: string;
+          website?: string | null;
+        };
+        Relationships: [];
+      };
+      recurringExpense: {
         Row: {
-          created_at: string
-          id: number
-          name: string | null
-        }
+          amount: number;
+          currency: string;
+          description: string;
+          end_date: string | null;
+          id: number;
+          interval: number | null;
+          monthly: boolean;
+          start_date: string;
+          title: string;
+          user_id: string;
+        };
         Insert: {
-          created_at?: string
-          id?: number
-          name?: string | null
-        }
+          amount: number;
+          currency?: string;
+          description: string;
+          end_date?: string | null;
+          id?: number;
+          interval?: number | null;
+          monthly: boolean;
+          start_date: string;
+          title: string;
+          user_id?: string;
+        };
         Update: {
-          created_at?: string
-          id: number
-          name?: string | null
-        }
-        Relationships: []
-      }
+          amount?: number;
+          currency?: string;
+          description?: string;
+          end_date?: string | null;
+          id?: number;
+          interval?: number | null;
+          monthly?: boolean;
+          start_date?: string;
+          title?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      recurringIncome: {
+        Row: {
+          amount: number;
+          currency: string;
+          description: string;
+          end_date: string | null;
+          id: number;
+          interval: number | null;
+          monthly: boolean;
+          start_date: string;
+          title: string;
+          user_id: string;
+        };
+        Insert: {
+          amount: number;
+          currency?: string;
+          description: string;
+          end_date?: string | null;
+          id?: number;
+          interval?: number | null;
+          monthly: boolean;
+          start_date: string;
+          title: string;
+          user_id?: string;
+        };
+        Update: {
+          amount?: number;
+          currency?: string;
+          description?: string;
+          end_date?: string | null;
+          id?: number;
+          interval?: number | null;
+          monthly?: boolean;
+          start_date?: string;
+          title?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      settings: {
+        Row: {
+          default_currency: Database["public"]["Enums"]["currency"];
+          id: string;
+          rounding_amount: Database["public"]["Enums"]["roundingAmount"];
+          rounding_direction: Database["public"]["Enums"]["roundingDirection"];
+          user_id: string;
+        };
+        Insert: {
+          default_currency?: Database["public"]["Enums"]["currency"];
+          id?: string;
+          rounding_amount?: Database["public"]["Enums"]["roundingAmount"];
+          rounding_direction?: Database["public"]["Enums"]["roundingDirection"];
+          user_id: string;
+        };
+        Update: {
+          default_currency?: Database["public"]["Enums"]["currency"];
+          id?: string;
+          rounding_amount?: Database["public"]["Enums"]["roundingAmount"];
+          rounding_direction?: Database["public"]["Enums"]["roundingDirection"];
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       timerProject: {
         Row: {
-          currency: string 
-          description: string
-          id: string
-          is_favorite: boolean | null
-          salary: number
-          title: string
-          user_id: string
-        }
+          currency: string;
+          description: string;
+          id: string;
+          is_favorite: boolean;
+          salary: number;
+          title: string;
+          user_id: string;
+        };
         Insert: {
-          currency: string | null
-          description: string
-          id?: string
-          is_favorite?: boolean | null
-          salary: number
-          title: string
-          user_id?: string
-        }
+          currency?: string;
+          description: string;
+          id?: string;
+          is_favorite?: boolean;
+          salary: number;
+          title: string;
+          user_id?: string;
+        };
         Update: {
-          currency?: string | null
-          description?: string
-          id: string
-          is_favorite?: boolean | null
-          salary?: number
-          title?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
+          currency?: string;
+          description?: string;
+          id?: string;
+          is_favorite?: boolean;
+          salary?: number;
+          title?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       timerSession: {
         Row: {
-          active_seconds: number 
-          currency: string 
-          end_time: string
-          id: string
-          paused_seconds: number 
-          project_id: string 
-          salary: number 
-          start_time: string 
-          user_id: string
-        }
+          active_seconds: number;
+          currency: string;
+          end_time: string;
+          id: string;
+          paused_seconds: number;
+          project_id: string;
+          salary: number;
+          start_time: string;
+          user_id: string;
+        };
         Insert: {
-          active_seconds: number 
-          currency: string 
-          end_time: string
-          id?: string
-          paused_seconds: number 
-          project_id: string 
-          salary: number 
-          start_time: string 
-          user_id: string
-        }
+          active_seconds: number;
+          currency?: string;
+          end_time: string;
+          id?: string;
+          paused_seconds?: number;
+          project_id?: string;
+          salary: number;
+          start_time: string;
+          user_id?: string;
+        };
         Update: {
-          active_seconds?: number | null
-          currency?: string | null
-          end_time?: string
-          id: string
-          paused_seconds?: number | null
-          project_id: string
-          salary?: number | null
-          start_time?: string | null
-          user_id?: string
-        }
+          active_seconds?: number;
+          currency?: string;
+          end_time?: string;
+          id?: string;
+          paused_seconds?: number;
+          project_id?: string;
+          salary?: number;
+          start_time?: string;
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "timerSession_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "timerProject"
-            referencedColumns: ["id"]
+            foreignKeyName: "timerSession_project_id_fkey";
+            columns: ["project_id"];
+            isOneToOne: false;
+            referencedRelation: "timerProject";
+            referencedColumns: ["id"];
           },
-        ]
-      }
-    }
+        ];
+      };
+    };
     Views: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Functions: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Enums: {
-      [_ in never]: never
-    }
+      currency:
+        | "USD"
+        | "EUR"
+        | "GBP"
+        | "CAD"
+        | "AUD"
+        | "JPY"
+        | "CHF"
+        | "CNY"
+        | "INR"
+        | "BRL"
+        | "VEF";
+      roundingAmount: "s" | "min" | "1/4h" | "1/2h" | "h";
+      roundingDirection: "up" | "down" | "nearest";
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-}
+      [_ in never]: never;
+    };
+  };
+};
 
-type PublicSchema = Database[Extract<keyof Database, "public">]
+type DefaultSchema = Database[Extract<keyof Database, "public">];
 
 export type Tables<
-  PublicTableNameOrOptions extends
-    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-        Database[PublicTableNameOrOptions["schema"]]["Views"])
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof Database;
+  }
+    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R;
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
-        PublicSchema["Views"])
-    ? (PublicSchema["Tables"] &
-        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
-        Row: infer R
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R;
       }
       ? R
       : never
-    : never
+    : never;
 
 export type TablesInsert<
-  PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof Database;
+  }
+    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
+  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I;
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Insert: infer I
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I;
       }
       ? I
       : never
-    : never
+    : never;
 
 export type TablesUpdate<
-  PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof Database;
+  }
+    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
+  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U;
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Update: infer U
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U;
       }
       ? U
       : never
-    : never
+    : never;
 
 export type Enums<
-  PublicEnumNameOrOptions extends
-    | keyof PublicSchema["Enums"]
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
     | { schema: keyof Database },
-  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof Database;
+  }
+    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = PublicEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
-    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
-    : never
+> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
+  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never;
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof PublicSchema["CompositeTypes"]
+    | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof Database },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof Database;
   }
     ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
   ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
-    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never;
+
+export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
+  public: {
+    Enums: {
+      currency: [
+        "USD",
+        "EUR",
+        "GBP",
+        "CAD",
+        "AUD",
+        "JPY",
+        "CHF",
+        "CNY",
+        "INR",
+        "BRL",
+        "VEF",
+      ],
+      roundingAmount: ["s", "min", "1/4h", "1/2h", "h"],
+      roundingDirection: ["up", "down", "nearest"],
+    },
+  },
+} as const;

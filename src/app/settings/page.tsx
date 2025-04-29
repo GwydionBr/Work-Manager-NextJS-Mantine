@@ -1,16 +1,19 @@
-import SchemeButtonGroup from "@/components/SchemeToggle/SchemeButtonGroup";
+import SchemeButtonGroup from "@/components/Scheme/SchemeButtonGroup";
 import classes from "./Settings.module.css";
-import { Group, Text } from "@mantine/core";
+import { Stack } from "@mantine/core";
 import Header from "@/components/Header/Header";
+import SettingsRow from "@/components/Settings/SettingsRow";
+import SelectDefaultUnits from "@/components/Settings/SelectDefaultUnits";
 
 export default function SettingsPage() {
+  
   return (
     <div className={classes.settingsMainContainer}>
       <Header headerTitle="Settings Page" />
-      <Group>
-        <Text pt="xl">Choose your color scheme</Text>
-        <SchemeButtonGroup />
-      </Group>
+      <Stack>
+        <SettingsRow title="Color Scheme" children={<SchemeButtonGroup />} />
+        <SettingsRow title="Default Units" children={<SelectDefaultUnits />} />
+      </Stack>
     </div>
   );
 }

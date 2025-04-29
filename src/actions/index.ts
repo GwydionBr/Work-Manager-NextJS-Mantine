@@ -1,3 +1,10 @@
+// Row Actions
+
+export { createRow } from './createRow';
+export { deleteRow } from './deleteRow';
+export { getAllRows } from './getAllRows';
+export { updateRow } from './updateRow';
+
 //  Project Actions
 
 export { getAllProjects } from './projects/getAllProjects';
@@ -20,3 +27,7 @@ export { login } from './auth/email/loginEmail';
 export { logout } from './auth/logout';
 export { signup } from './auth/email/signupEmail';
 export { signInWithGithub } from './auth/github/signInWithGithub';
+
+// Settings Actions
+
+export { getSettings } from './settings/getSettings';

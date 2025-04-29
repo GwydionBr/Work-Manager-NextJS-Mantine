@@ -3,13 +3,14 @@
 import { AppShell, Burger, Group } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import Navbar from '@/components/Navbar/Navbar';
-
+import classes from './AppShell.module.css';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [isBurgerOpen, { toggle: toggleBurger }] = useDisclosure();
 
   return (
     <AppShell
+      className={classes.appShell}
       navbar={{
         width: 65,
         breakpoint: 'sm',

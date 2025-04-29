@@ -1,0 +1,22 @@
+.settingRowContainer {
+  align-items: center;
+  background-color: light-dark( var(--mantine-color-gray-0), var(--mantine-color-dark-5));
+  border-radius: var(--mantine-radius-lg);
+  padding: var(--mantine-spacing-md);
+  width: var(--mantine-breakpoint-md);
+}
+
+.borderRight {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 70px;
+  border-right: 1px solid light-dark( var(--mantine-color-dark-6), var(--mantine-color-blue-2));
+}
+
+.childrenContainer {
+  display: flex;
+  padding-right: 50px;
+  align-items: center;
+  justify-content: flex-end;
+}

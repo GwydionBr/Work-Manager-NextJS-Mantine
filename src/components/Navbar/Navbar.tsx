@@ -1,19 +1,18 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   IconDeviceDesktopAnalytics,
   IconGauge,
   IconHome2,
   IconSettings,
   IconUser,
-} from '@tabler/icons-react';
-import { Flex, Stack, Text, Tooltip, UnstyledButton } from '@mantine/core';
-import SchemeToggle from '@/components/SchemeToggle/SchemeToggleButton';
-import paths from '@/utils/paths';
-import classes from './Navbar.module.css';
-
+} from "@tabler/icons-react";
+import { Flex, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
+import SchemeToggle from "@/components/Scheme/SchemeToggleButton";
+import paths from "@/utils/paths";
+import classes from "./Navbar.module.css";
 
 interface LinkData {
   icon: React.ElementType;
@@ -22,14 +21,18 @@ interface LinkData {
 }
 
 const mainLinksData = [
-  { icon: IconHome2, label: 'Home', to: paths.home() },
-  { icon: IconGauge, label: 'Work', to: paths.work.workPage() },
-  { icon: IconDeviceDesktopAnalytics, label: 'Analytics', to: paths.finances.financesPage() },
+  { icon: IconHome2, label: "Home", to: paths.home() },
+  { icon: IconGauge, label: "Work", to: paths.work.workPage() },
+  {
+    icon: IconDeviceDesktopAnalytics,
+    label: "Analytics",
+    to: paths.finances.financesPage(),
+  },
 ];
 
 const profileLinksData = [
-  { icon: IconUser, label: 'Account', to: paths.account.accountPage() },
-  { icon: IconSettings, label: 'Settings', to: paths.settings.settingsPage() },
+  { icon: IconUser, label: "Account", to: paths.account.accountPage() },
+  { icon: IconSettings, label: "Settings", to: paths.settings.settingsPage() },
 ];
 
 export default function Navbar() {
@@ -48,7 +51,9 @@ export default function Navbar() {
           <UnstyledButton
             className={classes.mainLink}
             data-active={
-              link.to === pathname || (link.to !== '/' && pathname.startsWith(link.to)) || undefined
+              link.to === pathname ||
+              (link.to !== "/" && pathname.startsWith(link.to)) ||
+              undefined
             }
           >
             <link.icon size={22} stroke={1.5} />
@@ -64,13 +69,19 @@ export default function Navbar() {
   const profileLinks = createLinks(profileLinksData);
 
   return (
-    <Flex direction="column" align="center" justify="flex-start" style={{ height: '100%' }}>
+    <Flex
+      direction="column"
+      align="center"
+      justify="flex-start"
+      style={{ height: "100%" }}
+      className={classes.navbar}
+    >
       <Text p="lg">WM</Text>
       <Flex
         align="center"
         direction="column"
         justify="space-between"
-        style={{ height: '100%' }}
+        style={{ height: "100%" }}
         pb={50}
         pt={20}
       >

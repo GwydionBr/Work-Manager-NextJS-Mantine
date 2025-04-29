@@ -1,22 +1,25 @@
-import '@mantine/core/styles.css';
+import "@mantine/core/styles.css";
 
-import React from 'react';
-import { ColorSchemeScript, mantineHtmlProps, MantineProvider } from '@mantine/core';
-import { Notifications } from '@mantine/notifications';
-import Layout from '@/components/AppShell/AppShell';
-import { theme } from '../theme';
-
+import React from "react";
+import {
+  ColorSchemeScript,
+  mantineHtmlProps,
+  MantineProvider,
+} from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
+import Layout from "@/components/AppShell/AppShell";
+import { theme } from "../theme";
 
 export const metadata = {
-  title: 'Work Manager',
-  description: 'Work Manager is a simple task manager',
+  title: "Work Manager",
+  description: "Work Manager is a simple task manager",
 };
 
 export default function RootLayout({ children }: { children: any }) {
   return (
     <html lang="en" {...mantineHtmlProps}>
       <head>
-        <ColorSchemeScript defaultColorScheme='auto'/>
+        <ColorSchemeScript defaultColorScheme="auto" />
         <link rel="shortcut icon" href="/favicon.svg" />
         <meta
           name="viewport"
@@ -24,9 +27,9 @@ export default function RootLayout({ children }: { children: any }) {
         />
       </head>
       <body>
-        <MantineProvider defaultColorScheme='auto' theme={theme}>
+        <MantineProvider defaultColorScheme="auto" theme={theme}>
           <Layout>
-          <Notifications />
+            <Notifications />
             {children}
           </Layout>
         </MantineProvider>
