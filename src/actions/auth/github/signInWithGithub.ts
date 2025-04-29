@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 
 import { createClient } from '@/utils/supabase/server'
 
-const rootUrl = process.env.NEXT_PUBLIC_ROOT_URL || 'http://localhost:3000'
+const rootUrl = process.env.NEXT_PUBLIC_ROOT_URL || 'http://localhost:3000/'
 
 export async function signInWithGithub() {
   const supabase = await createClient()
@@ -16,7 +16,7 @@ export async function signInWithGithub() {
   const { data, error } = await supabase.auth.signInWithOAuth({
   provider,
   options: {
-    redirectTo: `${rootUrl}/auth/callback`,
+    redirectTo: `${rootUrl}auth/callback`,
   },
 })
 
