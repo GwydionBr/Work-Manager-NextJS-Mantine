@@ -11,6 +11,7 @@ const Radius = 20;
 
 interface SessionListProps {
   sessions: Tables<'timerSession'>[];
+
 }
 
 export default function SessionList({ sessions }: SessionListProps) {
@@ -18,7 +19,7 @@ export default function SessionList({ sessions }: SessionListProps) {
   const groupedSessions = groupSessions(sessions);
 
   return (
-    <ScrollArea w="100%">
+    <ScrollArea w="100%" pb="xl">
       {groupedSessions.length === 0 ? (
         <Text size="lg" c="gray">
           No Sessions

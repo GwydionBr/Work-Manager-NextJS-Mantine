@@ -28,7 +28,7 @@ export default function WorkPage() {
         primaryButton={<EditProjectButton />}
         secondaryButton={<NewSessionButton />}
       />
-      <SessionList sessions={activeProject.sessions} />
+      <SessionList sessions={activeProject.sessions}/>
     </Stack>
   );
 }

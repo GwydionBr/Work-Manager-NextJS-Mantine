@@ -1,12 +1,16 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { Flex, Grid } from '@mantine/core';
-import ProjectNavbar from '@/components/Navbar/ProjectNavbar';
-import TimeTrackerComponent from '@/components/TimeTracker/TimeTrackerComponent';
-import { useWorkStore } from '@/stores/workManagerStore';
+import { useEffect } from "react";
+import { Container, Flex, Grid } from "@mantine/core";
+import ProjectNavbar from "@/components/Navbar/ProjectNavbar";
+import TimeTrackerComponent from "@/components/TimeTracker/TimeTrackerComponent";
+import { useWorkStore } from "@/stores/workManagerStore";
 
-export default function WorkLayout({ children }: { children: React.ReactNode }) {
+export default function WorkLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { fetchData } = useWorkStore();
 
   useEffect(() => {
@@ -14,22 +18,9 @@ export default function WorkLayout({ children }: { children: React.ReactNode }) 
   }, []);
 
   return (
-    <Grid justify="space-between">
-      <Grid.Col span={2}>
-        <ProjectNavbar />
-      </Grid.Col>
-      <Grid.Col span={7}>
-        {children}
-      </Grid.Col>
-      <Grid.Col span={3}>
-        <Flex
-          direction="column"
-          justify="center"
-          style={{ height: '100vh', position: 'fixed', right: 20 }}
-        >
-          <TimeTrackerComponent />
-        </Flex>
-      </Grid.Col>
-    </Grid>
+    <div>
+      <ProjectNavbar />
+      <Container ml="200px">{children}</Container>
+    </div>
   );
 }

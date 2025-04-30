@@ -22,7 +22,7 @@ interface SettingsActions {
   setRoundingMode: (roundingMode: RoundingDirection) => void;
 }
 
-const useSettingsStore = create<SettingsState & SettingsActions>()(
+export const useSettingsStore = create<SettingsState & SettingsActions>()(
   persist(
     (set, get) => ({
       currency: "USD",

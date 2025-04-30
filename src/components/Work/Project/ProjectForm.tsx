@@ -7,9 +7,10 @@ interface ProjectFormProps {
   onSubmit: (values: any) => void;
   onCancel: () => void;
   newProject: boolean;
+  submitting?: boolean;
 }
 
-export default function ProjectForm({ initialValues, onSubmit, onCancel, newProject }: ProjectFormProps) {
+export default function ProjectForm({ initialValues, onSubmit, onCancel, newProject, submitting }: ProjectFormProps) {
   const form = useForm({
     initialValues,
     validate: {
@@ -37,7 +38,7 @@ export default function ProjectForm({ initialValues, onSubmit, onCancel, newProj
           placeholder="USD, EUR, etc."
           {...form.getInputProps('currency')}
         />
-        <Button type="submit">{newProject ? "Create Project" : "Save Changes" }</Button>
+        <Button type="submit" loading={submitting} disabled={submitting}>{newProject ? "Create Project" : "Save Changes" }</Button>
         <Button onClick={onCancel} color="red" variant="outline">
           Cancel
         </Button>

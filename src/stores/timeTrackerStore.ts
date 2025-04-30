@@ -3,7 +3,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { TablesInsert } from '@/types/db.types';
-import { formatTime } from '@/utils/workHelperFunctions';
+import { secondsToTimerFormat } from '@/utils/workHelperFunctions';
 
 
 enum TimerState {
@@ -107,7 +107,7 @@ export const useTimeTracker = create(
             get().storedActiveSeconds;
           set({
             activeSeconds: newActiveSeconds,
-            activeTime: formatTime(newActiveSeconds),
+            activeTime: secondsToTimerFormat(newActiveSeconds),
             moneyEarned: ((newActiveSeconds / 3600) * get().salary).toFixed(2),
           });
           animationFrameId = requestAnimationFrame(updateLoop);
@@ -138,7 +138,7 @@ export const useTimeTracker = create(
             get().storedPausedSeconds;
           set({
             pausedSeconds: newPausedSeconds,
-            pausedTime: formatTime(newPausedSeconds),
+            pausedTime: secondsToTimerFormat(newPausedSeconds),
           });
           animationFrameId = requestAnimationFrame(updateLoop);
         };
@@ -168,7 +168,7 @@ export const useTimeTracker = create(
             get().storedActiveSeconds;
           set({
             activeSeconds: newActiveSeconds,
-            activeTime: formatTime(newActiveSeconds),
+            activeTime: secondsToTimerFormat(newActiveSeconds),
             moneyEarned: ((newActiveSeconds / 3600) * get().salary).toFixed(2),
           });
           animationFrameId = requestAnimationFrame(updateLoop);
