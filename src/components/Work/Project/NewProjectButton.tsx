@@ -20,6 +20,7 @@ export default function NewProjectButton() {
   }) {
     setSubmitting(true);
     const success = await addProject({ ...values });
+    console.log('success', success);
     if (success) {
       close();
     }

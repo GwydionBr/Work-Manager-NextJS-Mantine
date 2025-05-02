@@ -1,43 +1,48 @@
 const paths = {
   home() {
-    return '/';
+    return "/";
   },
 
   auth: {
     login() {
-      return '/auth?defaultType=login';
+      return "/auth?defaultType=login";
     },
     register() {
-      return '/auth?defaultType=register';
-    }
+      return "/auth?defaultType=register";
+    },
   },
 
   work: {
     workPage() {
-      return '/work';
+      return "/work";
     },
 
     workDetailsPage(projectId: string) {
       return `/work/${projectId}`;
     },
-
   },
 
   finances: {
     financesPage() {
-      return '/finances';
+      return "/finances";
+    },
+  },
+
+  analytics: {
+    analyticsPage() {
+      return "/analytics";
     },
   },
 
   account: {
     accountPage() {
-      return '/account';
+      return "/account";
     },
   },
 
   settings: {
     settingsPage() {
-      return '/settings';
+      return "/settings";
     },
   },
 };

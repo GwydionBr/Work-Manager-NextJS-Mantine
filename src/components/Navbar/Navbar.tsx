@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 import {
   IconDeviceDesktopAnalytics,
   IconGauge,
-  IconHome2,
   IconSettings,
   IconUser,
+  IconBrandCashapp,
 } from "@tabler/icons-react";
 import { Flex, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
 import SchemeToggle from "@/components/Scheme/SchemeToggleButton";
@@ -21,12 +21,12 @@ interface LinkData {
 }
 
 const mainLinksData = [
-  { icon: IconHome2, label: "Home", to: paths.home() },
   { icon: IconGauge, label: "Work", to: paths.work.workPage() },
+  { icon: IconBrandCashapp, label: "Finance", to: paths.finances.financesPage() },
   {
     icon: IconDeviceDesktopAnalytics,
     label: "Analytics",
-    to: paths.finances.financesPage(),
+    to: paths.analytics.analyticsPage(),
   },
 ];
 

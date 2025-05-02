@@ -2,10 +2,10 @@
 
 import { useEffect } from "react";
 import { Container } from "@mantine/core";
-import ProjectNavbar from "@/components/Navbar/ProjectNavbar";
+import FinanceNavbar from "@/components/Navbar/FinanceNavbar";
 import { useWorkStore } from "@/stores/workManagerStore";
 
-export default function WorkLayout({
+export default function FinanceLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -15,10 +15,10 @@ export default function WorkLayout({
   useEffect(() => {
     fetchData();
   }, []);
-
+  
   return (
     <div>
-      <ProjectNavbar />
+      <FinanceNavbar />
       <Container ml="200px">{children}</Container>
     </div>
   );

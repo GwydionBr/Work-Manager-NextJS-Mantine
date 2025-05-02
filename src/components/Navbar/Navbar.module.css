@@ -1,7 +1,7 @@
 .navbar {
   background-color: light-dark(
-    var(--mantine-color-teal-1),
-    var(--mantine-color-teal-9)
+    var(--mantine-color-teal-4),
+    var(--mantine-color-grape-9)
   );
 }
 
@@ -44,16 +44,19 @@
 
   &:hover {
     background-color: light-dark(
-      var(--mantine-color-gray-0),
-      var(--mantine-color-dark-5)
+      var(--mantine-color-teal-2),
+      var(--mantine-color-grape-7)
     );
   }
 
   &[data-active] {
     &,
     &:hover {
-      background-color: var(--mantine-color-blue-light);
-      color: var(--mantine-color-blue-light-color);
+      background-color: light-dark(
+        var(--mantine-color-teal-7),
+        var(--mantine-color-grape-4)
+      );
+      color: light-dark(var(--mantine-color-white), var(--mantine-color-black));
     }
   }
 }
@@ -115,4 +118,15 @@
   height: 100%;
   width: 100%;
   padding-bottom: 60px;
+}
+
+.financeSections {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.divider {
+  border-top: 1px solid
+    light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-2));
 }

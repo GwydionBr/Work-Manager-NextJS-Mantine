@@ -6,7 +6,6 @@ export default function FinancesPage() {
   return (
     <div className={classes.financesMainContainer}>
       <Header headerTitle="Finances" />
-      <Text>Finances</Text>
     </div>
   );
 }

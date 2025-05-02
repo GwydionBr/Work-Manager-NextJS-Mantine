@@ -1,0 +1,16 @@
+.financeSection {
+  display: flex;
+  flex-direction: column;
+  height: 45vh;
+  width: 100%;
+  /* border: 1px solid red; */
+}
+
+.financeSectionContent {
+  display: flex;
+  padding: 1rem 0;
+  width: 100%;
+  flex-direction: column;
+  border-top: 1px solid
+    light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-2));
+}
