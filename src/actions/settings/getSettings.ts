@@ -1,8 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
-import { SettingsResponse } from "@/types/action.types";
 import { Tables } from "@/types/db.types";
+import { ApiResponseSingle } from "@/types/action.types";
 
-export async function getSettings(): Promise<SettingsResponse> {
+export async function getSettings(): Promise<ApiResponseSingle<"settings">> {
   const supabase = await createClient();
   const {
     data: { user },
