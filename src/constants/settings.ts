@@ -18,6 +18,20 @@ export const currencies: { value: Currency; label: string }[] = [
   { value: "VEF", label: "Bs (Venezuelan Bolívar)" },
 ];
 
+export const shortCurrencies : { value: Currency; label: string }[] = [
+  { value: "USD", label: "$" },
+  { value: "EUR", label: "€" },
+  { value: "GBP", label: "£" },
+  { value: "CAD", label: "$" },
+  { value: "AUD", label: "$" },
+  { value: "JPY", label: "¥" },
+  { value: "CHF", label: "CHF" },
+  { value: "CNY", label: "¥" },
+  { value: "INR", label: "₹" },
+  { value: "BRL", label: "R$" },
+  { value: "VEF", label: "Bs" },
+];
+
 export const roundingAmounts: { value: RoundingAmount; label: string }[] = [
   { value: "s", label: "Seconds" },
   { value: "min", label: "Minutes" },
@@ -31,3 +45,4 @@ export const roundingModes: { value: RoundingDirection; label: string }[] = [
   { value: "down", label: "Down" },
   { value: "nearest", label: "Nearest" },
 ];
+

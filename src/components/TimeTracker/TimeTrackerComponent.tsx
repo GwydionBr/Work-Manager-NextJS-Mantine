@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useTimeTracker } from "@/stores/timeTrackerStore";
+import { useTimeTracker, TimerState } from "@/stores/timeTrackerStore";
 import { useWorkStore } from "@/stores/workManagerStore";
 
 import { roundTime } from "@/utils/workHelperFunctions";
@@ -14,8 +14,12 @@ import {
   IconPlayerPlay,
   IconPlayerStop,
   IconCurrencyDollar,
+  IconCurrencyEuro,
+  IconX,
 } from "@tabler/icons-react";
 import classes from "./TimeTracker.module.css";
+
+import TimeTrackerRow from "./TimeTrackerRow";
 
 export default function TimeTrackerComponent() {
   const {
@@ -23,12 +27,14 @@ export default function TimeTrackerComponent() {
     moneyEarned,
     activeTime,
     pausedTime,
+    currency,
     state,
     startTimer,
     pauseTimer,
     resumeTimer,
     getCurrentSession,
     stopTimer,
+    cancelTimer,
   } = useTimeTracker();
 
   const { roundingAmount, roundingMode } = useSettingsStore();
@@ -66,15 +72,15 @@ export default function TimeTrackerComponent() {
   }
 
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
-      <Stack gap="md">
+    <Card shadow="sm" padding="lg" radius="md" withBorder miw={270}>
+      <Stack gap="md" align="center">
+        <Badge size="lg" color={getStatusColor()}>
+          {state}
+        </Badge>
         <Group justify="space-between" align="center">
           <Text size="xl" fw={700}>
             {projectTitle}
           </Text>
-          <Badge size="lg" color={getStatusColor()}>
-            {state}
-          </Badge>
         </Group>
 
         {errorMessage && (
@@ -86,45 +92,27 @@ export default function TimeTrackerComponent() {
         )}
 
         <Stack gap="md">
-          <Paper
-            p="md"
-            withBorder
-            radius="xl"
-            style={{ borderColor: state === "running" ? "yellow" : "" }}
-          >
-            <Group gap="xs">
-              <IconCurrencyDollar size={20} />
-              <Text size="lg" fw={500}>
-                {moneyEarned} $
-              </Text>
-            </Group>
-          </Paper>
-          <Paper
-            p="md"
-            withBorder
-            radius="xl"
-            style={{ borderColor: state === "running" ? "red" : "" }}
-          >
-            <Group gap="xs">
-              <IconClock size={20} />
-              <Text size="lg" fw={500}>
-                {activeTime}
-              </Text>
-            </Group>
-          </Paper>
-          <Paper
-            p="md"
-            withBorder
-            radius="xl"
-            style={{ borderColor: state === "paused" ? "blue" : "" }}
-          >
-            <Group gap="xs">
-              <IconPlayerPause size={20} />
-              <Text size="lg" fw={500}>
-                {pausedTime}
-              </Text>
-            </Group>
-          </Paper>
+          <TimeTrackerRow
+            icon={currency === "€" ?  <IconCurrencyEuro size={20} /> : <IconCurrencyDollar size={20} />}
+            value={moneyEarned}
+            state={state}
+            activationState={TimerState.Running}
+            color="yellow"
+          />
+          <TimeTrackerRow
+            icon={<IconClock size={20} />}
+            value={activeTime}
+            state={state}
+            activationState={TimerState.Running}
+            color="red"
+          />
+          <TimeTrackerRow
+            icon={<IconPlayerPause size={20} />}
+            value={pausedTime}
+            state={state}
+            activationState={TimerState.Paused}
+            color="blue"
+          />
         </Stack>
 
         <Stack gap="md">
@@ -159,14 +147,24 @@ export default function TimeTrackerComponent() {
             </Button>
           )}
           {state !== "stopped" && (
-            <Button
-              onClick={submitTimer}
-              color="red"
-              leftSection={<IconPlayerStop size={20} />}
-              size="md"
-            >
-              Stop
-            </Button>
+            <Stack gap="md">
+              <Button
+                onClick={submitTimer}
+                color="red"
+                leftSection={<IconPlayerStop size={20} />}
+                size="md"
+              >
+                Stop
+              </Button>
+              <Button
+                onClick={cancelTimer}
+                color="gray"
+                leftSection={<IconX size={20} />}
+                size="md"
+              >
+                Abbrechen
+              </Button>
+            </Stack>
           )}
         </Stack>
       </Stack>
