@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { SettingsResponse } from "@/types/action.types_new";
+import { SettingsResponse } from "@/types/action.types";
 import { Tables } from "@/types/db.types";
 
 export async function getSettings(): Promise<SettingsResponse> {

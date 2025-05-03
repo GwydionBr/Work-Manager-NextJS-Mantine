@@ -2,13 +2,11 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import * as actions from "@/actions";
 import {
   Currency,
   RoundingAmount,
   RoundingDirection,
 } from "@/types/settings.types";
-import { Tables } from "@/types/db.types";
 
 interface SettingsState {
   currency: Currency;

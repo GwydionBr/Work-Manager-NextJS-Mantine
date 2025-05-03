@@ -70,7 +70,7 @@ export const useWorkStore = create<WorkStore>((set, get) => ({
   },
 
   async updateProject(project) {
-    const updatedProject = await actions.updateProject({ updateProject: project });
+    const updatedProject = await actions.updateProject({ project });
     if (!updatedProject.success) {return false};
 
     const updatedProjects = get().projects.map((p) =>
@@ -126,7 +126,7 @@ export const useWorkStore = create<WorkStore>((set, get) => ({
   },
 
   async updateTimerSession(session) {
-    const updatedSession = await actions.updateSession({ updateSession: session });
+    const updatedSession = await actions.updateSession({ session });
     if (!updatedSession.success) {return false};
 
     const updatedSessions = get().timerSessions.map((s) =>
