@@ -27,7 +27,7 @@ export { signInWithGithub } from "./auth/github/signInWithGithub";
 
 // Settings Actions
 
-export { getSettings } from "./settings/getSettings";
+export { getSettings, updateSettings } from "./settings/settingsActions";
 
 // Finance Actions
 

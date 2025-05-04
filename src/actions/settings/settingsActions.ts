@@ -1,6 +1,8 @@
+"use server";
+
 import { createClient } from "@/utils/supabase/server";
-import { Tables } from "@/types/db.types";
 import { ApiResponseSingle } from "@/types/action.types";
+import { TablesUpdate } from "@/types/db.types";
 
 export async function getSettings(): Promise<ApiResponseSingle<"settings">> {
   const supabase = await createClient();
@@ -32,7 +34,31 @@ export async function getSettings(): Promise<ApiResponseSingle<"settings">> {
 
   return {
     success: true,
-    data: data as Tables<"settings">,
+    data: data,
+    error: null,
+  };
+}
+
+export async function updateSettings(settings: TablesUpdate<"settings">): Promise<ApiResponseSingle<"settings">> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("settings")
+    .update(settings)
+    .eq("id", settings.id!)
+    .single();
+
+  if (error) {
+    return {
+      data: null,
+      error: error.message,
+      success: false,
+    };
+  }
+
+  return {
+    success: true,
+    data: data,
     error: null,
   };
 }
