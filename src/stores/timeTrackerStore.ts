@@ -46,6 +46,7 @@ interface TimeTrackerState {
 }
 
 let animationFrameId: number | null = null;
+let intervalId: NodeJS.Timeout | null = null;
 
 export const useTimeTracker = create(
   persist<TimeTrackerState>(
@@ -111,9 +112,16 @@ export const useTimeTracker = create(
             moneyEarned: ((newActiveSeconds / 3600) * get().salary).toFixed(2),
           });
           document.title = `${newActiveTime} - ${get().projectTitle} | Work Manager`;
-          animationFrameId = requestAnimationFrame(updateLoop);
         };
-        updateLoop();
+
+        // Clear any existing interval
+        if (intervalId) {
+          clearInterval(intervalId);
+        }
+
+        // Start new interval
+        intervalId = setInterval(updateLoop, 1000);
+        updateLoop(); // Run immediately
       },
 
       pauseTimer: () => {
@@ -142,9 +150,16 @@ export const useTimeTracker = create(
             pausedTime: newPausedTime,
           });
           document.title = `⏸️ ${get().activeTime} - ${get().projectTitle} | Work Manager`;
-          animationFrameId = requestAnimationFrame(updateLoop);
         };
-        updateLoop();
+
+        // Clear any existing interval
+        if (intervalId) {
+          clearInterval(intervalId);
+        }
+
+        // Start new interval
+        intervalId = setInterval(updateLoop, 1000);
+        updateLoop(); // Run immediately
       },
 
       resumeTimer: () => {
@@ -174,17 +189,25 @@ export const useTimeTracker = create(
             moneyEarned: ((newActiveSeconds / 3600) * get().salary).toFixed(2),
           });
           document.title = `${newActiveTime} - ${get().projectTitle} | Work Manager`;
-          animationFrameId = requestAnimationFrame(updateLoop);
         };
-        updateLoop();
+
+        // Clear any existing interval
+        if (intervalId) {
+          clearInterval(intervalId);
+        }
+
+        // Start new interval
+        intervalId = setInterval(updateLoop, 1000);
+        updateLoop(); // Run immediately
       },
 
       stopTimer: () => {
         if (get().state === TimerState.Stopped) {
           return;
         }
-        if (animationFrameId) {
-          cancelAnimationFrame(animationFrameId);
+        if (intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
         }
 
         set({
@@ -206,8 +229,9 @@ export const useTimeTracker = create(
         if (get().state === TimerState.Stopped) {
           return;
         }
-        if (animationFrameId) {
-          cancelAnimationFrame(animationFrameId);
+        if (intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
         }
 
         set({
