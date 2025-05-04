@@ -34,60 +34,6 @@ export type Database = {
   };
   public: {
     Tables: {
-      expense: {
-        Row: {
-          amount: number;
-          currency: Database["public"]["Enums"]["currency"];
-          date: string;
-          id: number;
-          title: string;
-          user_id: string;
-        };
-        Insert: {
-          amount: number;
-          currency?: Database["public"]["Enums"]["currency"];
-          date: string;
-          id?: number;
-          title?: string;
-          user_id?: string;
-        };
-        Update: {
-          amount?: number;
-          currency?: Database["public"]["Enums"]["currency"];
-          date?: string;
-          id?: number;
-          title?: string;
-          user_id?: string;
-        };
-        Relationships: [];
-      };
-      income: {
-        Row: {
-          amount: number;
-          currency: Database["public"]["Enums"]["currency"];
-          date: string;
-          id: number;
-          title: string;
-          user_id: string;
-        };
-        Insert: {
-          amount: number;
-          currency?: Database["public"]["Enums"]["currency"];
-          date: string;
-          id?: number;
-          title: string;
-          user_id?: string;
-        };
-        Update: {
-          amount?: number;
-          currency?: Database["public"]["Enums"]["currency"];
-          date?: string;
-          id?: number;
-          title?: string;
-          user_id?: string;
-        };
-        Relationships: [];
-      };
       profiles: {
         Row: {
           avatar_url: string | null;
@@ -115,17 +61,17 @@ export type Database = {
         };
         Relationships: [];
       };
-      recurringExpense: {
+      recurring_cash_flow: {
         Row: {
           amount: number;
           currency: Database["public"]["Enums"]["currency"];
           description: string;
           end_date: string | null;
-          id: number;
-          interval: number | null;
-          monthly: boolean;
+          id: string;
+          interval: Database["public"]["Enums"]["finance_interval"];
           start_date: string;
           title: string;
+          type: Database["public"]["Enums"]["cash_flow_type"];
           user_id: string;
         };
         Insert: {
@@ -133,11 +79,11 @@ export type Database = {
           currency?: Database["public"]["Enums"]["currency"];
           description: string;
           end_date?: string | null;
-          id?: number;
-          interval?: number | null;
-          monthly: boolean;
+          id?: string;
+          interval?: Database["public"]["Enums"]["finance_interval"];
           start_date: string;
           title: string;
+          type?: Database["public"]["Enums"]["cash_flow_type"];
           user_id?: string;
         };
         Update: {
@@ -145,50 +91,11 @@ export type Database = {
           currency?: Database["public"]["Enums"]["currency"];
           description?: string;
           end_date?: string | null;
-          id?: number;
-          interval?: number | null;
-          monthly?: boolean;
+          id?: string;
+          interval?: Database["public"]["Enums"]["finance_interval"];
           start_date?: string;
           title?: string;
-          user_id?: string;
-        };
-        Relationships: [];
-      };
-      recurringIncome: {
-        Row: {
-          amount: number;
-          currency: Database["public"]["Enums"]["currency"];
-          description: string;
-          end_date: string | null;
-          id: number;
-          interval: number | null;
-          monthly: boolean;
-          start_date: string;
-          title: string;
-          user_id: string;
-        };
-        Insert: {
-          amount: number;
-          currency?: Database["public"]["Enums"]["currency"];
-          description: string;
-          end_date?: string | null;
-          id?: number;
-          interval?: number | null;
-          monthly: boolean;
-          start_date: string;
-          title: string;
-          user_id?: string;
-        };
-        Update: {
-          amount?: number;
-          currency?: Database["public"]["Enums"]["currency"];
-          description?: string;
-          end_date?: string | null;
-          id?: number;
-          interval?: number | null;
-          monthly?: boolean;
-          start_date?: string;
-          title?: string;
+          type?: Database["public"]["Enums"]["cash_flow_type"];
           user_id?: string;
         };
         Relationships: [];
@@ -213,6 +120,36 @@ export type Database = {
           id?: string;
           rounding_amount?: Database["public"]["Enums"]["roundingAmount"];
           rounding_direction?: Database["public"]["Enums"]["roundingDirection"];
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      single_cash_flow: {
+        Row: {
+          amount: number;
+          currency: Database["public"]["Enums"]["currency"];
+          date: string;
+          id: string;
+          title: string;
+          type: Database["public"]["Enums"]["cash_flow_type"];
+          user_id: string;
+        };
+        Insert: {
+          amount: number;
+          currency?: Database["public"]["Enums"]["currency"];
+          date: string;
+          id?: string;
+          title?: string;
+          type?: Database["public"]["Enums"]["cash_flow_type"];
+          user_id?: string;
+        };
+        Update: {
+          amount?: number;
+          currency?: Database["public"]["Enums"]["currency"];
+          date?: string;
+          id?: string;
+          title?: string;
+          type?: Database["public"]["Enums"]["cash_flow_type"];
           user_id?: string;
         };
         Relationships: [];
@@ -299,6 +236,7 @@ export type Database = {
       [_ in never]: never;
     };
     Enums: {
+      cash_flow_type: "expense" | "income";
       currency:
         | "USD"
         | "EUR"
@@ -311,6 +249,13 @@ export type Database = {
         | "INR"
         | "BRL"
         | "VEF";
+      finance_interval:
+        | "day"
+        | "week"
+        | "month"
+        | "1/4 year"
+        | "1/2 year"
+        | "year";
       roundingAmount: "s" | "min" | "1/4h" | "1/2h" | "h";
       roundingDirection: "up" | "down" | "nearest";
     };
@@ -431,6 +376,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      cash_flow_type: ["expense", "income"],
       currency: [
         "USD",
         "EUR",
@@ -443,6 +389,14 @@ export const Constants = {
         "INR",
         "BRL",
         "VEF",
+      ],
+      finance_interval: [
+        "day",
+        "week",
+        "month",
+        "1/4 year",
+        "1/2 year",
+        "year",
       ],
       roundingAmount: ["s", "min", "1/4h", "1/2h", "h"],
       roundingDirection: ["up", "down", "nearest"],

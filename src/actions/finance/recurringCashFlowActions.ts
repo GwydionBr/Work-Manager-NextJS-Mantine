@@ -8,12 +8,14 @@ import {
   DeleteResponse,
 } from "@/types/action.types";
 
-export async function getAllIncomes(): Promise<ApiResponseList<"income">> {
+export async function getAllRecurringCashFlows(): Promise<
+  ApiResponseList<"recurring_cash_flow">
+> {
   const supabase = createClient();
   const { data, error } = await supabase
-    .from("income")
+    .from("recurring_cash_flow")
     .select("*")
-    .order("date", { ascending: false });
+    .order("start_date", { ascending: false });
 
   if (error) {
     return { success: false, data: null, error: error.message };
@@ -22,15 +24,15 @@ export async function getAllIncomes(): Promise<ApiResponseList<"income">> {
   return { success: true, data, error: null };
 }
 
-export async function createIncome({
-  income,
+export async function createRecurringCashFlow({
+  cashFlow,
 }: {
-  income: TablesInsert<"income">;
-}): Promise<ApiResponseSingle<"income">> {
+  cashFlow: TablesInsert<"recurring_cash_flow">;
+}): Promise<ApiResponseSingle<"recurring_cash_flow">> {
   const supabase = createClient();
   const { data, error } = await supabase
-    .from("income")
-    .insert(income)
+    .from("recurring_cash_flow")
+    .insert(cashFlow)
     .select()
     .single();
 
@@ -41,16 +43,16 @@ export async function createIncome({
   return { success: true, data, error: null };
 }
 
-export async function updateIncome({
-  updateIncome,
+export async function updateRecurringCashFlow({
+  updateRecurringCashFlow,
 }: {
-  updateIncome: TablesUpdate<"income">;
-}): Promise<ApiResponseSingle<"income">> {
+  updateRecurringCashFlow: TablesUpdate<"recurring_cash_flow">;
+}): Promise<ApiResponseSingle<"recurring_cash_flow">> {
   const supabase = createClient();
   const { data, error } = await supabase
-    .from("income")
-    .update(updateIncome)
-    .eq("id", updateIncome.id!)
+    .from("recurring_cash_flow")
+    .update(updateRecurringCashFlow)
+    .eq("id", updateRecurringCashFlow.id!)
     .select()
     .single();
 
@@ -61,13 +63,16 @@ export async function updateIncome({
   return { success: true, data, error: null };
 }
 
-export async function deleteIncome({
-  incomeId,
+export async function deleteRecurringCashFlow({
+  recurringCashFlowId,
 }: {
-  incomeId: number;
+  recurringCashFlowId: string;
 }): Promise<DeleteResponse> {
   const supabase = createClient();
-  const { error } = await supabase.from("income").delete().eq("id", incomeId);
+  const { error } = await supabase
+    .from("recurring_cash_flow")
+    .delete()
+    .eq("id", recurringCashFlowId);
 
   if (error) {
     return { success: false, data: null, error: error.message };

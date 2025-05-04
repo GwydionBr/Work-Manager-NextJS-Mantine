@@ -7,6 +7,7 @@ import { useWorkStore } from '@/stores/workManagerStore';
 import { ActionIcon, Drawer, Flex } from '@mantine/core';
 import ProjectForm from '@/components/Work/Project/ProjectForm';
 import { Plus } from 'lucide-react';
+import { Currency } from '@/types/settings.types';
 
 export default function NewProjectButton() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -16,7 +17,7 @@ export default function NewProjectButton() {
     title: string;
     description: string;
     salary: number;
-    currency: string;
+    currency: Currency;
   }) {
     setSubmitting(true);
     const success = await addProject({ ...values });

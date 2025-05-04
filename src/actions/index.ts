@@ -30,28 +30,15 @@ export { signInWithGithub } from "./auth/github/signInWithGithub";
 export { getSettings, updateSettings } from "./settings/settingsActions";
 
 // Finance Actions
-
 export {
-  getAllIncomes,
-  createIncome,
-  updateIncome,
-  deleteIncome,
-} from "./finance/incomeActions";
+  getAllSingleCashFlows,
+  createSingleCashFlow,
+  updateSingleCashFlow,
+  deleteSingleCashFlow,
+} from "./finance/singleCashFlowActions";
 export {
-  getAllExpenses,
-  createExpense,
-  updateExpense,
-  deleteExpense,
-} from "./finance/expenseActions";
-export {
-  getAllRecurringIncomes,
-  createRecurringIncome,
-  updateRecurringIncome,
-  deleteRecurringIncome,
-} from "./finance/recurringIncomeActions";
-export {
-  getAllRecurringExpenses,
-  createRecurringExpense,
-  updateRecurringExpense,
-  deleteRecurringExpense,
-} from "./finance/recurringExpenseActions";
+  getAllRecurringCashFlows,
+  createRecurringCashFlow,
+  updateRecurringCashFlow,
+  deleteRecurringCashFlow,
+} from "./finance/recurringCashFlowActions";

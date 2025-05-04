@@ -8,14 +8,12 @@ import {
   DeleteResponse,
 } from "@/types/action.types";
 
-export async function getAllRecurringExpenses(): Promise<
-  ApiResponseList<"recurringExpense">
-> {
+export async function getAllSingleCashFlows(): Promise<ApiResponseList<"single_cash_flow">> {
   const supabase = createClient();
   const { data, error } = await supabase
-    .from("recurringExpense")
+    .from("single_cash_flow")
     .select("*")
-    .order("start_date", { ascending: false });
+    .order("date", { ascending: false });
 
   if (error) {
     return { success: false, data: null, error: error.message };
@@ -24,15 +22,15 @@ export async function getAllRecurringExpenses(): Promise<
   return { success: true, data, error: null };
 }
 
-export async function createRecurringExpense({
-  expense,
+export async function createSingleCashFlow({
+  cashFlow,
 }: {
-  expense: TablesInsert<"recurringExpense">;
-}): Promise<ApiResponseSingle<"recurringExpense">> {
+  cashFlow: TablesInsert<"single_cash_flow">;
+}): Promise<ApiResponseSingle<"single_cash_flow">> {
   const supabase = createClient();
   const { data, error } = await supabase
-    .from("recurringExpense")
-    .insert(expense)
+    .from("single_cash_flow")
+    .insert(cashFlow)
     .select()
     .single();
 
@@ -43,16 +41,16 @@ export async function createRecurringExpense({
   return { success: true, data, error: null };
 }
 
-export async function updateRecurringExpense({
-  updateRecurringExpense,
+export async function updateSingleCashFlow({
+  updateSingleCashFlow,
 }: {
-  updateRecurringExpense: TablesUpdate<"recurringExpense">;
-}): Promise<ApiResponseSingle<"recurringExpense">> {
+  updateSingleCashFlow: TablesUpdate<"single_cash_flow">;
+}): Promise<ApiResponseSingle<"single_cash_flow">> {
   const supabase = createClient();
   const { data, error } = await supabase
-    .from("recurringExpense")
-    .update(updateRecurringExpense)
-    .eq("id", updateRecurringExpense.id!)
+    .from("single_cash_flow")
+    .update(updateSingleCashFlow)
+    .eq("id", updateSingleCashFlow.id!)
     .select()
     .single();
 
@@ -63,16 +61,16 @@ export async function updateRecurringExpense({
   return { success: true, data, error: null };
 }
 
-export async function deleteRecurringExpense({
-  recurringExpenseId,
+export async function deleteSingleCashFlow({
+  singleCashFlowId,
 }: {
-  recurringExpenseId: number;
+  singleCashFlowId: string;
 }): Promise<DeleteResponse> {
   const supabase = createClient();
   const { error } = await supabase
-    .from("recurringExpense")
+    .from("single_cash_flow")
     .delete()
-    .eq("id", recurringExpenseId);
+    .eq("id", singleCashFlowId);
 
   if (error) {
     return { success: false, data: null, error: error.message };

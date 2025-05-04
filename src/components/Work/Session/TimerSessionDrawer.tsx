@@ -4,6 +4,7 @@ import { Drawer, Flex } from '@mantine/core';
 import SessionForm from '@/components/Work/Session/SessionForm';
 import { Tables } from '@/types/db.types';
 import { useWorkStore } from '@/stores/workManagerStore';
+import { Currency } from '@/types/settings.types';
 
 interface TimerSessionModalProps {
   timerSession: Tables<'timerSession'>;
@@ -18,7 +19,7 @@ export default function TimerSessionDrawer({ timerSession, opened, close }: Time
     start_time: Date;
     active_seconds: number;
     paused_seconds: number;
-    currency: string;
+    currency: Currency;
     salary: number;
   }) {
     const endTime = new Date(

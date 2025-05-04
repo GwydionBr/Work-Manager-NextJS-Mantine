@@ -6,6 +6,7 @@ import { useDisclosure } from '@mantine/hooks';
 import DeleteProjectModal from '@/components/Work/Project/DeleteProjectModal';
 import ProjectForm from '@/components/Work/Project/ProjectForm';
 import { useWorkStore } from '@/stores/workManagerStore';
+import { Currency } from '@/types/settings.types';
 
 export default function EditProjectButton() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -17,7 +18,7 @@ export default function EditProjectButton() {
     title: string;
     description: string;
     salary: number;
-    currency: string;
+    currency: Currency;
   }) {
     if (!activeProject) {
       return;

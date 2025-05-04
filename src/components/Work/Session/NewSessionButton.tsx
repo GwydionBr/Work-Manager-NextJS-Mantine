@@ -6,7 +6,7 @@ import { useDisclosure } from '@mantine/hooks';
 import SessionForm from '@/components/Work/Session/SessionForm';
 import { useWorkStore } from '@/stores/workManagerStore';
 import { TablesInsert } from '@/types/db.types';
-
+import { Currency } from '@/types/settings.types';
 
 export default function NewSessionButton() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -16,7 +16,7 @@ export default function NewSessionButton() {
     start_time: Date;
     active_seconds: number;
     paused_seconds: number;
-    currency: string;
+    currency: Currency;
     salary: number;
   }) {
     if (!activeProject) {
@@ -48,7 +48,7 @@ export default function NewSessionButton() {
               start_time: new Date(),
               active_seconds: 0,
               paused_seconds: 0,
-              currency: activeProject?.project.currency || '$',
+              currency: activeProject?.project.currency || 'USD',
               salary: activeProject?.project.salary || 0
             }}
             onSubmit={handleSubmit}

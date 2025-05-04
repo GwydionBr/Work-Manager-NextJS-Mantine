@@ -4,10 +4,8 @@ import { Tables } from "@/types/db.types";
 export type TableNames =
   | "timerProject"
   | "timerSession"
-  | "expense"
-  | "income"
-  | "recurringExpense"
-  | "recurringIncome"
+  | "single_cash_flow"
+  | "recurring_cash_flow"
   | "settings"
   | "profiles";
 
