@@ -37,7 +37,7 @@ export type Database = {
       expense: {
         Row: {
           amount: number;
-          currency: string;
+          currency: Database["public"]["Enums"]["currency"];
           date: string;
           id: number;
           title: string;
@@ -45,7 +45,7 @@ export type Database = {
         };
         Insert: {
           amount: number;
-          currency?: string;
+          currency?: Database["public"]["Enums"]["currency"];
           date: string;
           id?: number;
           title?: string;
@@ -53,7 +53,7 @@ export type Database = {
         };
         Update: {
           amount?: number;
-          currency?: string;
+          currency?: Database["public"]["Enums"]["currency"];
           date?: string;
           id?: number;
           title?: string;
@@ -64,7 +64,7 @@ export type Database = {
       income: {
         Row: {
           amount: number;
-          currency: string;
+          currency: Database["public"]["Enums"]["currency"];
           date: string;
           id: number;
           title: string;
@@ -72,7 +72,7 @@ export type Database = {
         };
         Insert: {
           amount: number;
-          currency?: string;
+          currency?: Database["public"]["Enums"]["currency"];
           date: string;
           id?: number;
           title: string;
@@ -80,7 +80,7 @@ export type Database = {
         };
         Update: {
           amount?: number;
-          currency?: string;
+          currency?: Database["public"]["Enums"]["currency"];
           date?: string;
           id?: number;
           title?: string;
@@ -118,7 +118,7 @@ export type Database = {
       recurringExpense: {
         Row: {
           amount: number;
-          currency: string;
+          currency: Database["public"]["Enums"]["currency"];
           description: string;
           end_date: string | null;
           id: number;
@@ -130,7 +130,7 @@ export type Database = {
         };
         Insert: {
           amount: number;
-          currency?: string;
+          currency?: Database["public"]["Enums"]["currency"];
           description: string;
           end_date?: string | null;
           id?: number;
@@ -142,7 +142,7 @@ export type Database = {
         };
         Update: {
           amount?: number;
-          currency?: string;
+          currency?: Database["public"]["Enums"]["currency"];
           description?: string;
           end_date?: string | null;
           id?: number;
@@ -157,7 +157,7 @@ export type Database = {
       recurringIncome: {
         Row: {
           amount: number;
-          currency: string;
+          currency: Database["public"]["Enums"]["currency"];
           description: string;
           end_date: string | null;
           id: number;
@@ -169,7 +169,7 @@ export type Database = {
         };
         Insert: {
           amount: number;
-          currency?: string;
+          currency?: Database["public"]["Enums"]["currency"];
           description: string;
           end_date?: string | null;
           id?: number;
@@ -181,7 +181,7 @@ export type Database = {
         };
         Update: {
           amount?: number;
-          currency?: string;
+          currency?: Database["public"]["Enums"]["currency"];
           description?: string;
           end_date?: string | null;
           id?: number;
@@ -206,7 +206,7 @@ export type Database = {
           id?: string;
           rounding_amount?: Database["public"]["Enums"]["roundingAmount"];
           rounding_direction?: Database["public"]["Enums"]["roundingDirection"];
-          user_id: string;
+          user_id?: string;
         };
         Update: {
           default_currency?: Database["public"]["Enums"]["currency"];
@@ -219,7 +219,7 @@ export type Database = {
       };
       timerProject: {
         Row: {
-          currency: string;
+          currency: Database["public"]["Enums"]["currency"];
           description: string;
           id: string;
           is_favorite: boolean;
@@ -228,7 +228,7 @@ export type Database = {
           user_id: string;
         };
         Insert: {
-          currency?: string;
+          currency?: Database["public"]["Enums"]["currency"];
           description: string;
           id?: string;
           is_favorite?: boolean;
@@ -237,7 +237,7 @@ export type Database = {
           user_id?: string;
         };
         Update: {
-          currency?: string;
+          currency?: Database["public"]["Enums"]["currency"];
           description?: string;
           id?: string;
           is_favorite?: boolean;
@@ -250,7 +250,7 @@ export type Database = {
       timerSession: {
         Row: {
           active_seconds: number;
-          currency: string;
+          currency: Database["public"]["Enums"]["currency"];
           end_time: string;
           id: string;
           paused_seconds: number;
@@ -261,7 +261,7 @@ export type Database = {
         };
         Insert: {
           active_seconds: number;
-          currency?: string;
+          currency?: Database["public"]["Enums"]["currency"];
           end_time: string;
           id?: string;
           paused_seconds?: number;
@@ -272,7 +272,7 @@ export type Database = {
         };
         Update: {
           active_seconds?: number;
-          currency?: string;
+          currency?: Database["public"]["Enums"]["currency"];
           end_time?: string;
           id?: string;
           paused_seconds?: number;

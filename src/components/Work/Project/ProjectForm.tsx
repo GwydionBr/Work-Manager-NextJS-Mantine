@@ -1,7 +1,8 @@
-import { Button, NumberInput, Stack, Textarea, TextInput } from '@mantine/core';
+import { Button, NumberInput, Stack, Textarea, TextInput, Select } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
+import { currencies } from "@/constants/settings";
 
 interface ProjectFormProps {
   initialValues: { title: string; description: string; salary: number; currency: string };
@@ -38,9 +39,10 @@ export default function ProjectForm({ initialValues, onSubmit, onCancel, newProj
           {...form.getInputProps('description')}
         />
         <NumberInput label="Salary" min={0} step={0.01} {...form.getInputProps("salary")} />
-        <TextInput
+        <Select
           label="Currency"
-          placeholder="USD, EUR, etc."
+          placeholder="Select currency"
+          data={currencies}
           {...form.getInputProps('currency')}
         />
         <Button type="submit" loading={submitting} disabled={submitting}>{newProject ? "Create Project" : "Save Changes" }</Button>

@@ -1,4 +1,5 @@
-import { RoundingAmount, RoundingDirection } from "@/types/settings.types";
+import { RoundingAmount, RoundingDirection, Currency } from "@/types/settings.types";
+import { shortCurrencies } from "@/constants/settings";
 
 export function roundTime(
   seconds: number,
@@ -37,6 +38,10 @@ export function roundTime(
     default:
       return seconds;
   }
+}
+
+export function getCurrencySymbol(currency: Currency): string {
+  return shortCurrencies.find((c) => c.value === currency)?.label ?? "$";
 }
 
 export function formatTime(seconds: number): string {
@@ -92,9 +97,12 @@ export function formatMonth(month: number) {
 }
 
 export function getWeekNumber(date: Date) {
-  const firstJan = new Date(date.getFullYear(), 0, 1);
-  const diff = date.getTime() - firstJan.getTime();
-  return Math.ceil((diff / (1000 * 60 * 60 * 24) + firstJan.getDay() + 1) / 7);
+  const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+  const dayOfMonth = date.getDate();
+  const firstDayOffset = firstDayOfMonth.getDay() || 7;
+  const adjustedOffset = firstDayOffset - 1;
+  
+  return Math.ceil((dayOfMonth + adjustedOffset) / 7);
 }
 
 export function secondsToTimerFormat(seconds: number) {

@@ -1,12 +1,14 @@
 "use client";
 
-import { Center, Stack, Button } from "@mantine/core";
-import SessionList from "@/components/Work/Session/SessionList";
 import { useWorkStore } from "@/stores/workManagerStore";
+
+import { Center, Stack } from "@mantine/core";
+import SessionList from "@/components/Work/Session/SessionList";
+import NewSessionButton from "@/components/Work/Session/NewSessionButton";
 import EditProjectButton from "@/components/Work/Project/EditProjectButton";
 import Header from "@/components/Header/Header";
-import { formatMoney } from "@/utils/workHelperFunctions";
-import NewSessionButton from "@/components/Work/Session/NewSessionButton";
+
+import { formatMoney, getCurrencySymbol } from "@/utils/workHelperFunctions";
 
 export default function WorkPage() {
   const { activeProject } = useWorkStore();
@@ -17,7 +19,7 @@ export default function WorkPage() {
 
   const description = formatMoney(
     activeProject.project.salary,
-    activeProject.project.currency ?? "$"
+    getCurrencySymbol(activeProject.project.currency)
   );
 
   return (

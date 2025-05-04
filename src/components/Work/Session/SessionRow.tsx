@@ -1,15 +1,16 @@
 'use client';
 
+import { useWorkStore } from '@/stores/workManagerStore';
+import { useDisclosure, useHover } from '@mantine/hooks';
+
 import { IconClock } from '@tabler/icons-react';
 import { Card, Group, Stack, Text } from '@mantine/core';
-import { useDisclosure, useHover } from '@mantine/hooks';
 import DeleteButton from '@/components/Work/Buttons/DeleteButton';
 import EditButton from '@/components/Work/Buttons/EditButton';
 import DeleteSessionModal from '@/components/Work/Session/DeleteSessionModal';
 import TimerSessionDrawer from '@/components/Work/Session/TimerSessionDrawer';
-import { useWorkStore } from '@/stores/workManagerStore';
 import type { Tables } from '@/types/db.types';
-import { formatTime } from '@/utils/workHelperFunctions';
+
 import * as helper from '@/utils/workHelperFunctions';
 
 
@@ -47,10 +48,10 @@ export default function SessionRow({ session }: SessionRowProps) {
               </Group>
               <Group>
                 <Text size="sm" c="teal">
-                  Active: {formatTime(session.active_seconds)}
+                  Active: {helper.formatTime(session.active_seconds)}
                 </Text>
                 <Text size="sm" c="dimmed">
-                  Paused: {formatTime(session.paused_seconds)}
+                  Paused: {helper.formatTime(session.paused_seconds)}
                 </Text>
               </Group>
             </Stack>
@@ -61,7 +62,7 @@ export default function SessionRow({ session }: SessionRowProps) {
               </Group>
             )}
           </Group>
-          <Text>{helper.formatMoney(earnings, session.currency)}</Text>
+          <Text>{helper.formatMoney(earnings, helper.getCurrencySymbol(session.currency))}</Text>
         </Group>
       </Card>
 

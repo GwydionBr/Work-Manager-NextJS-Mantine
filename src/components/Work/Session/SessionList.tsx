@@ -1,21 +1,19 @@
-'use client';
+"use client";
 
-import { IconCalendar, IconClock, IconFolder } from '@tabler/icons-react';
-import { Accordion, Card, Group, ScrollArea, Text } from '@mantine/core';
-import SessionRow from '@/components/Work/Session/SessionRow';
-import type { Tables } from '@/types/db.types';
-import * as helper from '@/utils/workHelperFunctions';
+import { IconCalendar, IconClock, IconFolder } from "@tabler/icons-react";
+import { Accordion, Card, Group, ScrollArea, Text } from "@mantine/core";
+import SessionRow from "@/components/Work/Session/SessionRow";
+import type { Tables } from "@/types/db.types";
 
-
+import * as helper from "@/utils/workHelperFunctions";
+import { Currency } from "@/types/settings.types";
 const Radius = 20;
 
 interface SessionListProps {
-  sessions: Tables<'timerSession'>[];
-
+  sessions: Tables<"timerSession">[];
 }
 
 export default function SessionList({ sessions }: SessionListProps) {
-
   const groupedSessions = groupSessions(sessions);
 
   return (
@@ -26,7 +24,6 @@ export default function SessionList({ sessions }: SessionListProps) {
         </Text>
       ) : (
         groupedSessions.map(({ year, data: yearData }) => (
-
           // Year Section
           <Accordion
             key={year}
@@ -37,81 +34,107 @@ export default function SessionList({ sessions }: SessionListProps) {
             radius={Radius}
           >
             <Accordion.Item value={String(yearData.totalEarnings)}>
-              <Accordion.Control icon={<IconCalendar size={18} />} style={{ fontWeight: 'bold' }}>
+              <Accordion.Control
+                icon={<IconCalendar size={18} />}
+                style={{ fontWeight: "bold" }}
+              >
                 <Group>
                   {year}
-                  {
-                    yearData.totalEarnings.length > 0 && (
-                      <Text size="sm" c="dimmed">
-                        {formatEarnings(yearData.totalEarnings)}
-                      </Text>
-                    )
-                  }
+                  {yearData.totalEarnings.length > 0 && (
+                    <Text size="sm" c="dimmed">
+                      {formatEarnings(yearData.totalEarnings)}
+                    </Text>
+                  )}
                 </Group>
               </Accordion.Control>
               <Accordion.Panel>
                 {Object.entries(yearData.months).map(([month, monthData]) => (
-
                   // Month Section
-                  <Accordion key={month} p={10} variant="separated" multiple radius={Radius}>
+                  <Accordion
+                    key={month}
+                    p={10}
+                    variant="separated"
+                    multiple
+                    radius={Radius}
+                  >
                     <Accordion.Item value={String(monthData.totalEarnings)}>
-                      <Accordion.Control icon={<IconFolder size={18} color="blue" />}>
+                      <Accordion.Control
+                        icon={<IconFolder size={18} color="blue" />}
+                      >
                         <Group>
                           {helper.formatMonth(Number(month))}
-                          {
-                            monthData.totalEarnings.length > 0 && (
-                              <Text size="sm" c="dimmed">
-                                {formatEarnings(monthData.totalEarnings)}
-                              </Text>
-                            )
-                          }
+                          {monthData.totalEarnings.length > 0 && (
+                            <Text size="sm" c="dimmed">
+                              {formatEarnings(monthData.totalEarnings)}
+                            </Text>
+                          )}
                         </Group>
                       </Accordion.Control>
                       <Accordion.Panel>
-                        {Object.entries(monthData.weeks).map(([week, weekData]) => (
-
-                          // Week Section
-                          <Accordion key={week} variant="separated" multiple radius={Radius} p={5}>
-                            <Accordion.Item value={String(weekData.totalEarnings)}>
-                              <Accordion.Control icon={<IconCalendar size={18} color="orange" />}>
-                                <Group>
-                                  Week {week}
-                                  {
-                                    weekData.totalEarnings.length > 0 && (
+                        {Object.entries(monthData.weeks).map(
+                          ([week, weekData]) => (
+                            // Week Section
+                            <Accordion
+                              key={week}
+                              variant="separated"
+                              multiple
+                              radius={Radius}
+                              p={5}
+                            >
+                              <Accordion.Item
+                                value={String(weekData.totalEarnings)}
+                              >
+                                <Accordion.Control
+                                  icon={
+                                    <IconCalendar size={18} color="orange" />
+                                  }
+                                >
+                                  <Group>
+                                    Week {week}
+                                    {weekData.totalEarnings.length > 0 && (
                                       <Text size="sm" c="dimmed">
                                         {formatEarnings(weekData.totalEarnings)}
                                       </Text>
+                                    )}
+                                  </Group>
+                                </Accordion.Control>
+                                <Accordion.Panel>
+                                  {Object.entries(weekData.days).map(
+                                    ([day, dayData]) => (
+                                      // Day Section
+                                      <Card
+                                        key={day}
+                                        withBorder
+                                        shadow="sm"
+                                        p="sm"
+                                        m="xl"
+                                        radius={Radius}
+                                      >
+                                        <Group>
+                                          <IconClock size={16} color="green" />
+                                          <Text>
+                                            {helper.formatDate(new Date(day))}
+                                          </Text>
+                                          <Text>
+                                            {formatEarnings(
+                                              dayData.totalEarnings
+                                            )}
+                                          </Text>
+                                        </Group>
+                                        {dayData.sessions.map((session) => (
+                                          <SessionRow
+                                            key={session.id}
+                                            session={session}
+                                          />
+                                        ))}
+                                      </Card>
                                     )
-                                  }
-
-                                </Group>
-                              </Accordion.Control>
-                              <Accordion.Panel>
-                                {Object.entries(weekData.days).map(([day, dayData]) => (
-
-                                  // Day Section
-                                  <Card
-                                    key={day}
-                                    withBorder
-                                    shadow="sm"
-                                    p="sm"
-                                    m="xl"
-                                    radius={Radius}
-                                  >
-                                    <Group>
-                                      <IconClock size={16} color="green" />
-                                      <Text>{helper.formatDate(new Date(day))}</Text>
-                                      <Text>{formatEarnings(dayData.totalEarnings)}</Text>
-                                    </Group>
-                                    {dayData.sessions.map((session) => (
-                                      <SessionRow key={session.id} session={session} />
-                                    ))}
-                                  </Card>
-                                ))}
-                              </Accordion.Panel>
-                            </Accordion.Item>
-                          </Accordion>
-                        ))}
+                                  )}
+                                </Accordion.Panel>
+                              </Accordion.Item>
+                            </Accordion>
+                          )
+                        )}
                       </Accordion.Panel>
                     </Accordion.Item>
                   </Accordion>
@@ -127,7 +150,7 @@ export default function SessionList({ sessions }: SessionListProps) {
 
 interface Earnings {
   amount: number;
-  currency: string;
+  currency: Currency;
 }
 
 type Year = {
@@ -144,7 +167,7 @@ type Year = {
             string,
             {
               totalEarnings: Earnings[];
-              sessions: Tables<'timerSession'>[];
+              sessions: Tables<"timerSession">[];
             }
           >;
         }
@@ -153,7 +176,9 @@ type Year = {
   >;
 };
 
-function groupSessions(sessions: Tables<'timerSession'>[]): { year: number; data: Year }[] {
+function groupSessions(
+  sessions: Tables<"timerSession">[]
+): { year: number; data: Year }[] {
   const groupedSessions: Record<number, Year> = sessions.reduce(
     (acc, session) => {
       if (!session.start_time || !session.currency) {
@@ -164,10 +189,12 @@ function groupSessions(sessions: Tables<'timerSession'>[]): { year: number; data
       const year = startTime.getFullYear();
       const month = startTime.getMonth() + 1;
       const week = helper.getWeekNumber(startTime);
-      const day = startTime.toISOString().split('T')[0];
+      const day = startTime.toISOString().split("T")[0];
 
       const earnings: Earnings = {
-        amount: Number(((session.active_seconds * session.salary) / 3600).toFixed(2)),
+        amount: Number(
+          ((session.active_seconds * session.salary) / 3600).toFixed(2)
+        ),
         currency: session.currency,
       };
 
@@ -176,14 +203,19 @@ function groupSessions(sessions: Tables<'timerSession'>[]): { year: number; data
       acc[year].totalEarnings = addEarnings(acc[year].totalEarnings, earnings);
 
       // Month
-      acc[year].months[month] = acc[year].months[month] || { totalEarnings: [], weeks: {} };
+      acc[year].months[month] = acc[year].months[month] || {
+        totalEarnings: [],
+        weeks: {},
+      };
       acc[year].months[month].totalEarnings = addEarnings(
         acc[year].months[month].totalEarnings,
         earnings
       );
 
       // Week
-      acc[year].months[month].weeks[week] = acc[year].months[month].weeks[week] || {
+      acc[year].months[month].weeks[week] = acc[year].months[month].weeks[
+        week
+      ] || {
         totalEarnings: [],
         days: {},
       };
@@ -193,9 +225,8 @@ function groupSessions(sessions: Tables<'timerSession'>[]): { year: number; data
       );
 
       // Day
-      acc[year].months[month].weeks[week].days[day] = acc[year].months[month].weeks[week].days[
-        day
-      ] || { totalEarnings: [], sessions: [] };
+      acc[year].months[month].weeks[week].days[day] = acc[year].months[month]
+        .weeks[week].days[day] || { totalEarnings: [], sessions: [] };
       acc[year].months[month].weeks[week].days[day].totalEarnings = addEarnings(
         acc[year].months[month].weeks[week].days[day].totalEarnings,
         earnings
@@ -213,9 +244,14 @@ function groupSessions(sessions: Tables<'timerSession'>[]): { year: number; data
   }));
 }
 
-function addEarnings(existingEarnings: Earnings[], newEarnings: Earnings): Earnings[] {
+function addEarnings(
+  existingEarnings: Earnings[],
+  newEarnings: Earnings
+): Earnings[] {
   const updatedEarnings = [...existingEarnings]; // Neue Kopie des Arrays erstellen
-  const existingIndex = updatedEarnings.findIndex((e) => e.currency === newEarnings.currency);
+  const existingIndex = updatedEarnings.findIndex(
+    (e) => e.currency === newEarnings.currency
+  );
 
   if (existingIndex > -1) {
     updatedEarnings[existingIndex] = {
@@ -230,6 +266,10 @@ function addEarnings(existingEarnings: Earnings[], newEarnings: Earnings): Earni
 }
 
 function formatEarnings(earnings: Earnings[]): string {
-  return earnings.map((e) => helper.formatEarningsAmount(e.amount, e.currency)).join(', ');
+  return earnings
+    .map((e) => {
+      const shortCurrency = helper.getCurrencySymbol(e.currency);
+      return helper.formatEarningsAmount(e.amount, shortCurrency);
+    })
+    .join(", ");
 }
-

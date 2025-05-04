@@ -1,14 +1,16 @@
-import { Button, NumberInput, Stack, TextInput } from "@mantine/core";
+import { Button, NumberInput, Select, Stack } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { DateTimePicker } from "@mantine/dates";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
+import { currencies } from "@/constants/settings";
+import { Currency } from "@/types/settings.types";
 
 interface NewSession {
   start_time: Date;
   active_seconds: number;
   paused_seconds: number;
-  currency: string;
+  currency: Currency;
   salary: number;
   [key: string]: unknown;
 }
@@ -69,12 +71,12 @@ export default function SessionForm({
           step={0.01}
           {...form.getInputProps("salary")}
         />
-        <TextInput
+        <Select
           label="Currency"
-          placeholder="€, $, etc."
+          placeholder="Select currency"
+          data={currencies}
           {...form.getInputProps("currency")}
         />
-
         <Button type="submit">
           {newSession ? "Create Session" : "Save Changes"}
         </Button>

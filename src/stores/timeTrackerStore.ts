@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { TablesInsert } from "@/types/db.types";
 import { secondsToTimerFormat } from "@/utils/workHelperFunctions";
+import { Currency } from "@/types/settings.types";
 
 export enum TimerState {
   Stopped = "stopped",
@@ -17,7 +18,7 @@ interface TimeTrackerState {
   pausedTime: string;
   state: TimerState;
   projectTitle: string;
-  currency: string;
+  currency: Currency;
   salary: number;
   projectId: string;
   userId: string;
@@ -38,7 +39,7 @@ interface TimeTrackerState {
   configureProject: (
     projectId: string,
     projectTitle: string,
-    currency: string,
+    currency: Currency,
     salary: number,
     userId: string
   ) => void;
@@ -54,7 +55,7 @@ export const useTimeTracker = create(
       pausedTime: "00:00",
       state: TimerState.Stopped,
       projectTitle: "",
-      currency: "$",
+      currency: "USD",
       salary: 0,
       projectId: "",
       userId: "",
