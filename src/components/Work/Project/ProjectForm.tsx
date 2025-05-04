@@ -1,6 +1,7 @@
 import { Button, NumberInput, Stack, Textarea, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
-
+import { z } from "zod";
+import { zodResolver } from "mantine-form-zod-resolver";
 
 interface ProjectFormProps {
   initialValues: { title: string; description: string; salary: number; currency: string };
@@ -10,13 +11,17 @@ interface ProjectFormProps {
   submitting?: boolean;
 }
 
+const schema = z.object({
+  title: z.string().min(1, { message: "Title is required" }),
+  description: z.string().min(1, { message: "Description is required" }),
+  salary: z.number().min(0, { message: "Salary must be positive" }),
+  currency: z.string().min(1, { message: "Currency is required" }),
+});
+
 export default function ProjectForm({ initialValues, onSubmit, onCancel, newProject, submitting }: ProjectFormProps) {
   const form = useForm({
     initialValues,
-    validate: {
-      title: (value) => (value.trim().length === 0 ? "Title is required" : null),
-      salary: (value) => (value < 0 ? "Salary must be positive" : null),
-    },
+    validate: zodResolver(schema),
   });
 
   return (
