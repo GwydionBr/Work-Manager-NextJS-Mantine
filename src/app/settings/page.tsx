@@ -9,6 +9,7 @@ import { Stack } from "@mantine/core";
 import Header from "@/components/Header/Header";
 import SettingsRow from "@/components/Settings/SettingsRow";
 import SelectDefaultUnits from "@/components/Settings/SelectDefaultUnits";
+import SelectCurrencies from "@/components/Settings/SelectCurrencies";
 
 export default function SettingsPage() {
   const { fetchSettings } = useSettingsStore();
@@ -23,6 +24,7 @@ export default function SettingsPage() {
       <Stack>
         <SettingsRow title="Color Scheme" children={<SchemeButtonGroup />} />
         <SettingsRow title="Default Units" children={<SelectDefaultUnits />} />
+        <SettingsRow title="Currencies" children={<SelectCurrencies />} />
       </Stack>
     </div>
   );

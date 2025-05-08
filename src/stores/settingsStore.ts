@@ -13,6 +13,7 @@ import { Tables } from "@/types/db.types";
 interface SettingsState {
   settings: Tables<"settings"> | null;
   currency: Currency;
+  financeCurrency: Currency;
   roundingAmount: RoundingAmount;
   roundingMode: RoundingDirection;
 }
@@ -22,6 +23,7 @@ interface SettingsActions {
   setCurrency: (currency: Currency) => void;
   setRoundingAmount: (roundingAmount: RoundingAmount) => void;
   setRoundingMode: (roundingMode: RoundingDirection) => void;
+  setFinanceCurrency: (financeCurrency: Currency) => void;
 }
 
 export const useSettingsStore = create<SettingsState & SettingsActions>()(
@@ -29,6 +31,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
     (set, get) => ({
       settings: null,
       currency: "USD",
+      financeCurrency: "USD",
       roundingAmount: "min",
       roundingMode: "up",
       fetchSettings: async () => {
@@ -39,6 +42,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
             currency: data.default_currency,
             roundingAmount: data.rounding_amount,
             roundingMode: data.rounding_direction,
+            financeCurrency: data.default_finance_currency,
           });
         }
       },
@@ -62,6 +66,13 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
           rounding_direction: roundingMode,
         });
         set({ roundingMode: roundingMode });
+      },
+      setFinanceCurrency: async (financeCurrency: Currency) => {
+        const { data, error } = await actions.updateSettings({
+          id: get().settings?.id,
+          default_finance_currency: financeCurrency,
+        });
+        set({ financeCurrency: financeCurrency });
       },
     }),
     {

@@ -15,23 +15,14 @@ import {
 
 export default function SelectDefaultUnits() {
   const {
-    currency,
     roundingAmount,
     roundingMode,
-    setCurrency,
     setRoundingAmount,
     setRoundingMode,
   } = useSettingsStore();
 
   return (
     <Group>
-      <Select
-        data={currencies}
-        label="Currency"
-        placeholder="Select Currency"
-        value={currency}
-        onChange={(value) => setCurrency(value as Currency)}
-      />
       <Select
         w={150}
         data={roundingAmounts}

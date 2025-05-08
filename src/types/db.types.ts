@@ -103,6 +103,7 @@ export type Database = {
       settings: {
         Row: {
           default_currency: Database["public"]["Enums"]["currency"];
+          default_finance_currency: Database["public"]["Enums"]["currency"];
           id: string;
           rounding_amount: Database["public"]["Enums"]["roundingAmount"];
           rounding_direction: Database["public"]["Enums"]["roundingDirection"];
@@ -110,6 +111,7 @@ export type Database = {
         };
         Insert: {
           default_currency?: Database["public"]["Enums"]["currency"];
+          default_finance_currency?: Database["public"]["Enums"]["currency"];
           id?: string;
           rounding_amount?: Database["public"]["Enums"]["roundingAmount"];
           rounding_direction?: Database["public"]["Enums"]["roundingDirection"];
@@ -117,6 +119,7 @@ export type Database = {
         };
         Update: {
           default_currency?: Database["public"]["Enums"]["currency"];
+          default_finance_currency?: Database["public"]["Enums"]["currency"];
           id?: string;
           rounding_amount?: Database["public"]["Enums"]["roundingAmount"];
           rounding_direction?: Database["public"]["Enums"]["roundingDirection"];
