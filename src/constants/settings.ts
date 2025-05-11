@@ -2,6 +2,7 @@ import {
   Currency,
   RoundingAmount,
   RoundingDirection,
+  FinanceInterval,
 } from "@/types/settings.types";
 
 export const currencies: { value: Currency; label: string }[] = [
@@ -44,5 +45,14 @@ export const roundingModes: { value: RoundingDirection; label: string }[] = [
   { value: "up", label: "Up" },
   { value: "down", label: "Down" },
   { value: "nearest", label: "Nearest" },
+];
+
+export const financeIntervals: { value: FinanceInterval; label: string }[] = [
+  { value: "day", label: "Day" },
+  { value: "week", label: "Week" },
+  { value: "month", label: "Month" },
+  { value: "1/4 year", label: "Quarter Year" },
+  { value: "1/2 year", label: "Half Year" },
+  { value: "year", label: "Year" },
 ];
 

@@ -1,16 +1,16 @@
 "use client";
 
 import { Group, ScrollArea, Stack, Text, Divider } from "@mantine/core";
-import NewProjectButton from "../Work/Project/NewProjectButton";
 import classes from "./Navbar.module.css";
 import FinanceSection from "../Finances/FinanceSection";
+import NewCashFlowButton from "../Finances/NewCashFlowButton";
 
 export default function FinanceNavbar() {
   return (
     <div className={classes.main}>
       <Group className={classes.title} align="center" justify="space-between">
         <Text>Finances</Text>
-        <NewProjectButton />
+        <NewCashFlowButton />
       </Group>
 
       <ScrollArea className={classes.scrollArea}>

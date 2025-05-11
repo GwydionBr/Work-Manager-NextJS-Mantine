@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/utils/supabase/server";
 import { TablesInsert, TablesUpdate } from "@/types/db.types";
 import {
   ApiResponseList,
@@ -8,8 +8,10 @@ import {
   DeleteResponse,
 } from "@/types/action.types";
 
-export async function getAllSingleCashFlows(): Promise<ApiResponseList<"single_cash_flow">> {
-  const supabase = createClient();
+export async function getAllSingleCashFlows(): Promise<
+  ApiResponseList<"single_cash_flow">
+> {
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("single_cash_flow")
     .select("*")
@@ -27,10 +29,23 @@ export async function createSingleCashFlow({
 }: {
   cashFlow: TablesInsert<"single_cash_flow">;
 }): Promise<ApiResponseSingle<"single_cash_flow">> {
-  const supabase = createClient();
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return {
+      data: null,
+      error: "User not found",
+      success: false,
+    };
+  }
+
   const { data, error } = await supabase
     .from("single_cash_flow")
-    .insert(cashFlow)
+    .insert({ ...cashFlow, user_id: user.id })
     .select()
     .single();
 
@@ -46,7 +61,7 @@ export async function updateSingleCashFlow({
 }: {
   updateSingleCashFlow: TablesUpdate<"single_cash_flow">;
 }): Promise<ApiResponseSingle<"single_cash_flow">> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("single_cash_flow")
     .update(updateSingleCashFlow)
@@ -66,7 +81,7 @@ export async function deleteSingleCashFlow({
 }: {
   singleCashFlowId: string;
 }): Promise<DeleteResponse> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase
     .from("single_cash_flow")
     .delete()

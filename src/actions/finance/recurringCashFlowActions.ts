@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/utils/supabase/server";
 import { TablesInsert, TablesUpdate } from "@/types/db.types";
 import {
   ApiResponseList,
@@ -11,7 +11,7 @@ import {
 export async function getAllRecurringCashFlows(): Promise<
   ApiResponseList<"recurring_cash_flow">
 > {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("recurring_cash_flow")
     .select("*")
@@ -29,10 +29,23 @@ export async function createRecurringCashFlow({
 }: {
   cashFlow: TablesInsert<"recurring_cash_flow">;
 }): Promise<ApiResponseSingle<"recurring_cash_flow">> {
-  const supabase = createClient();
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return {
+      data: null,
+      error: "User not found",
+      success: false,
+    };
+  }
+
   const { data, error } = await supabase
     .from("recurring_cash_flow")
-    .insert(cashFlow)
+    .insert({ ...cashFlow, user_id: user.id })
     .select()
     .single();
 
@@ -48,7 +61,7 @@ export async function updateRecurringCashFlow({
 }: {
   updateRecurringCashFlow: TablesUpdate<"recurring_cash_flow">;
 }): Promise<ApiResponseSingle<"recurring_cash_flow">> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("recurring_cash_flow")
     .update(updateRecurringCashFlow)
@@ -68,7 +81,7 @@ export async function deleteRecurringCashFlow({
 }: {
   recurringCashFlowId: string;
 }): Promise<DeleteResponse> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { error } = await supabase
     .from("recurring_cash_flow")
     .delete()
