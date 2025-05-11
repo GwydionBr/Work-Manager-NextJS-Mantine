@@ -17,7 +17,6 @@ import {
   IconCurrencyEuro,
   IconX,
 } from "@tabler/icons-react";
-import classes from "./TimeTracker.module.css";
 
 import TimeTrackerRow from "./TimeTrackerRow";
 
@@ -93,7 +92,7 @@ export default function TimeTrackerComponent() {
 
         <Stack gap="md">
           <TimeTrackerRow
-            icon={currency === "€" ?  <IconCurrencyEuro size={20} /> : <IconCurrencyDollar size={20} />}
+            icon={currency === "EUR" ?  <IconCurrencyEuro size={20} /> : <IconCurrencyDollar size={20} />}
             value={moneyEarned}
             state={state}
             activationState={TimerState.Running}
