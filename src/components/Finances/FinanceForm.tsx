@@ -10,6 +10,7 @@ import {
   Center,
   Switch,
   Group,
+  Alert,
 } from "@mantine/core";
 import {
   IconMinus,
@@ -36,11 +37,12 @@ export default function FinanceForm({ onClose }: FinanceFormProps) {
   const [type, setType] = useState<CashFlowType>("expense");
   const [isRecurring, setIsRecurring] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const { financeCurrency } = useSettingsStore();
 
   async function handleSingleFinanceSubmit(values: SingleFinanceFormValues) {
     setIsLoading(true);
-    const { data, error } =  await createSingleCashFlow({
+    const { error } =  await createSingleCashFlow({
       cashFlow: {
         title: values.name,
         amount: values.amount,
@@ -49,17 +51,20 @@ export default function FinanceForm({ onClose }: FinanceFormProps) {
         type,
       },
     });
-    console.log(data, error);
-    setIsLoading(false);
-    onClose();
+    if (error) {
+      setError(error);
+      setIsLoading(false);
+    } else {
+      setIsLoading(false);
+      onClose();
+    }
   }
 
   async function handleRecurringFinanceSubmit(
     values: RecurringFinanceFormValues
   ) {
     setIsLoading(true);
-    console.log(values);
-    await createRecurringCashFlow({
+    const { error } = await createRecurringCashFlow({
       cashFlow: {
         title: values.name,
         description: values.description || "",
@@ -71,8 +76,13 @@ export default function FinanceForm({ onClose }: FinanceFormProps) {
         type,
       },
     });
-    setIsLoading(false);
-    onClose();
+    if (error) {
+      setError(error);
+      setIsLoading(false);
+    } else {
+      setIsLoading(false);
+      onClose();
+    }
   }
 
   return (
@@ -126,6 +136,11 @@ export default function FinanceForm({ onClose }: FinanceFormProps) {
           handleSubmit={handleSingleFinanceSubmit}
           isLoading={isLoading}
         />
+      )}
+      {error && (
+        <Alert color="red" variant="filled" title="Error" withCloseButton onClose={() => setError(null)}>
+          <Text>{error}</Text>
+        </Alert>
       )}
     </Stack>
   );
