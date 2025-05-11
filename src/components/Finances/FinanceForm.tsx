@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFinanceStore } from "@/stores/financeStore";
 
 import {
   Stack,
@@ -39,20 +40,19 @@ export default function FinanceForm({ onClose }: FinanceFormProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { financeCurrency } = useSettingsStore();
+  const { addSingleCashFlow, addRecurringCashFlow } = useFinanceStore();
 
   async function handleSingleFinanceSubmit(values: SingleFinanceFormValues) {
     setIsLoading(true);
-    const { error } =  await createSingleCashFlow({
-      cashFlow: {
-        title: values.name,
-        amount: values.amount,
-        currency: values.currency,
-        date: values.date.toISOString(),
-        type,
-      },
+    const success = await addSingleCashFlow({
+      title: values.name,
+      amount: values.amount,
+      currency: values.currency,
+      date: values.date.toISOString(),
+      type,
     });
-    if (error) {
-      setError(error);
+    if (!success) {
+      setError("Failed to add single cash flow. Please try again.");
       setIsLoading(false);
     } else {
       setIsLoading(false);
@@ -64,20 +64,18 @@ export default function FinanceForm({ onClose }: FinanceFormProps) {
     values: RecurringFinanceFormValues
   ) {
     setIsLoading(true);
-    const { error } = await createRecurringCashFlow({
-      cashFlow: {
-        title: values.name,
-        description: values.description || "",
-        amount: values.amount,
-        currency: values.currency,
-        start_date: values.startDate.toISOString(),
-        end_date: values.endDate?.toISOString(),
-        interval: values.interval,
-        type,
-      },
+    const success = await addRecurringCashFlow({
+      title: values.name,
+      description: values.description || "",
+      amount: values.amount,
+      currency: values.currency,
+      start_date: values.startDate.toISOString(),
+      end_date: values.endDate?.toISOString(),
+      interval: values.interval,
+      type,
     });
-    if (error) {
-      setError(error);
+    if (!success) {
+      setError("Failed to add recurring cash flow. Please try again.");
       setIsLoading(false);
     } else {
       setIsLoading(false);
@@ -138,7 +136,13 @@ export default function FinanceForm({ onClose }: FinanceFormProps) {
         />
       )}
       {error && (
-        <Alert color="red" variant="filled" title="Error" withCloseButton onClose={() => setError(null)}>
+        <Alert
+          color="red"
+          variant="filled"
+          title="Error"
+          withCloseButton
+          onClose={() => setError(null)}
+        >
           <Text>{error}</Text>
         </Alert>
       )}
