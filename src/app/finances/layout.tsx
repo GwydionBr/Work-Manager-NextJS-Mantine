@@ -3,14 +3,14 @@
 import { useEffect } from "react";
 import { Container } from "@mantine/core";
 import FinanceNavbar from "@/components/Navbar/FinanceNavbar";
-import { useWorkStore } from "@/stores/workManagerStore";
+import { useFinanceStore } from "@/stores/financeStore";
 
 export default function FinanceLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { fetchData } = useWorkStore();
+  const { fetchData } = useFinanceStore();
 
   useEffect(() => {
     fetchData();
