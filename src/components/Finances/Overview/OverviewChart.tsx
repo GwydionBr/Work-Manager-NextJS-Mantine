@@ -6,7 +6,6 @@ import { useFinanceStore } from "@/stores/financeStore";
 import { FinanceInterval } from "@/types/settings.types";
 import { financeIntervals } from "@/constants/settings";
 import { useEffect, useState } from "react";
-import { Tables } from "@/types/db.types";
 
 interface ChartData {
   date: string;
@@ -15,20 +14,21 @@ interface ChartData {
 }
 
 export default function OverviewChart() {
-  const [interval, setInterval] = useState<FinanceInterval>("month");
+  const [interval, setInterval] = useState<FinanceInterval>("week");
   const [columns, setColumns] = useState<number>(6);
   const [chartData, setChartData] = useState<ChartData[]>([]);
-  const { getChartData, fetchData } = useFinanceStore();
+  const { getChartData, fetchData, singleCashFlows } = useFinanceStore();
 
   useEffect(() => {
     const fetchChartData = async () => {
-      await fetchData();
+      if (singleCashFlows.length === 0) {
+        await fetchData();
+      }
       const newChartData = await getChartData(interval);
-      console.log("New Chart Data", newChartData);
       setChartData(newChartData);
     };
     fetchChartData();
-  }, [interval, columns]);
+  }, [interval, columns, singleCashFlows]);
 
   return (
     <Stack w="100%">
@@ -52,6 +52,7 @@ export default function OverviewChart() {
         onChange={(value) => setInterval(value as FinanceInterval)}
         data={financeIntervals}
       />
+      
     </Stack>
   );
 }

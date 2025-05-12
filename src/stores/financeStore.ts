@@ -51,80 +51,109 @@ export const useFinanceStore = create<FinanceStore>((set, get) => ({
   },
 
   async addSingleCashFlow(singleCashFlow) {
+    const { singleCashFlows } = get();
+
     const newSingleCashFlow = await actions.createSingleCashFlow({
       cashFlow: singleCashFlow,
     });
     if (!newSingleCashFlow.success) return false;
 
+    const newSingleCashFlows = [...singleCashFlows, newSingleCashFlow.data];
+
     set({
-      singleCashFlows: [...get().singleCashFlows, newSingleCashFlow.data],
+      singleCashFlows: newSingleCashFlows,
     });
+
     return true;
   },
 
   async addRecurringCashFlow(recurringCashFlow) {
+    const { recurringCashFlows } = get();
+
     const newRecurringCashFlow = await actions.createRecurringCashFlow({
       cashFlow: recurringCashFlow,
     });
     if (!newRecurringCashFlow.success) return false;
 
+    const newRecurringCashFlows = [
+      ...recurringCashFlows,
+      newRecurringCashFlow.data,
+    ];
+
     set({
-      recurringCashFlows: [
-        ...get().recurringCashFlows,
-        newRecurringCashFlow.data,
-      ],
+      recurringCashFlows: newRecurringCashFlows,
     });
     return true;
   },
 
   async updateRecurringCashFlow(recurringCashFlow) {
+    const { recurringCashFlows } = get();
+
     const updatedRecurringCashFlow = await actions.updateRecurringCashFlow({
       updateRecurringCashFlow: recurringCashFlow,
     });
     if (!updatedRecurringCashFlow.success) return false;
 
+    const updatedRecurringCashFlows = recurringCashFlows.map((c) =>
+      c.id === recurringCashFlow.id ? updatedRecurringCashFlow.data : c
+    );
+
     set({
-      recurringCashFlows: get().recurringCashFlows.map((c) =>
-        c.id === recurringCashFlow.id ? updatedRecurringCashFlow.data : c
-      ),
+      recurringCashFlows: updatedRecurringCashFlows,
     });
     return true;
   },
 
   async updateSingleCashFlow(singleCashFlow) {
+    const { singleCashFlows } = get();
+
     const updatedSingleCashFlow = await actions.updateSingleCashFlow({
       updateSingleCashFlow: singleCashFlow,
     });
     if (!updatedSingleCashFlow.success) return false;
 
+    const updatedSingleCashFlows = singleCashFlows.map((c) =>
+      c.id === singleCashFlow.id ? updatedSingleCashFlow.data : c
+    );
+
     set({
-      singleCashFlows: get().singleCashFlows.map((c) =>
-        c.id === singleCashFlow.id ? updatedSingleCashFlow.data : c
-      ),
+      singleCashFlows: updatedSingleCashFlows,
     });
     return true;
   },
 
   async deleteRecurringCashFlow(id) {
+    const { recurringCashFlows } = get();
+
     const deleted = await actions.deleteRecurringCashFlow({
       recurringCashFlowId: id,
     });
     if (!deleted.success) return false;
 
+    const updatedRecurringCashFlows = recurringCashFlows.filter(
+      (c) => c.id !== id
+    );
+
     set({
-      recurringCashFlows: get().recurringCashFlows.filter((c) => c.id !== id),
+      recurringCashFlows: updatedRecurringCashFlows,
     });
     return true;
   },
 
   async deleteSingleCashFlow(id) {
+    const { singleCashFlows } = get();
+
     const deleted = await actions.deleteSingleCashFlow({
       singleCashFlowId: id,
     });
     if (!deleted.success) return false;
 
+    const updatedSingleCashFlows = singleCashFlows.filter(
+      (c) => c.id !== id
+    );
+
     set({
-      singleCashFlows: get().singleCashFlows.filter((c) => c.id !== id),
+      singleCashFlows: updatedSingleCashFlows,
     });
     return true;
   },
@@ -171,7 +200,7 @@ export const useFinanceStore = create<FinanceStore>((set, get) => ({
         groupedData[key] = { expense: 0, income: 0 };
       }
 
-      if (flow.amount < 0) {
+      if (flow.type === "expense") {
         groupedData[key].expense += flow.amount;
       } else {
         groupedData[key].income += flow.amount;
