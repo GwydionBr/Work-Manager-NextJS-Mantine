@@ -16,7 +16,10 @@ const schema = z.object({
   currency: z.enum(
     currencies.map((currency) => currency.value) as [string, ...string[]]
   ),
-  date: z.date(),
+  date: z
+    .string()
+    .or(z.date())
+    .transform((val) => new Date(val)),
 });
 
 export interface SingleFinanceFormValues {
@@ -32,7 +35,11 @@ interface SingleFinanceFormProps {
   isLoading: boolean;
 }
 
-export default function SingleFinanceForm({ financeCurrency, handleSubmit, isLoading }: SingleFinanceFormProps) {
+export default function SingleFinanceForm({
+  financeCurrency,
+  handleSubmit,
+  isLoading,
+}: SingleFinanceFormProps) {
   const form = useForm({
     initialValues: {
       name: "",
@@ -42,20 +49,38 @@ export default function SingleFinanceForm({ financeCurrency, handleSubmit, isLoa
     },
     validate: zodResolver(schema),
   });
+
+  function handleFormSubmit(values: SingleFinanceFormValues) {
+    handleSubmit({
+      ...values,
+      date: new Date(values.date),
+    });
+  }
+
   return (
-    <form onSubmit={form.onSubmit(handleSubmit)}>
+    <form onSubmit={form.onSubmit(handleFormSubmit)}>
       <Stack>
         <TextInput withAsterisk label="Name" {...form.getInputProps("name")} />
-        <NumberInput withAsterisk label="Amount" {...form.getInputProps("amount")} />
-        <Select
-        withAsterisk
-        label="Currency"
-        placeholder="Select currency"
-        data={currencies}
-        {...form.getInputProps("currency")}
+        <NumberInput
+          withAsterisk
+          label="Amount"
+          {...form.getInputProps("amount")}
         />
-        <DatePickerInput label="Date" withAsterisk {...form.getInputProps("date")} />
-        <Button type="submit" loading={isLoading}>Create</Button>
+        <Select
+          withAsterisk
+          label="Currency"
+          placeholder="Select currency"
+          data={currencies}
+          {...form.getInputProps("currency")}
+        />
+        <DatePickerInput
+          label="Date"
+          withAsterisk
+          {...form.getInputProps("date")}
+        />
+        <Button type="submit" loading={isLoading}>
+          Create
+        </Button>
       </Stack>
     </form>
   );

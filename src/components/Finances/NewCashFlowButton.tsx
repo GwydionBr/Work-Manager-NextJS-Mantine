@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { ActionIcon, Drawer, Flex } from "@mantine/core";
+import { ActionIcon, Drawer, Flex, Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import FinanceForm from "@/components/Finances/Form/FinanceForm";
 
@@ -9,8 +9,8 @@ export default function NewCashFlowButton() {
   const [opened, { open, close }] = useDisclosure(false);
 
   return (
-    <>
-      <Drawer
+    < >
+      <Modal
         opened={opened}
         onClose={close}
         title="Add Cash Flow"
@@ -20,7 +20,7 @@ export default function NewCashFlowButton() {
         <Flex direction="column" gap="xl">
           <FinanceForm onClose={close} />
         </Flex>
-      </Drawer>
+      </Modal>
 
       <ActionIcon
         variant="transparent"

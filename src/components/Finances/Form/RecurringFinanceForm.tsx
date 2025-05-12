@@ -22,8 +22,15 @@ const schema = z.object({
   currency: z.enum(
     currencies.map((currency) => currency.value) as [string, ...string[]]
   ),
-  startDate: z.date(),
-  endDate: z.date().nullable(),
+  startDate: z
+    .string()
+    .or(z.date())
+    .transform((val) => new Date(val)),
+  endDate: z
+    .string()
+    .or(z.date())
+    .nullable()
+    .transform((val) => (val ? new Date(val) : null)),
   interval: z.enum(
     financeIntervals.map((interval) => interval.value) as [string, ...string[]]
   ),
@@ -62,8 +69,16 @@ export default function RecurringFinanceForm({
     },
     validate: zodResolver(schema),
   });
+
+  function handleFormSubmit(values: RecurringFinanceFormValues) {
+    handleSubmit({
+      ...values,
+      startDate: new Date(values.startDate),
+      endDate: values.endDate ? new Date(values.endDate) : null,
+    });
+  }
   return (
-    <form onSubmit={form.onSubmit(handleSubmit)}>
+    <form onSubmit={form.onSubmit(handleFormSubmit)}>
       <Stack>
         <TextInput withAsterisk label="Name" {...form.getInputProps("name")} />
         <TextInput label="Description" {...form.getInputProps("description")} />
