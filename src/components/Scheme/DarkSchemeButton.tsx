@@ -1,5 +1,5 @@
 import { IconMoon } from "@tabler/icons-react";
-import { ActionIcon, useComputedColorScheme } from "@mantine/core";
+import { ActionIcon } from "@mantine/core";
 import classes from "./Scheme.module.css";
 
 interface DarkSchemeButtonProps {
@@ -11,17 +11,16 @@ export default function DarkSchemeButton({
   onClick,
   active,
 }: DarkSchemeButtonProps) {
-  const computedColorScheme = useComputedColorScheme("light", {
-    getInitialValueInEffect: true,
-  });
-
   return (
     <ActionIcon
       onClick={onClick}
       variant="default"
       size="xl"
       aria-label="select system scheme"
-      className={active ? classes.active : ""}
+      style={{
+        backgroundColor: "var(--mantine-color-dark-5)",
+      }}
+      className={active ? classes.activeButton : ""}
     >
       <IconMoon className={classes.moonIcon} stroke={1.5} />
     </ActionIcon>
