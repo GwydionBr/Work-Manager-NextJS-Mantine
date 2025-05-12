@@ -27,7 +27,7 @@ import RecurringFinanceForm, {
   RecurringFinanceFormValues,
 } from "./RecurringFinanceForm";
 
-import classes from "../UI/Switch.module.css";
+import classes from "../../UI/Switch.module.css";
 
 interface FinanceFormProps {
   onClose: () => void;

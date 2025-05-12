@@ -3,7 +3,7 @@
 import { Plus } from "lucide-react";
 import { ActionIcon, Drawer, Flex } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import FinanceForm from "@/components/Finances/FinanceForm";
+import FinanceForm from "@/components/Finances/Form/FinanceForm";
 
 export default function NewCashFlowButton() {
   const [opened, { open, close }] = useDisclosure(false);

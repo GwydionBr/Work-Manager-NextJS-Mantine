@@ -1,12 +1,13 @@
 "use client";
 
 import { Tabs, useMantineColorScheme } from "@mantine/core";
-import FinanceOverview from "./FinanceSubviews/FinanceOverview";
-import FinanceRecurring from "./FinanceSubviews/FinanceRecurring";
-import FinanceSingle from "./FinanceSubviews/FinanceSingle";
+import FinanceOverview from "./Overview/FinanceOverview";
+import FinanceRecurring from "./Recurring/FinanceRecurring";
+import FinanceSingle from "./Single/FinanceSingle";
 
 export default function FinancesTab() {
   const { colorScheme } = useMantineColorScheme();
+  
 
   return (
     <Tabs defaultValue="Overview" w="100%" color={colorScheme === "dark" ? "grape.9" : "teal.5"}>
