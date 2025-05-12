@@ -19,7 +19,7 @@ export default function FinanceLayout({
   return (
     <div>
       <FinanceNavbar />
-      <Container ml="200px">{children}</Container>
+      <Container ml="250px">{children}</Container>
     </div>
   );
 }

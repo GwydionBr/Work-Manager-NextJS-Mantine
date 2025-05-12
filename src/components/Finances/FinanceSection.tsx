@@ -1,4 +1,4 @@
-import { Container, Text, Stack, ScrollArea } from "@mantine/core";
+import { Container, Text, Stack, ScrollArea, Box } from "@mantine/core";
 import classes from "./Finances.module.css";
 import { Tables } from "@/types/db.types";
 
@@ -18,7 +18,12 @@ export default function FinanceSection({
       </Text>
       <ScrollArea className={classes.financeSectionContent}>
         {cashFlows.map((cashFlow) => (
-          <Text key={cashFlow.id}>{cashFlow.title}</Text>
+          <Box className={classes.cashFlowBox} my="xs" key={cashFlow.id}>
+            <Text p="xs" fz={12}>
+              {cashFlow.title}
+            </Text>
+            <Text p="xs">{cashFlow.amount}</Text>
+          </Box>
         ))}
       </ScrollArea>
     </Container>

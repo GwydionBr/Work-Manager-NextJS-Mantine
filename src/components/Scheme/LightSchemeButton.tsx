@@ -18,9 +18,7 @@ export default function LightSchemeButton({
       variant="default"
       size="xl"
       aria-label="select system scheme"
-      style={{
-        backgroundColor: "var(--mantine-color-yellow-2)",
-      }}
+      bg="yellow.2"
       className={active ? classes.activeButton : ""}
     >
       <IconSun className={classes.sunIcon} stroke={1.5} />

@@ -1,11 +1,10 @@
 "use client";
 
-import { Group, ScrollArea, Stack, Text, Divider } from "@mantine/core";
+import { Group, ScrollArea, Stack, Text, Divider, Box } from "@mantine/core";
 import classes from "./Navbar.module.css";
 import FinanceSection from "../Finances/FinanceSection";
 import NewCashFlowButton from "../Finances/NewCashFlowButton";
 import { useFinanceStore } from "@/stores/financeStore";
-import { useEffect } from "react";
 
 export default function FinanceNavbar() {
   const { singleCashFlows } = useFinanceStore();
@@ -18,7 +17,7 @@ export default function FinanceNavbar() {
   );
 
   return (
-    <div className={classes.main}>
+    <Box className={classes.main} w="250px">
       <Group className={classes.title} align="center" justify="space-between">
         <Text>Finances</Text>
         <NewCashFlowButton />
@@ -31,6 +30,6 @@ export default function FinanceNavbar() {
           <FinanceSection title="Expenses" cashFlows={expenseCashFlows} />
         </Stack>
       </ScrollArea>
-    </div>
+    </Box>
   );
 }

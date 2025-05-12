@@ -1,5 +1,4 @@
 import { Text, Title, Stack, Group } from "@mantine/core";
-import classes from "./Header.module.css";
 
 interface HeaderProps {
   headerTitle?: string;

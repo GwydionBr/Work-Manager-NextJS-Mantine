@@ -1,0 +1,30 @@
+"use client";
+
+import { Tabs, useMantineColorScheme } from "@mantine/core";
+import FinanceOverview from "./FinanceSubviews/FinanceOverview";
+import FinanceRecurring from "./FinanceSubviews/FinanceRecurring";
+import FinanceSingle from "./FinanceSubviews/FinanceSingle";
+
+export default function FinancesTab() {
+  const { colorScheme } = useMantineColorScheme();
+
+  return (
+    <Tabs defaultValue="Overview" w="100%" color={colorScheme === "dark" ? "grape.9" : "teal.5"}>
+      <Tabs.List grow my="xl">
+        <Tabs.Tab value="Overview">Overview</Tabs.Tab>
+        <Tabs.Tab value="Single">Single</Tabs.Tab>
+        <Tabs.Tab value="Recurring">Recurring</Tabs.Tab>
+      </Tabs.List>
+
+      <Tabs.Panel value="Overview">
+        <FinanceOverview />
+      </Tabs.Panel>
+        <Tabs.Panel value="Single">
+          <FinanceSingle />
+        </Tabs.Panel>
+      <Tabs.Panel value="Recurring">
+        <FinanceRecurring />
+      </Tabs.Panel>
+    </Tabs>
+  );
+}

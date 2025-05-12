@@ -17,9 +17,7 @@ export default function DarkSchemeButton({
       variant="default"
       size="xl"
       aria-label="select system scheme"
-      style={{
-        backgroundColor: "var(--mantine-color-dark-5)",
-      }}
+      bg="dark.6"
       className={active ? classes.activeButton : ""}
     >
       <IconMoon className={classes.moonIcon} stroke={1.5} />
