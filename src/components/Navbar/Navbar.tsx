@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  IconDeviceDesktopAnalytics,
   IconGauge,
   IconSettings,
   IconUser,
   IconBrandCashapp,
+  IconDeviceDesktopAnalytics,
+  IconUsersGroup,
 } from "@tabler/icons-react";
 import { Flex, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
 import SchemeToggle from "@/components/Scheme/SchemeToggleButton";
@@ -27,6 +28,11 @@ const mainLinksData = [
     icon: IconDeviceDesktopAnalytics,
     label: "Analytics",
     to: paths.analytics.analyticsPage(),
+  },
+  {
+    icon: IconUsersGroup,
+    label: "Group Manager",
+    to: paths.groupManager.groupManagerPage(),
   },
 ];
 

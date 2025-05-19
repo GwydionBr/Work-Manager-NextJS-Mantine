@@ -4,6 +4,11 @@ import { Tabs, useMantineColorScheme } from "@mantine/core";
 import FinanceOverview from "./Overview/FinanceOverview";
 import FinanceRecurring from "./Recurring/FinanceRecurring";
 import FinanceSingle from "./Single/FinanceSingle";
+import {
+  IconReload,
+  IconCircleDashedNumber1,
+  IconMenuDeep,
+} from "@tabler/icons-react";
 
 export default function FinancesTab() {
   const { colorScheme } = useMantineColorScheme();
@@ -12,9 +17,9 @@ export default function FinancesTab() {
   return (
     <Tabs defaultValue="Overview" w="100%" color={colorScheme === "dark" ? "grape.9" : "teal.5"}>
       <Tabs.List grow my="xl">
-        <Tabs.Tab value="Overview">Overview</Tabs.Tab>
-        <Tabs.Tab value="Single">Single</Tabs.Tab>
-        <Tabs.Tab value="Recurring">Recurring</Tabs.Tab>
+        <Tabs.Tab leftSection={<IconMenuDeep />} value="Overview">Overview</Tabs.Tab>
+        <Tabs.Tab leftSection={<IconCircleDashedNumber1 />} value="Single">Single</Tabs.Tab>
+        <Tabs.Tab leftSection={<IconReload />} value="Recurring">Recurring</Tabs.Tab>
       </Tabs.List>
 
       <Tabs.Panel value="Overview">

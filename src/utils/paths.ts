@@ -34,6 +34,12 @@ const paths = {
     },
   },
 
+  groupManager: {
+    groupManagerPage() {
+      return "/groupManager";
+    },
+  },
+
   account: {
     accountPage() {
       return "/account";

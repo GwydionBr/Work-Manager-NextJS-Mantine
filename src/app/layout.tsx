@@ -10,7 +10,7 @@ import {
 } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import Layout from "@/components/AppShell/AppShell";
-import { theme } from "../theme";
+import { mantineTheme } from "@/theme";
 
 export const metadata = {
   title: "Work Manager",
@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: any }) {
         />
       </head>
       <body>
-        <MantineProvider defaultColorScheme="auto" theme={theme}>
+        <MantineProvider defaultColorScheme="auto" theme={mantineTheme}>
           <Layout>
             <Notifications />
             {children}
