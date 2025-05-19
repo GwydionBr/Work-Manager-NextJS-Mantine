@@ -34,6 +34,108 @@ export type Database = {
   };
   public: {
     Tables: {
+      grocery_item: {
+        Row: {
+          active: boolean;
+          amount: number;
+          checked: boolean;
+          created_at: string;
+          group_id: string;
+          id: string;
+          title: string;
+          unit: Database["public"]["Enums"]["amountUnits"];
+        };
+        Insert: {
+          active?: boolean;
+          amount?: number;
+          checked?: boolean;
+          created_at?: string;
+          group_id: string;
+          id?: string;
+          title?: string;
+          unit?: Database["public"]["Enums"]["amountUnits"];
+        };
+        Update: {
+          active?: boolean;
+          amount?: number;
+          checked?: boolean;
+          created_at?: string;
+          group_id?: string;
+          id?: string;
+          title?: string;
+          unit?: Database["public"]["Enums"]["amountUnits"];
+        };
+        Relationships: [
+          {
+            foreignKeyName: "grocery_item_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "group";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      group: {
+        Row: {
+          created_at: string;
+          description: string | null;
+          id: string;
+          title: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          title?: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          title?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "group_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "group";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      group_member: {
+        Row: {
+          created_at: string;
+          group_id: string;
+          id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          group_id?: string;
+          id?: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          group_id?: string;
+          id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "group_member_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "group";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       profiles: {
         Row: {
           avatar_url: string | null;
@@ -239,6 +341,7 @@ export type Database = {
       [_ in never]: never;
     };
     Enums: {
+      amountUnits: "kg" | "g" | "t" | "ml" | "l" | "amount";
       cash_flow_type: "expense" | "income";
       currency:
         | "USD"
@@ -379,6 +482,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      amountUnits: ["kg", "g", "t", "ml", "l", "amount"],
       cash_flow_type: ["expense", "income"],
       currency: [
         "USD",

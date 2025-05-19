@@ -49,7 +49,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <AppShell.Navbar>
         <Navbar />
       </AppShell.Navbar>
-      <AppShell.Main>{children}</AppShell.Main>
+      <AppShell.Main className={classes.main}>{children}</AppShell.Main>
       <AppShell.Aside className={classes.aside}>
         <Stack py="md" h="100%" justify="space-between" align="center">
           <Group pl="sm" justify="flex-start" w="100%">

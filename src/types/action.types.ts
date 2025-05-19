@@ -2,12 +2,14 @@ import { Tables } from "@/types/db.types";
 
 // Liste der erlaubten Tabellen
 export type TableNames =
-  | "timerProject"
-  | "timerSession"
-  | "single_cash_flow"
+  | "grocery_item"
+  | "group"
+  | "profiles"
   | "recurring_cash_flow"
   | "settings"
-  | "profiles";
+  | "single_cash_flow"
+  | "timerProject"
+  | "timerSession";
 
 // Response after an error occurs
 interface ErrorResponse {
