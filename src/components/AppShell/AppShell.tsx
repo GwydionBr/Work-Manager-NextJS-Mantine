@@ -1,17 +1,24 @@
 "use client";
 
-import { AppShell, Burger, Group, Button, Stack } from "@mantine/core";
+import { AppShell, Burger, Group, Stack, ActionIcon } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Navbar from "@/components/Navbar/Navbar";
 import classes from "./AppShell.module.css";
 import TimeTrackerComponent from "../TimeTracker/TimeTrackerComponent";
 import { usePathname } from "next/navigation";
+import { useSettingsStore } from "@/stores/settingsStore";
+import { IconArrowBarLeft } from "@tabler/icons-react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const { isAsideOpen, setIsAsideOpen } = useSettingsStore();
   const [isBurgerOpen, { toggle: toggleBurger }] = useDisclosure();
   const pathname = usePathname();
   const isHome = pathname === "/";
   const isAuth = pathname === "/auth";
+
+  function toggleAside() {
+    setIsAsideOpen(!isAsideOpen);
+  }
 
   return (
     <AppShell
@@ -23,7 +30,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         collapsed: { mobile: !isBurgerOpen },
       }}
       aside={{
-        width: 300,
+        width: isAsideOpen ? 300 : 50,
         breakpoint: "md",
         collapsed: { desktop: isHome || isAuth, mobile: true },
       }}
@@ -43,9 +50,25 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <Navbar />
       </AppShell.Navbar>
       <AppShell.Main>{children}</AppShell.Main>
-      <AppShell.Aside>
-        <Stack h="100%" justify="center" align="center">
-          <TimeTrackerComponent />
+      <AppShell.Aside className={classes.aside}>
+        <Stack py="md" h="100%" justify="space-between" align="center">
+          <Group pl="sm" justify="flex-start" w="100%">
+            <ActionIcon onClick={toggleAside}>
+              <IconArrowBarLeft
+                className={classes.icon}
+                style={{ transform: isAsideOpen ? "rotate(180deg)" : "none" }}
+              />
+            </ActionIcon>
+          </Group>
+          {isAsideOpen && <TimeTrackerComponent />}
+          <Group pl="sm" justify="flex-start" w="100%">
+            <ActionIcon onClick={toggleAside}>
+              <IconArrowBarLeft
+                className={classes.icon}
+                style={{ transform: isAsideOpen ? "rotate(180deg)" : "none" }}
+              />
+            </ActionIcon>
+          </Group>
         </Stack>
       </AppShell.Aside>
     </AppShell>

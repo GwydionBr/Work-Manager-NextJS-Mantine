@@ -1,3 +1,20 @@
 .appShell {
-  background-color: light-dark( var(--mantine-color-white), var(--mantine-color-dark-7));
+  background-color: light-dark(
+    var(--mantine-color-white),
+    var(--mantine-color-dark-7)
+  );
+}
+
+.aside {
+  background-color: light-dark(
+    var(--mantine-color-gray-0),
+    var(--mantine-color-dark-6)
+  );
+
+  overflow: hidden;
+  transition: width 0.4s ease-in;
+}
+
+.icon {
+  transition: transform 0.4s linear;
 }

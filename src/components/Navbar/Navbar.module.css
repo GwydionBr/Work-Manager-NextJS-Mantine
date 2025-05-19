@@ -1,7 +1,7 @@
 .navbar {
   background-color: light-dark(
     var(--mantine-color-teal-4),
-    var(--mantine-color-grape-9)
+    var(--mantine-color-teal-8)
   );
 }
 
@@ -45,7 +45,7 @@
   &:hover {
     background-color: light-dark(
       var(--mantine-color-teal-2),
-      var(--mantine-color-grape-7)
+      var(--mantine-color-teal-7)
     );
   }
 
@@ -54,7 +54,7 @@
     &:hover {
       background-color: light-dark(
         var(--mantine-color-teal-7),
-        var(--mantine-color-grape-4)
+        var(--mantine-color-teal-4)
       );
       color: light-dark(var(--mantine-color-white), var(--mantine-color-black));
     }

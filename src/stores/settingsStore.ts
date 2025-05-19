@@ -16,6 +16,7 @@ interface SettingsState {
   financeCurrency: Currency;
   roundingAmount: RoundingAmount;
   roundingMode: RoundingDirection;
+  isAsideOpen: boolean;
 }
 
 interface SettingsActions {
@@ -24,6 +25,7 @@ interface SettingsActions {
   setRoundingAmount: (roundingAmount: RoundingAmount) => void;
   setRoundingMode: (roundingMode: RoundingDirection) => void;
   setFinanceCurrency: (financeCurrency: Currency) => void;
+  setIsAsideOpen: (isAsideOpen: boolean) => void;
 }
 
 export const useSettingsStore = create<SettingsState & SettingsActions>()(
@@ -34,6 +36,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       financeCurrency: "USD",
       roundingAmount: "min",
       roundingMode: "up",
+      isAsideOpen: true,
       fetchSettings: async () => {
         const { data, error } = await actions.getSettings();
         if (data) {
@@ -73,6 +76,9 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
           default_finance_currency: financeCurrency,
         });
         set({ financeCurrency: financeCurrency });
+      },
+      setIsAsideOpen: (isAsideOpen: boolean) => {
+        set({ isAsideOpen: isAsideOpen });
       },
     }),
     {
