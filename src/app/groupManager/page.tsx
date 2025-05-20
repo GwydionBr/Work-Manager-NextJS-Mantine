@@ -17,7 +17,7 @@ export default function GroupManagerPage() {
 
   return (
     <Container className={classes.groupManagerMainContainer}>
-      <Header headerTitle={activeGroup?.title || "Group Manager"} />
+      <Header headerTitle={activeGroup?.group.title || "Group Manager"} />
       {isLoading && <Loader />}
       {!isLoading && groups.length > 0 && (
         <Tabs

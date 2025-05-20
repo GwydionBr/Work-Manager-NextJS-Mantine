@@ -26,10 +26,10 @@ export default function FinanceNavbar() {
         </Text>
         <Select
           data={groups.map((group) => ({
-            label: group.title,
-            value: group.id,
+            label: group.group.title,
+            value: group.group.id,
           }))}
-          value={activeGroup?.id}
+          value={activeGroup?.group.id}
           onChange={(value) => {
             if (value) {
               setActiveGroup(value);

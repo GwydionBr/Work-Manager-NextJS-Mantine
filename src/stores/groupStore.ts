@@ -4,19 +4,20 @@ import * as actions from "@/actions";
 import { Tables, TablesInsert } from "@/types/db.types";
 import { create } from "zustand";
 
-interface GroupState {
-  groups: Tables<"group">[];
-  activeGroup: Tables<"group"> | null;
+interface GroupContent {
+  group: Tables<"group">;
   groceryItems: Tables<"grocery_item">[];
+}
+
+interface GroupState {
+  groups: GroupContent[];
+  activeGroup: GroupContent | null;
   isLoading: boolean;
 }
 
 interface GroupActions {
   fetchGroupData: () => void;
   addGroup: (group: TablesInsert<"group">) => Promise<boolean>;
-  removeGroup: (id: string) => void;
-  addGroceryItem: (groceryItem: TablesInsert<"grocery_item">) => void;
-  removeGroceryItem: (id: string) => void;
   setActiveGroup: (id: string) => void;
 }
 
@@ -24,20 +25,34 @@ export const useGroupStore = create<GroupState & GroupActions>()(
   (set, get) => ({
     groups: [],
     activeGroup: null,
-    groceryItems: [],
     isLoading: true,
 
     fetchGroupData: async () => {
       const activeGroup = get().activeGroup;
-      const response = await actions.getAllGroups();
-      if (response.success) {
-         if (!activeGroup) {
-           set({
-             activeGroup: response.data[0] || null,
-           });
-         }
+      const groupResponse = await actions.getAllGroups();
+      const allGroupContent: GroupContent[] = [];
+
+      if (groupResponse.success) {
+        if (groupResponse.data.length > 0) {
+          for (const group of groupResponse.data) {
+            const groceryItemsResponse = await actions.getAllGroceryItems({
+              groupId: group.id,
+            });
+            if (groceryItemsResponse.success) {
+              allGroupContent.push({
+                group,
+                groceryItems: groceryItemsResponse.data,
+              });
+            }
+          }
+        }
+        if (!activeGroup) {
+          set({
+            activeGroup: allGroupContent[0] || null,
+          });
+        }
         set({
-          groups: response.data,
+          groups: allGroupContent,
           isLoading: false,
         });
       } else {
@@ -46,34 +61,19 @@ export const useGroupStore = create<GroupState & GroupActions>()(
     },
     addGroup: async (group) => {
       const response = await actions.createGroup({ group });
-      console.log(response);
 
       if (response.success) {
-        set((state) => ({ groups: [...state.groups, response.data] }));
+        const newGroupContent: GroupContent = {
+          group: response.data,
+          groceryItems: [],
+        };
+        set((state) => ({ groups: [...state.groups, newGroupContent] }));
         return true;
       }
       return false;
     },
-    removeGroup: (id) => {
-      set((state) => ({
-        groups: state.groups.filter((g) => g.id !== id),
-      }));
-    },
-    addGroceryItem: async (groceryItem) => {
-      const response = await actions.createGroceryItem({ item: groceryItem });
-      if (response.success) {
-        set((state) => ({
-          groceryItems: [...state.groceryItems, response.data],
-        }));
-      }
-    },
-    removeGroceryItem: (id) => {
-      set((state) => ({
-        groceryItems: state.groceryItems.filter((i) => i.id !== id),
-      }));
-    },
     setActiveGroup: (id: string) => {
-      const group = get().groups.find((g) => g.id === id);
+      const group = get().groups.find((g) => g.group.id === id);
       if (group) {
         set({ activeGroup: group });
       }

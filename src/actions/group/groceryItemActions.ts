@@ -8,24 +8,17 @@ import {
   DeleteResponse,
 } from "@/types/action.types";
 
-export async function getAllGroceryItems(): Promise<
-  ApiResponseList<"grocery_item">
-> {
+export async function getAllGroceryItems({
+  groupId,
+}: {
+  groupId: string;
+}): Promise<ApiResponseList<"grocery_item">> {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return {
-      data: null,
-      error: "User not found",
-      success: false,
-    };
-  }
-
-  const { data, error } = await supabase.from("grocery_item").select("*");
+  const { data, error } = await supabase
+    .from("grocery_item")
+    .select("*")
+    .eq("group_id", groupId);
 
   if (error) {
     return { success: false, data: null, error: error.message };
