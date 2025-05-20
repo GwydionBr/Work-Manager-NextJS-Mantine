@@ -44,6 +44,7 @@ export type Database = {
           id: string;
           title: string;
           unit: Database["public"]["Enums"]["amountUnits"];
+          user_id: string;
         };
         Insert: {
           active?: boolean;
@@ -52,8 +53,9 @@ export type Database = {
           created_at?: string;
           group_id: string;
           id?: string;
-          title?: string;
+          title: string;
           unit?: Database["public"]["Enums"]["amountUnits"];
+          user_id?: string;
         };
         Update: {
           active?: boolean;
@@ -64,6 +66,7 @@ export type Database = {
           id?: string;
           title?: string;
           unit?: Database["public"]["Enums"]["amountUnits"];
+          user_id?: string;
         };
         Relationships: [
           {
@@ -97,15 +100,7 @@ export type Database = {
           title?: string;
           user_id?: string;
         };
-        Relationships: [
-          {
-            foreignKeyName: "group_user_id_fkey";
-            columns: ["user_id"];
-            isOneToOne: false;
-            referencedRelation: "group";
-            referencedColumns: ["id"];
-          },
-        ];
+        Relationships: [];
       };
       group_member: {
         Row: {

@@ -8,25 +8,6 @@ import {
   DeleteResponse,
 } from "@/types/action.types";
 
-export async function getAllGroceryItems({
-  groupId,
-}: {
-  groupId: string;
-}): Promise<ApiResponseList<"grocery_item">> {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("grocery_item")
-    .select("*")
-    .eq("group_id", groupId);
-
-  if (error) {
-    return { success: false, data: null, error: error.message };
-  }
-
-  return { success: true, data, error: null };
-}
-
 export async function getGroceryItemsByGroup({
   groupId,
 }: {
@@ -88,6 +69,8 @@ export async function createGroceryItem({
     .insert(item)
     .select()
     .single();
+
+  console.log(error);
 
   if (error) {
     return { success: false, data: null, error: error.message };

@@ -54,7 +54,7 @@ export {
 
 // Grocery Item Actions
 export {
-  getAllGroceryItems,
+  getGroceryItemsByGroup,
   getGroceryItemById,
   createGroceryItem,
   updateGroceryItem,

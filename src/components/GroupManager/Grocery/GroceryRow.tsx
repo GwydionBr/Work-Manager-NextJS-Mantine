@@ -1,9 +1,14 @@
 import { Group } from "@mantine/core";
+import { Tables } from "@/types/db.types";
 
-export default function GroceryRow() {
+interface GroceryRowProps {
+  item: Tables<"grocery_item">;
+}
+
+export default function GroceryRow({ item }: GroceryRowProps) {
   return (
     <Group>
-      Grocery Row
+      {item.title}
     </Group>
   );
 }

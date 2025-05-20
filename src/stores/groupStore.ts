@@ -5,7 +5,9 @@ import { Tables, TablesInsert } from "@/types/db.types";
 import { create } from "zustand";
 
 interface GroupContent {
-  group: Tables<"group">;
+  id: string;
+  title: string;
+  description: string | null;
   groceryItems: Tables<"grocery_item">[];
 }
 
@@ -18,6 +20,9 @@ interface GroupState {
 interface GroupActions {
   fetchGroupData: () => void;
   addGroup: (group: TablesInsert<"group">) => Promise<boolean>;
+  addGroceryItem: (
+    groceryItem: TablesInsert<"grocery_item">
+  ) => Promise<boolean>;
   setActiveGroup: (id: string) => void;
 }
 
@@ -35,17 +40,21 @@ export const useGroupStore = create<GroupState & GroupActions>()(
       if (groupResponse.success) {
         if (groupResponse.data.length > 0) {
           for (const group of groupResponse.data) {
-            const groceryItemsResponse = await actions.getAllGroceryItems({
+            const groceryItemsResponse = await actions.getGroceryItemsByGroup({
               groupId: group.id,
             });
+
             if (groceryItemsResponse.success) {
               allGroupContent.push({
-                group,
+                id: group.id,
+                title: group.title,
+                description: group.description,
                 groceryItems: groceryItemsResponse.data,
               });
             }
           }
         }
+        console.log(allGroupContent);
         if (!activeGroup) {
           set({
             activeGroup: allGroupContent[0] || null,
@@ -64,7 +73,9 @@ export const useGroupStore = create<GroupState & GroupActions>()(
 
       if (response.success) {
         const newGroupContent: GroupContent = {
-          group: response.data,
+          id: response.data.id,
+          title: response.data.title,
+          description: response.data.description,
           groceryItems: [],
         };
         set((state) => ({ groups: [...state.groups, newGroupContent] }));
@@ -73,10 +84,34 @@ export const useGroupStore = create<GroupState & GroupActions>()(
       return false;
     },
     setActiveGroup: (id: string) => {
-      const group = get().groups.find((g) => g.group.id === id);
+      const group = get().groups.find((g) => g.id === id);
       if (group) {
         set({ activeGroup: group });
       }
+    },
+    addGroceryItem: async (groceryItem) => {
+      const { activeGroup, groups } = get();
+      if (activeGroup) {
+        const response = await actions.createGroceryItem({
+          item: {
+            ...groceryItem,
+            group_id: activeGroup.id,
+          },
+        });
+
+        if (response.success) {
+          const newActiveGroup = {
+            ...activeGroup,
+            groceryItems: [...activeGroup.groceryItems, response.data],
+          };
+          const newGroups = groups.map((g) =>
+            g.id === activeGroup.id ? newActiveGroup : g
+          );
+          set({ activeGroup: newActiveGroup, groups: newGroups });
+          return true;
+        }
+      }
+      return false;
     },
   })
 );
