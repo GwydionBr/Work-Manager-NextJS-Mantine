@@ -3,17 +3,17 @@
 import { useEffect } from "react";
 import { Container } from "@mantine/core";
 import GroupManagerNavbar from "@/components/Navbar/GroupManagerNavbar";
-import { useFinanceStore } from "@/stores/financeStore";
+import { useGroupStore } from "@/stores/groupStore";
 
 export default function FinanceLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { fetchData } = useFinanceStore();
+  const { fetchGroupData } = useGroupStore();
 
   useEffect(() => {
-    fetchData();
+    fetchGroupData();
   }, []);
 
   return (

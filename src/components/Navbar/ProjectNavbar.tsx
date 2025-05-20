@@ -5,20 +5,27 @@ import { useTimeTracker } from '@/stores/timeTrackerStore';
 import { useWorkStore, type TimerProject } from '@/stores/workManagerStore';
 import NewProjectButton from '../Work/Project/NewProjectButton';
 import classes from './Navbar.module.css';
+import { useEffect } from 'react';
 
 export default function ProjectNavbar() {
   const { projects, activeProject, setActiveProject } = useWorkStore();
   const { configureProject } = useTimeTracker();
 
+  useEffect(() => {
+    if (activeProject) {
+      configureProject(
+        activeProject.project.id,
+        activeProject.project.title,
+        activeProject.project.currency,
+        activeProject.project.salary,
+        activeProject.project.user_id
+      );
+    }
+  }, [activeProject]);
+  
+
   function handleSelection(timerProject: TimerProject) {
     setActiveProject(timerProject.project.id);
-    configureProject(
-      timerProject.project.id,
-      timerProject.project.title,
-      timerProject.project.currency,
-      timerProject.project.salary,
-      timerProject.project.user_id
-    );
   }
 
   const links = projects.map((timerProject) => (
