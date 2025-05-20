@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Anchor,
   Button,
@@ -15,7 +15,7 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { upperFirst, useToggle, useDisclosure } from '@mantine/hooks';
+import { upperFirst, useToggle } from '@mantine/hooks';
 import { login, signup, signInWithGithub} from '@/actions';
 import GithubButton from '../SocialButtons/GithubButton';
 
@@ -30,20 +30,20 @@ export default function AuthenticationForm({
   ...props
 }: AuthenticationFormProps) {
   const [type, toggle] = useToggle(['login', 'register'] as const);
-  const [loading, { open, close }] = useDisclosure(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     toggle(defaultType);
   }, [defaultType]);
 
   async function handleSubmit(values: any) {
-    open();
+    setIsLoading(true);
     if (type === 'login') {
       await login(values);
     } else {
       await signup(values);
     }
-    close();
+    setIsLoading(false);
   }
 
   async function handleGithub() {
@@ -117,7 +117,7 @@ export default function AuthenticationForm({
               ? 'Already have an account? Login'
               : "Don't have an account? Register"}
           </Anchor>
-          <Button type="submit" radius="xl" loading={loading} disabled={loading}>
+          <Button type="submit" radius="xl" loading={isLoading} disabled={isLoading}>
             {upperFirst(type)}
           </Button>
         </Group>

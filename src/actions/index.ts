@@ -60,3 +60,12 @@ export {
   updateGroceryItem,
   deleteGroceryItem,
 } from "./group/groceryItemActions";
+
+// Profile Actions
+export {
+  getAllProfiles,
+  getProfile,
+  createProfile,
+  updateProfile,
+  deleteProfile,
+} from "./profile/profileActions";
