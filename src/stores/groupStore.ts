@@ -14,7 +14,7 @@ interface GroupState {
 
 interface GroupActions {
   fetchGroupData: () => void;
-  addGroup: (group: TablesInsert<"group">) => void;
+  addGroup: (group: TablesInsert<"group">) => Promise<boolean>;
   removeGroup: (id: string) => void;
   addGroceryItem: (groceryItem: TablesInsert<"grocery_item">) => void;
   removeGroceryItem: (id: string) => void;
@@ -38,7 +38,9 @@ export const useGroupStore = create<GroupState & GroupActions>()(
         const response = await actions.createGroup({ group });
         if (response.success) {
           set((state) => ({ groups: [...state.groups, response.data] }));
+          return true;
         }
+        return false;
       },
       removeGroup: (id) => {
         set((state) => ({

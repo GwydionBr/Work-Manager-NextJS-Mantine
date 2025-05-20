@@ -1,0 +1,36 @@
+"use client";
+
+import { Plus } from "lucide-react";
+import { ActionIcon, Flex, Modal } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import GroupForm from "@/components/GroupManager/GroupForm";
+
+export default function NewGroupButton() {
+  const [opened, { open, close }] = useDisclosure(false);
+
+  return (
+    <>
+      <Modal
+        opened={opened}
+        onClose={close}
+        title="Add Cash Flow"
+        size="md"
+        padding="md"
+      >
+        <Flex direction="column" gap="xl">
+          <GroupForm onClose={close} />
+        </Flex>
+      </Modal>
+
+      <ActionIcon
+        variant="transparent"
+        aria-label="Edit project"
+        onClick={open}
+        size="sm"
+        color="teal"
+      >
+        <Plus />
+      </ActionIcon>
+    </>
+  );
+}
