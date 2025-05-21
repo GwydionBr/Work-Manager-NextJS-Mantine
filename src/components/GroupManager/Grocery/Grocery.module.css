@@ -1,3 +1,12 @@
 .groceryInput {
   border-radius: var(--mantine-radius-md);
 }
+
+.groceryRow {
+  border-radius: var(--mantine-radius-md);
+  border: 1px solid var(--mantine-color-dark-3);
+  box-shadow: var(--mantine-shadow-sm);
+  padding: var(--mantine-spacing-xs);
+
+  transition: all 0.2s ease-in-out;
+}

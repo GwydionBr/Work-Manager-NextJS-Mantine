@@ -21,11 +21,11 @@ export default function GroupManagerPage() {
       {isLoading && <Loader />}
       {!isLoading && groups.length > 0 && (
         <Tabs
-          defaultValue="Calendar"
+          defaultValue="Grocery List"
           w="100%"
           color={"teal.5"}
         >
-          <Tabs.List grow my="xl">
+          <Tabs.List grow my="xl" >
             <Tabs.Tab leftSection={<IconCalendar />} value="Calendar">
               Calendar
             </Tabs.Tab>
