@@ -1,4 +1,5 @@
 import { ActionIcon, Alert, Group, Stack, TextInput } from "@mantine/core";
+import { useForm } from "@mantine/form";
 import { IconX, IconPlus } from "@tabler/icons-react";
 import classes from "./Grocery.module.css";
 
@@ -23,35 +24,42 @@ export default function GroceryInput({
   error,
   onCloseError,
 }: GroceryInputProps) {
+  const form = useForm({
+    initialValues: {
+      value: "",
+    },
+  });
   return (
     <Stack w="100%">
-      <Group justify="center">
-        <TextInput
-          style={{ flexGrow: 1 }}
-          leftSection={
-            <ActionIcon
-              onClick={clearInput}
-              disabled={!value}
-              variant="transparent"
-              color="red"
-            >
-              <IconX />
-            </ActionIcon>
-          }
-          placeholder={placeholder}
-          className={classes.groceryInput}
-          value={value}
-          onChange={(e) => onValueChange(e.target.value)}
-        />
-        <ActionIcon onClick={onSubmit} loading={isLoading}>
-          <IconPlus />
-        </ActionIcon>
-      </Group>
-      {error && (
-        <Alert withCloseButton color="red" onClose={onCloseError}>
-          {error}
-        </Alert>
-      )}
+      <form onSubmit={form.onSubmit(onSubmit)}>
+        <Group justify="center">
+          <TextInput
+            style={{ flexGrow: 1 }}
+            leftSection={
+              <ActionIcon
+                onClick={clearInput}
+                disabled={!value}
+                variant="transparent"
+                color="red"
+              >
+                <IconX />
+              </ActionIcon>
+            }
+            placeholder={placeholder}
+            className={classes.groceryInput}
+            value={value}
+            onChange={(e) => onValueChange(e.target.value)}
+          />
+          <ActionIcon onClick={onSubmit} loading={isLoading}>
+            <IconPlus />
+          </ActionIcon>
+        </Group>
+        {error && (
+          <Alert withCloseButton color="red" onClose={onCloseError}>
+            {error}
+          </Alert>
+        )}
+      </form>
     </Stack>
   );
 }
