@@ -1,23 +1,22 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+
 import { Tables, TablesInsert } from "@/types/db.types";
 import {
-  ApiResponseList,
   ApiResponseSingle,
   DeleteResponse,
-  ErrorResponse
+  ErrorResponse,
 } from "@/types/action.types";
+import { Friend } from "@/stores/profileStore";
 
 export async function getAllFriendships(): Promise<
-  ErrorResponse | {
-    success: true;
-    data: {
-      friends: Tables<"profiles">[];
-      pendingFriends: Tables<"profiles">[];
-    };
-    error: null;
-  }
+  | ErrorResponse
+  | {
+      success: true;
+      data: Friend[];
+      error: null;
+    }
 > {
   const supabase = await createClient();
 
@@ -42,41 +41,40 @@ export async function getAllFriendships(): Promise<
     return { success: false, data: null, error: error.message };
   }
 
-  const pendingFriendships = data.filter(
-    (friendship) => friendship.status === "pending"
-  );
-
-  const pendingFriendIds = pendingFriendships.map((friendship) =>
+  const friendsData = data.map((friendship) =>
     friendship.requester_id === user.id
-      ? friendship.addressee_id
-      : friendship.requester_id
+      ? {
+          id: friendship.addressee_id,
+          status: friendship.status,
+          requester: true,
+        }
+      : {
+          id: friendship.requester_id,
+          status: friendship.status,
+          requester: false,
+        }
   );
 
-  const friendships = data.filter(  
-    (friendship) => friendship.status === "accepted"
-  );
-
-  const friendIds = friendships.map((friendship) =>
-    friendship.requester_id === user.id
-      ? friendship.addressee_id
-      : friendship.requester_id
-  );
-
-  const { data: friends, error: friendsError } = await supabase
+  const { data: profiles, error: profilesError } = await supabase
     .from("profiles")
     .select("*")
-    .in("id", friendIds);
+    .in(
+      "id",
+      friendsData.map((friend) => friend.id)
+    );
 
-  const { data: pendingFriends, error: pendingFriendsError } = await supabase
-    .from("profiles")
-    .select("*")
-    .in("id", pendingFriendIds);
-
-  if (friendsError || pendingFriendsError) {
-    return { success: false, data: null, error: friendsError?.message || pendingFriendsError?.message || "Unknown error" };
+  if (profilesError) {
+    return { success: false, data: null, error: profilesError.message };
   }
 
-  return { success: true, data: { friends, pendingFriends }, error: null };
+  const friends = friendsData.map((friend) => ({
+    ...friend,
+    profile: profiles.find(
+      (profile) => profile.id === friend.id
+    ) as Tables<"profiles">,
+  }));
+
+  return { success: true, data: friends, error: null };
 }
 
 export async function createFriendship({

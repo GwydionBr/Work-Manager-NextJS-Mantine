@@ -1,14 +1,20 @@
 "use client";
 
 import * as actions from "@/actions";
-import { Tables, TablesInsert } from "@/types/db.types";
+import { Tables, TablesInsert, Enums } from "@/types/db.types";
 import { create } from "zustand";
+
+export interface Friend {
+  id: string;
+  profile: Tables<"profiles">;
+  requester: boolean;
+  status: Enums<"status">;
+}
 
 interface ProfileState {
   allProfiles: Tables<"profiles">[] | null;
   profile: Tables<"profiles"> | null;
-  pendingFriends: Tables<"profiles">[];
-  friends: Tables<"profiles">[];
+  friends: Friend[];
   isLoading: boolean;
 }
 
@@ -24,7 +30,6 @@ export const useProfileStore = create<ProfileState & ProfileActions>()(
     profile: null,
     isLoading: true,
     friends: [],
-    pendingFriends: [],
 
     fetchProfileData: async () => {
       const profileResponse = await actions.getProfile();
@@ -42,8 +47,7 @@ export const useProfileStore = create<ProfileState & ProfileActions>()(
         const friendshipResponse = await actions.getAllFriendships();
         if (friendshipResponse.success) {
           set({
-            friends: friendshipResponse.data.friends,
-            pendingFriends: friendshipResponse.data.pendingFriends,
+            friends: friendshipResponse.data,
           });
         }
       }
@@ -59,21 +63,29 @@ export const useProfileStore = create<ProfileState & ProfileActions>()(
       return false;
     },
     addFriend: async (friendId) => {
-      const { allProfiles, pendingFriends } = get();
+      const { allProfiles, friends } = get();
       const response = await actions.createFriendship({
         friendship: {
           requester_id: get().profile?.id,
           addressee_id: friendId,
         },
       });
-      console.log(response);
       if (response.success) {
         const newPendingFriend = allProfiles?.find(
           (profile) => profile.id === friendId
         );
         if (newPendingFriend) {
+          const newFriends = [
+            ...friends,
+            {
+              id: friendId,
+              profile: newPendingFriend,
+              requester: true,
+              status: "pending" as Enums<"status">,
+            },
+          ];
           set({
-            pendingFriends: [...pendingFriends, newPendingFriend],
+            friends: newFriends,
           });
         }
         return true;

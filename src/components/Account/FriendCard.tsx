@@ -9,7 +9,7 @@ import FriendList from "./FriendList";
 import { IconSearch } from "@tabler/icons-react";
 
 export default function FriendCard() {
-  const { fetchProfileData, allProfiles, friends, pendingFriends, addFriend } =
+  const { fetchProfileData, allProfiles, friends, addFriend } =
     useProfileStore();
   const [search, setSearch] = useState("");
   const [isAddable, setIsAddable] = useState(false);
@@ -22,7 +22,9 @@ export default function FriendCard() {
 
   useEffect(() => {
     if (friends) {
-      const isFriend = friends.some((friend) => friend.username === search);
+      const isFriend = friends.some(
+        (friend) => friend.profile.username === search
+      );
       const isValidProfile = allProfiles?.some(
         (profile) => profile.username === search
       );
@@ -41,7 +43,10 @@ export default function FriendCard() {
     )?.id;
     if (friendId) {
       const response = await addFriend(friendId);
-      if (!response) {
+      if (response) {
+        setSearch("");
+        setError(null);
+      } else {
         setError("Failed to add friend");
       }
     }
@@ -73,7 +78,7 @@ export default function FriendCard() {
           )}
         </Stack>
         {error && <Text c="red">{error}</Text>}
-        <FriendList friends={friends} pendingFriends={pendingFriends} />
+        <FriendList friends={friends} />
       </Stack>
     </Card>
   );
