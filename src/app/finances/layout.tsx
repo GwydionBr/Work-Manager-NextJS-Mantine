@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { Container } from "@mantine/core";
-import FinanceNavbar from "@/components/Navbar/FinanceNavbar";
 import { useFinanceStore } from "@/stores/financeStore";
+
+import { Box } from "@mantine/core";
+import FinanceNavbar from "@/components/Navbar/FinanceNavbar";
 
 export default function FinanceLayout({
   children,
@@ -17,9 +18,9 @@ export default function FinanceLayout({
   }, []);
   
   return (
-    <div >
+    <Box>
       <FinanceNavbar />
-      <Container ml="250px">{children}</Container>
-    </div>
+      <Box ml="250px">{children}</Box>
+    </Box>
   );
 }

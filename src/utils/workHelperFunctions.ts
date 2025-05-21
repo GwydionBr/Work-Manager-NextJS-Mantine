@@ -1,4 +1,8 @@
-import { RoundingAmount, RoundingDirection, Currency } from "@/types/settings.types";
+import {
+  RoundingAmount,
+  RoundingDirection,
+  Currency,
+} from "@/types/settings.types";
 import { shortCurrencies } from "@/constants/settings";
 
 export function roundTime(
@@ -101,7 +105,7 @@ export function getWeekNumber(date: Date) {
   const dayOfMonth = date.getDate();
   const firstDayOffset = firstDayOfMonth.getDay() || 7;
   const adjustedOffset = firstDayOffset - 1;
-  
+
   return Math.ceil((dayOfMonth + adjustedOffset) / 7);
 }
 
@@ -110,9 +114,9 @@ export function secondsToTimerFormat(seconds: number) {
   const minutes = Math.floor((seconds % 3600) / 60);
   const secondsLeft = seconds % 60;
 
-  const hoursStr = hours > 0 ? `${hours.toString().padStart(2, '0')}:` : '';
-  const minutesStr = minutes.toString().padStart(2, '0');
-  const secondsStr = secondsLeft.toString().padStart(2, '0');
+  const hoursStr = hours > 0 ? `${hours.toString().padStart(2, "0")}:` : "";
+  const minutesStr = minutes.toString().padStart(2, "0");
+  const secondsStr = secondsLeft.toString().padStart(2, "0");
 
   return `${hoursStr}${minutesStr}:${secondsStr}`;
 }

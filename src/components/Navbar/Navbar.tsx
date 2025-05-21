@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+
+import { Flex, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
 import {
   IconGauge,
   IconSettings,
@@ -10,9 +11,10 @@ import {
   IconDeviceDesktopAnalytics,
   IconUsersGroup,
 } from "@tabler/icons-react";
-import { Flex, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
+import Link from "next/link";
 import SchemeToggle from "@/components/Scheme/SchemeToggleButton";
 import paths from "@/utils/paths";
+
 import classes from "./Navbar.module.css";
 
 interface LinkData {
@@ -23,7 +25,11 @@ interface LinkData {
 
 const mainLinksData = [
   { icon: IconGauge, label: "Work", to: paths.work.workPage() },
-  { icon: IconBrandCashapp, label: "Finance", to: paths.finances.financesPage() },
+  {
+    icon: IconBrandCashapp,
+    label: "Finance",
+    to: paths.finances.financesPage(),
+  },
   {
     icon: IconDeviceDesktopAnalytics,
     label: "Analytics",

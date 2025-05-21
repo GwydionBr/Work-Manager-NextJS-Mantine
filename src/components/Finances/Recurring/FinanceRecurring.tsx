@@ -1,4 +1,5 @@
 import { Box, Text } from "@mantine/core";
+
 import classes from "./FinanceRecurring.module.css";
 
 export default function FinanceRecurring() {

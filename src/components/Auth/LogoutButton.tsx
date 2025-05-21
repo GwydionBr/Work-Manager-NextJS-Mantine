@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import { logout } from '@/actions';
-import { Button } from '@mantine/core'
-import { useDisclosure } from '@mantine/hooks';
+import { useDisclosure } from "@mantine/hooks";
+
+import { Button } from "@mantine/core";
+
+import { logout } from "@/actions";
 
 export default function LogoutButton() {
   const [loading, { open, close }] = useDisclosure(false);
@@ -14,8 +16,14 @@ export default function LogoutButton() {
   }
 
   return (
-    <Button color="red" onClick={handleLogout} variant="filled" loading={loading} disabled={loading}>
+    <Button
+      color="red"
+      onClick={handleLogout}
+      variant="filled"
+      loading={loading}
+      disabled={loading}
+    >
       Logout
     </Button>
-  )
+  );
 }

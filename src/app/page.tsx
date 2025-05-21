@@ -1,11 +1,12 @@
-import { Group, Text, Button, Stack } from "@mantine/core";
 import classes from "./Home.module.css";
-import Header from "@/components/Header/Header";
+
+import { Group, Text, Button, Stack, Box } from "@mantine/core";
 import Link from "next/link";
+import Header from "@/components/Header/Header";
 
 export default function HomePage() {
   return (
-    <div className={classes.mainHomeContainer}>
+    <Box className={classes.mainHomeContainer}>
       <Header headerTitle="Work Manager" />
       <Stack align="center" justify="center" h="100%">
         <Group>
@@ -15,6 +16,6 @@ export default function HomePage() {
           Click me
         </Button>
       </Stack>
-    </div>
+    </Box>
   );
 }

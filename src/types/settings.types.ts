@@ -14,4 +14,10 @@ export type Currency =
   | "VEF";
 
 export type CashFlowType = "income" | "expense";
-export type FinanceInterval = "day" | "week" | "month" | "1/4 year" | "1/2 year" | "year";
+export type FinanceInterval =
+  | "day"
+  | "week"
+  | "month"
+  | "1/4 year"
+  | "1/2 year"
+  | "year";

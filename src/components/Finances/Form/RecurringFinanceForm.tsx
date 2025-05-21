@@ -8,11 +8,12 @@ import {
   Stack,
   Button,
 } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
 
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
-import { DatePickerInput } from "@mantine/dates";
 import { currencies, financeIntervals } from "@/constants/settings";
+
 import { Currency, FinanceInterval } from "@/types/settings.types";
 
 const schema = z.object({

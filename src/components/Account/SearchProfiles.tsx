@@ -7,8 +7,11 @@ interface SearchProfilesProps {
   setSearch: (search: string) => void;
 }
 
-export default function SearchProfiles({ profiles, search, setSearch }: SearchProfilesProps) {
-
+export default function SearchProfiles({
+  profiles,
+  search,
+  setSearch,
+}: SearchProfilesProps) {
   return (
     <Autocomplete
       label="Search for a profile"

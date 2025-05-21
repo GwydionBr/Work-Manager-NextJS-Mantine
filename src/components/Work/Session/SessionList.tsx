@@ -1,12 +1,14 @@
 "use client";
 
-import { IconCalendar, IconClock, IconFolder } from "@tabler/icons-react";
 import { Accordion, Card, Group, ScrollArea, Text } from "@mantine/core";
+import { IconCalendar, IconClock, IconFolder } from "@tabler/icons-react";
 import SessionRow from "@/components/Work/Session/SessionRow";
-import type { Tables } from "@/types/db.types";
 
 import * as helper from "@/utils/workHelperFunctions";
+
+import type { Tables } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
+
 const Radius = 20;
 
 interface SessionListProps {

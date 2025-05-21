@@ -23,7 +23,7 @@ export default function WorkPage() {
   );
 
   return (
-    <Stack align="center" w="100%">
+    <Stack align="center" w="100%" px="xl">
       <Header
         headerTitle={activeProject.project.title}
         description={description}

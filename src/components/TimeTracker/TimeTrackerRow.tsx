@@ -1,5 +1,6 @@
 import { Paper, Text, PaperProps, Grid } from "@mantine/core";
 import { TimerState } from "@/stores/timeTrackerStore";
+
 import classes from "./TimeTracker.module.css";
 
 interface TimeTrackerRowProps extends PaperProps {

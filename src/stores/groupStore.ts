@@ -132,7 +132,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
             g.id === activeGroup.id ? newActiveGroup : g
           );
           set({ activeGroup: newActiveGroup, groups: newGroups });
-          
+
           const response = await actions.updateGroceryItem({
             item: {
               id,

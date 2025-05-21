@@ -1,8 +1,9 @@
 "use client";
 
-import { Plus } from "lucide-react";
-import { ActionIcon, Flex, Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+
+import { ActionIcon, Flex, Modal } from "@mantine/core";
+import { Plus } from "lucide-react";
 import GroupForm from "@/components/GroupManager/GroupForm";
 
 export default function NewGroupButton() {

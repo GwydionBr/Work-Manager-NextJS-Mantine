@@ -1,9 +1,16 @@
-import { Button, ButtonProps } from '@mantine/core';
-import { GithubIcon } from '@mantinex/dev-icons';
-import classes from './GithubButton.module.css';
+import { Button, ButtonProps } from "@mantine/core";
+import { IconBrandGithub } from "@tabler/icons-react";
 
-export default function GithubButton(props: ButtonProps & React.ComponentPropsWithoutRef<'button'>) {
+import classes from "./GithubButton.module.css";
+
+export default function GithubButton(
+  props: ButtonProps & React.ComponentPropsWithoutRef<"button">
+) {
   return (
-    <Button {...props} leftSection={<GithubIcon size={16} />} className={classes.githubButton} />
+    <Button
+      {...props}
+      leftSection={<IconBrandGithub size={16} />}
+      className={classes.githubButton}
+    />
   );
 }

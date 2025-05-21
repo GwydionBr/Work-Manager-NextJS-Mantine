@@ -1,4 +1,4 @@
-import { Button, Flex, Modal } from '@mantine/core';
+import { Button, Flex, Modal } from "@mantine/core";
 
 export default function DeleteSessionModal({
   opened,

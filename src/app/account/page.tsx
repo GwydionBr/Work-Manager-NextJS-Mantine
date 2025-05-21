@@ -1,6 +1,8 @@
+"use client";
+
 import classes from "./Account.module.css";
 
-import { Grid } from "@mantine/core";
+import { Box, Grid } from "@mantine/core";
 import Header from "@/components/Header/Header";
 import Profile from "@/components/Account/Profile";
 import FriendCard from "@/components/Account/FriendCard";
@@ -9,7 +11,7 @@ export default function AccountPage() {
 
 
   return (
-    <div className={classes.accountMainContainer}>
+    <Box className={classes.accountMainContainer}>
       <Header headerTitle="Account" />
       <Grid w="100%" px="xl">
         <Grid.Col span={{ base: 12, lg: 4, md: 6 }}>
@@ -19,6 +21,6 @@ export default function AccountPage() {
           <FriendCard />
         </Grid.Col>
       </Grid>
-    </div>
+    </Box>
   );
 }

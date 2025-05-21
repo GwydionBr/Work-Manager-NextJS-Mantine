@@ -1,12 +1,14 @@
-'use client';
+"use client";
 
-import { Plus } from 'lucide-react';
-import { ActionIcon, Drawer, Flex } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import SessionForm from '@/components/Work/Session/SessionForm';
-import { useWorkStore } from '@/stores/workManagerStore';
-import { TablesInsert } from '@/types/db.types';
-import { Currency } from '@/types/settings.types';
+import { useDisclosure } from "@mantine/hooks";
+import { useWorkStore } from "@/stores/workManagerStore";
+
+import { ActionIcon, Drawer, Flex } from "@mantine/core";
+import { IconPlus } from "@tabler/icons-react";
+import SessionForm from "@/components/Work/Session/SessionForm";
+
+import { TablesInsert } from "@/types/db.types";
+import { Currency } from "@/types/settings.types";
 
 export default function NewSessionButton() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -23,7 +25,10 @@ export default function NewSessionButton() {
       return;
     }
 
-    const endTime = new Date(values.start_time.getTime() + (values.active_seconds + values.paused_seconds) * 1000).toISOString();
+    const endTime = new Date(
+      values.start_time.getTime() +
+        (values.active_seconds + values.paused_seconds) * 1000
+    ).toISOString();
 
     const newSession: TablesInsert<"timerSession"> = {
       ...values,
@@ -31,7 +36,7 @@ export default function NewSessionButton() {
       user_id: activeProject.project.user_id,
       start_time: values.start_time.toISOString(),
       end_time: endTime,
-    }
+    };
 
     const success = await addTimerSession(newSession);
     if (success) {
@@ -41,15 +46,21 @@ export default function NewSessionButton() {
 
   return (
     <>
-      <Drawer opened={opened} onClose={close} title="Add Session" size="md" padding="md">
+      <Drawer
+        opened={opened}
+        onClose={close}
+        title="Add Session"
+        size="md"
+        padding="md"
+      >
         <Flex direction="column" gap="xl">
           <SessionForm
             initialValues={{
               start_time: new Date(),
               active_seconds: 0,
               paused_seconds: 0,
-              currency: activeProject?.project.currency || 'USD',
-              salary: activeProject?.project.salary || 0
+              currency: activeProject?.project.currency || "USD",
+              salary: activeProject?.project.salary || 0,
             }}
             onSubmit={handleSubmit}
             onCancel={close}
@@ -60,12 +71,12 @@ export default function NewSessionButton() {
 
       <ActionIcon
         variant="transparent"
-        aria-label="Edit project"
+        aria-label="Add session"
         onClick={open}
         size="sm"
         color="teal"
       >
-        <Plus />
+        <IconPlus />
       </ActionIcon>
     </>
   );

@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useGroupStore } from "@/stores/groupStore";
 
 import { TextInput, Stack, Button, Alert } from "@mantine/core";
-
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 
@@ -49,7 +48,11 @@ export default function GroupForm({ onClose }: GroupFormProps) {
         <Button type="submit" loading={isLoading}>
           Create
         </Button>
-        {error && <Alert variant="light" color="red">{error}</Alert>}
+        {error && (
+          <Alert variant="light" color="red">
+            {error}
+          </Alert>
+        )}
       </Stack>
     </form>
   );

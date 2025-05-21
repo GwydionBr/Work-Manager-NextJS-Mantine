@@ -1,11 +1,11 @@
-import { Avatar, Button, Card, Group, Popover, Text } from '@mantine/core';
-import classes from './UserCard.module.css';
+import { Avatar, Button, Card, Group, Popover, Text } from "@mantine/core";
 
+import classes from "./UserCard.module.css";
 
 const stats = [
-  { value: '34K', label: 'Followers' },
-  { value: '187', label: 'Follows' },
-  { value: '1.6K', label: 'Posts' },
+  { value: "34K", label: "Followers" },
+  { value: "187", label: "Follows" },
+  { value: "1.6K", label: "Posts" },
 ];
 
 export default function UserCard() {
@@ -23,9 +23,7 @@ export default function UserCard() {
   return (
     <Popover>
       <Popover.Target>
-        <Avatar
-          src="https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-9.png"
-        />
+        <Avatar src="https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-9.png" />
       </Popover.Target>
       <Popover.Dropdown>
         <Card withBorder padding="xl" radius="md" className={classes.card}>
@@ -33,7 +31,7 @@ export default function UserCard() {
             h={140}
             style={{
               backgroundImage:
-                'url(https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80)',
+                "url(https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80)",
             }}
           />
           <Avatar

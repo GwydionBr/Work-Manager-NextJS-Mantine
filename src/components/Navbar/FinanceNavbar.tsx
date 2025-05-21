@@ -1,10 +1,12 @@
 "use client";
 
+import { useFinanceStore } from "@/stores/financeStore";
+
 import { Group, ScrollArea, Stack, Text, Divider, Box } from "@mantine/core";
-import classes from "./Navbar.module.css";
 import FinanceSection from "../Finances/FinanceSection";
 import NewCashFlowButton from "../Finances/NewCashFlowButton";
-import { useFinanceStore } from "@/stores/financeStore";
+
+import classes from "./Navbar.module.css";
 
 export default function FinanceNavbar() {
   const { singleCashFlows } = useFinanceStore();

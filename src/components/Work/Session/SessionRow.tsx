@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useWorkStore } from '@/stores/workManagerStore';
-import { useDisclosure, useHover } from '@mantine/hooks';
+import { useWorkStore } from "@/stores/workManagerStore";
+import { useDisclosure, useHover } from "@mantine/hooks";
 
-import { IconClock } from '@tabler/icons-react';
-import { Card, Group, Stack, Text } from '@mantine/core';
-import DeleteButton from '@/components/Work/Buttons/DeleteButton';
-import EditButton from '@/components/Work/Buttons/EditButton';
-import DeleteSessionModal from '@/components/Work/Session/DeleteSessionModal';
-import TimerSessionDrawer from '@/components/Work/Session/TimerSessionDrawer';
-import type { Tables } from '@/types/db.types';
+import { Card, Group, Stack, Text } from "@mantine/core";
+import { IconClock } from "@tabler/icons-react";
+import DeleteButton from "@/components/Work/Buttons/DeleteButton";
+import EditButton from "@/components/Work/Buttons/EditButton";
+import DeleteSessionModal from "@/components/Work/Session/DeleteSessionModal";
+import TimerSessionDrawer from "@/components/Work/Session/TimerSessionDrawer";
 
-import * as helper from '@/utils/workHelperFunctions';
+import * as helper from "@/utils/workHelperFunctions";
 
+import type { Tables } from "@/types/db.types";
 
 interface SessionRowProps {
-  session: Tables<'timerSession'>;
+  session: Tables<"timerSession">;
 }
 
 export default function SessionRow({ session }: SessionRowProps) {
@@ -32,7 +32,9 @@ export default function SessionRow({ session }: SessionRowProps) {
     }
   }
 
-  const earnings = Number(((session.active_seconds * session.salary) / 3600).toFixed(2));
+  const earnings = Number(
+    ((session.active_seconds * session.salary) / 3600).toFixed(2)
+  );
 
   return (
     <>
@@ -43,7 +45,10 @@ export default function SessionRow({ session }: SessionRowProps) {
               <Group>
                 <IconClock size={14} color="gray" />
                 <Text>
-                  {helper.formatTimeSpan(new Date(session.start_time), new Date(session.end_time))}
+                  {helper.formatTimeSpan(
+                    new Date(session.start_time),
+                    new Date(session.end_time)
+                  )}
                 </Text>
               </Group>
               <Group>
@@ -62,7 +67,12 @@ export default function SessionRow({ session }: SessionRowProps) {
               </Group>
             )}
           </Group>
-          <Text>{helper.formatMoney(earnings, helper.getCurrencySymbol(session.currency))}</Text>
+          <Text>
+            {helper.formatMoney(
+              earnings,
+              helper.getCurrencySymbol(session.currency)
+            )}
+          </Text>
         </Group>
       </Card>
 

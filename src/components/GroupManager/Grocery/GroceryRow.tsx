@@ -1,6 +1,8 @@
 import { Group, Checkbox, CheckIcon, ActionIcon } from "@mantine/core";
-import { Tables } from "@/types/db.types";
 import { IconTrash } from "@tabler/icons-react";
+
+import { Tables } from "@/types/db.types";
+
 import classes from "./Grocery.module.css";
 
 interface GroceryRowProps {

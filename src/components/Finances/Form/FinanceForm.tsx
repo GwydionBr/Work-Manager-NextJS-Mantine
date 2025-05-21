@@ -19,13 +19,14 @@ import {
   IconReload,
   IconCircleDashedNumber1,
 } from "@tabler/icons-react";
-import { CashFlowType } from "@/types/settings.types";
 import SingleFinanceForm, {
   SingleFinanceFormValues,
 } from "./SingleFinanceForm";
 import RecurringFinanceForm, {
   RecurringFinanceFormValues,
 } from "./RecurringFinanceForm";
+
+import { CashFlowType } from "@/types/settings.types";
 
 import classes from "../../UI/Switch.module.css";
 

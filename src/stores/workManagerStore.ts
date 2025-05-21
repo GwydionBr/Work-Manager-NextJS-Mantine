@@ -1,24 +1,26 @@
-'use client';
+"use client";
 
-import { create } from 'zustand';
-import * as actions from '@/actions';
-import { Tables, TablesInsert, TablesUpdate } from '@/types/db.types';
+import { create } from "zustand";
+import * as actions from "@/actions";
+import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 
 export interface TimerProject {
-  project: Tables<'timerProject'>;
-  sessions: Tables<'timerSession'>[];
+  project: Tables<"timerProject">;
+  sessions: Tables<"timerSession">[];
 }
 
 interface WorkStore {
   projects: TimerProject[];
   activeProject: TimerProject | null;
-  timerSessions: Tables<'timerSession'>[];
+  timerSessions: Tables<"timerSession">[];
   fetchData: () => Promise<void>;
   setActiveProject: (id: string) => void;
-  addProject: (project: TablesInsert<'timerProject'>) => Promise<boolean>;
-  addTimerSession: (session: TablesInsert<'timerSession'>) => Promise<boolean>;
-  updateProject: (project: TablesUpdate<'timerProject'>) => Promise<boolean>;
-  updateTimerSession: (session: TablesUpdate<'timerSession'>) => Promise<boolean>;
+  addProject: (project: TablesInsert<"timerProject">) => Promise<boolean>;
+  addTimerSession: (session: TablesInsert<"timerSession">) => Promise<boolean>;
+  updateProject: (project: TablesUpdate<"timerProject">) => Promise<boolean>;
+  updateTimerSession: (
+    session: TablesUpdate<"timerSession">
+  ) => Promise<boolean>;
   deleteProject: (id: string) => Promise<boolean>;
   deleteTimerSession: (id: string) => Promise<boolean>;
 }
@@ -27,17 +29,19 @@ const updateStore = (
   set: any,
   get: any,
   updatedProjects: TimerProject[],
-  updatedSessions: Tables<'timerSession'>[]
+  updatedSessions: Tables<"timerSession">[]
 ) => {
   set({ projects: updatedProjects, timerSessions: updatedSessions });
   const activeProject = get().activeProject;
   if (activeProject) {
     set({
-      activeProject: updatedProjects.find((p) => p.project.id === activeProject.project.id) || null,
+      activeProject:
+        updatedProjects.find(
+          (p) => p.project.id === activeProject.project.id
+        ) || null,
     });
   }
 };
-
 
 export const useWorkStore = create<WorkStore>((set, get) => ({
   projects: [],
@@ -50,11 +54,15 @@ export const useWorkStore = create<WorkStore>((set, get) => ({
       actions.getAllSessions(),
     ]);
 
-    if (!projects.success || !timerSessions.success) {return};
+    if (!projects.success || !timerSessions.success) {
+      return;
+    }
 
     const projectsData = projects.data.map((project) => ({
       project,
-      sessions: timerSessions.data.filter((session) => session.project_id === project.id),
+      sessions: timerSessions.data.filter(
+        (session) => session.project_id === project.id
+      ),
     }));
 
     if (projectsData.length !== 0) {
@@ -66,15 +74,21 @@ export const useWorkStore = create<WorkStore>((set, get) => ({
 
   setActiveProject(id) {
     const project = get().projects.find((p) => p.project.id === id);
-    if (project) {set({ activeProject: project })};
+    if (project) {
+      set({ activeProject: project });
+    }
   },
 
   async updateProject(project) {
     const updatedProject = await actions.updateProject({ project });
-    if (!updatedProject.success) {return false};
+    if (!updatedProject.success) {
+      return false;
+    }
 
     const updatedProjects = get().projects.map((p) =>
-      p.project.id === project.id ? { project: updatedProject.data, sessions: p.sessions } : p
+      p.project.id === project.id
+        ? { project: updatedProject.data, sessions: p.sessions }
+        : p
     );
     updateStore(set, get, updatedProjects, get().timerSessions);
     return true;
@@ -82,7 +96,9 @@ export const useWorkStore = create<WorkStore>((set, get) => ({
 
   async deleteProject(id) {
     const deleted = await actions.deleteProject({ projectId: id });
-    if (!deleted.success) {return false};
+    if (!deleted.success) {
+      return false;
+    }
 
     const updatedProjects = get().projects.filter((p) => p.project.id !== id);
     updateStore(set, get, updatedProjects, get().timerSessions);
@@ -91,16 +107,23 @@ export const useWorkStore = create<WorkStore>((set, get) => ({
 
   async addProject(project) {
     const newProject = await actions.createProject({ project });
-    if (!newProject.success) {return false};
+    if (!newProject.success) {
+      return false;
+    }
 
-    const updatedProjects = [...get().projects, { project: newProject.data, sessions: [] }];
+    const updatedProjects = [
+      ...get().projects,
+      { project: newProject.data, sessions: [] },
+    ];
     updateStore(set, get, updatedProjects, get().timerSessions);
     return true;
   },
 
   async addTimerSession(session) {
     const newSession = await actions.createSession({ session });
-    if (!newSession.success) {return false};
+    if (!newSession.success) {
+      return false;
+    }
 
     const updatedSessions = [...get().timerSessions, newSession.data];
     const updatedProjects = get().projects.map((p) =>
@@ -114,7 +137,9 @@ export const useWorkStore = create<WorkStore>((set, get) => ({
 
   async deleteTimerSession(id) {
     const deleted = await actions.deleteSession({ sessionId: id });
-    if (!deleted.success) {return false};
+    if (!deleted.success) {
+      return false;
+    }
 
     const updatedSessions = get().timerSessions.filter((s) => s.id !== id);
     const updatedProjects = get().projects.map((p) => ({
@@ -127,14 +152,18 @@ export const useWorkStore = create<WorkStore>((set, get) => ({
 
   async updateTimerSession(session) {
     const updatedSession = await actions.updateSession({ session });
-    if (!updatedSession.success) {return false};
+    if (!updatedSession.success) {
+      return false;
+    }
 
     const updatedSessions = get().timerSessions.map((s) =>
       s.id === session.id ? updatedSession.data : s
     );
     const updatedProjects = get().projects.map((p) => ({
       project: p.project,
-      sessions: p.sessions.map((s) => (s.id === session.id ? updatedSession.data : s)),
+      sessions: p.sessions.map((s) =>
+        s.id === session.id ? updatedSession.data : s
+      ),
     }));
     updateStore(set, get, updatedProjects, updatedSessions);
     return true;

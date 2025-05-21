@@ -1,6 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
+import { useForm } from "@mantine/form";
+import { upperFirst, useToggle } from "@mantine/hooks";
+
 import {
   Anchor,
   Button,
@@ -13,23 +16,22 @@ import {
   Stack,
   Text,
   TextInput,
-} from '@mantine/core';
-import { useForm } from '@mantine/form';
-import { upperFirst, useToggle } from '@mantine/hooks';
-import { login, signup, signInWithGithub} from '@/actions';
-import GithubButton from '../SocialButtons/GithubButton';
+} from "@mantine/core";
+import GithubButton from "../SocialButtons/GithubButton";
 
-type AuthType = 'login' | 'register';
+import { login, signup, signInWithGithub } from "@/actions";
+
+type AuthType = "login" | "register";
 
 interface AuthenticationFormProps extends PaperProps {
   defaultType?: AuthType;
 }
 
 export default function AuthenticationForm({
-  defaultType = 'login',
+  defaultType = "login",
   ...props
 }: AuthenticationFormProps) {
-  const [type, toggle] = useToggle(['login', 'register'] as const);
+  const [type, toggle] = useToggle(["login", "register"] as const);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -38,7 +40,7 @@ export default function AuthenticationForm({
 
   async function handleSubmit(values: any) {
     setIsLoading(true);
-    if (type === 'login') {
+    if (type === "login") {
       await login(values);
     } else {
       await signup(values);
@@ -52,14 +54,17 @@ export default function AuthenticationForm({
 
   const form = useForm({
     initialValues: {
-      email: '',
-      name: '',
-      password: '',
+      email: "",
+      name: "",
+      password: "",
       terms: true,
     },
     validate: {
-      email: (val) => (/^\S+@\S+$/.test(val) ? null : 'Invalid email'),
-      password: (val) => (val.length <= 6 ? 'Password should include at least 6 characters' : null),
+      email: (val) => (/^\S+@\S+$/.test(val) ? null : "Invalid email"),
+      password: (val) =>
+        val.length <= 6
+          ? "Password should include at least 6 characters"
+          : null,
     },
   });
 
@@ -76,12 +81,14 @@ export default function AuthenticationForm({
       <Divider label="Or continue with email" labelPosition="center" my="lg" />
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack>
-          {type === 'register' && (
+          {type === "register" && (
             <TextInput
               label="Name"
               placeholder="Your name"
               value={form.values.name}
-              onChange={(event) => form.setFieldValue('name', event.currentTarget.value)}
+              onChange={(event) =>
+                form.setFieldValue("name", event.currentTarget.value)
+              }
               radius="md"
             />
           )}
@@ -90,8 +97,10 @@ export default function AuthenticationForm({
             label="Email"
             placeholder="hello@mantine.dev"
             value={form.values.email}
-            onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
-            error={form.errors.email && 'Invalid email'}
+            onChange={(event) =>
+              form.setFieldValue("email", event.currentTarget.value)
+            }
+            error={form.errors.email && "Invalid email"}
             radius="md"
           />
           <PasswordInput
@@ -99,25 +108,43 @@ export default function AuthenticationForm({
             label="Password"
             placeholder="Your password"
             value={form.values.password}
-            onChange={(event) => form.setFieldValue('password', event.currentTarget.value)}
-            error={form.errors.password && 'Password should include at least 6 characters'}
+            onChange={(event) =>
+              form.setFieldValue("password", event.currentTarget.value)
+            }
+            error={
+              form.errors.password &&
+              "Password should include at least 6 characters"
+            }
             radius="md"
           />
-          {type === 'register' && (
+          {type === "register" && (
             <Checkbox
               label="I accept terms and conditions"
               checked={form.values.terms}
-              onChange={(event) => form.setFieldValue('terms', event.currentTarget.checked)}
+              onChange={(event) =>
+                form.setFieldValue("terms", event.currentTarget.checked)
+              }
             />
           )}
         </Stack>
         <Group justify="space-between" mt="xl">
-          <Anchor component="button" type="button" c="dimmed" onClick={() => toggle()} size="xs">
-            {type === 'register'
-              ? 'Already have an account? Login'
+          <Anchor
+            component="button"
+            type="button"
+            c="dimmed"
+            onClick={() => toggle()}
+            size="xs"
+          >
+            {type === "register"
+              ? "Already have an account? Login"
               : "Don't have an account? Register"}
           </Anchor>
-          <Button type="submit" radius="xl" loading={isLoading} disabled={isLoading}>
+          <Button
+            type="submit"
+            radius="xl"
+            loading={isLoading}
+            disabled={isLoading}
+          >
             {upperFirst(type)}
           </Button>
         </Group>

@@ -1,25 +1,15 @@
 "use client";
 
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import { Group, Select } from "@mantine/core";
-import {
-  currencies,
-  roundingAmounts,
-  roundingModes,
-} from "@/constants/settings";
-import useSettingsStore from "@/stores/settingsStore";
-import {
-  Currency,
-  RoundingAmount,
-  RoundingDirection,
-} from "@/types/settings.types";
+import { roundingAmounts, roundingModes } from "@/constants/settings";
+
+import { RoundingAmount, RoundingDirection } from "@/types/settings.types";
 
 export default function SelectDefaultUnits() {
-  const {
-    roundingAmount,
-    roundingMode,
-    setRoundingAmount,
-    setRoundingMode,
-  } = useSettingsStore();
+  const { roundingAmount, roundingMode, setRoundingAmount, setRoundingMode } =
+    useSettingsStore();
 
   return (
     <Group>

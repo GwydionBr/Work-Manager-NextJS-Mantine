@@ -1,13 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useDisclosure } from '@mantine/hooks';
-import { useWorkStore } from '@/stores/workManagerStore';
+import { useState } from "react";
+import { useDisclosure } from "@mantine/hooks";
+import { useWorkStore } from "@/stores/workManagerStore";
 
-import { ActionIcon, Drawer, Flex } from '@mantine/core';
-import ProjectForm from '@/components/Work/Project/ProjectForm';
-import { Plus } from 'lucide-react';
-import { Currency } from '@/types/settings.types';
+import { ActionIcon, Drawer, Flex } from "@mantine/core";
+import { IconPlus } from "@tabler/icons-react";
+import ProjectForm from "@/components/Work/Project/ProjectForm";
+
+import { Currency } from "@/types/settings.types";
 
 export default function NewProjectButton() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -21,7 +22,7 @@ export default function NewProjectButton() {
   }) {
     setSubmitting(true);
     const success = await addProject({ ...values });
-    console.log('success', success);
+    console.log("success", success);
     if (success) {
       close();
     }
@@ -30,14 +31,20 @@ export default function NewProjectButton() {
 
   return (
     <>
-      <Drawer opened={opened} onClose={close} title="Add Project" size="md" padding="md">
+      <Drawer
+        opened={opened}
+        onClose={close}
+        title="Add Project"
+        size="md"
+        padding="md"
+      >
         <Flex direction="column" gap="xl">
           <ProjectForm
             initialValues={{
-              title: '',
-              description: '',
+              title: "",
+              description: "",
               salary: 0,
-              currency: '$',
+              currency: "$",
             }}
             onSubmit={handleSubmit}
             onCancel={close}
@@ -49,12 +56,12 @@ export default function NewProjectButton() {
 
       <ActionIcon
         variant="transparent"
-        aria-label="Edit project"
+        aria-label="Add project"
         onClick={open}
         size="sm"
         color="teal"
       >
-        <Plus />
+        <IconPlus />
       </ActionIcon>
     </>
   );

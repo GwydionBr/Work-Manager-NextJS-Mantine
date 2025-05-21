@@ -1,11 +1,13 @@
 "use client";
 
-import { AreaChart } from "@mantine/charts";
-import { Paper, Select, Stack } from "@mantine/core";
-import { useFinanceStore } from "@/stores/financeStore";
-import { FinanceInterval } from "@/types/settings.types";
-import { financeIntervals } from "@/constants/settings";
 import { useEffect, useState } from "react";
+import { useFinanceStore } from "@/stores/financeStore";
+
+import { Paper, Select, Stack } from "@mantine/core";
+import { AreaChart } from "@mantine/charts";
+import { financeIntervals } from "@/constants/settings";
+
+import { FinanceInterval } from "@/types/settings.types";
 
 interface ChartData {
   date: string;
@@ -52,7 +54,6 @@ export default function OverviewChart() {
         onChange={(value) => setInterval(value as FinanceInterval)}
         data={financeIntervals}
       />
-      
     </Stack>
   );
 }

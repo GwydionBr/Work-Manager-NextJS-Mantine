@@ -1,6 +1,8 @@
-import { Container, Text, Stack, ScrollArea, Box } from "@mantine/core";
-import classes from "./Finances.module.css";
+import { Container, Text, ScrollArea, Box } from "@mantine/core";
+
 import { Tables } from "@/types/db.types";
+
+import classes from "./Finances.module.css";
 
 interface FinanceSectionProps {
   title: string;

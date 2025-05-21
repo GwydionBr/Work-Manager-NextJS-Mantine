@@ -148,9 +148,7 @@ export const useFinanceStore = create<FinanceStore>((set, get) => ({
     });
     if (!deleted.success) return false;
 
-    const updatedSingleCashFlows = singleCashFlows.filter(
-      (c) => c.id !== id
-    );
+    const updatedSingleCashFlows = singleCashFlows.filter((c) => c.id !== id);
 
     set({
       singleCashFlows: updatedSingleCashFlows,

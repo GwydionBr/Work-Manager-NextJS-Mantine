@@ -2,21 +2,20 @@
 
 import { useGroupStore } from "@/stores/groupStore";
 
-import { Container, Loader } from "@mantine/core";
-import Header from "@/components/Header/Header";
-import { Tabs, useMantineColorScheme, Text } from "@mantine/core";
+import classes from "./GroupManager.module.css";
+
+import { Box, Loader, Tabs, Text } from "@mantine/core";
 import { IconCalendar, IconList, IconChecklist } from "@tabler/icons-react";
+import Header from "@/components/Header/Header";
 import GroceryList from "@/components/GroupManager/Grocery/GroceryList";
 import GroupInitializer from "@/components/GroupManager/GroupInitializer";
 
-import classes from "./GroupManager.module.css";
 
 export default function GroupManagerPage() {
-  const { colorScheme } = useMantineColorScheme();
   const { isLoading, groups, activeGroup } = useGroupStore();
 
   return (
-    <Container className={classes.groupManagerMainContainer}>
+    <Box className={classes.groupManagerMainContainer} px="xl">
       <Header headerTitle={activeGroup?.title || "Group Manager"} />
       {isLoading && <Loader />}
       {!isLoading && groups.length > 0 && (
@@ -52,6 +51,6 @@ export default function GroupManagerPage() {
         </Tabs>
       )}
       {!isLoading && groups.length === 0 && <GroupInitializer />}
-    </Container>
+    </Box>
   );
 }

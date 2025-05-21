@@ -19,7 +19,7 @@ export const currencies: { value: Currency; label: string }[] = [
   { value: "VEF", label: "Bs (Venezuelan Bolívar)" },
 ];
 
-export const shortCurrencies : { value: Currency; label: string }[] = [
+export const shortCurrencies: { value: Currency; label: string }[] = [
   { value: "USD", label: "$" },
   { value: "EUR", label: "€" },
   { value: "GBP", label: "£" },
@@ -55,4 +55,3 @@ export const financeIntervals: { value: FinanceInterval; label: string }[] = [
   { value: "1/2 year", label: "Half Year" },
   { value: "year", label: "Year" },
 ];
-

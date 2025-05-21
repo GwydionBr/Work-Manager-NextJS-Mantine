@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { Container } from "@mantine/core";
-import ProjectNavbar from "@/components/Navbar/ProjectNavbar";
 import { useWorkStore } from "@/stores/workManagerStore";
+
+import { Box } from "@mantine/core";
+import ProjectNavbar from "@/components/Navbar/ProjectNavbar";
 
 export default function WorkLayout({
   children,
@@ -17,9 +18,9 @@ export default function WorkLayout({
   }, []);
 
   return (
-    <div>
+    <Box>
       <ProjectNavbar />
-      <Container ml="200px">{children}</Container>
-    </div>
+      <Box ml="200px">{children}</Box>
+    </Box>
   );
 }

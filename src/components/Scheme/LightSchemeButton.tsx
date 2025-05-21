@@ -1,5 +1,6 @@
 import { IconSun } from "@tabler/icons-react";
 import { ActionIcon } from "@mantine/core";
+
 import classes from "./Scheme.module.css";
 
 interface LightSchemeButtonProps {
@@ -11,7 +12,6 @@ export default function LightSchemeButton({
   onClick,
   active,
 }: LightSchemeButtonProps) {
-
   return (
     <ActionIcon
       onClick={onClick}

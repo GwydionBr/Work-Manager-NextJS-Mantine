@@ -1,5 +1,6 @@
 import { IconMoon } from "@tabler/icons-react";
 import { ActionIcon } from "@mantine/core";
+
 import classes from "./Scheme.module.css";
 
 interface DarkSchemeButtonProps {

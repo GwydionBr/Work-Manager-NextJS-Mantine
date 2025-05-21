@@ -1,11 +1,13 @@
-'use client';
+"use client";
 
-import { Box, Group, ScrollArea, Text } from '@mantine/core';
-import { useTimeTracker } from '@/stores/timeTrackerStore';
-import { useWorkStore, type TimerProject } from '@/stores/workManagerStore';
-import NewProjectButton from '../Work/Project/NewProjectButton';
-import classes from './Navbar.module.css';
-import { useEffect } from 'react';
+import { useEffect } from "react";
+import { useTimeTracker } from "@/stores/timeTrackerStore";
+import { useWorkStore, type TimerProject } from "@/stores/workManagerStore";
+
+import { Box, Group, ScrollArea, Text } from "@mantine/core";
+import NewProjectButton from "../Work/Project/NewProjectButton";
+
+import classes from "./Navbar.module.css";
 
 export default function ProjectNavbar() {
   const { projects, activeProject, setActiveProject } = useWorkStore();
@@ -22,7 +24,6 @@ export default function ProjectNavbar() {
       );
     }
   }, [activeProject]);
-  
 
   function handleSelection(timerProject: TimerProject) {
     setActiveProject(timerProject.project.id);
@@ -31,7 +32,9 @@ export default function ProjectNavbar() {
   const links = projects.map((timerProject) => (
     <Box
       className={classes.link}
-      data-active={timerProject.project.id === activeProject?.project.id || undefined}
+      data-active={
+        timerProject.project.id === activeProject?.project.id || undefined
+      }
       key={timerProject.project.id}
       onClick={() => handleSelection(timerProject)}
     >

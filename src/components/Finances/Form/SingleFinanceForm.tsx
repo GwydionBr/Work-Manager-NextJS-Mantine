@@ -5,9 +5,10 @@ import { useForm } from "@mantine/form";
 import { TextInput, NumberInput, Select, Stack, Button } from "@mantine/core";
 
 import { z } from "zod";
-import { zodResolver } from "mantine-form-zod-resolver";
 import { DatePickerInput } from "@mantine/dates";
+import { zodResolver } from "mantine-form-zod-resolver";
 import { currencies } from "@/constants/settings";
+
 import { Currency } from "@/types/settings.types";
 
 const schema = z.object({

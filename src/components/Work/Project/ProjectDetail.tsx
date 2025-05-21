@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import type { Tables } from '@/types/db.types';
+import type { Tables } from "@/types/db.types";
 
 type ProjectDetailProps = {
-  project: Tables<'timerProject'> | null;
+  project: Tables<"timerProject"> | null;
 };
 
 export default function ProjectDetail({ project }: ProjectDetailProps) {

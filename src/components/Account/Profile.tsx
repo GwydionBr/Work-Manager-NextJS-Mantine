@@ -1,4 +1,5 @@
 import { useProfileStore } from "@/stores/profileStore";
+
 import { Card, Loader, Stack, Text } from "@mantine/core";
 import LogoutButton from "../Auth/LogoutButton";
 

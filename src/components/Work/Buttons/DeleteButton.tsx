@@ -1,15 +1,15 @@
-import { Trash2 } from 'lucide-react';
-import { ActionIcon } from '@mantine/core';
-
+import { ActionIcon } from "@mantine/core";
+import { IconTrash } from "@tabler/icons-react";
 
 interface EditButtonProps {
   onClick: () => void;
+  size?: number;
 }
 
-export default function DeleteButton({ onClick }: EditButtonProps) {
+export default function DeleteButton({ onClick, size = 20 }: EditButtonProps) {
   return (
     <ActionIcon onClick={onClick} color="red" variant="transparent">
-      <Trash2 size={20} />
+      <IconTrash size={size} />
     </ActionIcon>
   );
 }

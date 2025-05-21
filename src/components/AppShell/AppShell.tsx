@@ -1,13 +1,15 @@
 "use client";
 
-import { AppShell, Burger, Group, Stack, ActionIcon } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import Navbar from "@/components/Navbar/Navbar";
-import classes from "./AppShell.module.css";
-import TimeTrackerComponent from "../TimeTracker/TimeTrackerComponent";
 import { usePathname } from "next/navigation";
 import { useSettingsStore } from "@/stores/settingsStore";
+
+import classes from "./AppShell.module.css";
+
+import { AppShell, Burger, Group, Stack, ActionIcon } from "@mantine/core";
 import { IconArrowBarLeft } from "@tabler/icons-react";
+import Navbar from "@/components/Navbar/Navbar";
+import TimeTrackerComponent from "../TimeTracker/TimeTrackerComponent";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { isAsideOpen, setIsAsideOpen } = useSettingsStore();

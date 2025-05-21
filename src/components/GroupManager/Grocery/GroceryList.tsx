@@ -1,26 +1,33 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useGroupStore } from "@/stores/groupStore";
+
 import { Divider, Stack } from "@mantine/core";
 import GroceryRow from "./GroceryRow";
 import GroceryInput from "./GroceryInput";
-import { useGroupStore } from "@/stores/groupStore";
+
 import { Tables } from "@/types/db.types";
 
 export default function GroceryList() {
-  const { addGroceryItem, activeGroup, toggleGroceryItem, deleteGroceryItem } = useGroupStore();
+  const { addGroceryItem, activeGroup, toggleGroceryItem, deleteGroceryItem } =
+    useGroupStore();
 
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [uncheckedItems, setUncheckedItems] = useState<Tables<"grocery_item">[]>(
+  const [uncheckedItems, setUncheckedItems] = useState<
+    Tables<"grocery_item">[]
+  >([]);
+  const [checkedItems, setCheckedItems] = useState<Tables<"grocery_item">[]>(
     []
   );
-  const [checkedItems, setCheckedItems] = useState<Tables<"grocery_item">[]>([]);
 
   useEffect(() => {
     if (activeGroup) {
-      setUncheckedItems(activeGroup.groceryItems.filter((item) => !item.checked));
+      setUncheckedItems(
+        activeGroup.groceryItems.filter((item) => !item.checked)
+      );
       setCheckedItems(activeGroup.groceryItems.filter((item) => item.checked));
     }
   }, [activeGroup]);
@@ -54,7 +61,7 @@ export default function GroceryList() {
         error={error}
         onCloseError={() => setError(null)}
       />
-      <Stack w="100%" >
+      <Stack w="100%">
         {uncheckedItems.map((item) => (
           <GroceryRow
             key={item.id}

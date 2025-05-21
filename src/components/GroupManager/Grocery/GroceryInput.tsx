@@ -1,6 +1,10 @@
-import { ActionIcon, Alert, Group, Stack, TextInput } from "@mantine/core";
+"use client";
+
 import { useForm } from "@mantine/form";
+
+import { ActionIcon, Alert, Group, Stack, TextInput } from "@mantine/core";
 import { IconX, IconPlus } from "@tabler/icons-react";
+
 import classes from "./Grocery.module.css";
 
 interface GroceryInputProps {
@@ -42,8 +46,8 @@ export default function GroceryInput({
                   disabled={!value}
                   variant="transparent"
                   color="red"
-              >
-                <IconX />
+                >
+                  <IconX />
                 </ActionIcon>
               )
             }

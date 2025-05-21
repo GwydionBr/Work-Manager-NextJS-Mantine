@@ -1,8 +1,10 @@
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import { Group, Select } from "@mantine/core";
 
 import { currencies } from "@/constants/settings";
-import useSettingsStore from "@/stores/settingsStore";
 import { Currency } from "@/types/settings.types";
+
 export default function SelectCurrencies() {
   const { currency, financeCurrency, setCurrency, setFinanceCurrency } = useSettingsStore();
 

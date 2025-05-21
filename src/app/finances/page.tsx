@@ -1,12 +1,14 @@
-import FinancesTab from "@/components/Finances/FinancesTab";
 import classes from "./Finances.module.css";
+
+import { Box } from "@mantine/core";
+import FinancesTab from "@/components/Finances/FinancesTab";
 import Header from "@/components/Header/Header";
 
 export default function FinancesPage() {
   return (
-    <div className={classes.financesMainContainer}>
+    <Box className={classes.financesMainContainer} px="xl">
       <Header headerTitle="Finances" />
       <FinancesTab />
-    </div>
+    </Box>
   );
 }

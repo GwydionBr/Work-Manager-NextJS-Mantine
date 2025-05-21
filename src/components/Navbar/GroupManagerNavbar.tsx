@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import { Group, ScrollArea, Stack, Text, Box, Select } from "@mantine/core";
 import { useGroupStore } from "@/stores/groupStore";
-import classes from "./Navbar.module.css";
+
+import { Group, ScrollArea, Stack, Text, Box, Select } from "@mantine/core";
 import NewGroupButton from "../GroupManager/NewGroupButton";
+
+import classes from "./Navbar.module.css";
 
 export default function FinanceNavbar() {
   const { groups, activeGroup, fetchGroupData, setActiveGroup } =
