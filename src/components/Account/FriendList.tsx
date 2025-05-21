@@ -1,5 +1,7 @@
+import { Grid, Stack, Text } from "@mantine/core";
+import FriendsTable from "./FriendsTable";
+
 import { Tables } from "@/types/db.types";
-import { Stack, Text } from "@mantine/core";
 
 interface FriendListProps {
   pendingFriends: Tables<"profiles">[];
@@ -11,19 +13,19 @@ export default function FriendList({
   pendingFriends,
 }: FriendListProps) {
   return (
-    <Stack>
-      <Text>Friends:</Text>
-      {friends.length === 0 ? (
-        <Text>No friends found</Text>
-      ) : (
-        friends.map((friend) => <div key={friend.id}>{friend.username}</div>)
-      )}
-
-      <Text>Pending Friends:</Text>
-      {pendingFriends.map((friend) => (
-        <div key={friend.id}>{friend.username}</div>
-      ))}
-      {pendingFriends.length === 0 && <Text>No pending friends found</Text>}
-    </Stack>
+    <Grid w="100%">
+      <Grid.Col span={7}>
+        <Stack>
+          <Text>Friends:</Text>
+          <FriendsTable friends={friends} />
+        </Stack>
+      </Grid.Col>
+      <Grid.Col span={5}>
+        <Stack>
+          <Text>Pending Friends:</Text>
+          <FriendsTable friends={pendingFriends} />
+        </Stack>
+      </Grid.Col>
+    </Grid>
   );
 }

@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import { useProfileStore } from "@/stores/profileStore";
 
-import { Button, Text } from "@mantine/core";
+import { Autocomplete, Button, Stack, Text } from "@mantine/core";
 import { Card } from "@mantine/core";
-import SearchProfiles from "./SearchProfiles";
 import FriendList from "./FriendList";
+import { IconSearch } from "@tabler/icons-react";
 
 export default function FriendCard() {
   const { fetchProfileData, allProfiles, friends, pendingFriends, addFriend } =
@@ -49,23 +49,32 @@ export default function FriendCard() {
   }
 
   return (
-    <Card>
-      <SearchProfiles
-        profiles={allProfiles}
-        search={search}
-        setSearch={setSearch}
-      />
-      {isAddable && (
-        <Button
-          loading={isLoading}
-          disabled={isLoading}
-          onClick={handleAddFriend}
-        >
-          Add Friend
-        </Button>
-      )}
-      {error && <Text c="red">{error}</Text>}
-      <FriendList friends={friends} pendingFriends={pendingFriends} />
+    <Card withBorder radius="md" shadow="md">
+      <Stack gap="md" mt="md">
+        <Stack maw={500}>
+          <Autocomplete
+            placeholder="Search for a profile"
+            data={allProfiles?.map((profile) => profile.username) || []}
+            value={search}
+            onChange={(e) => setSearch(e)}
+            leftSection={<IconSearch size={18} />}
+            radius="xl"
+            mx="md"
+          />
+          {isAddable && (
+            <Button
+              loading={isLoading}
+              disabled={isLoading}
+              onClick={handleAddFriend}
+              mx="xl"
+            >
+              Add Friend
+            </Button>
+          )}
+        </Stack>
+        {error && <Text c="red">{error}</Text>}
+        <FriendList friends={friends} pendingFriends={pendingFriends} />
+      </Stack>
     </Card>
   );
 }

@@ -15,7 +15,7 @@ export default function Profile() {
   }
 
   return (
-    <Card>
+    <Card withBorder radius="md" shadow="md">
       <Stack>
         <Text>Username: {profile.username}</Text>
         <Text>Email: {profile.email}</Text>

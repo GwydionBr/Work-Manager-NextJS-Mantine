@@ -13,11 +13,11 @@ export default function AccountPage() {
   return (
     <Box className={classes.accountMainContainer}>
       <Header headerTitle="Account" />
-      <Grid w="100%" px="xl">
-        <Grid.Col span={{ base: 12, lg: 4, md: 6 }}>
+      <Grid w="100%" px="xl" justify="center">
+        <Grid.Col span={{ base: 6 }} >
           <Profile />
         </Grid.Col>
-        <Grid.Col span={{ base: 12, lg: 8, md: 6 }}>
+        <Grid.Col span={{ base: 12 }}>
           <FriendCard />
         </Grid.Col>
       </Grid>
