@@ -9,22 +9,23 @@ export type TableNames =
   | "settings"
   | "single_cash_flow"
   | "timerProject"
-  | "timerSession";
+  | "timerSession"
+  | "friendships";
 
 // Response after an error occurs
-interface ErrorResponse {
+export interface ErrorResponse {
   success: false;
   data: null;
   error: string;
 }
 
-interface SuccessResponseList<T extends TableNames> {
+export interface SuccessResponseList<T extends TableNames> {
   success: true;
   data: Tables<T>[];
   error: null;
 }
 
-interface SuccessResponseSingle<T extends TableNames> {
+export interface SuccessResponseSingle<T extends TableNames> {
   success: true;
   data: Tables<T>;
   error: null;
@@ -39,7 +40,6 @@ export type ApiResponseSingle<T extends TableNames> =
   | SuccessResponseSingle<T>
   | ErrorResponse;
 
-  
 export type DeleteResponse =
   | { success: true; data: null; error: null }
   | ErrorResponse;

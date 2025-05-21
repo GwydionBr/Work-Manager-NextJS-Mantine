@@ -63,9 +63,18 @@ export {
 
 // Profile Actions
 export {
-  getAllProfiles,
+  getOtherProfiles as getAllProfiles,
   getProfile,
   createProfile,
   updateProfile,
   deleteProfile,
 } from "./profile/profileActions";
+
+// Friendship Actions
+export {
+  getAllFriendships,
+  createFriendship,
+  acceptFriendship,
+  declineFriendship,
+  deleteFriendship,
+} from "./profile/friendshipActions";

@@ -34,6 +34,45 @@ export type Database = {
   };
   public: {
     Tables: {
+      friendships: {
+        Row: {
+          addressee_id: string;
+          created_at: string;
+          id: string;
+          requester_id: string;
+          status: Database["public"]["Enums"]["status"];
+        };
+        Insert: {
+          addressee_id?: string;
+          created_at?: string;
+          id?: string;
+          requester_id?: string;
+          status?: Database["public"]["Enums"]["status"];
+        };
+        Update: {
+          addressee_id?: string;
+          created_at?: string;
+          id?: string;
+          requester_id?: string;
+          status?: Database["public"]["Enums"]["status"];
+        };
+        Relationships: [
+          {
+            foreignKeyName: "friendships_addressee_id_fkey";
+            columns: ["addressee_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "friendships_requester_id_fkey";
+            columns: ["requester_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       grocery_item: {
         Row: {
           active: boolean;
@@ -44,7 +83,6 @@ export type Database = {
           id: string;
           title: string;
           unit: Database["public"]["Enums"]["amountUnits"];
-          user_id: string;
         };
         Insert: {
           active?: boolean;
@@ -55,7 +93,6 @@ export type Database = {
           id?: string;
           title: string;
           unit?: Database["public"]["Enums"]["amountUnits"];
-          user_id?: string;
         };
         Update: {
           active?: boolean;
@@ -66,7 +103,6 @@ export type Database = {
           id?: string;
           title?: string;
           unit?: Database["public"]["Enums"]["amountUnits"];
-          user_id?: string;
         };
         Relationships: [
           {
@@ -362,6 +398,7 @@ export type Database = {
         | "year";
       roundingAmount: "s" | "min" | "1/4h" | "1/2h" | "h";
       roundingDirection: "up" | "down" | "nearest";
+      status: "pending" | "accepted" | "declined";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -505,6 +542,7 @@ export const Constants = {
       ],
       roundingAmount: ["s", "min", "1/4h", "1/2h", "h"],
       roundingDirection: ["up", "down", "nearest"],
+      status: ["pending", "accepted", "declined"],
     },
   },
 } as const;

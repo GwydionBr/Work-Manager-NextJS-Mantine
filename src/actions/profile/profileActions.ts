@@ -8,7 +8,7 @@ import {
   DeleteResponse,
 } from "@/types/action.types";
 
-export async function getAllProfiles(): Promise<ApiResponseList<"profiles">> {
+export async function getOtherProfiles(): Promise<ApiResponseList<"profiles">> {
   const supabase = await createClient();
 
   const {
@@ -16,14 +16,13 @@ export async function getAllProfiles(): Promise<ApiResponseList<"profiles">> {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return {
-      data: null,
-      error: "User not found",
-      success: false,
-    };
+    return { success: false, data: null, error: "User not found" };
   }
 
-  const { data, error } = await supabase.from("profiles").select("*");
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .not("id", "eq", user.id);
 
   if (error) {
     return { success: false, data: null, error: error.message };
