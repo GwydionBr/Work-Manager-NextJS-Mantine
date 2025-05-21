@@ -83,6 +83,16 @@ export async function createGroup({
     return { success: false, data: null, error: error.message };
   }
 
+  const { error: groupMemberError } = await supabase
+    .from("group_member")
+    .insert({ group_id: data.id, user_id: user.id, status: "accepted" })
+    .select()
+    .single();
+
+  if (groupMemberError) {
+    return { success: false, data: null, error: groupMemberError.message };
+  }
+
   return { success: true, data, error: null };
 }
 
