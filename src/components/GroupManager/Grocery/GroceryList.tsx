@@ -7,8 +7,9 @@ import GroceryInput from "./GroceryInput";
 import { useGroupStore } from "@/stores/groupStore";
 
 export default function GroceryList() {
+  const { addGroceryItem, activeGroup, toggleGroceryItem } = useGroupStore();
+
   const [inputValue, setInputValue] = useState("");
-  const { addGroceryItem, activeGroup } = useGroupStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,7 +31,11 @@ export default function GroceryList() {
   }
 
   const GroceryRows = activeGroup?.groceryItems.map((item) => (
-    <GroceryRow key={item.id} item={item} />
+    <GroceryRow
+      key={item.id}
+      item={item}
+      handleCheckChange={toggleGroceryItem}
+    />
   ));
 
   return (

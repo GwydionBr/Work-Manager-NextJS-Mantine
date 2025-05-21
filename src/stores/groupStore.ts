@@ -24,6 +24,7 @@ interface GroupActions {
     groceryItem: TablesInsert<"grocery_item">
   ) => Promise<boolean>;
   setActiveGroup: (id: string) => void;
+  toggleGroceryItem: (id: string, checked: boolean) => Promise<boolean>;
 }
 
 export const useGroupStore = create<GroupState & GroupActions>()(
@@ -111,6 +112,38 @@ export const useGroupStore = create<GroupState & GroupActions>()(
           return true;
         }
       }
+      return false;
+    },
+    toggleGroceryItem: async (id: string, checked: boolean) => {
+      const { activeGroup, groups } = get();
+
+      if (activeGroup) {
+        const item = activeGroup.groceryItems.find((i) => i.id === id);
+        if (item) {
+          // Update active and other groups
+          const newActiveGroup = {
+            ...activeGroup,
+            groceryItems: activeGroup.groceryItems.map((i) =>
+              i.id === id ? { ...i, checked } : i
+            ),
+          };
+          const newGroups = groups.map((g) =>
+            g.id === activeGroup.id ? newActiveGroup : g
+          );
+          set({ activeGroup: newActiveGroup, groups: newGroups });
+          
+          const response = await actions.updateGroceryItem({
+            item: {
+              id,
+              checked,
+            },
+          });
+          if (response.success) {
+            return true;
+          }
+        }
+      }
+      // TODO: Handle error and retry updating the item
       return false;
     },
   })
