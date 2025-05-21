@@ -8,7 +8,7 @@ import { useGroupStore } from "@/stores/groupStore";
 import { Tables } from "@/types/db.types";
 
 export default function GroceryList() {
-  const { addGroceryItem, activeGroup, toggleGroceryItem } = useGroupStore();
+  const { addGroceryItem, activeGroup, toggleGroceryItem, deleteGroceryItem } = useGroupStore();
 
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -60,7 +60,7 @@ export default function GroceryList() {
             key={item.id}
             item={item}
             handleCheckChange={toggleGroceryItem}
-            onDelete={() => console.log("delete")}
+            onDelete={() => deleteGroceryItem(item.id)}
           />
         ))}
         <Divider />
@@ -69,7 +69,7 @@ export default function GroceryList() {
             key={item.id}
             item={item}
             handleCheckChange={toggleGroceryItem}
-            onDelete={() => console.log("delete")}
+            onDelete={() => deleteGroceryItem(item.id)}
           />
         ))}
       </Stack>

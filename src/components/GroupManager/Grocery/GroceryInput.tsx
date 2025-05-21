@@ -36,14 +36,16 @@ export default function GroceryInput({
           <TextInput
             style={{ flexGrow: 1 }}
             leftSection={
-              <ActionIcon
-                onClick={clearInput}
-                disabled={!value}
-                variant="transparent"
-                color="red"
+              value !== "" && (
+                <ActionIcon
+                  onClick={clearInput}
+                  disabled={!value}
+                  variant="transparent"
+                  color="red"
               >
                 <IconX />
-              </ActionIcon>
+                </ActionIcon>
+              )
             }
             placeholder={placeholder}
             className={classes.groceryInput}
