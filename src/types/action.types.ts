@@ -40,6 +40,6 @@ export type ApiResponseSingle<T extends TableNames> =
   | SuccessResponseSingle<T>
   | ErrorResponse;
 
-export type DeleteResponse =
+export type SimpleResponse =
   | { success: true; data: null; error: null }
   | ErrorResponse;

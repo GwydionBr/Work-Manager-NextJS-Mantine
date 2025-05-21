@@ -5,7 +5,7 @@ import { TablesInsert, TablesUpdate } from "@/types/db.types";
 import {
   ApiResponseList,
   ApiResponseSingle,
-  DeleteResponse,
+  SimpleResponse,
 } from "@/types/action.types";
 
 export async function getOtherProfiles(): Promise<ApiResponseList<"profiles">> {
@@ -115,7 +115,7 @@ export async function deleteProfile({
   profileId,
 }: {
   profileId: string;
-}): Promise<DeleteResponse> {
+}): Promise<SimpleResponse> {
   const supabase = await createClient();
   const { error } = await supabase
     .from("profiles")

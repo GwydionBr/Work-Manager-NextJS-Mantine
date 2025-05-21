@@ -5,7 +5,7 @@ import { TablesInsert, TablesUpdate } from "@/types/db.types";
 import {
   ApiResponseList,
   ApiResponseSingle,
-  DeleteResponse,
+  SimpleResponse,
 } from "@/types/action.types";
 
 export async function getGroceryItemsByGroup({
@@ -103,7 +103,7 @@ export async function deleteGroceryItem({
   itemId,
 }: {
   itemId: string;
-}): Promise<DeleteResponse> {
+}): Promise<SimpleResponse> {
   const supabase = await createClient();
   const { error } = await supabase
     .from("grocery_item")

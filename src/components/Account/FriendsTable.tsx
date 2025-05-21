@@ -1,16 +1,46 @@
-import { Box, Table, Text } from "@mantine/core";
+import { ActionIcon, Box, Table } from "@mantine/core";
 
-import { Tables } from "@/types/db.types";
+import { Friend } from "@/stores/profileStore";
 
 interface FriendsTableProps {
-  friends: Tables<"profiles">[];
+  friends: Friend[];
+  emptyMessage?: React.ReactNode;
+  icon?: React.ReactNode;
+  secondaryIcon?: React.ReactNode;
+  iconAction?: (id: string) => void;
+  secondaryIconAction?: (id: string) => void;
 }
 
-export default function FriendsTable({ friends }: FriendsTableProps) {
+export default function FriendsTable({
+  friends,
+  emptyMessage,
+  icon,
+  secondaryIcon,
+  iconAction,
+  secondaryIconAction,
+}: FriendsTableProps) {
   const rows = friends.map((friend) => (
-    <Table.Tr key={friend.id}>
-      <Table.Td>{friend.username}</Table.Td>
-      <Table.Td>{friend.email}</Table.Td>
+    <Table.Tr key={friend.frienshipId}>
+      <Table.Td>{friend.profile.username}</Table.Td>
+      <Table.Td>{friend.profile.email}</Table.Td>
+      {icon && (
+        <Table.Td>
+          <ActionIcon
+            variant="transparent"
+            onClick={() => iconAction?.(friend.frienshipId)}
+          >
+            {icon}
+          </ActionIcon>
+          {secondaryIcon && (
+            <ActionIcon
+              variant="transparent"
+              onClick={() => secondaryIconAction?.(friend.frienshipId)}
+            >
+              {secondaryIcon}
+            </ActionIcon>
+          )}
+        </Table.Td>
+      )}
     </Table.Tr>
   ));
 
@@ -25,7 +55,11 @@ export default function FriendsTable({ friends }: FriendsTableProps) {
         </Table.Thead>
         <Table.Tbody>{rows}</Table.Tbody>
       </Table>
-      {friends.length === 0 && <Text c="red" p="md" ta="center">Add some friends to see them here</Text>}
+      {friends.length === 0 && (
+        <Box p="md" ta="center">
+          {emptyMessage || "No friends found"}
+        </Box>
+      )}
     </Box>
   );
 }

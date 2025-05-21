@@ -5,7 +5,7 @@ import { createClient } from "@/utils/supabase/server";
 import { Tables, TablesInsert } from "@/types/db.types";
 import {
   ApiResponseSingle,
-  DeleteResponse,
+  SimpleResponse,
   ErrorResponse,
 } from "@/types/action.types";
 import { Friend } from "@/stores/profileStore";
@@ -44,14 +44,16 @@ export async function getAllFriendships(): Promise<
   const friendsData = data.map((friendship) =>
     friendship.requester_id === user.id
       ? {
-          id: friendship.addressee_id,
+          frienshipId: friendship.id,
           status: friendship.status,
           requester: true,
+          profile: friendship.addressee_id,
         }
       : {
-          id: friendship.requester_id,
+          frienshipId: friendship.id,
           status: friendship.status,
           requester: false,
+          profile: friendship.requester_id,
         }
   );
 
@@ -60,7 +62,7 @@ export async function getAllFriendships(): Promise<
     .select("*")
     .in(
       "id",
-      friendsData.map((friend) => friend.id)
+      friendsData.map((friend) => friend.profile)
     );
 
   if (profilesError) {
@@ -70,7 +72,7 @@ export async function getAllFriendships(): Promise<
   const friends = friendsData.map((friend) => ({
     ...friend,
     profile: profiles.find(
-      (profile) => profile.id === friend.id
+      (profile) => profile.id === friend.profile
     ) as Tables<"profiles">,
   }));
 
@@ -113,47 +115,44 @@ export async function acceptFriendship({
   friendshipId,
 }: {
   friendshipId: string;
-}): Promise<ApiResponseSingle<"friendships">> {
+}): Promise<SimpleResponse> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("friendships")
     .update({ status: "accepted" })
     .eq("id", friendshipId)
     .select()
-    .single();
 
   if (error) {
     return { success: false, data: null, error: error.message };
   }
 
-  return { success: true, data, error: null };
+  return { success: true, data: null, error: null };
 }
 
 export async function declineFriendship({
   friendshipId,
 }: {
   friendshipId: string;
-}): Promise<ApiResponseSingle<"friendships">> {
+}): Promise<SimpleResponse> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("friendships")
-    .update({ status: "declined" })
+    .update({ status: "declined" }) 
     .eq("id", friendshipId)
-    .select()
-    .single();
 
   if (error) {
     return { success: false, data: null, error: error.message };
   }
 
-  return { success: true, data, error: null };
+  return { success: true, data: null, error: null };
 }
 
 export async function deleteFriendship({
   friendshipId,
 }: {
   friendshipId: string;
-}): Promise<DeleteResponse> {
+}): Promise<SimpleResponse> {
   const supabase = await createClient();
   const { error } = await supabase
     .from("friendships")

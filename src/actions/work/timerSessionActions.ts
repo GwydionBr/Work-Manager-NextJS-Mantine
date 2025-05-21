@@ -5,7 +5,7 @@ import { TablesInsert, TablesUpdate } from "@/types/db.types";
 import {
   ApiResponseList,
   ApiResponseSingle,
-  DeleteResponse,
+  SimpleResponse,
 } from "@/types/action.types";
 
 export async function getAllSessions(): Promise<
@@ -95,7 +95,7 @@ export async function deleteSession({
   sessionId,
 }: {
   sessionId: string;
-}): Promise<DeleteResponse> {
+}): Promise<SimpleResponse> {
   const supabase = await createClient();
   const { error } = await supabase
     .from("timerSession")

@@ -5,7 +5,7 @@ import { TablesInsert, TablesUpdate } from "@/types/db.types";
 import {
   ApiResponseList,
   ApiResponseSingle,
-  DeleteResponse,
+  SimpleResponse,
 } from "@/types/action.types";
 
 export async function getAllProjects(): Promise<
@@ -99,7 +99,7 @@ export async function deleteProject({
   projectId,
 }: {
   projectId: string;
-}): Promise<DeleteResponse> {
+}): Promise<SimpleResponse> {
   const supabase = await createClient();
   const { error } = await supabase
     .from("timerProject")

@@ -5,7 +5,7 @@ import { TablesInsert, TablesUpdate } from "@/types/db.types";
 import {
   ApiResponseList,
   ApiResponseSingle,
-  DeleteResponse,
+  SimpleResponse,
 } from "@/types/action.types";
 
 export async function getAllRecurringCashFlows(): Promise<
@@ -80,7 +80,7 @@ export async function deleteRecurringCashFlow({
   recurringCashFlowId,
 }: {
   recurringCashFlowId: string;
-}): Promise<DeleteResponse> {
+}): Promise<SimpleResponse> {
   const supabase = await createClient();
   const { error } = await supabase
     .from("recurring_cash_flow")
