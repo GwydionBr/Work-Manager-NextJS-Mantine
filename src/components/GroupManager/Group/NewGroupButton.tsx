@@ -3,8 +3,8 @@
 import { useDisclosure } from "@mantine/hooks";
 
 import { ActionIcon, Flex, Modal } from "@mantine/core";
-import { Plus } from "lucide-react";
-import GroupForm from "@/components/GroupManager/GroupForm";
+import { IconPlus } from "@tabler/icons-react";
+import GroupForm from "@/components/GroupManager/Group/GroupForm";
 
 export default function NewGroupButton() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -27,10 +27,9 @@ export default function NewGroupButton() {
         variant="transparent"
         aria-label="Edit project"
         onClick={open}
-        size="sm"
-        color="teal"
+        size="md"
       >
-        <Plus />
+        <IconPlus />
       </ActionIcon>
     </>
   );

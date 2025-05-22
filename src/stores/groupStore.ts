@@ -1,10 +1,10 @@
 "use client";
 
 import * as actions from "@/actions";
-import { Tables, TablesInsert } from "@/types/db.types";
+import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { create } from "zustand";
 
-interface GroupContent {
+export interface GroupContent {
   id: string;
   title: string;
   description: string | null;
@@ -20,6 +20,7 @@ interface GroupState {
 interface GroupActions {
   fetchGroupData: () => void;
   addGroup: (group: TablesInsert<"group">) => Promise<boolean>;
+  updateGroup: (group: TablesUpdate<"group">) => Promise<boolean>;
   addGroceryItem: (
     groceryItem: TablesInsert<"grocery_item">
   ) => Promise<boolean>;
@@ -84,6 +85,10 @@ export const useGroupStore = create<GroupState & GroupActions>()(
         return true;
       }
       return false;
+    },
+    updateGroup: async (group: TablesUpdate<"group">) => {
+      const response = await actions.updateGroup({ group });
+      return response.success;
     },
     setActiveGroup: (id: string) => {
       const group = get().groups.find((g) => g.id === id);

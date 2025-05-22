@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useGroupStore } from "@/stores/groupStore";
 
 import { Group, ScrollArea, Stack, Text, Box, Select } from "@mantine/core";
-import NewGroupButton from "../GroupManager/NewGroupButton";
+import NewGroupButton from "../GroupManager/Group/NewGroupButton";
 
 import classes from "./Navbar.module.css";
 

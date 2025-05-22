@@ -8,23 +8,19 @@ import { Box, Loader, Tabs, Text } from "@mantine/core";
 import { IconCalendar, IconList, IconChecklist } from "@tabler/icons-react";
 import Header from "@/components/Header/Header";
 import GroceryList from "@/components/GroupManager/Grocery/GroceryList";
-import GroupInitializer from "@/components/GroupManager/GroupInitializer";
-
+import GroupInitializer from "@/components/GroupManager/Group/GroupInitializer";
+import EditGroupButton from "@/components/GroupManager/Group/EditGroupButton";
 
 export default function GroupManagerPage() {
   const { isLoading, groups, activeGroup } = useGroupStore();
 
   return (
     <Box className={classes.groupManagerMainContainer} px="xl">
-      <Header headerTitle={activeGroup?.title || "Group Manager"} />
+      <Header headerTitle={activeGroup?.title || "Group Manager"} primaryButton={activeGroup ? <EditGroupButton /> : null}/>
       {isLoading && <Loader />}
       {!isLoading && groups.length > 0 && (
-        <Tabs
-          defaultValue="Grocery List"
-          w="100%"
-          color={"teal.5"}
-        >
-          <Tabs.List grow my="xl" >
+        <Tabs defaultValue="Grocery List" w="100%" color={"teal.5"}>
+          <Tabs.List grow my="xl">
             <Tabs.Tab leftSection={<IconCalendar />} value="Calendar">
               Calendar
             </Tabs.Tab>

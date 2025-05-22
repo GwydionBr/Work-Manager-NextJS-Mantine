@@ -1,6 +1,6 @@
 import { useForm } from "@mantine/form";
 import { useState } from "react";
-import { useGroupStore } from "@/stores/groupStore";
+import { useGroupStore, GroupContent } from "@/stores/groupStore";
 
 import { TextInput, Stack, Button, Alert } from "@mantine/core";
 import { z } from "zod";
@@ -13,24 +13,33 @@ const schema = z.object({
 
 interface GroupFormProps {
   onClose: () => void;
+  group?: GroupContent | null;
 }
 
-export default function GroupForm({ onClose }: GroupFormProps) {
-  const { addGroup } = useGroupStore();
+export default function GroupForm({ onClose, group }: GroupFormProps) {
+  const { addGroup, updateGroup } = useGroupStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm({
     initialValues: {
-      title: "",
-      description: "",
+      title: group?.title || "",
+      description: group?.description || "",
     },
     validate: zodResolver(schema),
   });
 
   async function handleFormSubmit(values: z.infer<typeof schema>) {
     setIsLoading(true);
-    const success = await addGroup(values);
+    let success = false;
+    if (group) {
+      success = await updateGroup({
+        id: group.id,
+        ...values,
+      });
+    } else {
+      success = await addGroup(values);
+    }
     if (success) {
       form.reset();
       onClose();
