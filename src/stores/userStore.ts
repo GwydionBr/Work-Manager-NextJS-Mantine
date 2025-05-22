@@ -11,14 +11,14 @@ export interface Friend {
   status: Enums<"status">;
 }
 
-interface ProfileState {
+interface UserState {
   allProfiles: Tables<"profiles">[] | null;
   profile: Tables<"profiles"> | null;
   friends: Friend[];
   isLoading: boolean;
 }
 
-interface ProfileActions {
+interface UserActions {
   fetchProfileData: () => void;
   addProfile: (profile: TablesInsert<"profiles">) => Promise<boolean>;
   addFriend: (friendId: string) => Promise<boolean>;
@@ -27,7 +27,7 @@ interface ProfileActions {
   declineFriend: (friendId: string) => Promise<boolean>;
 }
 
-export const useProfileStore = create<ProfileState & ProfileActions>()(
+export const useUserStore = create<UserState & UserActions>()(
   (set, get) => ({
     allProfiles: null,
     profile: null,
@@ -145,4 +145,4 @@ export const useProfileStore = create<ProfileState & ProfileActions>()(
   })
 );
 
-export default useProfileStore;
+export default useUserStore;

@@ -8,7 +8,7 @@ import {
   SimpleResponse,
   ErrorResponse,
 } from "@/types/action.types";
-import { Friend } from "@/stores/profileStore";
+import { Friend } from "@/stores/userStore";
 
 export async function getAllFriendships(): Promise<
   | ErrorResponse
@@ -121,7 +121,7 @@ export async function acceptFriendship({
     .from("friendships")
     .update({ status: "accepted" })
     .eq("id", friendshipId)
-    .select()
+    .select();
 
   if (error) {
     return { success: false, data: null, error: error.message };
@@ -138,8 +138,8 @@ export async function declineFriendship({
   const supabase = await createClient();
   const { error } = await supabase
     .from("friendships")
-    .update({ status: "declined" }) 
-    .eq("id", friendshipId)
+    .update({ status: "declined" })
+    .eq("id", friendshipId);
 
   if (error) {
     return { success: false, data: null, error: error.message };

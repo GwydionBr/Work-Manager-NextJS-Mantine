@@ -4,11 +4,9 @@ import * as actions from "@/actions";
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { create } from "zustand";
 
-export interface GroupContent {
-  id: string;
-  title: string;
-  description: string | null;
+export interface GroupContent extends Tables<"group"> {
   groceryItems: Tables<"grocery_item">[];
+  members: Tables<"profiles">[];
 }
 
 interface GroupState {
@@ -19,8 +17,11 @@ interface GroupState {
 
 interface GroupActions {
   fetchGroupData: () => void;
-  addGroup: (group: TablesInsert<"group">) => Promise<boolean>;
-  updateGroup: (group: TablesUpdate<"group">) => Promise<boolean>;
+  addGroup: (
+    group: TablesInsert<"group">,
+    memberIds?: string[]
+  ) => Promise<boolean>;
+  updateGroup: (group: TablesUpdate<"group">) => Promise<boolean>;  
   addGroceryItem: (
     groceryItem: TablesInsert<"grocery_item">
   ) => Promise<boolean>;
@@ -38,53 +39,36 @@ export const useGroupStore = create<GroupState & GroupActions>()(
     fetchGroupData: async () => {
       const activeGroup = get().activeGroup;
       const groupResponse = await actions.getAllGroups();
-      const allGroupContent: GroupContent[] = [];
 
       if (groupResponse.success) {
-        if (groupResponse.data.length > 0) {
-          for (const group of groupResponse.data) {
-            const groceryItemsResponse = await actions.getGroceryItemsByGroup({
-              groupId: group.id,
-            });
-
-            if (groceryItemsResponse.success) {
-              allGroupContent.push({
-                id: group.id,
-                title: group.title,
-                description: group.description,
-                groceryItems: groceryItemsResponse.data,
-              });
-            }
-          }
-        }
-        console.log(allGroupContent);
-        if (!activeGroup) {
-          set({
-            activeGroup: allGroupContent[0] || null,
-          });
-        }
         set({
-          groups: allGroupContent,
+          groups: groupResponse.data,
           isLoading: false,
         });
+        if (!activeGroup) {
+          set({
+            activeGroup: groupResponse.data[0] || null,
+          });
+        }
       } else {
         set({ isLoading: false });
       }
     },
-    addGroup: async (group) => {
-      const response = await actions.createGroup({ group });
+    addGroup: async (group, memberIds) => {
+      const response = await actions.createGroup({ group, memberIds });
+
+      console.log(response);
 
       if (response.success) {
         const newGroupContent: GroupContent = {
-          id: response.data.id,
-          title: response.data.title,
-          description: response.data.description,
+          ...response.data,
           groceryItems: [],
+          members: [],
         };
         set((state) => ({ groups: [...state.groups, newGroupContent] }));
         return true;
       }
-      return false;
+      return true;
     },
     updateGroup: async (group: TablesUpdate<"group">) => {
       const response = await actions.updateGroup({ group });

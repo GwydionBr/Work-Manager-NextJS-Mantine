@@ -1,6 +1,6 @@
 import { ActionIcon, Box, Table } from "@mantine/core";
 
-import { Friend } from "@/stores/profileStore";
+import { Friend } from "@/stores/userStore";
 
 interface FriendsTableProps {
   friends: Friend[];

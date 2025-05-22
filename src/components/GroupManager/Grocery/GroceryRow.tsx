@@ -1,5 +1,9 @@
-import { Group, Checkbox, CheckIcon, ActionIcon } from "@mantine/core";
-import { IconTrash } from "@tabler/icons-react";
+"use client";
+
+import { useHover } from "@mantine/hooks";
+
+import { Group, Checkbox, CheckIcon, Space } from "@mantine/core";
+import DeleteActionIcon from "@/components/UI/Buttons/DeleteActionIcon";
 
 import { Tables } from "@/types/db.types";
 
@@ -16,8 +20,15 @@ export default function GroceryRow({
   handleCheckChange,
   onDelete,
 }: GroceryRowProps) {
+  const { hovered, ref } = useHover();
+
   return (
-    <Group justify="space-between" w="100%" className={classes.groceryRow}>
+    <Group
+      justify="space-between"
+      w="100%"
+      className={classes.groceryRow}
+      ref={ref}
+    >
       <Group>
         <Checkbox
           icon={CheckIcon}
@@ -28,13 +39,20 @@ export default function GroceryRow({
       </Group>
       <Group>
         {item.amount}
-        <ActionIcon
+        <DeleteActionIcon
+          style={
+            hovered
+              ? {
+                  opacity: 1,
+                }
+              : {
+                  opacity: 0,
+                }
+          }
+          size="sm"
+          aria-label="Delete grocery item"
           onClick={() => onDelete(item.id)}
-          variant="transparent"
-          color="red"
-        >
-          <IconTrash />
-        </ActionIcon>
+        />
       </Group>
     </Group>
   );

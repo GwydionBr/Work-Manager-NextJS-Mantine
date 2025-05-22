@@ -44,8 +44,8 @@ export {
 } from "./finance/recurringCashFlowActions";
 
 // Group Actions
+export { getAllGroups } from "./group/getAllGroups";
 export {
-  getAllGroups,
   getGroupById,
   createGroup,
   updateGroup,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useProfileStore } from "@/stores/profileStore";
+import { useUserStore } from "@/stores/userStore";
 
 import { Autocomplete, Button, Stack, Text } from "@mantine/core";
 import { Card } from "@mantine/core";
@@ -9,8 +9,7 @@ import FriendList from "./FriendList";
 import { IconSearch } from "@tabler/icons-react";
 
 export default function FriendCard() {
-  const { fetchProfileData, allProfiles, friends, addFriend } =
-    useProfileStore();
+  const { fetchProfileData, allProfiles, friends, addFriend } = useUserStore();
   const [search, setSearch] = useState("");
   const [isAddable, setIsAddable] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

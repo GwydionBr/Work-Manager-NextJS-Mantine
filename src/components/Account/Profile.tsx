@@ -1,10 +1,10 @@
-import { useProfileStore } from "@/stores/profileStore";
+import { useUserStore } from "@/stores/userStore";
 
 import { Card, Loader, Stack, Text } from "@mantine/core";
 import LogoutButton from "../Auth/LogoutButton";
 
 export default function Profile() {
-  const { profile, isLoading } = useProfileStore();
+  const { profile, isLoading } = useUserStore();
 
   if (isLoading) {
     return <Loader />;

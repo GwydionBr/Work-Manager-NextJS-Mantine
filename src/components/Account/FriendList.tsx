@@ -1,8 +1,8 @@
 "use client";
 
-import { useProfileStore } from "@/stores/profileStore";
+import { useUserStore } from "@/stores/userStore";
 
-import {  Divider, Grid, Group, Stack, Text } from "@mantine/core";
+import { Divider, Grid, Group, Stack, Text } from "@mantine/core";
 import {
   IconUserX,
   IconUserCheck,
@@ -13,14 +13,14 @@ import {
 } from "@tabler/icons-react";
 import FriendsTable from "./FriendsTable";
 
-import { Friend } from "@/stores/profileStore";
+import { Friend } from "@/stores/userStore";
 
 interface FriendListProps {
   friends: Friend[];
 }
 
 export default function FriendList({ friends }: FriendListProps) {
-  const { removeFriend, acceptFriend, declineFriend } = useProfileStore();
+  const { removeFriend, acceptFriend, declineFriend } = useUserStore();
 
   const acceptedFriends = friends.filter(
     (friend) => friend.status === "accepted"
@@ -72,9 +72,7 @@ export default function FriendList({ friends }: FriendListProps) {
                 <IconHourglass color="orange" />
                 <Text>Pending friend requests:</Text>
               </Group>
-              <FriendsTable
-                friends={pendingFriends}
-              />
+              <FriendsTable friends={pendingFriends} />
             </Stack>
           )}
           {declinedFriends.length > 0 && (
@@ -84,9 +82,7 @@ export default function FriendList({ friends }: FriendListProps) {
                 <IconUserX color="red" />
                 <Text>Declined friend requests:</Text>
               </Group>
-              <FriendsTable
-                friends={declinedFriends}
-              />
+              <FriendsTable friends={declinedFriends} />
             </Stack>
           )}
         </Stack>
