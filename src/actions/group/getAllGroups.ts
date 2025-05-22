@@ -2,7 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 
-import { GroupContent } from "@/stores/groupStore";
+import { GroupContent, GroupMember } from "@/stores/groupStore";
 import { ErrorResponse } from "@/types/action.types";
 
 export async function getAllGroups(): Promise<
@@ -100,13 +100,13 @@ export async function getAllGroups(): Promise<
       ),
       members: allMembers
         .filter((member) => member.group_id === group.id)
-        .map((member) =>
-          profileData.find((profile) => profile.id === member.user_id)
-        )
-        .filter(
-          (profile): profile is NonNullable<typeof profile> =>
-            profile !== undefined
-        ),
+        .map((member) => {
+          const profile = profileData.find(
+            (profile) => profile.id === member.user_id
+          );
+          return profile ? { member: profile, status: member.status } : null;
+        })
+        .filter((member): member is GroupMember => member !== null),
     });
   }
   return { success: true, data: allGroupContent, error: null };

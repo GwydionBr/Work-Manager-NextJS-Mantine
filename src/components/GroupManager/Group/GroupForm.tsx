@@ -36,7 +36,7 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
       description: group?.description || "",
       memberIds:
         group?.members
-          .map((member) => member.id)
+          .map((member) => member.member.id)
           .filter((id) => id !== profile?.id) || [],
     },
     validate: zodResolver(schema),

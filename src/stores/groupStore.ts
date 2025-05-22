@@ -1,12 +1,17 @@
 "use client";
 
 import * as actions from "@/actions";
-import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
+import { Tables, TablesInsert, TablesUpdate, Enums } from "@/types/db.types";
 import { create } from "zustand";
+
+export interface GroupMember {
+  member: Tables<"profiles">;
+  status: Enums<"status">;
+}
 
 export interface GroupContent extends Tables<"group"> {
   groceryItems: Tables<"grocery_item">[];
-  members: Tables<"profiles">[];
+  members: GroupMember[];
 }
 
 interface GroupState {
@@ -21,7 +26,7 @@ interface GroupActions {
     group: TablesInsert<"group">,
     memberIds?: string[]
   ) => Promise<boolean>;
-  updateGroup: (group: TablesUpdate<"group">) => Promise<boolean>;  
+  updateGroup: (group: TablesUpdate<"group">) => Promise<boolean>;
   addGroceryItem: (
     groceryItem: TablesInsert<"grocery_item">
   ) => Promise<boolean>;
