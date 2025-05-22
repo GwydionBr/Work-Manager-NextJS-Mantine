@@ -9,7 +9,12 @@ import FriendList from "./FriendList";
 import { IconSearch } from "@tabler/icons-react";
 
 export default function FriendCard() {
-  const { fetchProfileData, allProfiles, friends, addFriend } = useUserStore();
+  const {
+    fetchUserData: fetchProfileData,
+    allProfiles,
+    friends,
+    addFriend,
+  } = useUserStore();
   const [search, setSearch] = useState("");
   const [isAddable, setIsAddable] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

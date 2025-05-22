@@ -1,8 +1,3 @@
-"use client";
-
-import { useEffect } from "react";
-import { useSettingsStore } from "@/stores/settingsStore";
-
 import classes from "./Settings.module.css";
 
 import { Box, Stack } from "@mantine/core";
@@ -13,12 +8,6 @@ import SelectDefaultUnits from "@/components/Settings/SelectDefaultUnits";
 import SelectCurrencies from "@/components/Settings/SelectCurrencies";
 
 export default function SettingsPage() {
-  const { fetchSettings } = useSettingsStore();
-
-  useEffect(() => {
-    fetchSettings();
-  }, []);
-
   return (
     <Box className={classes.settingsMainContainer} px="xl">
       <Header headerTitle="Settings Page" />

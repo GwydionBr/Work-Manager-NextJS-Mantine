@@ -8,7 +8,7 @@ import { FinanceInterval } from "@/types/settings.types";
 interface FinanceStore {
   singleCashFlows: Tables<"single_cash_flow">[];
   recurringCashFlows: Tables<"recurring_cash_flow">[];
-  fetchData: () => Promise<void>;
+  fetchFinanceData: () => Promise<void>;
   addSingleCashFlow: (
     singleCashFlow: TablesInsert<"single_cash_flow">
   ) => Promise<boolean>;
@@ -34,7 +34,7 @@ export const useFinanceStore = create<FinanceStore>((set, get) => ({
   singleCashFlows: [],
   recurringCashFlows: [],
 
-  async fetchData() {
+  async fetchFinanceData() {
     const [singleCashFlows, recurringCashFlows] = await Promise.all([
       actions.getAllSingleCashFlows(),
       actions.getAllRecurringCashFlows(),

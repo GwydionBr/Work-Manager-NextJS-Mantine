@@ -19,7 +19,11 @@ export default function OverviewChart() {
   const [interval, setInterval] = useState<FinanceInterval>("week");
   const [columns, setColumns] = useState<number>(6);
   const [chartData, setChartData] = useState<ChartData[]>([]);
-  const { getChartData, fetchData, singleCashFlows } = useFinanceStore();
+  const {
+    getChartData,
+    fetchFinanceData: fetchData,
+    singleCashFlows,
+  } = useFinanceStore();
 
   useEffect(() => {
     const fetchChartData = async () => {

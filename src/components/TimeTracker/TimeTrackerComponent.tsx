@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useTimeTracker, TimerState } from "@/stores/timeTrackerStore";
 import { useWorkStore } from "@/stores/workManagerStore";
@@ -33,11 +33,24 @@ export default function TimeTrackerComponent() {
     getCurrentSession,
     stopTimer,
     cancelTimer,
+    configureProject,
   } = useTimeTracker();
 
   const { roundingAmount, roundingMode } = useSettingsStore();
-  const { addTimerSession } = useWorkStore();
+  const { addTimerSession, activeProject } = useWorkStore();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (activeProject) {
+      configureProject(
+        activeProject.project.id,
+        activeProject.project.title,
+        activeProject.project.currency,
+        activeProject.project.salary,
+        activeProject.project.user_id
+      );
+    }
+  }, [activeProject]);
 
   const getStatusColor = () => {
     switch (state) {

@@ -11,12 +11,12 @@ export default function FinanceLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { fetchData } = useFinanceStore();
+  const { fetchFinanceData: fetchData } = useFinanceStore();
 
   useEffect(() => {
     fetchData();
   }, []);
-  
+
   return (
     <Box>
       <FinanceNavbar />

@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
-import { useTimeTracker } from "@/stores/timeTrackerStore";
 import { useWorkStore, type TimerProject } from "@/stores/workManagerStore";
 
 import { Box, Group, ScrollArea, Text } from "@mantine/core";
@@ -11,19 +9,6 @@ import classes from "./Navbar.module.css";
 
 export default function ProjectNavbar() {
   const { projects, activeProject, setActiveProject } = useWorkStore();
-  const { configureProject } = useTimeTracker();
-
-  useEffect(() => {
-    if (activeProject) {
-      configureProject(
-        activeProject.project.id,
-        activeProject.project.title,
-        activeProject.project.currency,
-        activeProject.project.salary,
-        activeProject.project.user_id
-      );
-    }
-  }, [activeProject]);
 
   function handleSelection(timerProject: TimerProject) {
     setActiveProject(timerProject.project.id);

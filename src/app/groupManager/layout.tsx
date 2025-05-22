@@ -13,7 +13,7 @@ export default function FinanceLayout({
   children: React.ReactNode;
 }) {
   const { fetchGroupData } = useGroupStore();
-  const { fetchProfileData } = useUserStore();
+  const { fetchUserData: fetchProfileData } = useUserStore();
 
   useEffect(() => {
     fetchGroupData();

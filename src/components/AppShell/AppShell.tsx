@@ -1,8 +1,13 @@
 "use client";
 
+import { useEffect } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { usePathname } from "next/navigation";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useGroupStore } from "@/stores/groupStore";
+import { useUserStore } from "@/stores/userStore";
+import { useFinanceStore } from "@/stores/financeStore";
+import { useWorkStore } from "@/stores/workManagerStore";
 
 import classes from "./AppShell.module.css";
 
@@ -12,11 +17,26 @@ import Navbar from "@/components/Navbar/Navbar";
 import TimeTrackerComponent from "../TimeTracker/TimeTrackerComponent";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { isAsideOpen, setIsAsideOpen } = useSettingsStore();
+  const { fetchGroupData } = useGroupStore();
+  const { fetchUserData } = useUserStore();
+  const { fetchFinanceData } = useFinanceStore();
+  const { fetchWorkData } = useWorkStore();
+  const { isAsideOpen, setIsAsideOpen, fetchSettings } = useSettingsStore();
+
   const [isBurgerOpen, { toggle: toggleBurger }] = useDisclosure();
   const pathname = usePathname();
   const isHome = pathname === "/";
   const isAuth = pathname === "/auth";
+
+  useEffect(() => {
+    if (!isHome && !isAuth) {
+      fetchSettings();
+      fetchGroupData();
+      fetchUserData();
+      fetchFinanceData();
+      fetchWorkData();
+    }
+  }, [isHome, isAuth]);
 
   function toggleAside() {
     setIsAsideOpen(!isAsideOpen);

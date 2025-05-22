@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { useGroupStore } from "@/stores/groupStore";
 
 import {
@@ -17,12 +16,7 @@ import NewGroupButton from "../GroupManager/Group/NewGroupButton";
 import classes from "./Navbar.module.css";
 
 export default function FinanceNavbar() {
-  const { groups, activeGroup, fetchGroupData, setActiveGroup } =
-    useGroupStore();
-
-  useEffect(() => {
-    fetchGroupData();
-  }, []);
+  const { groups, activeGroup, setActiveGroup } = useGroupStore();
 
   const acceptedMembers = activeGroup?.members.filter(
     (member) => member.status === "accepted"

@@ -19,7 +19,7 @@ interface UserState {
 }
 
 interface UserActions {
-  fetchProfileData: () => void;
+  fetchUserData: () => void;
   addProfile: (profile: TablesInsert<"profiles">) => Promise<boolean>;
   addFriend: (friendId: string) => Promise<boolean>;
   removeFriend: (friendId: string) => Promise<boolean>;
@@ -27,122 +27,120 @@ interface UserActions {
   declineFriend: (friendId: string) => Promise<boolean>;
 }
 
-export const useUserStore = create<UserState & UserActions>()(
-  (set, get) => ({
-    allProfiles: null,
-    profile: null,
-    isLoading: true,
-    friends: [],
+export const useUserStore = create<UserState & UserActions>()((set, get) => ({
+  allProfiles: null,
+  profile: null,
+  isLoading: true,
+  friends: [],
 
-    fetchProfileData: async () => {
-      const profileResponse = await actions.getProfile();
+  fetchUserData: async () => {
+    const profileResponse = await actions.getProfile();
 
-      if (profileResponse.success) {
+    if (profileResponse.success) {
+      set({
+        profile: profileResponse.data,
+      });
+      const allProfilesResponse = await actions.getAllProfiles();
+      if (allProfilesResponse.success) {
         set({
-          profile: profileResponse.data,
+          allProfiles: allProfilesResponse.data,
         });
-        const allProfilesResponse = await actions.getAllProfiles();
-        if (allProfilesResponse.success) {
-          set({
-            allProfiles: allProfilesResponse.data,
-          });
-        }
-        const friendshipResponse = await actions.getAllFriendships();
-        if (friendshipResponse.success) {
-          set({
-            friends: friendshipResponse.data,
-          });
-        }
       }
-      set({ isLoading: false });
-    },
+      const friendshipResponse = await actions.getAllFriendships();
+      if (friendshipResponse.success) {
+        set({
+          friends: friendshipResponse.data,
+        });
+      }
+    }
+    set({ isLoading: false });
+  },
 
-    addProfile: async (profile) => {
-      const response = await actions.createProfile({ profile });
-      if (response.success) {
-        set({ profile: response.data });
-        return true;
+  addProfile: async (profile) => {
+    const response = await actions.createProfile({ profile });
+    if (response.success) {
+      set({ profile: response.data });
+      return true;
+    }
+    return false;
+  },
+  addFriend: async (friendId) => {
+    const { allProfiles, friends } = get();
+    const response = await actions.createFriendship({
+      friendship: {
+        requester_id: get().profile?.id,
+        addressee_id: friendId,
+      },
+    });
+    if (response.success) {
+      const newPendingFriend = allProfiles?.find(
+        (profile) => profile.id === friendId
+      );
+      if (newPendingFriend) {
+        const newFriends = [
+          ...friends,
+          {
+            frienshipId: response.data.id,
+            profile: newPendingFriend,
+            requester: true,
+            status: "pending" as Enums<"status">,
+          },
+        ];
+        set({
+          friends: newFriends,
+        });
       }
-      return false;
-    },
-    addFriend: async (friendId) => {
-      const { allProfiles, friends } = get();
-      const response = await actions.createFriendship({
-        friendship: {
-          requester_id: get().profile?.id,
-          addressee_id: friendId,
-        },
-      });
-      if (response.success) {
-        const newPendingFriend = allProfiles?.find(
-          (profile) => profile.id === friendId
-        );
-        if (newPendingFriend) {
-          const newFriends = [
-            ...friends,
-            {
-              frienshipId: response.data.id,
-              profile: newPendingFriend,
-              requester: true,
-              status: "pending" as Enums<"status">,
-            },
-          ];
-          set({
-            friends: newFriends,
-          });
-        }
-        return true;
-      }
-      return false;
-    },
-    removeFriend: async (friendId) => {
-      const { friends } = get();
-      const response = await actions.deleteFriendship({
-        friendshipId: friendId,
-      });
-      if (response.success) {
-        const newFriends = friends.filter(
-          (friend) => friend.frienshipId !== friendId
-        );
-        set({ friends: newFriends });
-        return true;
-      }
-      return false;
-    },
-    acceptFriend: async (friendId) => {
-      const { friends } = get();
-      const response = await actions.acceptFriendship({
-        friendshipId: friendId,
-      });
-      console.log(response);
-      if (response.success) {
-        const newFriends = friends.map((friend) =>
-          friend.frienshipId === friendId
-            ? { ...friend, status: "accepted" as Enums<"status"> }
-            : friend
-        );
-        set({ friends: newFriends });
-        return true;
-      }
-      return false;
-    },
-    declineFriend: async (friendId) => {
-      const { friends } = get();
-      const response = await actions.declineFriendship({
-        friendshipId: friendId,
-      });
-      if (response.success) {
-        const newFriends = friends.map((friend) =>
-          friend.frienshipId === friendId
-            ? { ...friend, status: "declined" as Enums<"status"> }
-            : friend
-        );
-        set({ friends: newFriends });
-        return true;
-      }
-      return false;
-    },
-  })
-);
+      return true;
+    }
+    return false;
+  },
+  removeFriend: async (friendId) => {
+    const { friends } = get();
+    const response = await actions.deleteFriendship({
+      friendshipId: friendId,
+    });
+    if (response.success) {
+      const newFriends = friends.filter(
+        (friend) => friend.frienshipId !== friendId
+      );
+      set({ friends: newFriends });
+      return true;
+    }
+    return false;
+  },
+  acceptFriend: async (friendId) => {
+    const { friends } = get();
+    const response = await actions.acceptFriendship({
+      friendshipId: friendId,
+    });
+    console.log(response);
+    if (response.success) {
+      const newFriends = friends.map((friend) =>
+        friend.frienshipId === friendId
+          ? { ...friend, status: "accepted" as Enums<"status"> }
+          : friend
+      );
+      set({ friends: newFriends });
+      return true;
+    }
+    return false;
+  },
+  declineFriend: async (friendId) => {
+    const { friends } = get();
+    const response = await actions.declineFriendship({
+      friendshipId: friendId,
+    });
+    if (response.success) {
+      const newFriends = friends.map((friend) =>
+        friend.frienshipId === friendId
+          ? { ...friend, status: "declined" as Enums<"status"> }
+          : friend
+      );
+      set({ friends: newFriends });
+      return true;
+    }
+    return false;
+  },
+}));
 
 export default useUserStore;
