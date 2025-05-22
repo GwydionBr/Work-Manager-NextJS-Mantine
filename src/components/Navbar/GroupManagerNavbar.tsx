@@ -3,7 +3,15 @@
 import { useEffect } from "react";
 import { useGroupStore } from "@/stores/groupStore";
 
-import { Group, ScrollArea, Stack, Text, Box, Select } from "@mantine/core";
+import {
+  Group,
+  ScrollArea,
+  Stack,
+  Text,
+  Box,
+  Select,
+  Divider,
+} from "@mantine/core";
 import NewGroupButton from "../GroupManager/Group/NewGroupButton";
 
 import classes from "./Navbar.module.css";
@@ -15,6 +23,13 @@ export default function FinanceNavbar() {
   useEffect(() => {
     fetchGroupData();
   }, []);
+
+  const acceptedMembers = activeGroup?.members.filter(
+    (member) => member.status === "accepted"
+  );
+  const pendingMembers = activeGroup?.members.filter(
+    (member) => member.status === "pending"
+  );
 
   return (
     <Box className={classes.main} w="250px">
@@ -38,6 +53,20 @@ export default function FinanceNavbar() {
             }
           }}
         />
+        <Divider />
+        <Text>Group Members</Text>
+        <Stack>
+          {acceptedMembers?.map((member) => (
+            <Text key={member.member.id}>{member.member.username}</Text>
+          ))}
+        </Stack>
+        <Divider />
+        <Text>Pending Requests</Text>
+        <Stack>
+          {pendingMembers?.map((member) => (
+            <Text key={member.member.id}>{member.member.username}</Text>
+          ))}
+        </Stack>
       </Stack>
 
       <ScrollArea className={classes.scrollArea}>
