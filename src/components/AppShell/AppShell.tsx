@@ -55,7 +55,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <AppShell.Aside className={classes.aside}>
         <Stack py="md" h="100%" justify="space-between" align="center">
           <Group pl="sm" justify="flex-start" w="100%">
-            <ActionIcon onClick={toggleAside}>
+            <ActionIcon
+              onClick={toggleAside}
+              aria-label="Toggle aside"
+              variant="transparent"
+            >
               <IconArrowBarLeft
                 className={classes.icon}
                 style={{ transform: isAsideOpen ? "rotate(180deg)" : "none" }}
@@ -64,7 +68,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </Group>
           {isAsideOpen && <TimeTrackerComponent />}
           <Group pl="sm" justify="flex-start" w="100%">
-            <ActionIcon onClick={toggleAside}>
+            <ActionIcon
+              onClick={toggleAside}
+              aria-label="Toggle aside"
+              variant="transparent"
+            >
               <IconArrowBarLeft
                 className={classes.icon}
                 style={{ transform: isAsideOpen ? "rotate(180deg)" : "none" }}

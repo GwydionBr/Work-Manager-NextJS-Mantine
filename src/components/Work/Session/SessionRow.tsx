@@ -5,8 +5,8 @@ import { useDisclosure, useHover } from "@mantine/hooks";
 
 import { Card, Group, Stack, Text } from "@mantine/core";
 import { IconClock } from "@tabler/icons-react";
-import DeleteButton from "@/components/Work/Buttons/DeleteButton";
-import EditButton from "@/components/Work/Buttons/EditButton";
+import DeleteActionIcon from "@/components/UI/Buttons/DeleteActionIcon";
+import EditActionIcon from "@/components/UI/Buttons/EditActionIcon";
 import DeleteSessionModal from "@/components/Work/Session/DeleteSessionModal";
 import TimerSessionDrawer from "@/components/Work/Session/TimerSessionDrawer";
 
@@ -62,8 +62,14 @@ export default function SessionRow({ session }: SessionRowProps) {
             </Stack>
             {hovered && (
               <Group>
-                <EditButton onClick={() => editDrawerHandler.open()} />
-                <DeleteButton onClick={() => deleteModalHandler.open()} />
+                <EditActionIcon
+                  onClick={() => editDrawerHandler.open()}
+                  aria-label="Edit session"
+                />
+                <DeleteActionIcon
+                  onClick={() => deleteModalHandler.open()}
+                  aria-label="Delete session"
+                />
               </Group>
             )}
           </Group>

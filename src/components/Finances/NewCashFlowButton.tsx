@@ -2,10 +2,9 @@
 
 import { useDisclosure } from "@mantine/hooks";
 
-import { ActionIcon, Flex, Modal } from "@mantine/core";
-import { Plus } from "lucide-react";
+import { Flex, Modal } from "@mantine/core";
 import FinanceForm from "@/components/Finances/Form/FinanceForm";
-
+import AddActionIcon from "@/components/UI/Buttons/AddActionIcon";
 export default function NewCashFlowButton() {
   const [opened, { open, close }] = useDisclosure(false);
 
@@ -23,15 +22,11 @@ export default function NewCashFlowButton() {
         </Flex>
       </Modal>
 
-      <ActionIcon
-        variant="transparent"
-        aria-label="Edit project"
+      <AddActionIcon
+        aria-label="Add cash flow"
         onClick={open}
-        size="sm"
-        color="teal"
-      >
-        <Plus />
-      </ActionIcon>
+        size="md"
+      />
     </>
   );
 }

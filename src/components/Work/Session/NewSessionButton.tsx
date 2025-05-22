@@ -3,9 +3,9 @@
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 
-import { ActionIcon, Drawer, Flex } from "@mantine/core";
-import { IconPlus } from "@tabler/icons-react";
+import { Drawer, Flex } from "@mantine/core";
 import SessionForm from "@/components/Work/Session/SessionForm";
+import AddActionIcon from "@/components/UI/Buttons/AddActionIcon";
 
 import { TablesInsert } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
@@ -69,15 +69,7 @@ export default function NewSessionButton() {
         </Flex>
       </Drawer>
 
-      <ActionIcon
-        variant="transparent"
-        aria-label="Add session"
-        onClick={open}
-        size="sm"
-        color="teal"
-      >
-        <IconPlus />
-      </ActionIcon>
+      <AddActionIcon aria-label="Add session" onClick={open} size="md" />
     </>
   );
 }

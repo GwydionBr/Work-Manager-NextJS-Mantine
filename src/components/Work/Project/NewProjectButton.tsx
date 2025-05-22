@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 
-import { ActionIcon, Drawer, Flex } from "@mantine/core";
-import { IconPlus } from "@tabler/icons-react";
+import { Drawer, Flex } from "@mantine/core";
 import ProjectForm from "@/components/Work/Project/ProjectForm";
+import AddActionIcon from "@/components/UI/Buttons/AddActionIcon";
 
 import { Currency } from "@/types/settings.types";
 
@@ -22,7 +22,6 @@ export default function NewProjectButton() {
   }) {
     setSubmitting(true);
     const success = await addProject({ ...values });
-    console.log("success", success);
     if (success) {
       close();
     }
@@ -54,15 +53,7 @@ export default function NewProjectButton() {
         </Flex>
       </Drawer>
 
-      <ActionIcon
-        variant="transparent"
-        aria-label="Add project"
-        onClick={open}
-        size="sm"
-        color="teal"
-      >
-        <IconPlus />
-      </ActionIcon>
+      <AddActionIcon aria-label="Add project" onClick={open} size="md" />
     </>
   );
 }

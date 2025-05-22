@@ -3,10 +3,11 @@
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 
-import { ActionIcon, Button, Drawer, Flex } from "@mantine/core";
-import { Pencil, Trash2 } from "lucide-react";
+import { Drawer, Flex } from "@mantine/core";
 import DeleteProjectModal from "@/components/Work/Project/DeleteProjectModal";
 import ProjectForm from "@/components/Work/Project/ProjectForm";
+import EditActionIcon from "@/components/UI/Buttons/EditActionIcon";
+import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 
 import { Currency } from "@/types/settings.types";
 
@@ -72,14 +73,7 @@ export default function EditProjectButton() {
             onCancel={close}
             newProject={false}
           />
-          <Button
-            leftSection={<Trash2 size={18} />}
-            color="red"
-            variant="filled"
-            onClick={openDeleteModal}
-          >
-            Delete
-          </Button>
+          <DeleteButton onClick={openDeleteModal} />
         </Flex>
       </Drawer>
 
@@ -89,15 +83,7 @@ export default function EditProjectButton() {
         onDelete={handleDelete}
       />
 
-      <ActionIcon
-        variant="transparent"
-        aria-label="Edit project"
-        onClick={open}
-        size="sm"
-        color="teal"
-      >
-        <Pencil />
-      </ActionIcon>
+      <EditActionIcon aria-label="Edit project" onClick={open} size="md" />
     </>
   );
 }
