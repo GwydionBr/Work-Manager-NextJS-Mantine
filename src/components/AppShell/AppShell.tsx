@@ -106,12 +106,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </Indicator>
             </Group>
           </Stack>
-          {isAsideOpen && (
-            <>
-              <NotificationAside />
-              <TimeTrackerComponent />
-            </>
-          )}
+
+          <NotificationAside />
+          <TimeTrackerComponent />
           <Group pl="sm" justify="flex-start" w="100%">
             <ActionIcon
               onClick={toggleAside}
