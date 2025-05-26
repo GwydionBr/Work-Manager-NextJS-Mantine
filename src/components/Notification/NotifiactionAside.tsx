@@ -11,6 +11,7 @@ import {
   Stack,
   Text,
   Popover,
+  ActionIcon,
 } from "@mantine/core";
 import {
   IconUserPlus,
@@ -20,9 +21,16 @@ import {
 } from "@tabler/icons-react";
 
 import classes from "./Notification.module.css";
+import CheckActionIcon from "../UI/Buttons/CheckActionIcon";
+import XActionIcon from "../UI/Buttons/XActionIcon";
 
 export default function NotificationAside() {
-  const { friendRequests, groupRequests } = useNotificationStore();
+  const {
+    friendRequests,
+    groupRequests,
+    answerFriendRequest,
+    answerGroupRequest,
+  } = useNotificationStore();
   const [friendRequestsOpened, setFriendRequestsOpened] = useState(false);
   const [groupRequestsOpened, setGroupRequestsOpened] = useState(false);
   if (friendRequests.length === 0 && groupRequests.length === 0) {
@@ -59,9 +67,21 @@ export default function NotificationAside() {
                     justify="space-between"
                   >
                     {request.name}
-                    <Group gap={5}>
-                      <IconCheck color="green" />
-                      <IconX color="red" />
+                    <Group gap="xs">
+                      <CheckActionIcon
+                        size="sm"
+                        iconSize={20}
+                        onClick={() =>
+                          answerFriendRequest(request.requestId, true)
+                        }
+                      />
+                      <XActionIcon
+                        size="sm"
+                        iconSize={20}
+                        onClick={() =>
+                          answerFriendRequest(request.requestId, false)
+                        }
+                      />
                     </Group>
                   </Group>
                 ))}
@@ -99,9 +119,21 @@ export default function NotificationAside() {
                     justify="space-between"
                   >
                     {request.name}
-                    <Group gap={5}>
-                      <IconCheck color="green" />
-                      <IconX color="red" />
+                    <Group gap="xs">
+                      <CheckActionIcon
+                        size="sm"
+                        iconSize={20}
+                        onClick={() =>
+                          answerGroupRequest(request.requestId, true)
+                        }
+                      />
+                      <XActionIcon
+                        size="sm"
+                        iconSize={20}
+                        onClick={() =>
+                          answerGroupRequest(request.requestId, false)
+                        }
+                      />
                     </Group>
                   </Group>
                 ))}

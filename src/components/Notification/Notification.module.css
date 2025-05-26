@@ -20,12 +20,6 @@
   padding: var(--mantine-spacing-sm);
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
-  &:hover {
-    background-color: light-dark(
-      var(--mantine-color-gray-1),
-      var(--mantine-color-dark-4)
-    );
-  }
 }
 
 .notificationRow {
