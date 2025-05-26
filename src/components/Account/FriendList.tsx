@@ -40,7 +40,7 @@ export default function FriendList({ friends }: FriendListProps) {
       <Grid.Col span={7}>
         <Stack>
           <Group>
-            <IconUserCheck color="teal" />
+            <IconUserCheck color="light-dark(var(--mantine-color-teal-9), var(--mantine-color-teal-4))" />
             <Text>Friends:</Text>
           </Group>
           <FriendsTable
@@ -54,7 +54,7 @@ export default function FriendList({ friends }: FriendListProps) {
       <Grid.Col span={5}>
         <Stack>
           <Group>
-            <IconUserPlus color="blue" />
+            <IconUserPlus color="light-dark(var(--mantine-color-blue-9), var(--mantine-color-blue-4))" />
             <Text>Friend requests:</Text>
           </Group>
           <FriendsTable
@@ -69,7 +69,7 @@ export default function FriendList({ friends }: FriendListProps) {
             <Stack>
               <Divider my="md" />
               <Group>
-                <IconHourglass color="orange" />
+                <IconHourglass color="light-dark(var(--mantine-color-orange-7), var(--mantine-color-orange-4))" />
                 <Text>Pending friend requests:</Text>
               </Group>
               <FriendsTable friends={pendingFriends} />
