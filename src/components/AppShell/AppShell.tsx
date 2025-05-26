@@ -8,19 +8,29 @@ import { useGroupStore } from "@/stores/groupStore";
 import { useUserStore } from "@/stores/userStore";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useWorkStore } from "@/stores/workManagerStore";
+import { useNotificationStore } from "@/stores/notificationStore";
 
 import classes from "./AppShell.module.css";
 
-import { AppShell, Burger, Group, Stack, ActionIcon } from "@mantine/core";
-import { IconArrowBarLeft } from "@tabler/icons-react";
+import {
+  AppShell,
+  Burger,
+  Group,
+  Stack,
+  ActionIcon,
+  Indicator,
+} from "@mantine/core";
+import { IconArrowBarLeft, IconBellFilled } from "@tabler/icons-react";
 import Navbar from "@/components/Navbar/Navbar";
 import TimeTrackerComponent from "../TimeTracker/TimeTrackerComponent";
+import NotificationAside from "../Notification/NotifiactionAside";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { fetchGroupData } = useGroupStore();
   const { fetchUserData } = useUserStore();
   const { fetchFinanceData } = useFinanceStore();
   const { fetchWorkData } = useWorkStore();
+  const { fetchNotifications, notificationCount } = useNotificationStore();
   const { isAsideOpen, setIsAsideOpen, fetchSettings } = useSettingsStore();
 
   const [isBurgerOpen, { toggle: toggleBurger }] = useDisclosure();
@@ -35,6 +45,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       fetchUserData();
       fetchFinanceData();
       fetchWorkData();
+      fetchNotifications();
     }
   }, [isHome, isAuth]);
 
@@ -74,19 +85,33 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <AppShell.Main className={classes.main}>{children}</AppShell.Main>
       <AppShell.Aside className={classes.aside}>
         <Stack py="md" h="100%" justify="space-between" align="center">
-          <Group pl="sm" justify="flex-start" w="100%">
-            <ActionIcon
-              onClick={toggleAside}
-              aria-label="Toggle aside"
-              variant="transparent"
-            >
-              <IconArrowBarLeft
-                className={classes.icon}
-                style={{ transform: isAsideOpen ? "rotate(180deg)" : "none" }}
-              />
-            </ActionIcon>
-          </Group>
-          {isAsideOpen && <TimeTrackerComponent />}
+          <Stack align="flex-start" w="100%">
+            <Group pl="sm" justify="flex-start" w="100%">
+              <ActionIcon
+                onClick={toggleAside}
+                aria-label="Toggle aside"
+                variant="transparent"
+              >
+                <IconArrowBarLeft
+                  className={classes.icon}
+                  style={{ transform: isAsideOpen ? "rotate(180deg)" : "none" }}
+                />
+              </ActionIcon>
+            </Group>
+            <Group pl="sm">
+              <Indicator size={16} label={notificationCount} color="red">
+                <ActionIcon variant="transparent">
+                  <IconBellFilled />
+                </ActionIcon>
+              </Indicator>
+            </Group>
+          </Stack>
+          {isAsideOpen && (
+            <>
+              <NotificationAside />
+              <TimeTrackerComponent />
+            </>
+          )}
           <Group pl="sm" justify="flex-start" w="100%">
             <ActionIcon
               onClick={toggleAside}

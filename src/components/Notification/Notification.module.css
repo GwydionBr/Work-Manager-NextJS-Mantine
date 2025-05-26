@@ -1,0 +1,15 @@
+.notificationTitle {
+  font-weight: 500;
+  font-size: var(--mantine-font-size-sm);
+}
+
+.notifactionRow {
+  border-radius: var(--mantine-radius-md);
+  padding: var(--mantine-spacing-sm);
+  background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  &:hover {
+    background-color: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
+  }
+}

@@ -1,3 +1,5 @@
+"use client";
+
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Group, Select } from "@mantine/core";

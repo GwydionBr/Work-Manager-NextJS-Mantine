@@ -78,3 +78,7 @@ export {
   declineFriendship,
   deleteFriendship,
 } from "./profile/friendshipActions";
+
+// Notification Actions
+export { getFriendRequests } from "./notification/getFriendRequests";
+export { getGroupRequests } from "./notification/getGroupRequests";
