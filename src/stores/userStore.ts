@@ -11,10 +11,19 @@ export interface Friend {
   status: Enums<"status">;
 }
 
+export interface FriendRequest {
+  requestId: string;
+  name: string;
+  email: string;
+  avatar: string | null;
+  createdAt: string;
+}
+
 interface UserState {
   allProfiles: Tables<"profiles">[] | null;
   profile: Tables<"profiles"> | null;
   friends: Friend[];
+  friendRequests: FriendRequest[];
   isLoading: boolean;
 }
 
@@ -32,6 +41,7 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
   profile: null,
   isLoading: true,
   friends: [],
+  friendRequests: [],
 
   fetchUserData: async () => {
     const profileResponse = await actions.getProfile();
@@ -52,6 +62,13 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
           friends: friendshipResponse.data,
         });
       }
+    }
+    const { data: friendRequests, error: friendRequestsError } =
+      await actions.getFriendRequests();
+    let count = 0;
+    if (friendRequests) {
+      set({ friendRequests: friendRequests.friendRequests });
+      count += friendRequests.friendRequests.length;
     }
     set({ isLoading: false });
   },
@@ -109,24 +126,26 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
     return false;
   },
   acceptFriend: async (friendId) => {
-    const { friends } = get();
+    const { friends, friendRequests } = get();
     const response = await actions.acceptFriendship({
       friendshipId: friendId,
     });
-    console.log(response);
     if (response.success) {
       const newFriends = friends.map((friend) =>
         friend.frienshipId === friendId
           ? { ...friend, status: "accepted" as Enums<"status"> }
           : friend
       );
-      set({ friends: newFriends });
+      const newFriendRequests = friendRequests.filter(
+        (request) => request.requestId !== friendId
+      );
+      set({ friends: newFriends, friendRequests: newFriendRequests });
       return true;
     }
     return false;
   },
   declineFriend: async (friendId) => {
-    const { friends } = get();
+    const { friends, friendRequests } = get();
     const response = await actions.declineFriendship({
       friendshipId: friendId,
     });
@@ -136,7 +155,10 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
           ? { ...friend, status: "declined" as Enums<"status"> }
           : friend
       );
-      set({ friends: newFriends });
+      const newFriendRequests = friendRequests.filter(
+        (request) => request.requestId !== friendId
+      );  
+      set({ friends: newFriends, friendRequests: newFriendRequests });
       return true;
     }
     return false;

@@ -8,7 +8,6 @@ import { useGroupStore } from "@/stores/groupStore";
 import { useUserStore } from "@/stores/userStore";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useWorkStore } from "@/stores/workManagerStore";
-import { useNotificationStore } from "@/stores/notificationStore";
 
 import classes from "./AppShell.module.css";
 
@@ -23,14 +22,13 @@ import {
 import { IconArrowBarLeft, IconBellFilled } from "@tabler/icons-react";
 import Navbar from "@/components/Navbar/Navbar";
 import TimeTrackerComponent from "../TimeTracker/TimeTrackerComponent";
-import NotificationAside from "../Notification/NotifiactionAside";
+import NotificationAside from "../Notification/NotificationAside";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { fetchGroupData } = useGroupStore();
-  const { fetchUserData } = useUserStore();
+  const { fetchGroupData, groupRequests } = useGroupStore();
+  const { fetchUserData, friendRequests } = useUserStore();
   const { fetchFinanceData } = useFinanceStore();
   const { fetchWorkData } = useWorkStore();
-  const { fetchNotifications, notificationCount } = useNotificationStore();
   const { isAsideOpen, setIsAsideOpen, fetchSettings } = useSettingsStore();
 
   const [isBurgerOpen, { toggle: toggleBurger }] = useDisclosure();
@@ -45,7 +43,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       fetchUserData();
       fetchFinanceData();
       fetchWorkData();
-      fetchNotifications();
     }
   }, [isHome, isAuth]);
 
@@ -99,7 +96,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </ActionIcon>
             </Group>
             <Group pl="sm">
-              <Indicator size={16} label={notificationCount} color="red">
+              <Indicator
+                size={16}
+                disabled={friendRequests.length + groupRequests.length === 0}
+                label={friendRequests.length + groupRequests.length}
+                color="red"
+              >
                 <ActionIcon variant="transparent">
                   <IconBellFilled />
                 </ActionIcon>

@@ -9,6 +9,13 @@ export interface GroupMember {
   status: Enums<"status">;
 }
 
+export interface GroupRequest {
+  requestId: string;
+  name: string;
+  description?: string;
+  createdAt: string;
+}
+
 export interface GroupContent extends Tables<"group"> {
   groceryItems: Tables<"grocery_item">[];
   members: GroupMember[];
@@ -16,6 +23,7 @@ export interface GroupContent extends Tables<"group"> {
 
 interface GroupState {
   groups: GroupContent[];
+  groupRequests: GroupRequest[];
   activeGroup: GroupContent | null;
   isLoading: boolean;
 }
@@ -33,11 +41,13 @@ interface GroupActions {
   setActiveGroup: (id: string) => void;
   toggleGroceryItem: (id: string, checked: boolean) => Promise<boolean>;
   deleteGroceryItem: (id: string) => Promise<boolean>;
+  answerGroupRequest: (requestId: string, answer: boolean) => void;
 }
 
 export const useGroupStore = create<GroupState & GroupActions>()(
   (set, get) => ({
     groups: [],
+    groupRequests: [],
     activeGroup: null,
     isLoading: true,
 
@@ -57,6 +67,14 @@ export const useGroupStore = create<GroupState & GroupActions>()(
         }
       } else {
         set({ isLoading: false });
+      }
+      const { data: groupRequests, error: groupRequestsError } =
+        await actions.getGroupRequests();
+      if (groupRequests) {
+        set({ groupRequests: groupRequests.groupRequests });
+      }
+      if (groupRequestsError) {
+        console.error(groupRequestsError);
       }
     },
     addGroup: async (group, memberIds) => {
@@ -159,6 +177,9 @@ export const useGroupStore = create<GroupState & GroupActions>()(
         return true;
       }
       return false;
+    },
+    answerGroupRequest: async (requestId: string, answer: boolean) => {
+      console.log("answering group request", requestId, answer);
     },
   })
 );

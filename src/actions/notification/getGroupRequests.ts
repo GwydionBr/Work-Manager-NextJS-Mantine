@@ -2,7 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { ErrorResponse } from "@/types/action.types";
-import { GroupRequest } from "@/stores/notificationStore";
+import { GroupRequest } from "@/stores/groupStore";
 
 export async function getGroupRequests(): Promise<
   | ErrorResponse

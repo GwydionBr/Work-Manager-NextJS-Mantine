@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useNotificationStore } from "@/stores/notificationStore";
+import { useUserStore } from "@/stores/userStore";
+import { useGroupStore } from "@/stores/groupStore";
 
 import {
   Divider,
@@ -25,12 +26,8 @@ import CheckActionIcon from "../UI/Buttons/CheckActionIcon";
 import XActionIcon from "../UI/Buttons/XActionIcon";
 
 export default function NotificationAside() {
-  const {
-    friendRequests,
-    groupRequests,
-    answerFriendRequest,
-    answerGroupRequest,
-  } = useNotificationStore();
+  const { friendRequests, acceptFriend, declineFriend } = useUserStore();
+  const { groupRequests, answerGroupRequest } = useGroupStore();
   const [friendRequestsOpened, setFriendRequestsOpened] = useState(false);
   const [groupRequestsOpened, setGroupRequestsOpened] = useState(false);
   if (friendRequests.length === 0 && groupRequests.length === 0) {
@@ -72,14 +69,14 @@ export default function NotificationAside() {
                         size="sm"
                         iconSize={20}
                         onClick={() =>
-                          answerFriendRequest(request.requestId, true)
+                          acceptFriend(request.requestId)
                         }
                       />
                       <XActionIcon
                         size="sm"
                         iconSize={20}
                         onClick={() =>
-                          answerFriendRequest(request.requestId, false)
+                          declineFriend(request.requestId)
                         }
                       />
                     </Group>

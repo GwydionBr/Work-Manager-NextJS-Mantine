@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 
 import { ErrorResponse } from "@/types/action.types";
-import { FriendRequest } from "@/stores/notificationStore";
+import { FriendRequest } from "@/stores/userStore";
 
 export async function getFriendRequests(): Promise<
   | ErrorResponse
@@ -66,6 +66,7 @@ export async function getFriendRequests(): Promise<
     return {
       requestId: friendship.id,
       name: friend?.username || "No friend name",
+      email: friend?.email || "No friend email",
       avatar: friend?.avatar_url || null,
       createdAt: friendship.created_at,
     };
