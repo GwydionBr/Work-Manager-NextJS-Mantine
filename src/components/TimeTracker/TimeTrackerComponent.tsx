@@ -19,6 +19,8 @@ import {
 } from "@tabler/icons-react";
 import TimeTrackerRow from "./TimeTrackerRow";
 
+import classes from "./TimeTracker.module.css";
+
 export default function TimeTrackerComponent() {
   const {
     projectTitle,
@@ -83,7 +85,14 @@ export default function TimeTrackerComponent() {
   }
 
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder miw={270}>
+    <Card
+      shadow="sm"
+      padding="lg"
+      radius="md"
+      withBorder
+      miw={270}
+      className={classes.timeTrackerContainer}
+    >
       <Stack gap="md" align="center">
         <Badge size="lg" color={getStatusColor()}>
           {state}

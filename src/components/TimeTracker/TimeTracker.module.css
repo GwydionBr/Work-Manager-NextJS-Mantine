@@ -1,3 +1,15 @@
+.timeTrackerContainer {
+  position: absolute;
+  left: 15;
+  top: 250;
+  width: 220;
+
+  @media (max-height: 650px) {
+    left: 10;
+    top: 100;
+  }
+}
+
 .icon {
   display: flex;
   justify-content: center;
@@ -10,5 +22,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border-left: 1px solid gray;
+  border-left: 1px solid
+    light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5));
 }
