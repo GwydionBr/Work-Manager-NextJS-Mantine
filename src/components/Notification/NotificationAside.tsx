@@ -26,18 +26,18 @@ import CheckActionIcon from "../UI/Buttons/CheckActionIcon";
 import XActionIcon from "../UI/Buttons/XActionIcon";
 
 export default function NotificationAside() {
-  const { friendRequests, acceptFriend, declineFriend } = useUserStore();
+  const { requestedFriends, acceptFriend, declineFriend } = useUserStore();
   const { groupRequests, answerGroupRequest } = useGroupStore();
   const [friendRequestsOpened, setFriendRequestsOpened] = useState(false);
   const [groupRequestsOpened, setGroupRequestsOpened] = useState(false);
-  if (friendRequests.length === 0 && groupRequests.length === 0) {
+  if (requestedFriends.length === 0 && groupRequests.length === 0) {
     return null;
   }
 
   return (
     <Paper mah={300} p="md" withBorder className={classes.notificationAside}>
       <Stack gap="xs">
-        {friendRequests.length > 0 && (
+        {requestedFriends.length > 0 && (
           <Popover
             opened={friendRequestsOpened}
             onChange={setFriendRequestsOpened}
@@ -47,7 +47,7 @@ export default function NotificationAside() {
                 className={classes.notificationRow}
                 onClick={() => setFriendRequestsOpened(true)}
               >
-                <Indicator size={16} label={friendRequests.length}>
+                <Indicator size={16} label={requestedFriends.length}>
                   <IconUserPlus color="light-dark(var(--mantine-color-blue-9), var(--mantine-color-blue-4))" />
                 </Indicator>
                 <Text className={classes.notificationTitle}>
@@ -57,27 +57,23 @@ export default function NotificationAside() {
             </Popover.Target>
             <Popover.Dropdown>
               <Stack>
-                {friendRequests.map((request) => (
+                {requestedFriends.map((request) => (
                   <Group
-                    key={request.requestId}
+                    key={request.friendshipId}
                     className={classes.notificationDropdownRow}
                     justify="space-between"
                   >
-                    {request.name}
+                    {request.profile.username}
                     <Group gap="xs">
                       <CheckActionIcon
                         size="sm"
                         iconSize={20}
-                        onClick={() =>
-                          acceptFriend(request.requestId)
-                        }
+                        onClick={() => acceptFriend(request.friendshipId)}
                       />
                       <XActionIcon
                         size="sm"
                         iconSize={20}
-                        onClick={() =>
-                          declineFriend(request.requestId)
-                        }
+                        onClick={() => declineFriend(request.friendshipId)}
                       />
                     </Group>
                   </Group>
@@ -86,7 +82,7 @@ export default function NotificationAside() {
             </Popover.Dropdown>
           </Popover>
         )}
-        {friendRequests.length > 0 && groupRequests.length > 0 && (
+        {requestedFriends.length > 0 && groupRequests.length > 0 && (
           <Divider orientation="vertical" />
         )}
         {groupRequests.length > 0 && (

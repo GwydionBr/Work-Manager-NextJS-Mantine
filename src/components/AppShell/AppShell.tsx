@@ -26,7 +26,7 @@ import NotificationAside from "../Notification/NotificationAside";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { fetchGroupData, groupRequests } = useGroupStore();
-  const { fetchUserData, friendRequests } = useUserStore();
+  const { fetchUserData, requestedFriends } = useUserStore();
   const { fetchFinanceData } = useFinanceStore();
   const { fetchWorkData } = useWorkStore();
   const { isAsideOpen, setIsAsideOpen, fetchSettings } = useSettingsStore();
@@ -98,8 +98,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Group pl="sm">
               <Indicator
                 size={16}
-                disabled={friendRequests.length + groupRequests.length === 0}
-                label={friendRequests.length + groupRequests.length}
+                disabled={requestedFriends.length + groupRequests.length === 0}
+                label={requestedFriends.length + groupRequests.length}
                 color="red"
               >
                 <ActionIcon variant="transparent">

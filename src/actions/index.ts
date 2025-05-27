@@ -71,12 +71,12 @@ export {
   getProfile,
   createProfile,
   updateProfile,
-  deleteProfile,
+  deleteProfile,  
 } from "./profile/profileActions";
 
 // Friendship Actions
+export { getAllFriends } from "./profile/getAllFriends";
 export {
-  getAllFriendships,
   createFriendship,
   acceptFriendship,
   declineFriendship,

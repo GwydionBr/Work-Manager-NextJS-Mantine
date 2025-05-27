@@ -82,7 +82,7 @@ export default function FriendCard() {
           )}
         </Stack>
         {error && <Text c="red">{error}</Text>}
-        <FriendList friends={friends} />
+        <FriendList />
       </Stack>
     </Card>
   );

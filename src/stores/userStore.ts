@@ -5,25 +5,18 @@ import { Tables, TablesInsert, Enums } from "@/types/db.types";
 import { create } from "zustand";
 
 export interface Friend {
-  frienshipId: string;
-  profile: Tables<"profiles">;
-  requester: boolean;
-  status: Enums<"status">;
-}
-
-export interface FriendRequest {
-  requestId: string;
-  name: string;
-  email: string;
-  avatar: string | null;
+  friendshipId: string;
   createdAt: string;
+  profile: Tables<"profiles">;
 }
 
 interface UserState {
   allProfiles: Tables<"profiles">[] | null;
   profile: Tables<"profiles"> | null;
   friends: Friend[];
-  friendRequests: FriendRequest[];
+  requestedFriends: Friend[];
+  pendingFriends: Friend[];
+  declinedFriends: Friend[];
   isLoading: boolean;
 }
 
@@ -41,7 +34,9 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
   profile: null,
   isLoading: true,
   friends: [],
-  friendRequests: [],
+  requestedFriends: [],
+  pendingFriends: [],
+  declinedFriends: [],
 
   fetchUserData: async () => {
     const profileResponse = await actions.getProfile();
@@ -56,19 +51,15 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
           allProfiles: allProfilesResponse.data,
         });
       }
-      const friendshipResponse = await actions.getAllFriendships();
+      const friendshipResponse = await actions.getAllFriends();
       if (friendshipResponse.success) {
         set({
-          friends: friendshipResponse.data,
+          friends: friendshipResponse.data.friends,
+          requestedFriends: friendshipResponse.data.requestedFriends,
+          pendingFriends: friendshipResponse.data.pendingFriends,
+          declinedFriends: friendshipResponse.data.declinedFriends,
         });
       }
-    }
-    const { data: friendRequests, error: friendRequestsError } =
-      await actions.getFriendRequests();
-    let count = 0;
-    if (friendRequests) {
-      set({ friendRequests: friendRequests.friendRequests });
-      count += friendRequests.friendRequests.length;
     }
     set({ isLoading: false });
   },
@@ -82,7 +73,7 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
     return false;
   },
   addFriend: async (friendId) => {
-    const { allProfiles, friends } = get();
+    const { allProfiles, pendingFriends } = get();
     const response = await actions.createFriendship({
       friendship: {
         requester_id: get().profile?.id,
@@ -94,17 +85,16 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
         (profile) => profile.id === friendId
       );
       if (newPendingFriend) {
-        const newFriends = [
-          ...friends,
+        const newPendingFriends = [
+          ...pendingFriends,
           {
-            frienshipId: response.data.id,
+            friendshipId: response.data.id,
             profile: newPendingFriend,
-            requester: true,
-            status: "pending" as Enums<"status">,
+            createdAt: response.data.created_at,
           },
         ];
         set({
-          friends: newFriends,
+          pendingFriends: newPendingFriends,
         });
       }
       return true;
@@ -118,7 +108,7 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
     });
     if (response.success) {
       const newFriends = friends.filter(
-        (friend) => friend.frienshipId !== friendId
+        (friend) => friend.friendshipId !== friendId
       );
       set({ friends: newFriends });
       return true;
@@ -126,42 +116,45 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
     return false;
   },
   acceptFriend: async (friendId) => {
-    const { friends, friendRequests } = get();
+    const { friends, requestedFriends } = get();
     const response = await actions.acceptFriendship({
       friendshipId: friendId,
     });
     if (response.success) {
-      const newFriends = friends.map((friend) =>
-        friend.frienshipId === friendId
-          ? { ...friend, status: "accepted" as Enums<"status"> }
-          : friend
+      const acceptedFriend = requestedFriends.find(
+        (friend) => friend.friendshipId === friendId
       );
-      const newFriendRequests = friendRequests.filter(
-        (request) => request.requestId !== friendId
-      );
-      set({ friends: newFriends, friendRequests: newFriendRequests });
-      return true;
+      if (acceptedFriend) {
+        const newFriends = [...friends, acceptedFriend];
+        const newRequestedFriends = requestedFriends.filter(
+          (friend) => friend.friendshipId !== friendId
+        );
+        set({ friends: newFriends, requestedFriends: newRequestedFriends });
+      }
     }
-    return false;
+    return true;
   },
   declineFriend: async (friendId) => {
-    const { friends, friendRequests } = get();
+    const { requestedFriends, declinedFriends } = get();
     const response = await actions.declineFriendship({
       friendshipId: friendId,
     });
     if (response.success) {
-      const newFriends = friends.map((friend) =>
-        friend.frienshipId === friendId
-          ? { ...friend, status: "declined" as Enums<"status"> }
-          : friend
+      const declinedFriend = requestedFriends.find(
+        (friend) => friend.friendshipId === friendId
       );
-      const newFriendRequests = friendRequests.filter(
-        (request) => request.requestId !== friendId
-      );  
-      set({ friends: newFriends, friendRequests: newFriendRequests });
-      return true;
+      if (declinedFriend) {
+        const newDeclinedFriends = [...declinedFriends, declinedFriend];
+        const newRequestedFriends = requestedFriends.filter(
+          (friend) => friend.friendshipId !== friendId
+        );
+        set({
+          declinedFriends: newDeclinedFriends,
+          requestedFriends: newRequestedFriends,
+        });
+      }
     }
-    return false;
+    return true;
   },
 }));
 

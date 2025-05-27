@@ -20,21 +20,21 @@ export default function FriendsTable({
   secondaryIconAction,
 }: FriendsTableProps) {
   const rows = friends.map((friend) => (
-    <Table.Tr key={friend.frienshipId}>
+    <Table.Tr key={friend.friendshipId}>
       <Table.Td>{friend.profile.username}</Table.Td>
       <Table.Td>{friend.profile.email}</Table.Td>
       {icon && (
         <Table.Td>
           <ActionIcon
             variant="transparent"
-            onClick={() => iconAction?.(friend.frienshipId)}
+            onClick={() => iconAction?.(friend.friendshipId)}
           >
             {icon}
           </ActionIcon>
           {secondaryIcon && (
             <ActionIcon
               variant="transparent"
-              onClick={() => secondaryIconAction?.(friend.frienshipId)}
+              onClick={() => secondaryIconAction?.(friend.friendshipId)}
             >
               {secondaryIcon}
             </ActionIcon>

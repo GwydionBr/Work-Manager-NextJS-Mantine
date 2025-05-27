@@ -13,27 +13,16 @@ import {
 } from "@tabler/icons-react";
 import FriendsTable from "./FriendsTable";
 
-import { Friend } from "@/stores/userStore";
-
-interface FriendListProps {
-  friends: Friend[];
-}
-
-export default function FriendList({ friends }: FriendListProps) {
-  const { removeFriend, acceptFriend, declineFriend } = useUserStore();
-
-  const acceptedFriends = friends.filter(
-    (friend) => friend.status === "accepted"
-  );
-  const pendingFriends = friends.filter(
-    (friend) => friend.status === "pending" && friend.requester
-  );
-  const requestedFriends = friends.filter(
-    (friend) => friend.status === "pending" && !friend.requester
-  );
-  const declinedFriends = friends.filter(
-    (friend) => friend.status === "declined"
-  );
+export default function FriendList() {
+  const {
+    friends,
+    requestedFriends,
+    pendingFriends,
+    declinedFriends,
+    acceptFriend,
+    declineFriend,
+    removeFriend,
+  } = useUserStore();
 
   return (
     <Grid w="100%">
@@ -44,7 +33,7 @@ export default function FriendList({ friends }: FriendListProps) {
             <Text>Friends:</Text>
           </Group>
           <FriendsTable
-            friends={acceptedFriends}
+            friends={friends}
             emptyMessage={<Text>Add some friends to see them here</Text>}
             icon={<IconX color="red" />}
             iconAction={removeFriend}
