@@ -84,5 +84,4 @@ export {
 } from "./profile/friendshipActions";
 
 // Notification Actions
-export { getFriendRequests } from "./profile/getFriendRequests";
 export { getGroupRequests } from "./group/getGroupRequests";

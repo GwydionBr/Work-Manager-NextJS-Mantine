@@ -26,10 +26,6 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const acceptedFriends = friends.filter(
-    (friend) => friend.status === "accepted"
-  );
-
   const form = useForm({
     initialValues: {
       title: group?.title || "",
@@ -79,7 +75,7 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
         <TextInput label="Description" {...form.getInputProps("description")} />
         <MultiSelect
           label="Members"
-          data={acceptedFriends.map((friend) => ({
+          data={friends.map((friend) => ({
             value: friend.profile.id,
             label: friend.profile.username,
           }))}
