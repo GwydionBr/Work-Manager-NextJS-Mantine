@@ -80,13 +80,11 @@ export const useGroupStore = create<GroupState & GroupActions>()(
     addGroup: async (group, memberIds) => {
       const response = await actions.createGroup({ group, memberIds });
 
-      console.log(response);
-
       if (response.success) {
         const newGroupContent: GroupContent = {
-          ...response.data,
+          ...response.data.group,
           groceryItems: [],
-          members: [],
+          members: response.data.groupMember,
         };
         set((state) => ({ groups: [...state.groups, newGroupContent] }));
         return true;

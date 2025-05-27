@@ -45,12 +45,8 @@ export {
 
 // Group Actions
 export { getAllGroups } from "./group/getAllGroups";
-export {
-  getGroupById,
-  createGroup,
-  updateGroup,
-  deleteGroup,
-} from "./group/groupActions";
+export { getGroupById, updateGroup, deleteGroup } from "./group/groupActions";
+export { createGroup } from "./group/createGroup";
 export {
   acceptGroupRequest,
   declineGroupRequest,
@@ -71,7 +67,7 @@ export {
   getProfile,
   createProfile,
   updateProfile,
-  deleteProfile,  
+  deleteProfile,
 } from "./profile/profileActions";
 
 // Friendship Actions
