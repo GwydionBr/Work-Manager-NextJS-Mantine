@@ -96,20 +96,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </ActionIcon>
             </Group>
             <Group pl="sm">
-              <Indicator
-                size={16}
-                disabled={requestedFriends.length + groupRequests.length === 0}
-                label={requestedFriends.length + groupRequests.length}
-                color="red"
-              >
-                <ActionIcon variant="transparent">
-                  <IconBellFilled />
-                </ActionIcon>
-              </Indicator>
+              <NotificationAside asideOpened={isAsideOpen} />
             </Group>
           </Stack>
 
-          <NotificationAside />
           <TimeTrackerComponent />
           <Group pl="sm" justify="flex-start" w="100%">
             <ActionIcon

@@ -1,13 +1,30 @@
 .notificationAside {
-  position: absolute;
-  left: 60;
-  top: 60;
+  display: flex;
+  justify-content: center;
+  gap: var(--mantine-spacing-lg);
+}
+
+.notificationAsideCard {
   width: 220;
 }
 
 .notificationTitle {
   font-weight: 500;
   font-size: var(--mantine-font-size-sm);
+}
+
+.popoverTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--mantine-spacing-sm);
+  font-weight: 500;
+  font-size: var(--mantine-font-size-sm);
+}
+
+.popoverRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .notificationDropdownRow {
