@@ -51,6 +51,10 @@ export {
   updateGroup,
   deleteGroup,
 } from "./group/groupActions";
+export {
+  acceptGroupRequest,
+  declineGroupRequest,
+} from "./group/answerGroupRequest";
 
 // Grocery Item Actions
 export {
@@ -80,5 +84,5 @@ export {
 } from "./profile/friendshipActions";
 
 // Notification Actions
-export { getFriendRequests } from "./notification/getFriendRequests";
-export { getGroupRequests } from "./notification/getGroupRequests";
+export { getFriendRequests } from "./profile/getFriendRequests";
+export { getGroupRequests } from "./group/getGroupRequests";

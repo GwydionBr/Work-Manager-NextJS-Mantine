@@ -179,7 +179,22 @@ export const useGroupStore = create<GroupState & GroupActions>()(
       return false;
     },
     answerGroupRequest: async (requestId: string, answer: boolean) => {
-      console.log("answering group request", requestId, answer);
+      const { groupRequests } = get();
+      if (answer) {
+        const response = await actions.acceptGroupRequest({ groupRequestId: requestId });
+        console.log("accepting group request", response);
+        if (response.success) {
+          const newGroupRequests = groupRequests.filter((r) => r.requestId !== requestId);
+          set({ groupRequests: newGroupRequests });
+        }
+      } else {
+        const response = await actions.declineGroupRequest({ groupRequestId: requestId });
+        console.log("declining group request", response);
+        if (response.success) {
+          const newGroupRequests = groupRequests.filter((r) => r.requestId !== requestId);
+          set({ groupRequests: newGroupRequests });
+        }
+      }
     },
   })
 );
