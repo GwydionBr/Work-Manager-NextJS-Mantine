@@ -14,6 +14,7 @@ import {
 import NewGroupButton from "../GroupManager/Group/NewGroupButton";
 
 import classes from "./Navbar.module.css";
+import ProfileRow from "../UI/ProfileRow";
 
 export default function FinanceNavbar() {
   const { groups, activeGroup, setActiveGroup } = useGroupStore();
@@ -49,18 +50,22 @@ export default function FinanceNavbar() {
         />
         <Divider />
         <Text>Group Members</Text>
-        <Stack>
+        <Stack gap="sm">
           {acceptedMembers?.map((member) => (
-            <Text key={member.member.id}>{member.member.username}</Text>
+            <ProfileRow key={member.member.id} profile={member.member} />
           ))}
         </Stack>
         <Divider />
-        <Text>Pending Requests</Text>
-        <Stack>
-          {pendingMembers?.map((member) => (
-            <Text key={member.member.id}>{member.member.username}</Text>
-          ))}
-        </Stack>
+        {pendingMembers && pendingMembers.length > 0 && (
+          <Stack gap="sm">
+            <Text>Pending Requests</Text>
+            <Stack gap="sm">
+              {pendingMembers?.map((member) => (
+                <ProfileRow key={member.member.id} profile={member.member} />
+              ))}
+            </Stack>
+          </Stack>
+        )}
       </Stack>
 
       <ScrollArea className={classes.scrollArea}>

@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Table } from "@mantine/core";
+import { ActionIcon, Avatar, Box, Table } from "@mantine/core";
 
 import { Friend } from "@/stores/userStore";
 
@@ -21,6 +21,9 @@ export default function FriendsTable({
 }: FriendsTableProps) {
   const rows = friends.map((friend) => (
     <Table.Tr key={friend.friendshipId}>
+      <Table.Td>
+        <Avatar src={friend.profile.avatar_url} size={32} color="teal" />
+      </Table.Td>
       <Table.Td>{friend.profile.username}</Table.Td>
       <Table.Td>{friend.profile.email}</Table.Td>
       {icon && (
@@ -49,6 +52,7 @@ export default function FriendsTable({
       <Table>
         <Table.Thead>
           <Table.Tr>
+            <Table.Th></Table.Th>
             <Table.Th>Username</Table.Th>
             <Table.Th>Email</Table.Th>
           </Table.Tr>
