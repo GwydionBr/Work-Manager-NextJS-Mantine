@@ -30,10 +30,7 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
     initialValues: {
       title: group?.title || "",
       description: group?.description || "",
-      memberIds:
-        group?.members
-          .map((member) => member.member.id)
-          .filter((id) => id !== profile?.id) || [],
+      memberIds: [],
     },
     validate: zodResolver(schema),
   });
@@ -79,10 +76,12 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
         <TextInput label="Description" {...form.getInputProps("description")} />
         <MultiSelect
           label="Members"
-          data={friends.map((friend) => ({
-            value: friend.profile.id,
-            label: friend.profile.username,
-          }))}
+          data={friends
+            .filter((friend) => !group?.members.some((member) => member.member.id === friend.profile.id))
+            .map((friend) => ({
+              value: friend.profile.id,
+              label: friend.profile.username,
+            }))}
           {...form.getInputProps("memberIds")}
         />
         <Button type="submit" loading={isLoading}>
