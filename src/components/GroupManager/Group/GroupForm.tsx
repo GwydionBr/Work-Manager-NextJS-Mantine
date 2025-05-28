@@ -42,10 +42,14 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
     setIsLoading(true);
     let success = false;
     if (group) {
-      success = await updateGroup({
-        id: group.id,
-        ...values,
-      });
+      success = await updateGroup(
+        {
+          id: group.id,
+          title: values.title,
+          description: values.description,
+        },
+        values.memberIds
+      );
     } else {
       success = await addGroup(
         {

@@ -23,25 +23,7 @@ export async function getGroupById({
   return { success: true, data, error: null };
 }
 
-export async function updateGroup({
-  group,
-}: {
-  group: TablesUpdate<"group">;
-}): Promise<ApiResponseSingle<"group">> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("group")
-    .update(group)
-    .eq("id", group.id!)
-    .select()
-    .single();
 
-  if (error) {
-    return { success: false, data: null, error: error.message };
-  }
-
-  return { success: true, data, error: null };
-}
 
 export async function deleteGroup({
   groupId,

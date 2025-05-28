@@ -30,11 +30,19 @@ interface GroupState {
 
 interface GroupActions {
   fetchGroupData: () => void;
+  updateGroupData: (
+    group: TablesUpdate<"group">,
+    groupMember?: GroupMember[],
+    isNewGroup?: boolean
+  ) => void;
   addGroup: (
     group: TablesInsert<"group">,
     memberIds?: string[]
   ) => Promise<boolean>;
-  updateGroup: (group: TablesUpdate<"group">) => Promise<boolean>;
+  updateGroup: (
+    group: TablesUpdate<"group">,
+    memberIds?: string[]
+  ) => Promise<boolean>;
   addGroceryItem: (
     groceryItem: TablesInsert<"grocery_item">
   ) => Promise<boolean>;
@@ -50,6 +58,42 @@ export const useGroupStore = create<GroupState & GroupActions>()(
     groupRequests: [],
     activeGroup: null,
     isLoading: true,
+
+    updateGroupData: (
+      group: TablesUpdate<"group">,
+      groupMember?: GroupMember[],
+      isNewGroup: boolean = false
+    ) => {
+      const { groups, activeGroup } = get();
+      if (isNewGroup) {
+        const newGroup: GroupContent = {
+          ...(group as Tables<"group">),
+          groceryItems: [],
+          members: groupMember || [],
+        };
+        const newGroups: GroupContent[] = [...groups, newGroup];
+        set({ groups: newGroups, activeGroup: newGroup });
+      } else {
+        const newGroups: GroupContent[] = groups.map((g) =>
+          g.id === group.id
+            ? {
+                ...g,
+                ...group,
+                members: [...g.members, ...(groupMember || [])],
+              }
+            : g
+        );
+        set({ groups: newGroups });
+        if (activeGroup && activeGroup.id === group.id) {
+          const newActiveGroup: GroupContent = {
+            ...activeGroup,
+            ...group,
+            members: [...activeGroup.members, ...(groupMember || [])],
+          };
+          set({ activeGroup: newActiveGroup });
+        }
+      }
+    },
 
     fetchGroupData: async () => {
       const activeGroup = get().activeGroup;
@@ -78,21 +122,25 @@ export const useGroupStore = create<GroupState & GroupActions>()(
       }
     },
     addGroup: async (group, memberIds) => {
+      const { updateGroupData } = get();
       const response = await actions.createGroup({ group, memberIds });
 
       if (response.success) {
-        const newGroupContent: GroupContent = {
-          ...response.data.group,
-          groceryItems: [],
-          members: response.data.groupMember,
-        };
-        set((state) => ({ groups: [...state.groups, newGroupContent] }));
+        updateGroupData(response.data.group, response.data.groupMember, true);
         return true;
       }
       return true;
     },
-    updateGroup: async (group: TablesUpdate<"group">) => {
-      const response = await actions.updateGroup({ group });
+    updateGroup: async (group, memberIds) => {
+      const { updateGroupData } = get();
+      const response = await actions.updateGroup({ group, memberIds });
+      if (response.success) {
+        updateGroupData(
+          response.data.group,
+          response.data.groupMember || undefined
+        );
+        return true;
+      }
       return response.success;
     },
     setActiveGroup: (id: string) => {
@@ -177,19 +225,28 @@ export const useGroupStore = create<GroupState & GroupActions>()(
       return false;
     },
     answerGroupRequest: async (requestId: string, answer: boolean) => {
-      const { groupRequests } = get();
+      const { groupRequests, updateGroupData } = get();
       if (answer) {
-        const response = await actions.acceptGroupRequest({ groupRequestId: requestId });
-        console.log("accepting group request", response);
+        const response = await actions.acceptGroupRequest({
+          groupRequestId: requestId,
+        });
         if (response.success) {
-          const newGroupRequests = groupRequests.filter((r) => r.requestId !== requestId);
+          const newGroupRequests = groupRequests.filter(
+            (r) => r.requestId !== requestId
+          );
           set({ groupRequests: newGroupRequests });
+          updateGroupData({ id: response.data.groupId }, [
+            response.data.groupMember,
+          ]);
         }
       } else {
-        const response = await actions.declineGroupRequest({ groupRequestId: requestId });
-        console.log("declining group request", response);
+        const response = await actions.declineGroupRequest({
+          groupRequestId: requestId,
+        });
         if (response.success) {
-          const newGroupRequests = groupRequests.filter((r) => r.requestId !== requestId);
+          const newGroupRequests = groupRequests.filter(
+            (r) => r.requestId !== requestId
+          );
           set({ groupRequests: newGroupRequests });
         }
       }
