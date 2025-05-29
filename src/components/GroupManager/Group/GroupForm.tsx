@@ -21,7 +21,7 @@ interface GroupFormProps {
 }
 
 export default function GroupForm({ onClose, group }: GroupFormProps) {
-  const { addGroup, updateGroup } = useGroupStore();
+  const { addGroup, updateGroup, updateGroupMembers } = useGroupStore();
   const { friends, profile } = useUserStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,14 +39,24 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
     setIsLoading(true);
     let success = false;
     if (group) {
-      success = await updateGroup(
-        {
-          id: group.id,
-          title: values.title,
-          description: values.description,
-        },
-        values.memberIds
-      );
+      const didGroupChange =
+        group.title !== values.title ||
+        group.description !== values.description;
+      if (didGroupChange) {
+        success = await updateGroup(
+          {
+            id: group.id,
+            title: values.title,
+            description: values.description,
+          },
+          values.memberIds
+        );
+      } else if (!didGroupChange && values.memberIds) {
+        success = await updateGroupMembers(
+          group.id,
+          values.memberIds
+        );
+      }
     } else {
       success = await addGroup(
         {
@@ -77,7 +87,12 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
         <MultiSelect
           label="Members"
           data={friends
-            .filter((friend) => !group?.members.some((member) => member.member.id === friend.profile.id))
+            .filter(
+              (friend) =>
+                !group?.members.some(
+                  (member) => member.member.id === friend.profile.id
+                )
+            )
             .map((friend) => ({
               value: friend.profile.id,
               label: friend.profile.username,

@@ -4,6 +4,7 @@ import { Tables } from "@/types/db.types";
 export type TableNames =
   | "grocery_item"
   | "group"
+  | "group_member"
   | "profiles"
   | "recurring_cash_flow"
   | "settings"

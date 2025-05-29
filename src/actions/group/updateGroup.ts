@@ -23,7 +23,7 @@ export async function updateGroup({
     .single();
 
   if (error) {
-    return { success: false, data: null, error: error.message };
+    return { success: false, data: null, error: "updateGroup first error: " + error.message };
   }
 
   if (memberIds) {
@@ -37,7 +37,7 @@ export async function updateGroup({
       .insert(memberInsertData);
 
     if (memberError) {
-      return { success: false, data: null, error: memberError.message };
+      return { success: false, data: null, error: "updateGroup second error: " + memberError.message };
     }
 
     const { data: profileData, error: profileError } = await supabase
@@ -46,7 +46,7 @@ export async function updateGroup({
       .in("id", [...memberIds]);
 
     if (profileError) {
-      return { success: false, data: null, error: profileError.message };
+      return { success: false, data: null, error: "updateGroup third error: " + profileError.message };
     }
 
     const groupMember: GroupMember[] = profileData.map((profile) => ({

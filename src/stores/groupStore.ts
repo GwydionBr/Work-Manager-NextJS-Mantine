@@ -43,6 +43,10 @@ interface GroupActions {
     group: TablesUpdate<"group">,
     memberIds?: string[]
   ) => Promise<boolean>;
+  updateGroupMembers: (
+    groupId: string,
+    memberIds: string[]
+  ) => Promise<boolean>;
   addGroceryItem: (
     groceryItem: TablesInsert<"grocery_item">
   ) => Promise<boolean>;
@@ -132,8 +136,10 @@ export const useGroupStore = create<GroupState & GroupActions>()(
       return true;
     },
     updateGroup: async (group, memberIds) => {
-      const { updateGroupData } = get();
+      const { updateGroupData, groups } = get();
+
       const response = await actions.updateGroup({ group, memberIds });
+      console.log("response", response);
       if (response.success) {
         updateGroupData(
           response.data.group,
@@ -142,6 +148,21 @@ export const useGroupStore = create<GroupState & GroupActions>()(
         return true;
       }
       return response.success;
+    },
+    updateGroupMembers: async (groupId, memberIds) => {
+      const { updateGroupData } = get();
+      const response = await actions.insertGroupMembers(groupId, memberIds);
+      if (response.success) {
+        updateGroupData(
+          { id: groupId },
+          response.data.map((member) => ({
+            member: member,
+            status: "pending" as Enums<"status">,
+          }))
+        );
+        return true;
+      }
+      return false;
     },
     setActiveGroup: (id: string) => {
       const group = get().groups.find((g) => g.id === id);

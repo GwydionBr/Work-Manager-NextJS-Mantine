@@ -52,6 +52,7 @@ export {
   acceptGroupRequest,
   declineGroupRequest,
 } from "./group/answerGroupRequest";
+export { insertGroupMembers } from "./group/insertGroupMemebers";
 
 // Grocery Item Actions
 export {
