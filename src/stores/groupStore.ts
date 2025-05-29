@@ -136,10 +136,9 @@ export const useGroupStore = create<GroupState & GroupActions>()(
       return true;
     },
     updateGroup: async (group, memberIds) => {
-      const { updateGroupData, groups } = get();
+      const { updateGroupData } = get();
 
       const response = await actions.updateGroup({ group, memberIds });
-      console.log("response", response);
       if (response.success) {
         updateGroupData(
           response.data.group,
