@@ -1,6 +1,6 @@
 "use client";
 
-import { Tabs } from "@mantine/core";
+import { Box, Tabs, Text } from "@mantine/core";
 import {
   IconReload,
   IconCircleDashedNumber1,
@@ -9,8 +9,19 @@ import {
 import FinanceOverview from "./Overview/FinanceOverview";
 import FinanceRecurring from "./Recurring/FinanceRecurring";
 import FinanceSingle from "./Single/FinanceSingle";
+import { useFinanceStore } from "@/stores/financeStore";
 
 export default function FinancesTab() {
+  const { singleCashFlows, recurringCashFlows } = useFinanceStore();
+
+  if (singleCashFlows.length === 0 && recurringCashFlows.length === 0) {
+    return (
+      <Box>
+        <Text>Please insert some data to see the charts</Text>
+      </Box>
+    );
+  }
+
   return (
     <Tabs defaultValue="Overview" w="100%">
       <Tabs.List grow my="xl">

@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, Grid } from "@mantine/core";
 import Header from "@/components/Header/Header";
 import Profile from "@/components/Account/Profile";

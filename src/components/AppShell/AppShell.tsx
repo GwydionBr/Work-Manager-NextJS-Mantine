@@ -11,7 +11,13 @@ import { useWorkStore } from "@/stores/workManagerStore";
 
 import classes from "./AppShell.module.css";
 
-import { AppShell, Burger, Group, Stack, ActionIcon } from "@mantine/core";
+import {
+  AppShell,
+  Burger,
+  Group,
+  Stack,
+  ActionIcon,
+} from "@mantine/core";
 import { IconArrowBarLeft } from "@tabler/icons-react";
 import Navbar from "@/components/Navbar/Navbar";
 import TimeTrackerComponent from "../TimeTracker/TimeTrackerComponent";

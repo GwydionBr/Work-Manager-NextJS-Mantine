@@ -1,3 +1,5 @@
+"use client";
+
 import { Box } from "@mantine/core";
 import FinanceNavbar from "@/components/Navbar/FinanceNavbar";
 

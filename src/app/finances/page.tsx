@@ -1,3 +1,5 @@
+"use client";
+
 import classes from "./Finances.module.css";
 
 import { Box } from "@mantine/core";

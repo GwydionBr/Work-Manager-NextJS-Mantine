@@ -24,14 +24,15 @@ export default function FinanceNavbar() {
         <Text>Finances</Text>
         <NewCashFlowButton />
       </Group>
-
-      <ScrollArea className={classes.scrollArea}>
-        <Stack className={classes.financeSections} gap={0}>
-          <FinanceSection title="Income" cashFlows={incomeCashFlows} />
-          <Divider className={classes.divider} />
-          <FinanceSection title="Expenses" cashFlows={expenseCashFlows} />
-        </Stack>
-      </ScrollArea>
+      {(incomeCashFlows.length > 0 || expenseCashFlows.length > 0) && (
+        <ScrollArea className={classes.scrollArea}>
+          <Stack className={classes.financeSections} gap={0}>
+            <FinanceSection title="Income" cashFlows={incomeCashFlows} />
+            <Divider className={classes.divider} />
+            <FinanceSection title="Expenses" cashFlows={expenseCashFlows} />
+          </Stack>
+        </ScrollArea>
+      )}
     </Box>
   );
 }
