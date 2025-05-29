@@ -17,9 +17,8 @@ import {
   Group,
   Stack,
   ActionIcon,
-  Indicator,
 } from "@mantine/core";
-import { IconArrowBarLeft, IconBellFilled } from "@tabler/icons-react";
+import { IconArrowBarLeft } from "@tabler/icons-react";
 import Navbar from "@/components/Navbar/Navbar";
 import TimeTrackerComponent from "../TimeTracker/TimeTrackerComponent";
 import NotificationAside from "../Notification/NotificationAside";

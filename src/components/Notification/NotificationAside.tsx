@@ -51,14 +51,15 @@ export default function NotificationAside({
             </ActionIcon>
           </Indicator>
         </Popover.Target>
-        {requestedFriends.length > 0 || groupRequests.length > 0 && (
+        {(requestedFriends.length > 0 || groupRequests.length > 0) && (
           <Popover.Dropdown>
             <NotificationPopover />
           </Popover.Dropdown>
         )}
       </Popover>
-      {requestedFriends.length > 0 ||
-        (groupRequests.length > 0 && <NotificationAsideCard />)}
+      {(requestedFriends.length > 0 || groupRequests.length > 0) && (
+        <NotificationAsideCard />
+      )}
     </Box>
   );
 }
