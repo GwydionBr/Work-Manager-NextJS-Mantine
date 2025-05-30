@@ -28,9 +28,9 @@ export default function NotificationAsideCard() {
   return (
     <Paper
       mah={300}
+      w={220}
       p="md"
       withBorder
-      className={classes.notificationAsideCard}
     >
       <Stack gap="xs">
         {requestedFriends.length > 0 && (

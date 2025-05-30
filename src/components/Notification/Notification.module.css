@@ -4,10 +4,6 @@
   gap: var(--mantine-spacing-lg);
 }
 
-.notificationAsideCard {
-  width: 220;
-}
-
 .notificationTitle {
   font-weight: 500;
   font-size: var(--mantine-font-size-sm);
