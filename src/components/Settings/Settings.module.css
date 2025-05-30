@@ -3,7 +3,7 @@
   background-color: light-dark( var(--mantine-color-gray-0), var(--mantine-color-dark-5));
   border-radius: var(--mantine-radius-lg);
   padding: var(--mantine-spacing-md);
-  width: var(--mantine-breakpoint-md);
+  width: 100%;
 }
 
 .borderRight {

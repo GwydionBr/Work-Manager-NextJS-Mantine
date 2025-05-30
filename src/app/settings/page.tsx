@@ -9,9 +9,9 @@ import classes from "./Settings.module.css";
 
 export default function SettingsPage() {
   return (
-    <Box className={classes.settingsMainContainer} px="xl">
+    <Box className={classes.settingsMainContainer} px="xl" w="100%">
       <Header headerTitle="Settings Page" />
-      <Stack>
+      <Stack w="100%">
         <SettingsRow title="Color Scheme" children={<SchemeButtonGroup />} />
         <SettingsRow title="Default Units" children={<SelectDefaultUnits />} />
         <SettingsRow title="Currencies" children={<SelectCurrencies />} />
