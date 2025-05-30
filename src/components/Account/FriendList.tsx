@@ -41,9 +41,11 @@ export default function FriendList() {
   function handleRemoveFriend(id: string) {
     setModalInformation({
       title: "Remove Friend",
-      message:
-        "Are you sure you want to remove this friend?",
-      onDelete: () => removeFriend(id),
+      message: "Are you sure you want to remove this friend?",
+      onDelete: () => {
+        removeFriend(id);
+        modalHandler.close();
+      },
       onCancel: () => modalHandler.close(),
     });
     modalHandler.open();
@@ -52,9 +54,11 @@ export default function FriendList() {
   function handleDeclineFriend(id: string) {
     setModalInformation({
       title: "Decline Friend Request",
-      message:
-        "Are you sure you want to decline this friend request?",
-      onDelete: () => declineFriend(id),
+      message: "Are you sure you want to decline this friend request?",
+      onDelete: () => {
+        declineFriend(id);
+        modalHandler.close();
+      },
       onCancel: () => modalHandler.close(),
     });
     modalHandler.open();
