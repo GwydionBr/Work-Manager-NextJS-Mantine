@@ -4,10 +4,10 @@ import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 
 import { Drawer, Flex } from "@mantine/core";
-import DeleteProjectModal from "@/components/Work/Project/DeleteProjectModal";
 import ProjectForm from "@/components/Work/Project/ProjectForm";
 import EditActionIcon from "@/components/UI/Buttons/EditActionIcon";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
+import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
 
 import { Currency } from "@/types/settings.types";
 
@@ -77,10 +77,12 @@ export default function EditProjectButton() {
         </Flex>
       </Drawer>
 
-      <DeleteProjectModal
+      <ConfirmDeleteModal
         opened={deleteModalOpened}
         onClose={closeDeleteModal}
         onDelete={handleDelete}
+        title="Delete Project"
+        message="Are you sure you want to delete this project? This action cannot be undone."
       />
 
       <EditActionIcon aria-label="Edit project" onClick={open} size="md" />

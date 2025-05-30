@@ -7,7 +7,7 @@ import { Card, Group, Stack, Text } from "@mantine/core";
 import { IconClock } from "@tabler/icons-react";
 import DeleteActionIcon from "@/components/UI/Buttons/DeleteActionIcon";
 import EditActionIcon from "@/components/UI/Buttons/EditActionIcon";
-import DeleteSessionModal from "@/components/Work/Session/DeleteSessionModal";
+import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
 import TimerSessionDrawer from "@/components/Work/Session/TimerSessionDrawer";
 
 import * as helper from "@/utils/workHelperFunctions";
@@ -88,10 +88,12 @@ export default function SessionRow({ session }: SessionRowProps) {
         close={() => editDrawerHandler.close()}
       />
 
-      <DeleteSessionModal
+      <ConfirmDeleteModal
         opened={deleteModalOpened}
         onClose={() => deleteModalHandler.close()}
         onDelete={handleDelete}
+        title="Delete Session"
+        message="Are you sure you want to delete this session? This action cannot be undone."
       />
     </>
   );
