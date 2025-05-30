@@ -86,6 +86,7 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
         <TextInput label="Description" {...form.getInputProps("description")} />
         <MultiSelect
           label="Members"
+          hidePickedOptions={true}
           data={friends
             .filter(
               (friend) =>

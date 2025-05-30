@@ -13,8 +13,9 @@ export default function NewGroupButton() {
     <>
       <Modal
         opened={opened}
+        closeOnClickOutside={false}
         onClose={close}
-        title="Add Cash Flow"
+        title="Add Group"
         size="md"
         padding="md"
       >
