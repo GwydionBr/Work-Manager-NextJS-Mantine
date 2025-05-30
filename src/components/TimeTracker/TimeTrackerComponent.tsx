@@ -2,26 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useTimeTracker, TimerState } from "@/stores/timeTrackerStore";
+import { useTimeTracker } from "@/stores/timeTrackerStore";
 import { useWorkStore } from "@/stores/workManagerStore";
 
 import { roundTime } from "@/utils/workHelperFunctions";
 
-import { Button, Card, Text, Group, Stack, Badge, Paper } from "@mantine/core";
-import {
-  IconClock,
-  IconPlayerPause,
-  IconPlayerPlay,
-  IconPlayerStop,
-  IconCurrencyDollar,
-  IconCurrencyEuro,
-  IconX,
-} from "@tabler/icons-react";
-import TimeTrackerRow from "./TimeTrackerRow";
+import TimeTrackerComponentBig from "./TimeTrackerComponentBig";
+import TimeTrackerComponentSmall from "./TimeTrackerComponentSmall";
 
-import classes from "./TimeTracker.module.css";
-
-export default function TimeTrackerComponent() {
+export default function TimeTrackerComponent({ isBig }: { isBig: boolean }) {
   const {
     projectTitle,
     moneyEarned,
@@ -41,6 +30,7 @@ export default function TimeTrackerComponent() {
   const { roundingAmount, roundingMode } = useSettingsStore();
   const { addTimerSession, activeProject } = useWorkStore();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showSmall, setShowSmall] = useState(true);
 
   useEffect(() => {
     if (activeProject) {
@@ -84,116 +74,35 @@ export default function TimeTrackerComponent() {
     }
   }
 
-  return (
-    <Card
-      shadow="sm"
-      padding="lg"
-      radius="md"
-      withBorder
-      miw={270}
-      className={classes.timeTrackerContainer}
-    >
-      <Stack gap="md" align="center">
-        <Badge size="lg" color={getStatusColor()}>
-          {state}
-        </Badge>
-        <Group justify="space-between" align="center">
-          <Text size="xl" fw={700}>
-            {projectTitle}
-          </Text>
-        </Group>
-
-        {errorMessage && (
-          <Paper p="xs" bg="red.1">
-            <Text c="red" size="sm">
-              {errorMessage}
-            </Text>
-          </Paper>
-        )}
-
-        <Stack gap="md">
-          <TimeTrackerRow
-            icon={
-              currency === "EUR" ? (
-                <IconCurrencyEuro size={20} />
-              ) : (
-                <IconCurrencyDollar size={20} />
-              )
-            }
-            value={moneyEarned}
-            state={state}
-            activationState={TimerState.Running}
-            color="yellow"
-          />
-          <TimeTrackerRow
-            icon={<IconClock size={20} />}
-            value={activeTime}
-            state={state}
-            activationState={TimerState.Running}
-            color="red"
-          />
-          <TimeTrackerRow
-            icon={<IconPlayerPause size={20} />}
-            value={pausedTime}
-            state={state}
-            activationState={TimerState.Paused}
-            color="blue"
-          />
-        </Stack>
-
-        <Stack gap="md">
-          {state === "stopped" && (
-            <Button
-              onClick={startTimer}
-              color="green"
-              leftSection={<IconPlayerPlay size={20} />}
-              size="md"
-            >
-              Start
-            </Button>
-          )}
-          {state === "running" && (
-            <Button
-              onClick={pauseTimer}
-              color="yellow"
-              leftSection={<IconPlayerPause size={20} />}
-              size="md"
-            >
-              Pause
-            </Button>
-          )}
-          {state === "paused" && (
-            <Button
-              onClick={resumeTimer}
-              color="blue"
-              leftSection={<IconPlayerPlay size={20} />}
-              size="md"
-            >
-              Weiter
-            </Button>
-          )}
-          {state !== "stopped" && (
-            <Stack gap="md">
-              <Button
-                onClick={submitTimer}
-                color="red"
-                leftSection={<IconPlayerStop size={20} />}
-                size="md"
-              >
-                Stop
-              </Button>
-              <Button
-                onClick={cancelTimer}
-                color="gray"
-                leftSection={<IconX size={20} />}
-                size="md"
-              >
-                Abbrechen
-              </Button>
-            </Stack>
-          )}
-        </Stack>
-      </Stack>
-    </Card>
+  return isBig ? (
+    <TimeTrackerComponentBig
+      state={state}
+      projectTitle={projectTitle}
+      moneyEarned={moneyEarned}
+      activeTime={activeTime}
+      pausedTime={pausedTime}
+      currency={currency}
+      errorMessage={errorMessage}
+      startTimer={startTimer}
+      pauseTimer={pauseTimer}
+      resumeTimer={resumeTimer}
+      submitTimer={submitTimer}
+      cancelTimer={cancelTimer}
+      getStatusColor={getStatusColor}
+    />
+  ) : (
+    <TimeTrackerComponentSmall
+      showSmall={showSmall}
+      setShowSmall={setShowSmall}
+      state={state}
+      activeTime={activeTime}
+      pausedTime={pausedTime}
+      startTimer={startTimer}
+      pauseTimer={pauseTimer}
+      resumeTimer={resumeTimer}
+      submitTimer={submitTimer}
+      cancelTimer={cancelTimer}
+      getStatusColor={getStatusColor}
+    />
   );
 }

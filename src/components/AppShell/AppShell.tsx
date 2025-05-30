@@ -11,13 +11,7 @@ import { useWorkStore } from "@/stores/workManagerStore";
 
 import classes from "./AppShell.module.css";
 
-import {
-  AppShell,
-  Burger,
-  Group,
-  Stack,
-  ActionIcon,
-} from "@mantine/core";
+import { AppShell, Burger, Group, Stack, ActionIcon } from "@mantine/core";
 import { IconArrowBarLeft } from "@tabler/icons-react";
 import Navbar from "@/components/Navbar/Navbar";
 import TimeTrackerComponent from "../TimeTracker/TimeTrackerComponent";
@@ -98,8 +92,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <NotificationAside asideOpened={isAsideOpen} />
             </Group>
           </Stack>
-
-          <TimeTrackerComponent />
+          <TimeTrackerComponent isBig={isAsideOpen} />
           <Group pl="sm" justify="flex-start" w="100%">
             <ActionIcon
               onClick={toggleAside}
