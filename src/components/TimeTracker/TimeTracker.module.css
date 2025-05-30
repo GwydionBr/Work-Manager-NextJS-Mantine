@@ -1,13 +1,13 @@
 .timeTrackerContainer {
-  position: absolute;
+  /* position: absolute;
   left: 15;
-  top: 250;
+  top: 250; */
   width: 220;
 
-  @media (max-height: 650px) {
+  /* @media (max-height: 650px) {
     left: 10;
     top: 100;
-  }
+  } */
 }
 
 .icon {

@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUserStore } from "@/stores/userStore";
 import { useGroupStore } from "@/stores/groupStore";
 
-import { ActionIcon, Box, Indicator, Popover } from "@mantine/core";
+import { ActionIcon, Box, Indicator, Popover, Transition } from "@mantine/core";
 import { IconBellFilled } from "@tabler/icons-react";
 import NotificationAsideCard from "./NotificationAsideCard";
 import NotificationPopover from "./NotificationPopover";
@@ -19,6 +19,18 @@ export default function NotificationAside({
   const { requestedFriends } = useUserStore();
   const { groupRequests } = useGroupStore();
   const [opened, setOpened] = useState(false);
+  const [showCard, setShowCard] = useState(false);
+
+  useEffect(() => {
+    if (
+      asideOpened &&
+      (requestedFriends.length > 0 || groupRequests.length > 0)
+    ) {
+      setShowCard(true);
+    } else {
+      setShowCard(false);
+    }
+  }, [asideOpened, requestedFriends, groupRequests]);
 
   function toggleOpened() {
     if (asideOpened) {
@@ -57,9 +69,18 @@ export default function NotificationAside({
           </Popover.Dropdown>
         )}
       </Popover>
-      {(requestedFriends.length > 0 || groupRequests.length > 0) && (
-        <NotificationAsideCard />
-      )}
+      <Transition
+        mounted={showCard}
+        transition="fade"
+        duration={200}
+        enterDelay={100}
+      >
+        {(styles) => (
+          <div style={styles}>
+            <NotificationAsideCard />
+          </div>
+        )}
+      </Transition>
     </Box>
   );
 }

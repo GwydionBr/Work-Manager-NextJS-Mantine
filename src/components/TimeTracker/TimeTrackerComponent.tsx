@@ -5,10 +5,11 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import { useTimeTracker } from "@/stores/timeTrackerStore";
 import { useWorkStore } from "@/stores/workManagerStore";
 
-import { roundTime } from "@/utils/workHelperFunctions";
-
+import { Transition } from "@mantine/core";
 import TimeTrackerComponentBig from "./TimeTrackerComponentBig";
 import TimeTrackerComponentSmall from "./TimeTrackerComponentSmall";
+
+import { roundTime } from "@/utils/workHelperFunctions";
 
 export default function TimeTrackerComponent({ isBig }: { isBig: boolean }) {
   const {
@@ -74,35 +75,58 @@ export default function TimeTrackerComponent({ isBig }: { isBig: boolean }) {
     }
   }
 
-  return isBig ? (
-    <TimeTrackerComponentBig
-      state={state}
-      projectTitle={projectTitle}
-      moneyEarned={moneyEarned}
-      activeTime={activeTime}
-      pausedTime={pausedTime}
-      currency={currency}
-      errorMessage={errorMessage}
-      startTimer={startTimer}
-      pauseTimer={pauseTimer}
-      resumeTimer={resumeTimer}
-      submitTimer={submitTimer}
-      cancelTimer={cancelTimer}
-      getStatusColor={getStatusColor}
-    />
-  ) : (
-    <TimeTrackerComponentSmall
-      showSmall={showSmall}
-      setShowSmall={setShowSmall}
-      state={state}
-      activeTime={activeTime}
-      pausedTime={pausedTime}
-      startTimer={startTimer}
-      pauseTimer={pauseTimer}
-      resumeTimer={resumeTimer}
-      submitTimer={submitTimer}
-      cancelTimer={cancelTimer}
-      getStatusColor={getStatusColor}
-    />
+  return (
+    <>
+      <Transition
+        mounted={isBig}
+        transition="fade"
+        duration={200}
+        enterDelay={200}
+      >
+        {(styles) => (
+          <div style={styles}>
+            <TimeTrackerComponentBig
+              state={state}
+              projectTitle={projectTitle}
+              moneyEarned={moneyEarned}
+              activeTime={activeTime}
+              pausedTime={pausedTime}
+              currency={currency}
+              errorMessage={errorMessage}
+              startTimer={startTimer}
+              pauseTimer={pauseTimer}
+              resumeTimer={resumeTimer}
+              submitTimer={submitTimer}
+              cancelTimer={cancelTimer}
+              getStatusColor={getStatusColor}
+            />
+          </div>
+        )}
+      </Transition>
+      <Transition
+        mounted={!isBig}
+        transition="fade"
+        duration={200}
+        enterDelay={200}
+      >
+        {(styles) => (
+          <div style={styles}>
+            <TimeTrackerComponentSmall
+              showSmall={showSmall}
+              setShowSmall={setShowSmall}
+              state={state}
+              activeTime={activeTime}
+              pausedTime={pausedTime}
+              startTimer={startTimer}
+              pauseTimer={pauseTimer}
+              resumeTimer={resumeTimer}
+              submitTimer={submitTimer}
+              cancelTimer={cancelTimer}
+              getStatusColor={getStatusColor}
+            />
+          </div>
+        )}
+      </Transition>
+    </>
   );
 }
