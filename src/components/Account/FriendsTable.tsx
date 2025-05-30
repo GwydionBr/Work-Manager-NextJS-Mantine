@@ -1,4 +1,4 @@
-import { ActionIcon, Avatar, Box, Table } from "@mantine/core";
+import { ActionIcon, Avatar, Box, Group, Table } from "@mantine/core";
 
 import { Friend } from "@/stores/userStore";
 
@@ -28,20 +28,22 @@ export default function FriendsTable({
       <Table.Td>{friend.profile.email}</Table.Td>
       {icon && (
         <Table.Td>
-          <ActionIcon
-            variant="transparent"
-            onClick={() => iconAction?.(friend.friendshipId)}
-          >
-            {icon}
-          </ActionIcon>
-          {secondaryIcon && (
+          <Group gap={5} wrap="nowrap">
             <ActionIcon
-              variant="transparent"
-              onClick={() => secondaryIconAction?.(friend.friendshipId)}
+              variant="outline"
+              onClick={() => iconAction?.(friend.friendshipId)}
             >
-              {secondaryIcon}
+              {icon}
             </ActionIcon>
-          )}
+            {secondaryIcon && (
+              <ActionIcon
+                variant="outline"
+                onClick={() => secondaryIconAction?.(friend.friendshipId)}
+              >
+                {secondaryIcon}
+              </ActionIcon>
+            )}
+          </Group>
         </Table.Td>
       )}
     </Table.Tr>

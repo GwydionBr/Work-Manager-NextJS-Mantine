@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { useDisclosure } from "@mantine/hooks";
 import { useUserStore } from "@/stores/userStore";
 
 import { Divider, Grid, Group, Stack, Text } from "@mantine/core";
@@ -11,9 +13,21 @@ import {
   IconX,
   IconCheck,
 } from "@tabler/icons-react";
+import ConfirmDeleteModal from "../UI/ConfirmDeleteModal";
 import FriendsTable from "./FriendsTable";
 
+interface ModalInformation {
+  title: string;
+  message: string;
+  onDelete: () => void;
+  onCancel: () => void;
+}
+
 export default function FriendList() {
+  const [modalInformation, setModalInformation] =
+    useState<ModalInformation | null>(null);
+  const [modalOpened, modalHandler] = useDisclosure(false);
+
   const {
     friends,
     requestedFriends,
@@ -23,6 +37,28 @@ export default function FriendList() {
     declineFriend,
     removeFriend,
   } = useUserStore();
+
+  function handleRemoveFriend(id: string) {
+    setModalInformation({
+      title: "Remove Friend",
+      message:
+        "Are you sure you want to remove this friend?",
+      onDelete: () => removeFriend(id),
+      onCancel: () => modalHandler.close(),
+    });
+    modalHandler.open();
+  }
+
+  function handleDeclineFriend(id: string) {
+    setModalInformation({
+      title: "Decline Friend Request",
+      message:
+        "Are you sure you want to decline this friend request?",
+      onDelete: () => declineFriend(id),
+      onCancel: () => modalHandler.close(),
+    });
+    modalHandler.open();
+  }
 
   return (
     <Grid w="100%">
@@ -36,7 +72,7 @@ export default function FriendList() {
             friends={friends}
             emptyMessage={<Text>Add some friends to see them here</Text>}
             icon={<IconX color="red" />}
-            iconAction={removeFriend}
+            iconAction={handleRemoveFriend}
           />
         </Stack>
       </Grid.Col>
@@ -52,7 +88,7 @@ export default function FriendList() {
             icon={<IconCheck color="green" />}
             iconAction={acceptFriend}
             secondaryIcon={<IconX color="red" />}
-            secondaryIconAction={declineFriend}
+            secondaryIconAction={handleDeclineFriend}
           />
           {pendingFriends.length > 0 && (
             <Stack>
@@ -76,6 +112,13 @@ export default function FriendList() {
           )}
         </Stack>
       </Grid.Col>
+      <ConfirmDeleteModal
+        opened={modalOpened}
+        onClose={modalHandler.close}
+        onDelete={modalInformation?.onDelete || (() => {})}
+        title={modalInformation?.title || ""}
+        message={modalInformation?.message || ""}
+      />
     </Grid>
   );
 }
