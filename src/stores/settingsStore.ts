@@ -8,12 +8,12 @@ import {
   RoundingDirection,
 } from "@/types/settings.types";
 import * as actions from "@/actions";
-import { Tables } from "@/types/db.types";
 
 interface SettingsState {
-  settings: Tables<"settings"> | null;
-  currency: Currency;
-  financeCurrency: Currency;
+  settingsId: string | null;
+  defaultSalaryCurrency: Currency;
+  defaultSalaryAmount: number;
+  defaultFinanceCurrency: Currency;
   roundingAmount: RoundingAmount;
   roundingMode: RoundingDirection;
   customRoundingAmount: number;
@@ -22,72 +22,82 @@ interface SettingsState {
 
 interface SettingsActions {
   fetchSettings: () => void;
-  setCurrency: (currency: Currency) => void;
+  setDefaultSalaryCurrency: (currency: Currency) => void;
+  setDefaultSalaryAmount: (salaryAmount: number) => void;
+  setDefaultFinanceCurrency: (financeCurrency: Currency) => void;
   setRoundingAmount: (roundingAmount: RoundingAmount) => void;
   setRoundingMode: (roundingMode: RoundingDirection) => void;
   setCustomRoundingAmount: (customRoundingAmount: number) => void;
-  setFinanceCurrency: (financeCurrency: Currency) => void;
   setIsAsideOpen: (isAsideOpen: boolean) => void;
 }
 
 export const useSettingsStore = create<SettingsState & SettingsActions>()(
   persist(
     (set, get) => ({
-      settings: null,
-      currency: "USD",
-      financeCurrency: "USD",
-      roundingAmount: "min",
+      settingsId: null,
+      defaultSalaryCurrency: "USD",
+      defaultFinanceCurrency: "USD",
+      roundingAmount: "s",
       roundingMode: "up",
       customRoundingAmount: 0,
+      defaultSalaryAmount: 0,
       isAsideOpen: true,
 
       fetchSettings: async () => {
         const { data } = await actions.getSettings();
         if (data) {
           set({
-            settings: data,
-            currency: data.default_currency,
+            settingsId: data.id,
+            defaultSalaryCurrency: data.default_currency,
+            defaultSalaryAmount: data.default_salary_amount,
+            defaultFinanceCurrency: data.default_finance_currency,
             roundingAmount: data.rounding_amount,
             roundingMode: data.rounding_direction,
             customRoundingAmount: data.rounding_custom_amount,
-            financeCurrency: data.default_finance_currency,
           });
         }
       },
-      setCurrency: async (currency: Currency) => {
+      setDefaultSalaryCurrency: async (currency: Currency) => {
         await actions.updateSettings({
-          id: get().settings?.id,
+          id: get().settingsId ?? "",
           default_currency: currency,
         });
-        set({ currency: currency });
+        set({ defaultSalaryCurrency: currency });
+      },
+      setDefaultSalaryAmount: async (salaryAmount: number) => {
+        await actions.updateSettings({
+          id: get().settingsId ?? "",
+          default_salary_amount: salaryAmount,
+        });
+        set({ defaultSalaryAmount: salaryAmount });
       },
       setRoundingAmount: async (roundingAmount: RoundingAmount) => {
         await actions.updateSettings({
-          id: get().settings?.id,
+          id: get().settingsId ?? "",
           rounding_amount: roundingAmount,
         });
         set({ roundingAmount: roundingAmount });
       },
       setRoundingMode: async (roundingMode: RoundingDirection) => {
         await actions.updateSettings({
-          id: get().settings?.id,
+          id: get().settingsId ?? "",
           rounding_direction: roundingMode,
         });
         set({ roundingMode: roundingMode });
       },
       setCustomRoundingAmount: async (customRoundingAmount: number) => {
         await actions.updateSettings({
-          id: get().settings?.id,
+          id: get().settingsId ?? "",
           rounding_custom_amount: customRoundingAmount,
         });
         set({ customRoundingAmount: customRoundingAmount });
       },
-      setFinanceCurrency: async (financeCurrency: Currency) => {
+      setDefaultFinanceCurrency: async (financeCurrency: Currency) => {
         await actions.updateSettings({
-          id: get().settings?.id,
+          id: get().settingsId ?? "",
           default_finance_currency: financeCurrency,
         });
-        set({ financeCurrency: financeCurrency });
+        set({ defaultFinanceCurrency: financeCurrency });
       },
       setIsAsideOpen: (isAsideOpen: boolean) => {
         set({ isAsideOpen: isAsideOpen });

@@ -250,6 +250,7 @@ export type Database = {
           created_at: string;
           default_currency: Database["public"]["Enums"]["currency"];
           default_finance_currency: Database["public"]["Enums"]["currency"];
+          default_salary_amount: number;
           id: string;
           rounding_amount: Database["public"]["Enums"]["roundingAmount"];
           rounding_custom_amount: number;
@@ -261,6 +262,7 @@ export type Database = {
           created_at?: string;
           default_currency?: Database["public"]["Enums"]["currency"];
           default_finance_currency?: Database["public"]["Enums"]["currency"];
+          default_salary_amount?: number;
           id?: string;
           rounding_amount?: Database["public"]["Enums"]["roundingAmount"];
           rounding_custom_amount?: number;
@@ -272,6 +274,7 @@ export type Database = {
           created_at?: string;
           default_currency?: Database["public"]["Enums"]["currency"];
           default_finance_currency?: Database["public"]["Enums"]["currency"];
+          default_salary_amount?: number;
           id?: string;
           rounding_amount?: Database["public"]["Enums"]["roundingAmount"];
           rounding_custom_amount?: number;

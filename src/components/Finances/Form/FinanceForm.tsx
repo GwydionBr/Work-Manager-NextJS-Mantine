@@ -39,7 +39,7 @@ export default function FinanceForm({ onClose }: FinanceFormProps) {
   const [isRecurring, setIsRecurring] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { financeCurrency } = useSettingsStore();
+  const { defaultFinanceCurrency: financeCurrency } = useSettingsStore();
   const { addSingleCashFlow, addRecurringCashFlow } = useFinanceStore();
 
   async function handleSingleFinanceSubmit(values: SingleFinanceFormValues) {

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Drawer, Flex } from "@mantine/core";
 import ProjectForm from "@/components/Work/Project/ProjectForm";
@@ -14,6 +15,7 @@ export default function NewProjectButton() {
   const [opened, { open, close }] = useDisclosure(false);
   const [submitting, setSubmitting] = useState(false);
   const { addProject } = useWorkStore();
+  const { defaultSalaryCurrency, defaultSalaryAmount } = useSettingsStore();
   async function handleSubmit(values: {
     title: string;
     description: string;
@@ -42,8 +44,8 @@ export default function NewProjectButton() {
             initialValues={{
               title: "",
               description: "",
-              salary: 0,
-              currency: "$",
+              salary: defaultSalaryAmount,
+              currency: defaultSalaryCurrency,
             }}
             onSubmit={handleSubmit}
             onCancel={close}

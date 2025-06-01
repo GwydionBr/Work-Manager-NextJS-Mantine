@@ -10,7 +10,7 @@ import { RoundingAmount, RoundingDirection } from "@/types/settings.types";
 
 import classes from "./Settings.module.css";
 
-export default function SelectTimerRounding() {
+export default function RoundingSettings() {
   const {
     roundingAmount,
     roundingMode,
@@ -41,7 +41,7 @@ export default function SelectTimerRounding() {
           loading={loading}
           disabled={loading}
         >
-          Submit
+          Save
         </Button>
       )}
       {roundingAmount === "custom" && (
