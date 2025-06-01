@@ -10,7 +10,13 @@ import classes from "./Settings.module.css";
 
 export default function SettingsPage() {
   return (
-    <Box className={classes.settingsMainContainer} px="xl" w="100%">
+    <Box
+      className={classes.settingsMainContainer}
+      px="xl"
+      w="100%"
+      maw={1200}
+      mx="auto"
+    >
       <Header headerTitle="Settings Page" />
       <Stack w="100%">
         <SettingsRow title="Color Scheme" children={<SchemeButtonGroup />} />

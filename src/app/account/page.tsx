@@ -5,11 +5,9 @@ import Header from "@/components/Header/Header";
 import Profile from "@/components/Account/Profile";
 import FriendCard from "@/components/Account/FriendCard";
 
-import classes from "./Account.module.css";
-
 export default function AccountPage() {
   return (
-    <Box className={classes.accountMainContainer}>
+    <Box px="xl" w="100%" maw={1200} mx="auto">
       <Header headerTitle="Account" />
       <Grid w="100%" px="xl" justify="center">
         <Grid.Col span={{ base: 6 }}>

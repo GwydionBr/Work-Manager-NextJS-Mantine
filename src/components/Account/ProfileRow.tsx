@@ -17,14 +17,19 @@ export default function ProfileRow({
   const { profile: userProfile } = useUserStore();
 
   return (
-    <Group justify="space-between" className={classes.profileRow}>
+    <Group
+      justify="space-between"
+      className={classes.profileRow}
+      style={{
+        border: profile.id === userProfile?.id ? "2px solid teal" : "none",
+      }}
+    >
       <Group gap="sm">
         <Avatar
           src={profile.avatar_url}
           size={32}
-          color={profile.id === userProfile?.id ? "teal" : "cyan"}
+          color={profile.id === userProfile?.id ? "yellow" : "cyan"}
           variant="light"
-          bd={profile.id === userProfile?.id ? "2px solid red" : "none"}
         />
         <Text>{profile.username}</Text>
       </Group>

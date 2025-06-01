@@ -21,13 +21,13 @@ export default function GroupManagerPage() {
       {!isLoading && groups.length > 0 && (
         <Tabs defaultValue="Grocery List" w="100%" color={"teal.5"}>
           <Tabs.List grow my="xl">
-            <Tabs.Tab leftSection={<IconCalendar />} value="Calendar">
+            <Tabs.Tab leftSection={<IconCalendar color="light-dark(blue, cyan)" />} value="Calendar">
               Calendar
             </Tabs.Tab>
-            <Tabs.Tab leftSection={<IconList />} value="Grocery List">
+            <Tabs.Tab leftSection={<IconList color="light-dark(blue, cyan)" />} value="Grocery List">
               Grocery List
             </Tabs.Tab>
-            <Tabs.Tab leftSection={<IconChecklist />} value="To Do">
+            <Tabs.Tab leftSection={<IconChecklist color="light-dark(blue, cyan)" />} value="To Do">
               To Do
             </Tabs.Tab>
           </Tabs.List>
