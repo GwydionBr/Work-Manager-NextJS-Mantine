@@ -10,6 +10,7 @@ import Header from "@/components/Header/Header";
 import GroceryList from "@/components/GroupManager/Grocery/GroceryList";
 import GroupInitializer from "@/components/GroupManager/Group/GroupInitializer";
 import EditGroupButton from "@/components/GroupManager/Group/EditGroupButton";
+import TaskList from "@/components/GroupManager/ToDo/TaskList";
 
 export default function GroupManagerPage() {
   const { isLoading, groups, activeGroup } = useGroupStore();
@@ -19,7 +20,7 @@ export default function GroupManagerPage() {
       <Header headerTitle={activeGroup?.title || "Group Manager"} primaryButton={activeGroup ? <EditGroupButton /> : null}/>
       {isLoading && <Loader />}
       {!isLoading && groups.length > 0 && (
-        <Tabs defaultValue="Grocery List" w="100%" color={"teal.5"}>
+        <Tabs defaultValue="To Do" w="100%" color={"teal.5"}>
           <Tabs.List grow my="xl">
             <Tabs.Tab leftSection={<IconCalendar color="light-dark(blue, cyan)" />} value="Calendar">
               Calendar
@@ -42,7 +43,7 @@ export default function GroupManagerPage() {
             <GroceryList />
           </Tabs.Panel>
           <Tabs.Panel value="To Do">
-            <Text>To Do</Text>
+            <TaskList />
           </Tabs.Panel>
         </Tabs>
       )}

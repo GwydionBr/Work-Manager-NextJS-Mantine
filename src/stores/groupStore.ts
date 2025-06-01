@@ -13,6 +13,8 @@ export interface GroupRequest {
 
 export interface Group extends Tables<"group"> {
   groceryItems: Tables<"grocery_item">[];
+  groupTasks: Tables<"group_task">[];
+  recurringGroupTasks: Tables<"recurring_group_task">[];
   admins: Tables<"profiles">[];
   members: Tables<"profiles">[];
   invitedMemebers: Tables<"profiles">[];
@@ -31,6 +33,8 @@ interface GroupActions {
     group: TablesUpdate<"group">,
     invitedMembers?: Tables<"profiles">[],
     groupAdmins?: Tables<"profiles">[],
+    groupTasks?: Tables<"group_task">[],
+    recurringGroupTasks?: Tables<"recurring_group_task">[],
     isNewGroup?: boolean
   ) => void;
   addGroup: (
@@ -53,6 +57,10 @@ interface GroupActions {
   toggleGroceryItem: (id: string, checked: boolean) => Promise<boolean>;
   deleteGroceryItem: (id: string) => Promise<boolean>;
   answerGroupRequest: (requestId: string, answer: boolean) => void;
+  addSingleGroupTask: (task: TablesInsert<"group_task">) => Promise<boolean>;
+  addRecurringGroupTask: (
+    task: TablesInsert<"recurring_group_task">
+  ) => Promise<boolean>;
 }
 
 export const useGroupStore = create<GroupState & GroupActions>()(
@@ -66,6 +74,8 @@ export const useGroupStore = create<GroupState & GroupActions>()(
       group: TablesUpdate<"group">,
       invitedMembers?: Tables<"profiles">[],
       groupAdmins?: Tables<"profiles">[],
+      groupTasks?: Tables<"group_task">[],
+      recurringGroupTasks?: Tables<"recurring_group_task">[],
       isNewGroup: boolean = false
     ) => {
       const { groups, activeGroup } = get();
@@ -73,6 +83,8 @@ export const useGroupStore = create<GroupState & GroupActions>()(
         const newGroup: Group = {
           ...(group as Tables<"group">),
           groceryItems: [],
+          groupTasks: [],
+          recurringGroupTasks: [],
           admins: groupAdmins || [],
           members: [],
           invitedMemebers: invitedMembers || [],
@@ -85,6 +97,11 @@ export const useGroupStore = create<GroupState & GroupActions>()(
             ? {
                 ...g,
                 ...group,
+                groupTasks: [...g.groupTasks, ...(groupTasks || [])],
+                recurringGroupTasks: [
+                  ...(g.recurringGroupTasks || []),
+                  ...(recurringGroupTasks || []),
+                ],
                 invitedMemebers: [
                   ...g.invitedMemebers,
                   ...(invitedMembers || []),
@@ -98,6 +115,11 @@ export const useGroupStore = create<GroupState & GroupActions>()(
           const newActiveGroup: Group = {
             ...activeGroup,
             ...group,
+            groupTasks: [...activeGroup.groupTasks, ...(groupTasks || [])],
+            recurringGroupTasks: [
+              ...(activeGroup.recurringGroupTasks || []),
+              ...(recurringGroupTasks || []),
+            ],
             invitedMemebers: [
               ...activeGroup.invitedMemebers,
               ...(invitedMembers || []),
@@ -144,6 +166,8 @@ export const useGroupStore = create<GroupState & GroupActions>()(
           response.data.group,
           response.data.invitedMembers,
           [response.data.admin],
+          undefined,
+          undefined,
           true
         );
         return true;
@@ -283,6 +307,32 @@ export const useGroupStore = create<GroupState & GroupActions>()(
           set({ groupRequests: newGroupRequests });
         }
       }
+    },
+    addSingleGroupTask: async (task) => {
+      const { updateGroupData } = get();
+      const response = await actions.createSingleGroupTask(task);
+      if (response.success) {
+        updateGroupData({ id: task.group_id }, undefined, undefined, [
+          response.data,
+        ]);
+        return true;
+      }
+      return false;
+    },
+    addRecurringGroupTask: async (task) => {
+      const response = await actions.createRecurringGroupTask(task);
+      if (response.success) {
+        const { updateGroupData } = get();
+        updateGroupData(
+          { id: task.group_id },
+          undefined,
+          undefined,
+          undefined,
+          [response.data]
+        );
+        return true;
+      }
+      return false;
     },
   })
 );

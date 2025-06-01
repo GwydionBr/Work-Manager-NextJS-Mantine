@@ -2,9 +2,11 @@ import { Tables } from "@/types/db.types";
 
 // Liste der erlaubten Tabellen
 export type TableNames =
-  | "grocery_item"
   | "group"
   | "group_member"
+  | "grocery_item"
+  | "group_task"
+  | "recurring_group_task"
   | "profiles"
   | "recurring_cash_flow"
   | "settings"

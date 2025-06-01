@@ -173,6 +173,44 @@ export type Database = {
           },
         ];
       };
+      group_task: {
+        Row: {
+          created_at: string;
+          exectution_date: string;
+          executed: boolean;
+          group_id: string;
+          id: string;
+          title: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          exectution_date?: string;
+          executed?: boolean;
+          group_id: string;
+          id?: string;
+          title?: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          exectution_date?: string;
+          executed?: boolean;
+          group_id?: string;
+          id?: string;
+          title?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "group_task_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "group";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       profiles: {
         Row: {
           avatar_url: string | null;
@@ -247,6 +285,50 @@ export type Database = {
           user_id?: string;
         };
         Relationships: [];
+      };
+      recurring_group_task: {
+        Row: {
+          created_at: string;
+          date_time: string;
+          end_date: string | null;
+          group_id: string;
+          id: string;
+          interval_days: number;
+          start_date: string;
+          title: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          date_time?: string;
+          end_date?: string | null;
+          group_id: string;
+          id?: string;
+          interval_days: number;
+          start_date?: string;
+          title?: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          date_time?: string;
+          end_date?: string | null;
+          group_id?: string;
+          id?: string;
+          interval_days?: number;
+          start_date?: string;
+          title?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "recurring_group_task_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "group";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       settings: {
         Row: {
@@ -432,6 +514,7 @@ export type Database = {
       roundingAmount: "s" | "min" | "1/4h" | "1/2h" | "h" | "custom";
       roundingDirection: "up" | "down" | "nearest";
       status: "pending" | "accepted" | "declined";
+      weekdays: "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -576,6 +659,7 @@ export const Constants = {
       roundingAmount: ["s", "min", "1/4h", "1/2h", "h", "custom"],
       roundingDirection: ["up", "down", "nearest"],
       status: ["pending", "accepted", "declined"],
+      weekdays: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
     },
   },
 } as const;

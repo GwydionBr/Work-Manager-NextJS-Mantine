@@ -54,6 +54,8 @@ export {
   declineGroupRequest,
 } from "./group/answerGroupRequest";
 export { insertGroupMembers } from "./group/insertGroupMemebers";
+export { createSingleGroupTask } from "./group/task/createSingleTask";
+export { createRecurringGroupTask } from "./group/task/createRecurringTask";
 
 // Grocery Item Actions
 export {

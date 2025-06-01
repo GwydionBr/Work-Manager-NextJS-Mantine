@@ -65,6 +65,19 @@ export async function getAllGroups(): Promise<
     return { success: false, data: null, error: groceryError.message };
   }
 
+  // Get all group tasks for the groups
+  const { data: groupTaskData, error: groupTaskError } = await supabase
+    .from("group_task")
+    .select("*")
+    .in(
+      "group_id",
+      groupData.map((group) => group.id)
+    );
+
+  if (groupTaskError) {
+    return { success: false, data: null, error: groupTaskError.message };
+  }
+
   // Get all members for the groups
   const { data: allMembers, error: allMembersError } = await supabase
     .from("group_member")
@@ -128,6 +141,9 @@ export async function getAllGroups(): Promise<
           (member) =>
             member.user_id === profile.id && member.status === "pending"
         )
+      ),
+      groupTasks: groupTaskData.filter(
+        (task) => task.group_id === group.id
       ),
     });
   }
