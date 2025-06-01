@@ -35,6 +35,7 @@ export default function TimerSessionDrawer({
 
     const newSession: Tables<"timerSession"> = {
       ...values,
+      created_at: new Date().toISOString(),
       id: timerSession.id,
       project_id: timerSession.project_id,
       user_id: timerSession.user_id,
