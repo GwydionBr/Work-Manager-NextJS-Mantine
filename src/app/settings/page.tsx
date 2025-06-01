@@ -18,8 +18,8 @@ export default function SettingsPage() {
           title="Timer Rounding"
           children={<SelectTimerRounding />}
         />
-        <SettingsRow title="Finances" children={<FinanceSettings />} />
         <SettingsRow title="Work Settings" children={<WorkSettings />} />
+        <SettingsRow title="Finances" children={<FinanceSettings />} />
       </Stack>
     </Box>
   );
