@@ -20,7 +20,7 @@ export default function GroupManagerPage() {
       <Header headerTitle={activeGroup?.title || "Group Manager"} primaryButton={activeGroup ? <EditGroupButton /> : null}/>
       {isLoading && <Loader />}
       {!isLoading && groups.length > 0 && (
-        <Tabs defaultValue="To Do" w="100%" color={"teal.5"}>
+        <Tabs defaultValue="Grocery List" w="100%" color={"teal.5"}>
           <Tabs.List grow my="xl">
             <Tabs.Tab leftSection={<IconCalendar color="light-dark(blue, cyan)" />} value="Calendar">
               Calendar

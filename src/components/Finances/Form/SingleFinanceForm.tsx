@@ -61,7 +61,12 @@ export default function SingleFinanceForm({
   return (
     <form onSubmit={form.onSubmit(handleFormSubmit)}>
       <Stack>
-        <TextInput withAsterisk label="Name" {...form.getInputProps("name")} />
+        <TextInput
+          withAsterisk
+          label="Name"
+          {...form.getInputProps("name")}
+          data-autofocus
+        />
         <NumberInput
           withAsterisk
           allowNegative={false}

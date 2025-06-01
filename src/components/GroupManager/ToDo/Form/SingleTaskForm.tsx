@@ -80,7 +80,12 @@ export default function SingleTaskForm({
   return (
     <form onSubmit={form.onSubmit(handleFormSubmit)} ref={focusTrapRef}>
       <Stack>
-        <TextInput withAsterisk label="Name" {...form.getInputProps("name")} />
+        <TextInput
+          withAsterisk
+          label="Name"
+          {...form.getInputProps("name")}
+          data-autofocus
+        />
         <Select
           withAsterisk
           label="Member"

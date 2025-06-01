@@ -81,7 +81,12 @@ export default function RecurringFinanceForm({
   return (
     <form onSubmit={form.onSubmit(handleFormSubmit)}>
       <Stack>
-        <TextInput withAsterisk label="Name" {...form.getInputProps("name")} />
+        <TextInput
+          withAsterisk
+          label="Name"
+          {...form.getInputProps("name")}
+          data-autofocus
+        />
         <TextInput label="Description" {...form.getInputProps("description")} />
         <NumberInput
           withAsterisk

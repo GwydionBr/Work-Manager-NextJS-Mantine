@@ -1,3 +1,5 @@
+"use client";
+
 import { useForm } from "@mantine/form";
 
 import {
@@ -48,6 +50,7 @@ export default function ProjectForm({
     <form onSubmit={form.onSubmit(onSubmit)}>
       <Stack>
         <TextInput
+          data-autofocus
           label="Title"
           placeholder="Enter project title"
           {...form.getInputProps("title")}

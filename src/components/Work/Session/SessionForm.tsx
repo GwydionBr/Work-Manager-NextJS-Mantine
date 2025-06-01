@@ -50,12 +50,8 @@ export default function SessionForm({
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
       <Stack>
-        <DateTimePicker
-          label="Start Time"
-          value={form.values.start_time}
-          {...form.getInputProps("start_time")}
-        />
         <NumberInput
+          data-autofocus
           label="Active Seconds"
           min={0}
           step={1}
@@ -72,6 +68,11 @@ export default function SessionForm({
           min={0}
           step={0.01}
           {...form.getInputProps("salary")}
+        />
+        <DateTimePicker
+          label="Start Time"
+          value={form.values.start_time}
+          {...form.getInputProps("start_time")}
         />
         <Select
           label="Currency"

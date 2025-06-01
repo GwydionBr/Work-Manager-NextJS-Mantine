@@ -79,7 +79,12 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
   return (
     <form onSubmit={form.onSubmit(handleFormSubmit)}>
       <Stack>
-        <TextInput withAsterisk label="Name" {...form.getInputProps("title")} />
+        <TextInput
+          withAsterisk
+          label="Name"
+          {...form.getInputProps("title")}
+          data-autofocus
+        />
         <TextInput label="Description" {...form.getInputProps("description")} />
         <MultiSelect
           label="Add Friends to the Group"

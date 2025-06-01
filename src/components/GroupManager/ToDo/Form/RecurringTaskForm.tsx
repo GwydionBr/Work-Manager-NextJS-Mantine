@@ -81,7 +81,12 @@ export default function RecurringTaskForm({
   return (
     <form onSubmit={form.onSubmit(handleFormSubmit)}>
       <Stack>
-        <TextInput withAsterisk label="Name" {...form.getInputProps("name")} />
+        <TextInput
+          withAsterisk
+          label="Name"
+          {...form.getInputProps("name")}
+          data-autofocus
+        />
         <Select
           label="Member"
           data={allMemberIds}
