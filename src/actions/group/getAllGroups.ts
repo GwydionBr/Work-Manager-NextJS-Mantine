@@ -78,6 +78,23 @@ export async function getAllGroups(): Promise<
     return { success: false, data: null, error: groupTaskError.message };
   }
 
+  const { data: recurringGroupTaskData, error: recurringGroupTaskError } =
+    await supabase
+      .from("recurring_group_task")
+      .select("*")
+      .in(
+        "group_id",
+        groupData.map((group) => group.id)
+      );
+
+  if (recurringGroupTaskError) {
+    return {
+      success: false,
+      data: null,
+      error: recurringGroupTaskError.message,
+    };
+  }
+
   // Get all members for the groups
   const { data: allMembers, error: allMembersError } = await supabase
     .from("group_member")
@@ -142,7 +159,8 @@ export async function getAllGroups(): Promise<
             member.user_id === profile.id && member.status === "pending"
         )
       ),
-      groupTasks: groupTaskData.filter(
+      groupTasks: groupTaskData.filter((task) => task.group_id === group.id),
+      recurringGroupTasks: recurringGroupTaskData.filter(
         (task) => task.group_id === group.id
       ),
     });

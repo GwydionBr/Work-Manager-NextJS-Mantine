@@ -51,6 +51,27 @@ export async function getGroupById(groupId: string): Promise<
     return { success: false, data: null, error: groceryError.message };
   }
 
+  // Get all group tasks for the group
+  const { data: groupTaskData, error: groupTaskError } = await supabase
+    .from("group_task")
+    .select("*")
+    .eq("group_id", groupId);
+
+  if (groupTaskError) {
+    return { success: false, data: null, error: groupTaskError.message };
+  }
+
+  // Get all recurring group tasks for the group
+  const { data: recurringGroupTaskData, error: recurringGroupTaskError } =
+    await supabase
+      .from("recurring_group_task")
+      .select("*")
+      .eq("group_id", groupId);
+
+  if (recurringGroupTaskError) {
+    return { success: false, data: null, error: recurringGroupTaskError.message };
+  }
+
   // Get all members for the group
   const { data: allMembers, error: allMembersError } = await supabase
     .from("group_member")
@@ -99,6 +120,8 @@ export async function getGroupById(groupId: string): Promise<
         (member) => member.user_id === profile.id && member.status === "pending"
       )
     ),
+    groupTasks: groupTaskData,
+    recurringGroupTasks: recurringGroupTaskData,
   };
 
   return { success: true, data: groupContent, error: null };
