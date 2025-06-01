@@ -68,7 +68,7 @@ export default function TimeTrackerComponentBig({
 
         {errorMessage && (
           <Paper p="xs" bg="red.1">
-            <Text c="red" size="sm">
+            <Text c="red.9" size="sm">
               {errorMessage}
             </Text>
           </Paper>

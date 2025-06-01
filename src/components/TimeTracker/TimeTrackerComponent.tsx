@@ -28,7 +28,7 @@ export default function TimeTrackerComponent({ isBig }: { isBig: boolean }) {
     configureProject,
   } = useTimeTracker();
 
-  const { roundingAmount, roundingMode } = useSettingsStore();
+  const { roundingAmount, roundingMode, customRoundingAmount } = useSettingsStore();
   const { addTimerSession, activeProject } = useWorkStore();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showSmall, setShowSmall] = useState(true);
@@ -64,7 +64,8 @@ export default function TimeTrackerComponent({ isBig }: { isBig: boolean }) {
     newSession.active_seconds = roundTime(
       newSession.active_seconds,
       roundingAmount,
-      roundingMode
+      roundingMode,
+      customRoundingAmount
     );
     pauseTimer();
     const result = await addTimerSession(newSession);

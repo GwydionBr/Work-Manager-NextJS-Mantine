@@ -39,6 +39,7 @@ export const roundingAmounts: { value: RoundingAmount; label: string }[] = [
   { value: "1/4h", label: "Quarter Hour" },
   { value: "1/2h", label: "Half Hour" },
   { value: "h", label: "Hour" },
+  { value: "custom", label: "Custom" },
 ];
 
 export const roundingModes: { value: RoundingDirection; label: string }[] = [

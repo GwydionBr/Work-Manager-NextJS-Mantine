@@ -8,7 +8,8 @@ import { shortCurrencies } from "@/constants/settings";
 export function roundTime(
   seconds: number,
   roundingAmount: RoundingAmount,
-  roundingMode: RoundingDirection
+  roundingMode: RoundingDirection,
+  customRoundingAmount?: number
 ) {
   if (roundingAmount === "s") {
     return seconds;
@@ -27,6 +28,9 @@ export function roundTime(
       break;
     case "h":
       roundingInterval = 3600; // 1 hour
+      break;
+    case "custom":
+      roundingInterval = (customRoundingAmount ?? 0) * 60;
       break;
     default:
       return seconds;

@@ -173,6 +173,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null;
+          created_at: string;
           email: string;
           full_name: string | null;
           id: string;
@@ -182,6 +183,7 @@ export type Database = {
         };
         Insert: {
           avatar_url?: string | null;
+          created_at?: string;
           email?: string;
           full_name?: string | null;
           id: string;
@@ -191,6 +193,7 @@ export type Database = {
         };
         Update: {
           avatar_url?: string | null;
+          created_at?: string;
           email?: string;
           full_name?: string | null;
           id?: string;
@@ -203,6 +206,7 @@ export type Database = {
       recurring_cash_flow: {
         Row: {
           amount: number;
+          created_at: string;
           currency: Database["public"]["Enums"]["currency"];
           description: string;
           end_date: string | null;
@@ -215,6 +219,7 @@ export type Database = {
         };
         Insert: {
           amount: number;
+          created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           description: string;
           end_date?: string | null;
@@ -227,6 +232,7 @@ export type Database = {
         };
         Update: {
           amount?: number;
+          created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           description?: string;
           end_date?: string | null;
@@ -241,27 +247,36 @@ export type Database = {
       };
       settings: {
         Row: {
+          created_at: string;
           default_currency: Database["public"]["Enums"]["currency"];
           default_finance_currency: Database["public"]["Enums"]["currency"];
           id: string;
           rounding_amount: Database["public"]["Enums"]["roundingAmount"];
+          rounding_custom_amount: number;
           rounding_direction: Database["public"]["Enums"]["roundingDirection"];
+          updated_at: string;
           user_id: string;
         };
         Insert: {
+          created_at?: string;
           default_currency?: Database["public"]["Enums"]["currency"];
           default_finance_currency?: Database["public"]["Enums"]["currency"];
           id?: string;
           rounding_amount?: Database["public"]["Enums"]["roundingAmount"];
+          rounding_custom_amount?: number;
           rounding_direction?: Database["public"]["Enums"]["roundingDirection"];
+          updated_at?: string;
           user_id?: string;
         };
         Update: {
+          created_at?: string;
           default_currency?: Database["public"]["Enums"]["currency"];
           default_finance_currency?: Database["public"]["Enums"]["currency"];
           id?: string;
           rounding_amount?: Database["public"]["Enums"]["roundingAmount"];
+          rounding_custom_amount?: number;
           rounding_direction?: Database["public"]["Enums"]["roundingDirection"];
+          updated_at?: string;
           user_id?: string;
         };
         Relationships: [];
@@ -269,6 +284,7 @@ export type Database = {
       single_cash_flow: {
         Row: {
           amount: number;
+          created_at: string;
           currency: Database["public"]["Enums"]["currency"];
           date: string;
           id: string;
@@ -278,6 +294,7 @@ export type Database = {
         };
         Insert: {
           amount: number;
+          created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           date: string;
           id?: string;
@@ -287,6 +304,7 @@ export type Database = {
         };
         Update: {
           amount?: number;
+          created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           date?: string;
           id?: string;
@@ -298,6 +316,7 @@ export type Database = {
       };
       timerProject: {
         Row: {
+          created_at: string | null;
           currency: Database["public"]["Enums"]["currency"];
           description: string;
           id: string;
@@ -307,6 +326,7 @@ export type Database = {
           user_id: string;
         };
         Insert: {
+          created_at?: string | null;
           currency?: Database["public"]["Enums"]["currency"];
           description: string;
           id?: string;
@@ -316,6 +336,7 @@ export type Database = {
           user_id?: string;
         };
         Update: {
+          created_at?: string | null;
           currency?: Database["public"]["Enums"]["currency"];
           description?: string;
           id?: string;
@@ -329,6 +350,7 @@ export type Database = {
       timerSession: {
         Row: {
           active_seconds: number;
+          created_at: string;
           currency: Database["public"]["Enums"]["currency"];
           end_time: string;
           id: string;
@@ -340,6 +362,7 @@ export type Database = {
         };
         Insert: {
           active_seconds: number;
+          created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           end_time: string;
           id?: string;
@@ -351,6 +374,7 @@ export type Database = {
         };
         Update: {
           active_seconds?: number;
+          created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           end_time?: string;
           id?: string;
@@ -399,7 +423,7 @@ export type Database = {
         | "1/4 year"
         | "1/2 year"
         | "year";
-      roundingAmount: "s" | "min" | "1/4h" | "1/2h" | "h";
+      roundingAmount: "s" | "min" | "1/4h" | "1/2h" | "h" | "custom";
       roundingDirection: "up" | "down" | "nearest";
       status: "pending" | "accepted" | "declined";
     };
@@ -543,7 +567,7 @@ export const Constants = {
         "1/2 year",
         "year",
       ],
-      roundingAmount: ["s", "min", "1/4h", "1/2h", "h"],
+      roundingAmount: ["s", "min", "1/4h", "1/2h", "h", "custom"],
       roundingDirection: ["up", "down", "nearest"],
       status: ["pending", "accepted", "declined"],
     },
