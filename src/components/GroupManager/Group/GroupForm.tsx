@@ -2,7 +2,7 @@
 
 import { useForm } from "@mantine/form";
 import { useState } from "react";
-import { useGroupStore, GroupContent } from "@/stores/groupStore";
+import { useGroupStore, Group } from "@/stores/groupStore";
 import { useUserStore } from "@/stores/userStore";
 
 import { TextInput, Stack, Button, Alert, MultiSelect } from "@mantine/core";
@@ -17,12 +17,12 @@ const schema = z.object({
 
 interface GroupFormProps {
   onClose: () => void;
-  group?: GroupContent | null;
+  group?: Group | null;
 }
 
 export default function GroupForm({ onClose, group }: GroupFormProps) {
   const { addGroup, updateGroup, updateGroupMembers } = useGroupStore();
-  const { friends, profile } = useUserStore();
+  const { friends } = useUserStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,10 +52,7 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
           values.memberIds
         );
       } else if (!didGroupChange && values.memberIds) {
-        success = await updateGroupMembers(
-          group.id,
-          values.memberIds
-        );
+        success = await updateGroupMembers(group.id, values.memberIds);
       }
     } else {
       success = await addGroup(
@@ -90,8 +87,14 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
           data={friends
             .filter(
               (friend) =>
+                !group?.admins.some(
+                  (admin) => admin.id === friend.profile.id
+                ) &&
                 !group?.members.some(
-                  (member) => member.member.id === friend.profile.id
+                  (member) => member.id === friend.profile.id
+                ) &&
+                !group?.invitedMemebers.some(
+                  (invitedMember) => invitedMember.id === friend.profile.id
                 )
             )
             .map((friend) => ({

@@ -19,13 +19,6 @@ import ProfileRow from "../Account/ProfileRow";
 export default function FinanceNavbar() {
   const { groups, activeGroup, setActiveGroup } = useGroupStore();
 
-  const acceptedMembers = activeGroup?.members.filter(
-    (member) => member.status === "accepted"
-  );
-  const pendingMembers = activeGroup?.members.filter(
-    (member) => member.status === "pending"
-  );
-
   return (
     <Box className={classes.main} w="250px">
       <Group className={classes.title} align="center" justify="space-between">
@@ -51,21 +44,25 @@ export default function FinanceNavbar() {
         <Divider />
         <Text fw={600}>Group Members</Text>
         <Stack gap="xs">
-          {acceptedMembers?.map((member) => (
-            <ProfileRow key={member.member.id} profile={member.member} />
+          {activeGroup?.admins.map((admin) => (
+            <ProfileRow key={admin.id} profile={admin} isAdmin={true} />
+          ))}
+          {activeGroup?.members.map((member) => (
+            <ProfileRow key={member.id} profile={member} />
           ))}
         </Stack>
         <Divider />
-        {pendingMembers && pendingMembers.length > 0 && (
-          <Stack gap="sm">
-            <Text fw={600}>Invited Members</Text>
-            <Stack gap="xs">
-              {pendingMembers?.map((member) => (
-                <ProfileRow key={member.member.id} profile={member.member} />
-              ))}
+        {activeGroup?.invitedMemebers &&
+          activeGroup.invitedMemebers.length > 0 && (
+            <Stack gap="sm">
+              <Text fw={600}>Invited Members</Text>
+              <Stack gap="xs">
+                {activeGroup.invitedMemebers.map((member) => (
+                  <ProfileRow key={member.id} profile={member} />
+                ))}
+              </Stack>
             </Stack>
-          </Stack>
-        )}
+          )}
       </Stack>
 
       <ScrollArea className={classes.scrollArea}>

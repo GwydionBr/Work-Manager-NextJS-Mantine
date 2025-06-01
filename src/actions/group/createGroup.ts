@@ -2,7 +2,6 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { ErrorResponse } from "@/types/action.types";
-import { GroupMember } from "@/stores/groupStore";
 import { Tables, TablesInsert } from "@/types/db.types";
 
 export async function createGroup({
@@ -15,7 +14,11 @@ export async function createGroup({
   | ErrorResponse
   | {
       success: true;
-      data: { group: Tables<"group">; groupMember: GroupMember[] };
+      data: {
+        group: Tables<"group">;
+        admin: Tables<"profiles">;
+        invitedMembers: Tables<"profiles">[];
+      };
       error: null;
     }
 > {
@@ -45,7 +48,12 @@ export async function createGroup({
 
   const { error: groupMemberError } = await supabase
     .from("group_member")
-    .insert({ group_id: data.id, user_id: user.id, status: "accepted" })
+    .insert({
+      group_id: data.id,
+      user_id: user.id,
+      status: "accepted",
+      is_Admin: true,
+    })
     .select()
     .single();
 
@@ -76,14 +84,19 @@ export async function createGroup({
     return { success: false, data: null, error: profileError.message };
   }
 
-  const groupMember: GroupMember[] = profileData.map((profile) => ({
-    member: profile,
-    status: profile.id === user.id ? "accepted" : "pending",
-  }));
+  const admin = profileData.find((profile) => profile.id === user.id);
+
+  if (!admin) {
+    return { success: false, data: null, error: "Admin not found" };
+  }
+
+  const invitedMembers = profileData.filter(
+    (profile) => profile.id !== user.id
+  );
 
   return {
     success: true,
-    data: { group: data, groupMember },
+    data: { group: data, invitedMembers, admin },
     error: null,
   };
 }

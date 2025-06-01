@@ -1,13 +1,8 @@
 "use client";
 
 import * as actions from "@/actions";
-import { Tables, TablesInsert, TablesUpdate, Enums } from "@/types/db.types";
+import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { create } from "zustand";
-
-export interface GroupMember {
-  member: Tables<"profiles">;
-  status: Enums<"status">;
-}
 
 export interface GroupRequest {
   requestId: string;
@@ -16,15 +11,17 @@ export interface GroupRequest {
   createdAt: string;
 }
 
-export interface GroupContent extends Tables<"group"> {
+export interface Group extends Tables<"group"> {
   groceryItems: Tables<"grocery_item">[];
-  members: GroupMember[];
+  admins: Tables<"profiles">[];
+  members: Tables<"profiles">[];
+  invitedMemebers: Tables<"profiles">[];
 }
 
 interface GroupState {
-  groups: GroupContent[];
+  groups: Group[];
   groupRequests: GroupRequest[];
-  activeGroup: GroupContent | null;
+  activeGroup: Group | null;
   isLoading: boolean;
 }
 
@@ -32,12 +29,14 @@ interface GroupActions {
   fetchGroupData: () => void;
   updateGroupData: (
     group: TablesUpdate<"group">,
-    groupMember?: GroupMember[],
+    invitedMembers?: Tables<"profiles">[],
+    groupAdmins?: Tables<"profiles">[],
     isNewGroup?: boolean
   ) => void;
   addGroup: (
     group: TablesInsert<"group">,
-    memberIds?: string[]
+    memberIds?: string[],
+    admins?: string[]
   ) => Promise<boolean>;
   updateGroup: (
     group: TablesUpdate<"group">,
@@ -65,34 +64,41 @@ export const useGroupStore = create<GroupState & GroupActions>()(
 
     updateGroupData: (
       group: TablesUpdate<"group">,
-      groupMember?: GroupMember[],
+      invitedMembers?: Tables<"profiles">[],
+      groupAdmins?: Tables<"profiles">[],
       isNewGroup: boolean = false
     ) => {
       const { groups, activeGroup } = get();
       if (isNewGroup) {
-        const newGroup: GroupContent = {
+        const newGroup: Group = {
           ...(group as Tables<"group">),
           groceryItems: [],
-          members: groupMember || [],
+          admins: groupAdmins || [],
+          members: [],
+          invitedMemebers: invitedMembers || [],
         };
-        const newGroups: GroupContent[] = [...groups, newGroup];
+        const newGroups: Group[] = [...groups, newGroup];
         set({ groups: newGroups, activeGroup: newGroup });
       } else {
-        const newGroups: GroupContent[] = groups.map((g) =>
+        const newGroups: Group[] = groups.map((g) =>
           g.id === group.id
             ? {
                 ...g,
                 ...group,
-                members: [...g.members, ...(groupMember || [])],
+                invitedMemebers: [...g.invitedMemebers, ...(invitedMembers || [])],
+                admins: [...g.admins, ...(groupAdmins || [])],
               }
             : g
         );
         set({ groups: newGroups });
         if (activeGroup && activeGroup.id === group.id) {
-          const newActiveGroup: GroupContent = {
+          const newActiveGroup: Group = {
             ...activeGroup,
             ...group,
-            members: [...activeGroup.members, ...(groupMember || [])],
+            invitedMemebers: [
+              ...activeGroup.invitedMemebers,
+              ...(invitedMembers || []),
+            ],
           };
           set({ activeGroup: newActiveGroup });
         }
@@ -125,12 +131,18 @@ export const useGroupStore = create<GroupState & GroupActions>()(
         console.error(groupRequestsError);
       }
     },
+
     addGroup: async (group, memberIds) => {
       const { updateGroupData } = get();
       const response = await actions.createGroup({ group, memberIds });
 
       if (response.success) {
-        updateGroupData(response.data.group, response.data.groupMember, true);
+        updateGroupData(
+          response.data.group,
+          response.data.invitedMembers,
+          [response.data.admin],
+          true
+        );
         return true;
       }
       return true;
@@ -152,13 +164,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
       const { updateGroupData } = get();
       const response = await actions.insertGroupMembers(groupId, memberIds);
       if (response.success) {
-        updateGroupData(
-          { id: groupId },
-          response.data.map((member) => ({
-            member: member,
-            status: "pending" as Enums<"status">,
-          }))
-        );
+        updateGroupData({ id: groupId }, response.data);
         return true;
       }
       return false;

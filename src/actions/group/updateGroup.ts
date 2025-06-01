@@ -3,7 +3,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { ErrorResponse } from "@/types/action.types";
 import { Enums, Tables, TablesUpdate } from "@/types/db.types";
-import { GroupMember } from "@/stores/groupStore";
 
 export async function updateGroup({
   group,
@@ -12,7 +11,15 @@ export async function updateGroup({
   group: TablesUpdate<"group">;
   memberIds?: string[];
 }): Promise<
-  ErrorResponse | { success: true; data: { group: Tables<"group">; groupMember: GroupMember[] | null }; error: null }
+  | ErrorResponse
+  | {
+      success: true;
+      data: {
+        group: Tables<"group">;
+        groupMember: Tables<"profiles">[] | null;
+      };
+      error: null;
+    }
 > {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -23,7 +30,11 @@ export async function updateGroup({
     .single();
 
   if (error) {
-    return { success: false, data: null, error: "updateGroup first error: " + error.message };
+    return {
+      success: false,
+      data: null,
+      error: "updateGroup first error: " + error.message,
+    };
   }
 
   if (memberIds) {
@@ -37,7 +48,11 @@ export async function updateGroup({
       .insert(memberInsertData);
 
     if (memberError) {
-      return { success: false, data: null, error: "updateGroup second error: " + memberError.message };
+      return {
+        success: false,
+        data: null,
+        error: "updateGroup second error: " + memberError.message,
+      };
     }
 
     const { data: profileData, error: profileError } = await supabase
@@ -46,16 +61,23 @@ export async function updateGroup({
       .in("id", [...memberIds]);
 
     if (profileError) {
-      return { success: false, data: null, error: "updateGroup third error: " + profileError.message };
+      return {
+        success: false,
+        data: null,
+        error: "updateGroup third error: " + profileError.message,
+      };
     }
 
-    const groupMember: GroupMember[] = profileData.map((profile) => ({
-      member: profile,
-      status: "pending",
-    }));
-
-    return { success: true, data: { group: data, groupMember }, error: null };
+    return {
+      success: true,
+      data: { group: data, groupMember: profileData },
+      error: null,
+    };
   }
 
-  return { success: true, data: { group: data, groupMember: null }, error: null };
+  return {
+    success: true,
+    data: { group: data, groupMember: null },
+    error: null,
+  };
 }

@@ -143,6 +143,7 @@ export type Database = {
           created_at: string;
           group_id: string;
           id: string;
+          is_Admin: boolean;
           status: Database["public"]["Enums"]["status"];
           user_id: string;
         };
@@ -150,6 +151,7 @@ export type Database = {
           created_at?: string;
           group_id?: string;
           id?: string;
+          is_Admin?: boolean;
           status?: Database["public"]["Enums"]["status"];
           user_id?: string;
         };
@@ -157,6 +159,7 @@ export type Database = {
           created_at?: string;
           group_id?: string;
           id?: string;
+          is_Admin?: boolean;
           status?: Database["public"]["Enums"]["status"];
           user_id?: string;
         };

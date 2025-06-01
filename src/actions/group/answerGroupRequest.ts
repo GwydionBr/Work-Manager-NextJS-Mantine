@@ -2,13 +2,21 @@
 
 import { ErrorResponse, SimpleResponse } from "@/types/action.types";
 import { createClient } from "@/utils/supabase/server";
-import { GroupMember } from "@/stores/groupStore";
+
+import { Tables } from "@/types/db.types";
 
 export async function acceptGroupRequest({
   groupRequestId,
 }: {
   groupRequestId: string;
-}): Promise<ErrorResponse | { success: true; data: { groupMember: GroupMember; groupId: string }; error: null }> {
+}): Promise<
+  | ErrorResponse
+  | {
+      success: true;
+      data: { groupMember: Tables<"profiles">; groupId: string };
+      error: null;
+    }
+> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("group_member")
@@ -30,13 +38,11 @@ export async function acceptGroupRequest({
   if (profileError) {
     return { success: false, data: null, error: profileError.message };
   }
-
-  const groupMember: GroupMember = {
-    member: profileData,
-    status: "accepted",
+  return {
+    success: true,
+    data: { groupMember: profileData, groupId: data.group_id },
+    error: null,
   };
-
-  return { success: true, data: { groupMember, groupId: data.group_id }, error: null };
 }
 
 export async function declineGroupRequest({

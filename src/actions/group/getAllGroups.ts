@@ -2,14 +2,14 @@
 
 import { createClient } from "@/utils/supabase/server";
 
-import { GroupContent, GroupMember } from "@/stores/groupStore";
+import { Group } from "@/stores/groupStore";
 import { ErrorResponse } from "@/types/action.types";
 
 export async function getAllGroups(): Promise<
   | ErrorResponse
   | {
       success: true;
-      data: GroupContent[];
+      data: Group[];
       error: null;
     }
 > {
@@ -43,7 +43,9 @@ export async function getAllGroups(): Promise<
     .select("*")
     .in(
       "id",
-      memberData.map((member) => member.group_id)
+      memberData
+        .filter((member) => member.status === "accepted")
+        .map((member) => member.group_id)
     );
 
   if (groupError) {
@@ -90,23 +92,43 @@ export async function getAllGroups(): Promise<
   }
 
   // Create a new array of group content with the combined data
-  const allGroupContent: GroupContent[] = [];
+  const allGroupContent: Group[] = [];
 
   for (const group of groupData) {
+    const groupMembers = allMembers.filter(
+      (member) => member.group_id === group.id
+    );
+    const groupProfiles = profileData.filter((profile) =>
+      groupMembers.some((member) => member.user_id === profile.id)
+    );
+
     allGroupContent.push({
       ...group,
       groceryItems: groceryData.filter(
         (grocery) => grocery.group_id === group.id
       ),
-      members: allMembers
-        .filter((member) => member.group_id === group.id)
-        .map((member) => {
-          const profile = profileData.find(
-            (profile) => profile.id === member.user_id
-          );
-          return profile ? { member: profile, status: member.status } : null;
-        })
-        .filter((member): member is GroupMember => member !== null),
+      admins: groupProfiles.filter((profile) =>
+        groupMembers.some(
+          (member) =>
+            member.user_id === profile.id &&
+            member.is_Admin &&
+            member.status === "accepted"
+        )
+      ),
+      members: groupProfiles.filter((profile) =>
+        groupMembers.some(
+          (member) =>
+            member.user_id === profile.id &&
+            !member.is_Admin &&
+            member.status === "accepted"
+        )
+      ),
+      invitedMemebers: groupProfiles.filter((profile) =>
+        groupMembers.some(
+          (member) =>
+            member.user_id === profile.id && member.status === "pending"
+        )
+      ),
     });
   }
   return { success: true, data: allGroupContent, error: null };
