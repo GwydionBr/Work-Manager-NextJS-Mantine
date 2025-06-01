@@ -85,7 +85,10 @@ export const useGroupStore = create<GroupState & GroupActions>()(
             ? {
                 ...g,
                 ...group,
-                invitedMemebers: [...g.invitedMemebers, ...(invitedMembers || [])],
+                invitedMemebers: [
+                  ...g.invitedMemebers,
+                  ...(invitedMembers || []),
+                ],
                 admins: [...g.admins, ...(groupAdmins || [])],
               }
             : g
@@ -251,19 +254,23 @@ export const useGroupStore = create<GroupState & GroupActions>()(
       return false;
     },
     answerGroupRequest: async (requestId: string, answer: boolean) => {
-      const { groupRequests, updateGroupData } = get();
+      const { groupRequests, groups } = get();
       if (answer) {
         const response = await actions.acceptGroupRequest({
           groupRequestId: requestId,
         });
         if (response.success) {
+          const groupResponse = await actions.getGroupById(
+            response.data.groupId
+          );
+          if (groupResponse.success) {
+            const newGroups = [...groups, groupResponse.data];
+            set({ groups: newGroups, activeGroup: groupResponse.data });
+          }
           const newGroupRequests = groupRequests.filter(
             (r) => r.requestId !== requestId
           );
           set({ groupRequests: newGroupRequests });
-          updateGroupData({ id: response.data.groupId }, [
-            response.data.groupMember,
-          ]);
         }
       } else {
         const response = await actions.declineGroupRequest({

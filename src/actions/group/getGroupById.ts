@@ -1,0 +1,105 @@
+"use server";
+
+import { createClient } from "@/utils/supabase/server";
+import { Group } from "@/stores/groupStore";
+import { ErrorResponse } from "@/types/action.types";
+
+export async function getGroupById(groupId: string): Promise<
+  | ErrorResponse
+  | {
+      success: true;
+      data: Group;
+      error: null;
+    }
+> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return {
+      data: null,
+      error: "User not found",
+      success: false,
+    };
+  }
+
+  // Get the group
+  const { data: groupData, error: groupError } = await supabase
+    .from("group")
+    .select("*")
+    .eq("id", groupId)
+    .single();
+
+  if (groupError) {
+    return { success: false, data: null, error: groupError.message };
+  }
+
+  if (!groupData) {
+    return { success: false, data: null, error: "Group not found" };
+  }
+
+  // Get all grocery items for the group
+  const { data: groceryData, error: groceryError } = await supabase
+    .from("grocery_item")
+    .select("*")
+    .eq("group_id", groupId);
+
+  if (groceryError) {
+    return { success: false, data: null, error: groceryError.message };
+  }
+
+  // Get all members for the group
+  const { data: allMembers, error: allMembersError } = await supabase
+    .from("group_member")
+    .select("*")
+    .eq("group_id", groupId);
+
+  if (allMembersError) {
+    return { success: false, data: null, error: allMembersError.message };
+  }
+
+  // Get all profiles for the members
+  const { data: profileData, error: profileError } = await supabase
+    .from("profiles")
+    .select("*")
+    .in(
+      "id",
+      allMembers.map((member) => member.user_id)
+    );
+
+  if (profileError) {
+    return { success: false, data: null, error: profileError.message };
+  }
+
+  // Create the group content with the combined data
+  const groupContent: Group = {
+    ...groupData,
+    groceryItems: groceryData,
+    admins: profileData.filter((profile) =>
+      allMembers.some(
+        (member) =>
+          member.user_id === profile.id &&
+          member.is_Admin &&
+          member.status === "accepted"
+      )
+    ),
+    members: profileData.filter((profile) =>
+      allMembers.some(
+        (member) =>
+          member.user_id === profile.id &&
+          !member.is_Admin &&
+          member.status === "accepted"
+      )
+    ),
+    invitedMemebers: profileData.filter((profile) =>
+      allMembers.some(
+        (member) => member.user_id === profile.id && member.status === "pending"
+      )
+    ),
+  };
+
+  return { success: true, data: groupContent, error: null };
+}

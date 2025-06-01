@@ -64,6 +64,8 @@ export default function SingleFinanceForm({
         <TextInput withAsterisk label="Name" {...form.getInputProps("name")} />
         <NumberInput
           withAsterisk
+          allowNegative={false}
+          allowLeadingZeros={false}
           label="Amount"
           {...form.getInputProps("amount")}
         />

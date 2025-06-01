@@ -58,7 +58,7 @@ export default function FinanceNavbar() {
               <Text fw={600}>Invited Members</Text>
               <Stack gap="xs">
                 {activeGroup.invitedMemebers.map((member) => (
-                  <ProfileRow key={member.id} profile={member} />
+                  <ProfileRow key={member.id} profile={member}/>
                 ))}
               </Stack>
             </Stack>

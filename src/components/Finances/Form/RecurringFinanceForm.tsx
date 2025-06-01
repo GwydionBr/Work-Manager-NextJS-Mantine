@@ -85,6 +85,8 @@ export default function RecurringFinanceForm({
         <TextInput label="Description" {...form.getInputProps("description")} />
         <NumberInput
           withAsterisk
+          allowNegative={false}
+          allowLeadingZeros={false}
           label="Amount"
           {...form.getInputProps("amount")}
         />
