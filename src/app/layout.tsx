@@ -7,6 +7,7 @@ import {
   mantineHtmlProps,
   MantineProvider,
 } from "@mantine/core";
+// import Script from "next/script";
 import { Notifications } from "@mantine/notifications";
 import Layout from "@/components/AppShell/AppShell";
 import { mantineTheme } from "@/theme";
@@ -26,6 +27,18 @@ export default function RootLayout({ children }: { children: any }) {
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
         />
+        {/* <Script
+          id="sitetran-config"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `var sitetran = { site_id: ${process.env.NEXT_PUBLIC_SITETRAN_SITE_ID} };`,
+          }}
+        />
+        <Script
+          id="sitetran-widget"
+          src="https://c.sitetran.com/widget/v3.js"
+          strategy="afterInteractive"
+        /> */}
       </head>
       <body>
         <MantineProvider defaultColorScheme="auto" theme={mantineTheme}>
@@ -34,6 +47,7 @@ export default function RootLayout({ children }: { children: any }) {
             {children}
           </Layout>
         </MantineProvider>
+        {/* <div id="sitetran_translate_element" /> */}
       </body>
     </html>
   );
