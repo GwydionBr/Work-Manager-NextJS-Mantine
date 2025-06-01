@@ -71,7 +71,7 @@ export default function TimeTrackerComponent({ isBig }: { isBig: boolean }) {
     if (result) {
       stopTimer();
     } else {
-      setErrorMessage("Fehler beim Speichern der Session");
+      setErrorMessage("Error saving session");
     }
   }
 

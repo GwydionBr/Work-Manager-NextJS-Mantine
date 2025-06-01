@@ -20,7 +20,7 @@ export default function SchemeToggle() {
   });
 
   if (!mounted) {
-    return null; // verhindert Server/Client-Mismatch
+    return null; // prevents server/client mismatch
   }
 
   return (

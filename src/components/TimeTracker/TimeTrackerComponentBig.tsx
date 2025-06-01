@@ -132,7 +132,7 @@ export default function TimeTrackerComponentBig({
               leftSection={<IconPlayerPlay size={20} />}
               size="md"
             >
-              Weiter
+              Resume
             </Button>
           )}
           {state !== "stopped" && (
@@ -151,7 +151,7 @@ export default function TimeTrackerComponentBig({
                 leftSection={<IconX size={20} />}
                 size="md"
               >
-                Abbrechen
+                Cancel
               </Button>
             </Stack>
           )}

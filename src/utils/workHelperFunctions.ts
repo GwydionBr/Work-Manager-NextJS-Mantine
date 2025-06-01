@@ -64,6 +64,7 @@ export function formatTimeSpan(start: Date, end: Date): string {
 }
 
 export function formatDateTime(date: Date) {
+  // TODO: implement different locales
   return date.toLocaleString("de-DE", {
     hour: "2-digit",
     minute: "2-digit",
