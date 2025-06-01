@@ -1,19 +1,25 @@
-'use server';
+"use server";
 
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
+import { createClient } from "@/utils/supabase/server";
 
-import { createClient } from '@/utils/supabase/server'
+import { SimpleResponse } from "@/types/action.types";
 
-export async function logout() {
-  const supabase = await createClient()
+export async function logout(): Promise<SimpleResponse> {
+  const supabase = await createClient();
 
-  const { error } = await supabase.auth.signOut()
+  const { error } = await supabase.auth.signOut();
 
   if (error) {
-    redirect('/error')
+    return {
+      success: false,
+      error: error.message,
+      data: null,
+    };
   }
 
-  revalidatePath('/')
-  redirect('/')
+  return {
+    success: true,
+    error: null,
+    data: null,
+  };
 }

@@ -1,18 +1,23 @@
 "use client";
 
-import { useDisclosure } from "@mantine/hooks";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@mantine/core";
-
-import { logout } from "@/actions";
+import { useUserStore } from "@/stores/userStore";
 
 export default function LogoutButton() {
-  const [loading, { open, close }] = useDisclosure(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { logout } = useUserStore();
+  const router = useRouter();
 
   async function handleLogout() {
-    open();
-    await logout();
-    close();
+    setIsLoading(true);
+    const response = await logout();
+    if (response) {
+      router.push("/");
+    }
+    setIsLoading(false);
   }
 
   return (
@@ -20,8 +25,8 @@ export default function LogoutButton() {
       color="red"
       onClick={handleLogout}
       variant="filled"
-      loading={loading}
-      disabled={loading}
+      loading={isLoading}
+      disabled={isLoading}
     >
       Logout
     </Button>

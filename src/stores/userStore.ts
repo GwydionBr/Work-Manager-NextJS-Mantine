@@ -2,6 +2,7 @@
 
 import * as actions from "@/actions";
 import { Tables, TablesInsert, Enums } from "@/types/db.types";
+import { redirect } from "next/navigation";
 import { create } from "zustand";
 
 export interface Friend {
@@ -22,6 +23,7 @@ interface UserState {
 
 interface UserActions {
   fetchUserData: () => void;
+  logout: () => Promise<boolean>;
   addProfile: (profile: TablesInsert<"profiles">) => Promise<boolean>;
   addFriend: (friendId: string) => Promise<boolean>;
   removeFriend: (friendId: string) => Promise<boolean>;
@@ -62,6 +64,17 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
       }
     }
     set({ isLoading: false });
+  },
+
+  logout: async () => {
+    const response = await actions.logout();
+
+    if (response.success) {
+      localStorage.removeItem("time-tracker-storage");
+      localStorage.removeItem("settings");
+      redirect("/");
+    }
+    return false;
   },
 
   addProfile: async (profile) => {
