@@ -57,11 +57,11 @@ export default function TimeTrackerComponent({ isBig }: { isBig: boolean }) {
   const getStatusColor = () => {
     switch (state) {
       case "running":
-        return "green";
+        return "lime";
       case "paused":
         return "yellow";
       case "stopped":
-        return "gray";
+        return "teal.6";
       default:
         return "blue";
     }

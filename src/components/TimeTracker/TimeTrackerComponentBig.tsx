@@ -12,7 +12,7 @@ import {
   IconCurrencyEuro,
   IconX,
 } from "@tabler/icons-react";
-import TimeTrackerRow from "./TimeTrackerRow";
+import TimeTrackerRow from "./TimeTrackerRow";  
 
 import classes from "./TimeTracker.module.css";
 
@@ -108,7 +108,7 @@ export default function TimeTrackerComponentBig({
           {state === "stopped" && (
             <Button
               onClick={startTimer}
-              color="green"
+              color="lime"
               leftSection={<IconPlayerPlay size={20} />}
               size="md"
             >
@@ -131,7 +131,7 @@ export default function TimeTrackerComponentBig({
               color="blue"
               leftSection={<IconPlayerPlay size={20} />}
               size="md"
-            >
+            > 
               Resume
             </Button>
           )}

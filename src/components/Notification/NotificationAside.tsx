@@ -73,7 +73,7 @@ export default function NotificationAside({
         mounted={showCard}
         transition="fade"
         duration={200}
-        enterDelay={100}
+        enterDelay={200}
       >
         {(styles) => (
           <div style={styles}>

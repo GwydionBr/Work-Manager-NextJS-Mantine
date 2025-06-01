@@ -50,7 +50,12 @@ export default function TimeTrackerComponentSmall({
     <Stack w={50} align="center" justify="center" gap="xs">
       <HoverCard position="top" openDelay={500} withArrow>
         <HoverCard.Target>
-          <Indicator color="red" size={10} disabled={state === "stopped"}>
+          <Indicator
+            color="red"
+            size={10}
+            processing={state === "running"}
+            disabled={state === "stopped"}
+          >
             <ActionIcon
               onClick={() => setShowSmall(!showSmall)}
               size="md"
@@ -82,7 +87,7 @@ export default function TimeTrackerComponentSmall({
             {pausedTime}
           </Text>
           {state === "stopped" && (
-            <ActionIcon onClick={startTimer} size="md" color="green">
+            <ActionIcon onClick={startTimer} size="md" color="lime">
               <IconPlayerPlay />
             </ActionIcon>
           )}
