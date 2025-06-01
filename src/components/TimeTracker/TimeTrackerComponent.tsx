@@ -9,7 +9,10 @@ import { Transition } from "@mantine/core";
 import TimeTrackerComponentBig from "./TimeTrackerComponentBig";
 import TimeTrackerComponentSmall from "./TimeTrackerComponentSmall";
 
-import { roundTime } from "@/utils/workHelperFunctions";
+import {
+  getRoundedSeconds,
+  getRoundingInterval,
+} from "@/utils/workHelperFunctions";
 
 export default function TimeTrackerComponent({ isBig }: { isBig: boolean }) {
   const {
@@ -26,9 +29,11 @@ export default function TimeTrackerComponent({ isBig }: { isBig: boolean }) {
     stopTimer,
     cancelTimer,
     configureProject,
+    setRoundingAmount,
   } = useTimeTracker();
 
-  const { roundingAmount, roundingMode, customRoundingAmount } = useSettingsStore();
+  const { roundingAmount, roundingMode, customRoundingAmount } =
+    useSettingsStore();
   const { addTimerSession, activeProject } = useWorkStore();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showSmall, setShowSmall] = useState(true);
@@ -44,6 +49,10 @@ export default function TimeTrackerComponent({ isBig }: { isBig: boolean }) {
       );
     }
   }, [activeProject]);
+
+  useEffect(() => {
+    setRoundingAmount(roundingAmount, roundingMode, customRoundingAmount);
+  }, [roundingAmount, roundingMode, customRoundingAmount]);
 
   const getStatusColor = () => {
     switch (state) {
@@ -61,11 +70,15 @@ export default function TimeTrackerComponent({ isBig }: { isBig: boolean }) {
   async function submitTimer() {
     setErrorMessage(null);
     const newSession = getCurrentSession();
-    newSession.active_seconds = roundTime(
-      newSession.active_seconds,
+    const roundingInterval = getRoundingInterval(
       roundingAmount,
-      roundingMode,
       customRoundingAmount
+    );
+
+    newSession.active_seconds = getRoundedSeconds(
+      newSession.active_seconds,
+      roundingInterval,
+      roundingMode
     );
     pauseTimer();
     const result = await addTimerSession(newSession);

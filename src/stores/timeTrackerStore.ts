@@ -3,8 +3,16 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { TablesInsert } from "@/types/db.types";
-import { secondsToTimerFormat } from "@/utils/workHelperFunctions";
-import { Currency } from "@/types/settings.types";
+import {
+  secondsToTimerFormat,
+  getRoundingInterval,
+  getRoundedSeconds,
+} from "@/utils/workHelperFunctions";
+import {
+  Currency,
+  RoundingAmount,
+  RoundingDirection,
+} from "@/types/settings.types";
 
 export enum TimerState {
   Stopped = "stopped",
@@ -28,6 +36,8 @@ interface TimeTrackerState {
   pausedSeconds: number;
   storedActiveSeconds: number;
   storedPausedSeconds: number;
+  roundingInterval: number;
+  roundingMode: RoundingDirection;
 
   startTimer: () => void;
   pauseTimer: () => void;
@@ -42,6 +52,11 @@ interface TimeTrackerState {
     currency: Currency,
     salary: number,
     userId: string
+  ) => void;
+  setRoundingAmount: (
+    roundingAmount: RoundingAmount,
+    roundingMode: RoundingDirection,
+    customRoundingAmount: number
   ) => void;
 }
 
@@ -66,6 +81,8 @@ export const useTimeTracker = create(
       pausedSeconds: 0,
       storedActiveSeconds: 0,
       storedPausedSeconds: 0,
+      roundingInterval: 60,
+      roundingMode: "up",
 
       configureProject: (projectId, projectTitle, currency, salary, userId) => {
         if (get().state !== TimerState.Stopped) {
@@ -82,6 +99,20 @@ export const useTimeTracker = create(
           activeTime: "00:00",
           pausedTime: "00:00",
           state: TimerState.Stopped,
+        });
+      },
+
+      setRoundingAmount: (
+        roundingAmount: RoundingAmount,
+        roundingMode: RoundingDirection,
+        customRoundingAmount: number
+      ) => {
+        set({
+          roundingInterval: getRoundingInterval(
+            roundingAmount,
+            customRoundingAmount
+          ),
+          roundingMode,
         });
       },
 
@@ -109,7 +140,15 @@ export const useTimeTracker = create(
           set({
             activeSeconds: newActiveSeconds,
             activeTime: newActiveTime,
-            moneyEarned: ((newActiveSeconds / 3600) * get().salary).toFixed(2),
+            moneyEarned: (
+              (getRoundedSeconds(
+                newActiveSeconds,
+                get().roundingInterval,
+                get().roundingMode
+              ) /
+                3600) *
+              get().salary
+            ).toFixed(2),
           });
           document.title = `${newActiveTime} - ${get().projectTitle} | Work Manager`;
         };

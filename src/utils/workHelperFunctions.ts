@@ -5,37 +5,31 @@ import {
 } from "@/types/settings.types";
 import { shortCurrencies } from "@/constants/settings";
 
-export function roundTime(
-  seconds: number,
+export function getRoundingInterval(
   roundingAmount: RoundingAmount,
-  roundingMode: RoundingDirection,
   customRoundingAmount?: number
 ) {
-  if (roundingAmount === "s") {
-    return seconds;
-  }
-
-  let roundingInterval: number;
   switch (roundingAmount) {
-    case "min":
-      roundingInterval = 60;
-      break;
+    case "s":
+      return 1;
     case "1/4h":
-      roundingInterval = 900; // 15 minutes
-      break;
+      return 900; // 15 minutes
     case "1/2h":
-      roundingInterval = 1800; // 30 minutes
-      break;
+      return 1800; // 30 minutes
     case "h":
-      roundingInterval = 3600; // 1 hour
-      break;
+      return 3600; // 1 hour
     case "custom":
-      roundingInterval = (customRoundingAmount ?? 0) * 60;
-      break;
+      return (customRoundingAmount ?? 0) * 60;
     default:
-      return seconds;
+      return 60;
   }
+}
 
+export function getRoundedSeconds(
+  seconds: number,
+  roundingInterval: number,
+  roundingMode: RoundingDirection
+) {
   switch (roundingMode) {
     case "up":
       return Math.ceil(seconds / roundingInterval) * roundingInterval;
