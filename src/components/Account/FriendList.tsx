@@ -10,8 +10,6 @@ import {
   IconUserCheck,
   IconHourglass,
   IconUserPlus,
-  IconX,
-  IconCheck,
 } from "@tabler/icons-react";
 import ConfirmDeleteModal from "../UI/ConfirmDeleteModal";
 import FriendsTable from "./FriendsTable";
@@ -75,8 +73,8 @@ export default function FriendList() {
           <FriendsTable
             friends={friends}
             emptyMessage={<Text>Add some friends to see them here</Text>}
-            icon={<IconX color="red" />}
-            iconAction={handleRemoveFriend}
+            xIcon={true}
+            xIconAction={handleRemoveFriend}
           />
         </Stack>
       </Grid.Col>
@@ -89,10 +87,10 @@ export default function FriendList() {
           <FriendsTable
             friends={requestedFriends}
             emptyMessage={<Text>No friend requests yet</Text>}
-            icon={<IconCheck color="green" />}
-            iconAction={acceptFriend}
-            secondaryIcon={<IconX color="red" />}
-            secondaryIconAction={handleDeclineFriend}
+            checkIcon={true}
+            checkIconAction={acceptFriend}
+            xIcon={true}
+            xIconAction={handleDeclineFriend}
           />
           {pendingFriends.length > 0 && (
             <Stack>

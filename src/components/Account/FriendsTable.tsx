@@ -1,23 +1,25 @@
-import { ActionIcon, Avatar, Box, Group, Table } from "@mantine/core";
+import { Avatar, Box, Group, Table } from "@mantine/core";
 
 import { Friend } from "@/stores/userStore";
+import CheckActionIcon from "../UI/Buttons/CheckActionIcon";
+import XActionIcon from "../UI/Buttons/XActionIcon";
 
 interface FriendsTableProps {
   friends: Friend[];
   emptyMessage?: React.ReactNode;
-  icon?: React.ReactNode;
-  secondaryIcon?: React.ReactNode;
-  iconAction?: (id: string) => void;
-  secondaryIconAction?: (id: string) => void;
+  checkIcon?: boolean;
+  xIcon?: boolean;
+  checkIconAction?: (id: string) => void;
+  xIconAction?: (id: string) => void;
 }
 
 export default function FriendsTable({
   friends,
   emptyMessage,
-  icon,
-  secondaryIcon,
-  iconAction,
-  secondaryIconAction,
+  checkIcon,
+  xIcon,
+  checkIconAction,
+  xIconAction,
 }: FriendsTableProps) {
   const rows = friends.map((friend) => (
     <Table.Tr key={friend.friendshipId}>
@@ -26,22 +28,16 @@ export default function FriendsTable({
       </Table.Td>
       <Table.Td>{friend.profile.username}</Table.Td>
       <Table.Td>{friend.profile.email}</Table.Td>
-      {icon && (
+      {(checkIcon || xIcon) && (
         <Table.Td>
           <Group gap={5} wrap="nowrap">
-            <ActionIcon
-              variant="outline"
-              onClick={() => iconAction?.(friend.friendshipId)}
-            >
-              {icon}
-            </ActionIcon>
-            {secondaryIcon && (
-              <ActionIcon
-                variant="outline"
-                onClick={() => secondaryIconAction?.(friend.friendshipId)}
-              >
-                {secondaryIcon}
-              </ActionIcon>
+            {checkIcon && (
+              <CheckActionIcon
+                onClick={() => checkIconAction?.(friend.friendshipId)}
+              />
+            )}
+            {xIcon && (
+              <XActionIcon onClick={() => xIconAction?.(friend.friendshipId)} />
             )}
           </Group>
         </Table.Td>
