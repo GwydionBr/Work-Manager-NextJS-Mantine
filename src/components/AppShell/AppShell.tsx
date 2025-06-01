@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useHotkeys } from "@mantine/hooks";
 import { usePathname } from "next/navigation";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useGroupStore } from "@/stores/groupStore";
@@ -18,13 +18,14 @@ import TimeTrackerComponent from "../TimeTracker/TimeTrackerComponent";
 import NotificationAside from "../Notification/NotificationAside";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { fetchGroupData, groupRequests } = useGroupStore();
-  const { fetchUserData, requestedFriends } = useUserStore();
+  const { fetchGroupData } = useGroupStore();
+  const { fetchUserData } = useUserStore();
   const { fetchFinanceData } = useFinanceStore();
   const { fetchWorkData } = useWorkStore();
   const { isAsideOpen, setIsAsideOpen, fetchSettings } = useSettingsStore();
-
   const [isBurgerOpen, { toggle: toggleBurger }] = useDisclosure();
+  useHotkeys([["mod + B", () => toggleAside()]]);
+
   const pathname = usePathname();
   const isHome = pathname === "/";
   const isAuth = pathname === "/auth";

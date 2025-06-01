@@ -1,5 +1,5 @@
 import { Box, Stack } from "@mantine/core";
-import SchemeButtonGroup from "@/components/Scheme/SchemeButtonGroup";
+import SchemeButtonGroup from "@/components/Settings/SchemeSettings";
 import Header from "@/components/Header/Header";
 import SettingsRow from "@/components/Settings/SettingsRow";
 import SelectTimerRounding from "@/components/Settings/RoundingSettings";

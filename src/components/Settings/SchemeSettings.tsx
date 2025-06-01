@@ -10,8 +10,8 @@ import {
   Text,
   useMantineColorScheme,
 } from "@mantine/core";
-import DarkSchemeButton from "./DarkSchemeButton";
-import LightSchemeButton from "./LightSchemeButton";
+import DarkSchemeButton from "../Scheme/DarkSchemeButton";
+import LightSchemeButton from "../Scheme/LightSchemeButton";
 
 export default function SchemeToggle() {
   const [mounted, setMounted] = useState(false);
@@ -32,6 +32,7 @@ export default function SchemeToggle() {
         <LightSchemeButton
           onClick={() => setColorScheme("light")}
           active={currentColorScheme === "light"}
+          toggleMode={false}
         />
       </Stack>
       <Stack>
@@ -39,6 +40,7 @@ export default function SchemeToggle() {
         <DarkSchemeButton
           onClick={() => setColorScheme("dark")}
           active={currentColorScheme === "dark"}
+          toggleMode={false}
         />
       </Stack>
       <Space w="xl" />
@@ -48,11 +50,13 @@ export default function SchemeToggle() {
           <LightSchemeButton
             onClick={() => setColorScheme("auto")}
             active={currentColorScheme === "auto"}
+            toggleMode={true}
           />
         ) : (
           <DarkSchemeButton
             onClick={() => setColorScheme("auto")}
             active={currentColorScheme === "auto"}
+            toggleMode={true}
           />
         )}
       </Stack>
