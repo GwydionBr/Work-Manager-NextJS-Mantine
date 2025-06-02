@@ -1,11 +1,15 @@
-.mainHomeContainer {
+.authPageContainer {
   min-height: 100vh;
   background: var(--mantine-color-body);
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
 }
 
-.mainHomeContainer::before {
+.authPageContainer::before {
   content: "";
   position: absolute;
   top: 0;
@@ -27,26 +31,39 @@
   pointer-events: none;
 }
 
-/* Card hover effects */
-.card {
+.authForm {
+  width: 100%;
+  max-width: 420px;
+  background: var(--mantine-color-body);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--mantine-color-gray-3);
+  box-shadow: var(--mantine-shadow-lg);
   transition:
     transform 0.2s ease-in-out,
     box-shadow 0.2s ease-in-out;
-  background: var(--mantine-color-body);
 }
 
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--mantine-shadow-lg);
+.authForm:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--mantine-shadow-xl);
 }
 
-/* Button styles */
-.primaryButton {
+.authButton {
   background: var(--mantine-color-teal-6);
   transition: transform 0.2s ease-in-out;
 }
 
-.primaryButton:hover {
+.authButton:hover {
   transform: translateY(-2px);
   background: var(--mantine-color-teal-7);
+}
+
+.socialButton {
+  background: var(--mantine-color-dark-6);
+  transition: transform 0.2s ease-in-out;
+}
+
+.socialButton:hover {
+  transform: translateY(-2px);
+  background: var(--mantine-color-dark-5);
 }

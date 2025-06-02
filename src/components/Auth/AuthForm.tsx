@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "@mantine/form";
 import { upperFirst, useToggle } from "@mantine/hooks";
+import classes from "@/app/Auth.module.css";
 
 import {
   Anchor,
@@ -16,6 +17,7 @@ import {
   Stack,
   Text,
   TextInput,
+  Title,
 } from "@mantine/core";
 import GithubButton from "../SocialButtons/GithubButton";
 
@@ -69,13 +71,23 @@ export default function AuthenticationForm({
   });
 
   return (
-    <Paper radius="md" p="xl" withBorder {...props}>
-      <Text size="lg" fw={500}>
-        Welcome to Mantine, {type} with
-      </Text>
+    <Paper radius="md" p="xl" className={classes.authForm} {...props}>
+      <Title
+        order={2}
+        ta="center"
+        mt="md"
+        mb={50}
+        c="var(--mantine-color-text)"
+      >
+        Welcome to Work Manager
+      </Title>
       <Group grow mb="md" mt="md">
-        <GithubButton radius="xl" onClick={handleGithub}>
-          Github
+        <GithubButton
+          radius="xl"
+          onClick={handleGithub}
+          className={classes.socialButton}
+        >
+          Continue with Github
         </GithubButton>
       </Group>
       <Divider label="Or continue with email" labelPosition="center" my="lg" />
@@ -90,18 +102,20 @@ export default function AuthenticationForm({
                 form.setFieldValue("name", event.currentTarget.value)
               }
               radius="md"
+              size="md"
             />
           )}
           <TextInput
             required
             label="Email"
-            placeholder="hello@mantine.dev"
+            placeholder="hello@example.com"
             value={form.values.email}
             onChange={(event) =>
               form.setFieldValue("email", event.currentTarget.value)
             }
             error={form.errors.email && "Invalid email"}
             radius="md"
+            size="md"
           />
           <PasswordInput
             required
@@ -116,6 +130,7 @@ export default function AuthenticationForm({
               "Password should include at least 6 characters"
             }
             radius="md"
+            size="md"
           />
           {type === "register" && (
             <Checkbox
@@ -133,7 +148,7 @@ export default function AuthenticationForm({
             type="button"
             c="dimmed"
             onClick={() => toggle()}
-            size="xs"
+            size="sm"
           >
             {type === "register"
               ? "Already have an account? Login"
@@ -144,6 +159,8 @@ export default function AuthenticationForm({
             radius="xl"
             loading={isLoading}
             disabled={isLoading}
+            className={classes.authButton}
+            size="md"
           >
             {upperFirst(type)}
           </Button>
