@@ -1,8 +1,8 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
-import { Flex, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
+import { Button, Flex, Stack, Tooltip, UnstyledButton } from "@mantine/core";
 import {
   IconGauge,
   IconSettings,
@@ -49,6 +49,7 @@ const profileLinksData = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
 
   function createLinks(linksData: LinkData[]) {
     const links = linksData.map((link) => (
@@ -88,7 +89,15 @@ export default function Navbar() {
       style={{ height: "100%" }}
       className={classes.navbar}
     >
-      <Text p="lg">WM</Text>
+      <Button
+        variant="light"
+        c="black"
+        onClick={() => router.push("/")}
+        mt="md"
+      >
+        WM
+      </Button>
+
       <Flex
         align="center"
         direction="column"
