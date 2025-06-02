@@ -24,7 +24,7 @@ export default function GroupManagerPage() {
       {isFetching && <Loader />}
       {!isFetching && groups.length > 0 && (
         <Tabs defaultValue="Grocery List" w="100%" color={"teal.5"}>
-          <Tabs.List grow my="xl">
+          <Tabs.List grow mb="xl">
             <Tabs.Tab
               leftSection={<IconCalendar color="light-dark(blue, cyan)" />}
               value="Calendar"

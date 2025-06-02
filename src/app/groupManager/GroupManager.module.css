@@ -1,13 +1,21 @@
 .groupManagerMainContainer {
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  height: 100vh;
+  /* overflow: hidden; */
 }
 
 .groceryListContainer {
+  height: 100%;
+  overflow: auto;
+}
+
+/* Add styles for the tabs panel to take up remaining space */
+:global(.mantine-Tabs-panel) {
+  height: calc(
+    100vh - 200px
+  ); /* Adjust this value based on your header height */
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: 100%;
 }
