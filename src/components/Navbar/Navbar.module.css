@@ -114,6 +114,36 @@
   }
 }
 
+.overviewLink {
+  display: block;
+  text-decoration: none;
+  border-radius: var(--mantine-radius-md);
+  color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-0));
+  padding: 0 var(--mantine-spacing-md);
+  font-size: var(--mantine-font-size-sm);
+  margin-right: var(--mantine-spacing-md);
+  font-weight: 700;
+  height: 44px;
+  line-height: 44px;
+
+  &:hover {
+    background-color: light-dark(
+      var(--mantine-color-gray-2),
+      var(--mantine-color-dark-5)
+    );
+    color: light-dark(var(--mantine-color-dark), var(--mantine-color-light));
+  }
+
+  &[data-active] {
+    &,
+    &:hover {
+      border-left-color: var(--mantine-color-teal-filled);
+      background-color: var(--mantine-color-cyan-filled);
+      color: var(--mantine-color-white);
+    }
+  }
+}
+
 .scrollArea {
   height: 100%;
   width: 100%;

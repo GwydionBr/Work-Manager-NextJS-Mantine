@@ -13,9 +13,10 @@ const Radius = 20;
 
 interface SessionListProps {
   sessions: Tables<"timerSession">[];
+  projects?: Tables<"timerProject">[];
 }
 
-export default function SessionList({ sessions }: SessionListProps) {
+export default function SessionList({ sessions, projects }: SessionListProps) {
   const groupedSessions = groupSessions(sessions);
 
   return (
@@ -163,6 +164,13 @@ export default function SessionList({ sessions }: SessionListProps) {
                                                   <SessionRow
                                                     key={session.id}
                                                     session={session}
+                                                    project={
+                                                      projects?.find(
+                                                        (p) =>
+                                                          p.id ===
+                                                          session.project_id
+                                                      )
+                                                    }
                                                   />
                                                 ))}
                                             </Accordion.Panel>
@@ -215,7 +223,7 @@ type Year = {
 };
 
 function groupSessions(
-  sessions: Tables<"timerSession">[]
+  sessions: Tables<"timerSession">[],
 ): { year: number; data: Year }[] {
   const groupedSessions: Record<number, Year> = sessions.reduce(
     (acc, session) => {

@@ -16,9 +16,10 @@ import type { Tables } from "@/types/db.types";
 
 interface SessionRowProps {
   session: Tables<"timerSession">;
+  project?: Tables<"timerProject">;
 }
 
-export default function SessionRow({ session }: SessionRowProps) {
+export default function SessionRow({ session, project }: SessionRowProps) {
   const [deleteModalOpened, deleteModalHandler] = useDisclosure(false);
   const [editDrawerOpened, editDrawerHandler] = useDisclosure(false);
   const { deleteTimerSession } = useWorkStore();
@@ -73,12 +74,19 @@ export default function SessionRow({ session }: SessionRowProps) {
               </Group>
             )}
           </Group>
-          <Text>
-            {helper.formatMoney(
-              earnings,
-              helper.getCurrencySymbol(session.currency)
+          <Group>
+            {project && (
+              <Text size="sm" c="dimmed">
+                {project.title}
+              </Text>
             )}
-          </Text>
+            <Text>
+              {helper.formatMoney(
+                earnings,
+                helper.getCurrencySymbol(session.currency)
+              )}
+            </Text>
+          </Group>
         </Group>
       </Card>
 

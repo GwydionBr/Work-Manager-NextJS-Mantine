@@ -1,24 +1,38 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useWorkStore, type TimerProject } from "@/stores/workManagerStore";
+import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
-import { Box, Group, ScrollArea, Text } from "@mantine/core";
+import { Box, Divider, Group, ScrollArea, Text } from "@mantine/core";
 import NewProjectButton from "../Work/Project/NewProjectButton";
 
 import classes from "./Navbar.module.css";
 
 export default function ProjectNavbar() {
   const { projects, activeProject, setActiveProject } = useWorkStore();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isOverview, setIsOverview] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsOverview(pathname === "/work/overview");
+    console.log("isOverview", pathname === "/work/overview");
+  }, [pathname]);
 
   function handleSelection(timerProject: TimerProject) {
     setActiveProject(timerProject.project.id);
+    router.push("/work");
   }
 
   const links = projects.map((timerProject) => (
     <Box
       className={classes.link}
       data-active={
-        timerProject.project.id === activeProject?.project.id || undefined
+        timerProject.project.id === activeProject?.project.id && !isOverview
+          ? true
+          : undefined
       }
       key={timerProject.project.id}
       onClick={() => handleSelection(timerProject)}
@@ -33,6 +47,14 @@ export default function ProjectNavbar() {
         <Text>Projects</Text>
         <NewProjectButton />
       </Group>
+      <Box
+        className={classes.overviewLink}
+        data-active={isOverview ? true : undefined}
+        onClick={() => router.push("/work/overview")}
+      >
+        Overview
+      </Box>
+      <Divider />
 
       <ScrollArea className={classes.scrollArea}>{links}</ScrollArea>
     </div>
