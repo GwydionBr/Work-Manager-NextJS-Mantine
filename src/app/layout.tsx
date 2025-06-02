@@ -19,7 +19,6 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: any }) {
   const isProduction = process.env.NODE_ENV === "production";
-  console.log("isProduction", isProduction);
 
   return (
     <html lang="en" {...mantineHtmlProps}>
