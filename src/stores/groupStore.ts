@@ -25,6 +25,7 @@ interface GroupState {
   groupRequests: GroupRequest[];
   activeGroup: Group | null;
   isFetching: boolean;
+  lastFetch: Date | null;
 }
 
 interface GroupActions {
@@ -69,6 +70,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
     groupRequests: [],
     activeGroup: null,
     isFetching: true,
+    lastFetch: null,
 
     updateGroupData: (
       group: TablesUpdate<"group">,
@@ -138,6 +140,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
         set({
           groups: groupResponse.data,
           isFetching: false,
+          lastFetch: new Date(),
         });
         if (!activeGroup) {
           set({

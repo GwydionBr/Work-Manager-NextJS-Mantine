@@ -18,7 +18,8 @@ interface UserState {
   requestedFriends: Friend[];
   pendingFriends: Friend[];
   declinedFriends: Friend[];
-  isLoading: boolean;
+  isFetching: boolean;
+  lastFetch: Date | null;
 }
 
 interface UserActions {
@@ -34,11 +35,12 @@ interface UserActions {
 export const useUserStore = create<UserState & UserActions>()((set, get) => ({
   allProfiles: null,
   profile: null,
-  isLoading: true,
+  isFetching: true,
   friends: [],
   requestedFriends: [],
   pendingFriends: [],
   declinedFriends: [],
+  lastFetch: null,
 
   fetchUserData: async () => {
     const profileResponse = await actions.getProfile();
@@ -63,7 +65,7 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
         });
       }
     }
-    set({ isLoading: false });
+    set({ isFetching: false, lastFetch: new Date() });
   },
 
   logout: async () => {

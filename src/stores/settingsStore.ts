@@ -18,6 +18,8 @@ interface SettingsState {
   roundingMode: RoundingDirection;
   customRoundingAmount: number;
   isAsideOpen: boolean;
+  isFetching: boolean;
+  lastFetch: Date | null;
 }
 
 interface SettingsActions {
@@ -42,6 +44,8 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       customRoundingAmount: 0,
       defaultSalaryAmount: 0,
       isAsideOpen: true,
+      isFetching: true,
+      lastFetch: null,
 
       fetchSettings: async () => {
         const { data } = await actions.getSettings();
@@ -56,6 +60,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
             customRoundingAmount: data.rounding_custom_amount,
           });
         }
+        set({ isFetching: false, lastFetch: new Date() });
       },
       setDefaultSalaryCurrency: async (currency: Currency) => {
         await actions.updateSettings({

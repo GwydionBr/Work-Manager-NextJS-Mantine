@@ -14,6 +14,7 @@ interface WorkStoreState {
   activeProject: TimerProject | null;
   timerSessions: Tables<"timerSession">[];
   isFetching: boolean;
+  lastFetch: Date | null;
 }
 
 interface WorkStoreActions {
@@ -39,10 +40,10 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
     activeProject: null,
     timerSessions: [],
     isFetching: true,
+    lastFetch: null,
 
     async fetchWorkData() {
       const { updateStore } = get();
-      set({ isFetching: true });
       const [projects, timerSessions] = await Promise.all([
         actions.getAllProjects(),
         actions.getAllSessions(),
@@ -64,7 +65,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
       }
 
       updateStore(projectsData, timerSessions.data);
-      set({ isFetching: false });
+      set({ isFetching: false, lastFetch: new Date() });
     },
 
     updateStore(

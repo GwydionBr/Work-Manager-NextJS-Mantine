@@ -4,7 +4,7 @@ import { Card, Loader, Stack, Text } from "@mantine/core";
 import LogoutButton from "../Auth/LogoutButton";
 
 export default function Profile() {
-  const { profile, isLoading } = useUserStore();
+  const { profile, isFetching: isLoading } = useUserStore();
 
   if (isLoading) {
     return <Loader />;
