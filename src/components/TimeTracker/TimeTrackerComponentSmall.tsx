@@ -101,7 +101,10 @@ export default function TimeTrackerComponentSmall({
               <IconPlayerPlay />
             </ActionIcon>
           )}
-          <Collapse in={state === "running"} transitionDuration={400}>
+          <Collapse
+            in={state === "running" || state === "paused"}
+            transitionDuration={400}
+          >
             <Stack gap="xs" align="center" justify="center">
               <ActionIcon onClick={submitTimer} size="md" color="red">
                 <IconPlayerStop />
