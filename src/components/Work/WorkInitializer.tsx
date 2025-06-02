@@ -90,7 +90,6 @@ export default function WorkInitializer() {
                 currency: defaultSalaryCurrency,
               }}
               onSubmit={handleSubmit}
-              onCancel={() => {}}
               newProject={true}
               submitting={submitting}
             />

@@ -22,7 +22,7 @@ interface ProjectFormProps {
     currency: string;
   };
   onSubmit: (values: any) => void;
-  onCancel: () => void;
+  onCancel?: () => void;
   newProject: boolean;
   submitting?: boolean;
 }
@@ -72,12 +72,14 @@ export default function ProjectForm({
           data={currencies}
           {...form.getInputProps("currency")}
         />
-        <Button type="submit" loading={submitting} disabled={submitting}>
+        <Button type="submit" loading={submitting} disabled={submitting} mt="md">
           {newProject ? "Create Project" : "Save Changes"}
         </Button>
-        <Button onClick={onCancel} color="red" variant="outline">
-          Cancel
-        </Button>
+        {onCancel && (
+          <Button onClick={onCancel} color="red" variant="outline">
+            Cancel
+          </Button>
+        )}
       </Stack>
     </form>
   );
