@@ -24,7 +24,7 @@ interface GroupState {
   groups: Group[];
   groupRequests: GroupRequest[];
   activeGroup: Group | null;
-  isLoading: boolean;
+  isFetching: boolean;
 }
 
 interface GroupActions {
@@ -68,7 +68,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
     groups: [],
     groupRequests: [],
     activeGroup: null,
-    isLoading: true,
+    isFetching: true,
 
     updateGroupData: (
       group: TablesUpdate<"group">,
@@ -137,7 +137,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
       if (groupResponse.success) {
         set({
           groups: groupResponse.data,
-          isLoading: false,
+          isFetching: false,
         });
         if (!activeGroup) {
           set({
@@ -145,7 +145,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
           });
         }
       } else {
-        set({ isLoading: false });
+        set({ isFetching: false });
       }
       const { data: groupRequests, error: groupRequestsError } =
         await actions.getGroupRequests();

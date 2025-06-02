@@ -10,6 +10,7 @@ import {
   Box,
   Select,
   Divider,
+  Skeleton,
 } from "@mantine/core";
 import NewGroupButton from "../GroupManager/Group/NewGroupButton";
 
@@ -17,32 +18,37 @@ import classes from "./Navbar.module.css";
 import ProfileRow from "../Account/ProfileRow";
 
 export default function FinanceNavbar() {
-  const { groups, activeGroup, setActiveGroup } = useGroupStore();
+  const { groups, activeGroup, isFetching, setActiveGroup } = useGroupStore();
 
   return (
     <Box className={classes.main} w="250px">
       <Group className={classes.title} align="center" justify="space-between">
         <Text>Group Manager</Text>
-        <NewGroupButton />
+        {!isFetching && <NewGroupButton />}
       </Group>
       <Stack gap="sm" px="xs">
         <Text mt="sm" fz="sm" ta="center">
           Active Group
         </Text>
-        <Select
-          data={groups.map((group) => ({
-            label: group.title,
-            value: group.id,
-          }))}
-          value={activeGroup?.id}
-          onChange={(value) => {
-            if (value) {
-              setActiveGroup(value);
-            }
-          }}
-        />
+        {isFetching ? (
+          <Skeleton height={25} w={200} mx="md" />
+        ) : (
+          <Select
+            data={groups.map((group) => ({
+              label: group.title,
+              value: group.id,
+            }))}
+            value={activeGroup?.id}
+            onChange={(value) => {
+              if (value) {
+                setActiveGroup(value);
+              }
+            }}
+          />
+        )}
         <Divider />
         <Text fw={600}>Group Members</Text>
+        {isFetching && <Skeleton height={25} w={200} mx="md" />}
         <Stack gap="xs">
           {activeGroup?.admins.map((admin) => (
             <ProfileRow key={admin.id} profile={admin} isAdmin={true} />
@@ -58,7 +64,7 @@ export default function FinanceNavbar() {
               <Text fw={600}>Invited Members</Text>
               <Stack gap="xs">
                 {activeGroup.invitedMemebers.map((member) => (
-                  <ProfileRow key={member.id} profile={member}/>
+                  <ProfileRow key={member.id} profile={member} />
                 ))}
               </Stack>
             </Stack>

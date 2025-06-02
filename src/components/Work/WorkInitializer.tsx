@@ -14,7 +14,7 @@ import {
   Anchor,
   Box,
 } from "@mantine/core";
-import { IconBriefcase, IconSettings } from "@tabler/icons-react";
+import { IconBriefcase } from "@tabler/icons-react";
 import ProjectForm from "./Project/ProjectForm";
 import { Currency } from "@/types/settings.types";
 import Link from "next/link";
@@ -40,28 +40,44 @@ export default function WorkInitializer() {
 
   return (
     <Container size="md" py="xl">
-      <Paper shadow="sm" p="xl" radius="md" withBorder>
-        <Stack gap="lg">
-          <Stack align="center" gap="xs">
-            <ThemeIcon size={60} radius="md" variant="light">
-              <IconBriefcase size={30} />
+      <Paper shadow="md" p="xl" radius="lg" withBorder>
+        <Stack gap="xl">
+          <Stack align="center" gap="md">
+            <ThemeIcon
+              size={80}
+              radius="xl"
+              variant="gradient"
+              gradient={{ from: "blue", to: "cyan" }}
+            >
+              <IconBriefcase size={40} />
             </ThemeIcon>
-            <Title order={2} ta="center">
-              Welcome to the Work Manager
+            <Title order={2} ta="center" fw={700}>
+              Project Management
             </Title>
           </Stack>
 
-          <Stack gap="xs">
-            <Text size="lg" ta="center" c="dimmed">
-              Let's get started by creating your first project. This will help
-              you track your work and earnings effectively.
+          <Stack gap="md">
+            <Text size="lg" ta="center" c="dimmed" fw={500}>
+              Create your first project to start tracking your work and earnings
             </Text>
             <Text size="sm" ta="center" c="dimmed">
-              Pro tip: You can customize default salary settings in the{" "}
-              <Anchor component={Link} href="/settings" c="blue" inline>
+              Set up your project now to begin monitoring your progress and
+              financial goals. You can customize project details and settings at
+              any time.
+            </Text>
+            <Text size="sm" ta="center" c="dimmed">
+              Want to streamline your workflow? Configure default settings in
+              the{" "}
+              <Anchor
+                component={Link}
+                href="/settings"
+                c="blue"
+                fw={500}
+                inline
+              >
                 settings menu
               </Anchor>{" "}
-              for quicker project creation.
+              for faster project creation.
             </Text>
           </Stack>
 

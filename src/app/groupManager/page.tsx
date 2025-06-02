@@ -8,27 +8,38 @@ import { Box, Loader, Tabs, Text } from "@mantine/core";
 import { IconCalendar, IconList, IconChecklist } from "@tabler/icons-react";
 import Header from "@/components/Header/Header";
 import GroceryList from "@/components/GroupManager/Grocery/GroceryList";
-import GroupInitializer from "@/components/GroupManager/Group/GroupInitializer";
 import EditGroupButton from "@/components/GroupManager/Group/EditGroupButton";
 import TaskList from "@/components/GroupManager/ToDo/TaskList";
 
 export default function GroupManagerPage() {
-  const { isLoading, groups, activeGroup } = useGroupStore();
+  const { isFetching, groups, activeGroup } = useGroupStore();
 
   return (
     <Box className={classes.groupManagerMainContainer} px="xl">
-      <Header headerTitle={activeGroup?.title || "Group Manager"} primaryButton={activeGroup ? <EditGroupButton /> : null}/>
-      {isLoading && <Loader />}
-      {!isLoading && groups.length > 0 && (
+      <Header
+        headerTitle={activeGroup?.title || "Group Manager"}
+        primaryButton={activeGroup ? <EditGroupButton /> : null}
+      />
+      {isFetching && <Loader />}
+      {!isFetching && groups.length > 0 && (
         <Tabs defaultValue="Grocery List" w="100%" color={"teal.5"}>
           <Tabs.List grow my="xl">
-            <Tabs.Tab leftSection={<IconCalendar color="light-dark(blue, cyan)" />} value="Calendar">
+            <Tabs.Tab
+              leftSection={<IconCalendar color="light-dark(blue, cyan)" />}
+              value="Calendar"
+            >
               Calendar
             </Tabs.Tab>
-            <Tabs.Tab leftSection={<IconList color="light-dark(blue, cyan)" />} value="Grocery List">
+            <Tabs.Tab
+              leftSection={<IconList color="light-dark(blue, cyan)" />}
+              value="Grocery List"
+            >
               Grocery List
             </Tabs.Tab>
-            <Tabs.Tab leftSection={<IconChecklist color="light-dark(blue, cyan)" />} value="To Do">
+            <Tabs.Tab
+              leftSection={<IconChecklist color="light-dark(blue, cyan)" />}
+              value="To Do"
+            >
               To Do
             </Tabs.Tab>
           </Tabs.List>
@@ -47,7 +58,6 @@ export default function GroupManagerPage() {
           </Tabs.Panel>
         </Tabs>
       )}
-      {!isLoading && groups.length === 0 && <GroupInitializer />}
     </Box>
   );
 }

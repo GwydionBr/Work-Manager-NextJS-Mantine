@@ -15,9 +15,10 @@ export default function WorkPage() {
 
   if (!activeProject || isFetching) {
     return (
-      <Center h="100vh">
+      <Stack align="center" w="100%" px="xl">
+        <Header headerTitle="Work Manager" />
         <Loader />
-      </Center>
+      </Stack>
     );
   }
 
