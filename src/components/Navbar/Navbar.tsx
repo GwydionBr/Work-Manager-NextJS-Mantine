@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 import { Button, Flex, Stack, Tooltip, UnstyledButton } from "@mantine/core";
 import {
-  IconGauge,
+  IconBriefcase,
   IconSettings,
   IconUser,
   IconBrandCashapp,
@@ -24,7 +24,7 @@ interface LinkData {
 }
 
 const mainLinksData = [
-  { icon: IconGauge, label: "Work", to: paths.work.workPage() },
+  { icon: IconBriefcase, label: "Work", to: paths.work.workPage() },
   {
     icon: IconBrandCashapp,
     label: "Finance",

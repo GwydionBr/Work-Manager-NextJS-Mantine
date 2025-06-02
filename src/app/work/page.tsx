@@ -2,7 +2,7 @@
 
 import { useWorkStore } from "@/stores/workManagerStore";
 
-import { Center, Stack } from "@mantine/core";
+import { Center, Loader, Stack } from "@mantine/core";
 import SessionList from "@/components/Work/Session/SessionList";
 import NewSessionButton from "@/components/Work/Session/NewSessionButton";
 import EditProjectButton from "@/components/Work/Project/EditProjectButton";
@@ -11,10 +11,14 @@ import Header from "@/components/Header/Header";
 import { formatMoney, getCurrencySymbol } from "@/utils/workHelperFunctions";
 
 export default function WorkPage() {
-  const { activeProject } = useWorkStore();
+  const { activeProject, isFetching } = useWorkStore();
 
-  if (!activeProject) {
-    return <Center>Please select a project</Center>;
+  if (!activeProject || isFetching) {
+    return (
+      <Center h="100vh">
+        <Loader />
+      </Center>
+    );
   }
 
   const description = formatMoney(

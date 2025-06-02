@@ -13,6 +13,7 @@ interface WorkStore {
   projects: TimerProject[];
   activeProject: TimerProject | null;
   timerSessions: Tables<"timerSession">[];
+  isFetching: boolean;
   fetchWorkData: () => Promise<void>;
   setActiveProject: (id: string) => void;
   addProject: (project: TablesInsert<"timerProject">) => Promise<boolean>;
@@ -47,8 +48,10 @@ export const useWorkStore = create<WorkStore>((set, get) => ({
   projects: [],
   activeProject: null,
   timerSessions: [],
+  isFetching: true,
 
   async fetchWorkData() {
+    set({ isFetching: true });
     const [projects, timerSessions] = await Promise.all([
       actions.getAllProjects(),
       actions.getAllSessions(),
@@ -70,6 +73,7 @@ export const useWorkStore = create<WorkStore>((set, get) => ({
     }
 
     updateStore(set, get, projectsData, timerSessions.data);
+    set({ isFetching: false });
   },
 
   setActiveProject(id) {
