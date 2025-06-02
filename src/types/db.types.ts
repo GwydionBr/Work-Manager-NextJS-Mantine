@@ -138,6 +138,47 @@ export type Database = {
         };
         Relationships: [];
       };
+      group_appointment: {
+        Row: {
+          created_at: string;
+          date: string;
+          description: string | null;
+          group_id: string;
+          id: string;
+          reminder: string | null;
+          title: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          date?: string;
+          description?: string | null;
+          group_id?: string;
+          id?: string;
+          reminder?: string | null;
+          title?: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          date?: string;
+          description?: string | null;
+          group_id?: string;
+          id?: string;
+          reminder?: string | null;
+          title?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "group_appointment_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "group_member";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       group_member: {
         Row: {
           created_at: string;
