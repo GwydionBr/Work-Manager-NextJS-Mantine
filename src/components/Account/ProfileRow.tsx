@@ -7,17 +7,22 @@ import { Tables } from "@/types/db.types";
 
 import classes from "./Account.module.css";
 
+interface ProfileRowProps {
+  profile: Tables<"profiles">;
+  isAdmin?: boolean;
+  onClick?: () => void;
+}
+
 export default function ProfileRow({
   profile,
   isAdmin,
-}: {
-  profile: Tables<"profiles">;
-  isAdmin?: boolean;
-}) {
+  onClick,
+}: ProfileRowProps) {
   const { profile: userProfile } = useUserStore();
 
   return (
     <Group
+      onClick={onClick}
       justify="space-between"
       className={classes.profileRow}
       style={{

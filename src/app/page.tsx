@@ -17,6 +17,7 @@ import {
   IconChartBar,
   IconArrowRight,
 } from "@tabler/icons-react";
+import HomeHeader from "@/components/Home/HomeHeader";
 
 export default function HomePage() {
   const features = [
@@ -44,9 +45,15 @@ export default function HomePage() {
     <Box className={classes.mainHomeContainer}>
       <Container size="lg" py="xl">
         <Stack gap="xl">
+          <HomeHeader />
           {/* Hero Section */}
           <Box ta="center" py={80}>
-            <Title order={1} size={48} mb="md" c="light-dark(var(--mantine-color-dark-7), var(--mantine-color-gray-2))">
+            <Title
+              order={1}
+              size={48}
+              mb="md"
+              c="light-dark(var(--mantine-color-dark-7), var(--mantine-color-gray-2))"
+            >
               Welcome to Work Manager
             </Title>
             <Text size="xl" c="dimmed" maw={600} mx="auto" mb={40}>
@@ -85,7 +92,12 @@ export default function HomePage() {
                 >
                   {feature.icon}
                 </ThemeIcon>
-                <Title order={3} size="h4" mb="sm" c="light-dark(var(--mantine-color-dark-7), var(--mantine-color-gray-2))">
+                <Title
+                  order={3}
+                  size="h4"
+                  mb="sm"
+                  c="light-dark(var(--mantine-color-dark-7), var(--mantine-color-gray-2))"
+                >
                   {feature.title}
                 </Title>
                 <Text size="sm" c="dimmed">
