@@ -1,7 +1,7 @@
 "use client";
 
 import * as actions from "@/actions";
-import { Tables, TablesInsert, Enums } from "@/types/db.types";
+import { Tables, TablesInsert, Enums, TablesUpdate } from "@/types/db.types";
 import { redirect } from "next/navigation";
 import { create } from "zustand";
 
@@ -25,7 +25,7 @@ interface UserState {
 interface UserActions {
   fetchUserData: () => void;
   logout: () => Promise<boolean>;
-  addProfile: (profile: TablesInsert<"profiles">) => Promise<boolean>;
+  updateProfile: (profile: TablesUpdate<"profiles">) => Promise<boolean>;
   addFriend: (friendId: string) => Promise<boolean>;
   removeFriend: (friendId: string) => Promise<boolean>;
   acceptFriend: (friendId: string) => Promise<boolean>;
@@ -79,14 +79,15 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
     return false;
   },
 
-  addProfile: async (profile) => {
-    const response = await actions.createProfile({ profile });
+  updateProfile: async (profile) => {
+    const response = await actions.updateProfile({ profile });
     if (response.success) {
       set({ profile: response.data });
       return true;
     }
     return false;
   },
+
   addFriend: async (friendId) => {
     const { allProfiles, pendingFriends } = get();
     const response = await actions.createFriendship({

@@ -3,10 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { Button } from "@mantine/core";
+import { Button, ButtonProps } from "@mantine/core";
 import { useUserStore } from "@/stores/userStore";
 
-export default function LogoutButton() {
+interface LogoutButtonProps extends ButtonProps {
+
+}
+
+export default function LogoutButton({ }: LogoutButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { logout } = useUserStore();
   const router = useRouter();
