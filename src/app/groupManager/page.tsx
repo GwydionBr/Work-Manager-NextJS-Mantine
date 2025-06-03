@@ -46,7 +46,9 @@ export default function GroupManagerPage() {
           </Tabs.List>
 
           <Tabs.Panel value="Calendar">
-            <Calendar />
+            <Box className={classes.mainCalendarContainer}>
+              <Calendar />
+            </Box>
           </Tabs.Panel>
           <Tabs.Panel
             value="Grocery List"

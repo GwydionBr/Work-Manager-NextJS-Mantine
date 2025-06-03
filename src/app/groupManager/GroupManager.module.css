@@ -11,7 +11,7 @@
 }
 
 /* Add styles for the tabs panel to take up remaining space */
-:global(.mantine-Tabs-panel) {
+.mainCalendarContainer {
   height: calc(
     100vh - 200px
   ); /* Adjust this value based on your header height */
