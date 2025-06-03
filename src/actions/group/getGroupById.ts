@@ -95,6 +95,16 @@ export async function getGroupById(groupId: string): Promise<
     return { success: false, data: null, error: profileError.message };
   }
 
+  // Get all appointments for the group
+  const { data: appointmentData, error: appointmentError } = await supabase
+    .from("group_appointment")
+    .select("*")
+    .eq("group_id", groupId);
+
+  if (appointmentError) {
+    return { success: false, data: null, error: appointmentError.message };
+  }
+
   // Create the group content with the combined data
   const groupContent: Group = {
     ...groupData,
@@ -120,6 +130,7 @@ export async function getGroupById(groupId: string): Promise<
         (member) => member.user_id === profile.id && member.status === "pending"
       )
     ),
+    appointments: appointmentData,
     groupTasks: groupTaskData,
     recurringGroupTasks: recurringGroupTaskData,
   };

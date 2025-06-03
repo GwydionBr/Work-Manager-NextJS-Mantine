@@ -69,14 +69,14 @@
 
 .calendarCellSelected {
   background-color: light-dark(
-    var(--mantine-color-blue-3),
-    var(--mantine-color-blue-9)
+    var(--mantine-color-teal-4),
+    var(--mantine-color-teal-9)
   );
 
   &:hover {
     background-color: light-dark(
-      var(--mantine-color-blue-4),
-      var(--mantine-color-blue-8)
+      var(--mantine-color-teal-5),
+      var(--mantine-color-teal-8)
     );
   }
 }
@@ -105,7 +105,7 @@
 }
 
 .calendarDayNumberToday {
-  color: light-dark(var(--mantine-color-blue-6), var(--mantine-color-dark-9));
+  color: light-dark(var(--mantine-color-dark-9), var(--mantine-color-dark-9));
   font-weight: 800;
 }
 

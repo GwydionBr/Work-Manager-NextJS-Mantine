@@ -34,7 +34,14 @@ export default function CalendarAside({ isBig }: CalendarAsideProps) {
           const profile = activeGroup.members.find(
             (member) => member.id === appointment.user_id
           );
-          return profile ? { ...appointment, profile } : null;
+          const admin = activeGroup.admins.find(
+            (admin) => admin.id === appointment.user_id
+          );
+          return profile
+            ? { ...appointment, profile }
+            : admin
+              ? { ...appointment, profile: admin }
+              : null;
         })
         .filter(
           (appointment): appointment is NonNullable<typeof appointment> =>
