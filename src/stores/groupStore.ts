@@ -37,6 +37,7 @@ interface GroupActions {
     groupAdmins?: Tables<"profiles">[],
     groupTasks?: Tables<"group_task">[],
     recurringGroupTasks?: Tables<"recurring_group_task">[],
+    appointments?: Tables<"group_appointment">[],
     isNewGroup?: boolean
   ) => void;
   addGroup: (
@@ -55,6 +56,13 @@ interface GroupActions {
   addGroceryItem: (
     groceryItem: TablesInsert<"grocery_item">
   ) => Promise<boolean>;
+  addAppointment: (
+    appointment: TablesInsert<"group_appointment">
+  ) => Promise<boolean>;
+  updateAppointment: (
+    appointment: TablesUpdate<"group_appointment">
+  ) => Promise<boolean>;
+  deleteAppointment: (id: string) => Promise<boolean>;
   setActiveGroup: (id: string) => void;
   toggleGroceryItem: (id: string, checked: boolean) => Promise<boolean>;
   deleteGroceryItem: (id: string) => Promise<boolean>;
@@ -79,6 +87,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
       groupAdmins?: Tables<"profiles">[],
       groupTasks?: Tables<"group_task">[],
       recurringGroupTasks?: Tables<"recurring_group_task">[],
+      appointments?: Tables<"group_appointment">[],
       isNewGroup: boolean = false
     ) => {
       const { groups, activeGroup } = get();
@@ -106,6 +115,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
                   ...(g.recurringGroupTasks || []),
                   ...(recurringGroupTasks || []),
                 ],
+                appointments: [...g.appointments, ...(appointments || [])],
                 invitedMemebers: [
                   ...g.invitedMemebers,
                   ...(invitedMembers || []),
@@ -123,6 +133,10 @@ export const useGroupStore = create<GroupState & GroupActions>()(
             recurringGroupTasks: [
               ...(activeGroup.recurringGroupTasks || []),
               ...(recurringGroupTasks || []),
+            ],
+            appointments: [
+              ...activeGroup.appointments,
+              ...(appointments || []),
             ],
             invitedMemebers: [
               ...activeGroup.invitedMemebers,
@@ -171,6 +185,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
           response.data.group,
           response.data.invitedMembers,
           [response.data.admin],
+          undefined,
           undefined,
           undefined,
           true
@@ -335,6 +350,38 @@ export const useGroupStore = create<GroupState & GroupActions>()(
           undefined,
           [response.data]
         );
+        return true;
+      }
+      return false;
+    },
+    addAppointment: async (appointment) => {
+      const response = await actions.createGroupAppointment(appointment);
+      if (response.success) {
+        const { updateGroupData } = get();
+        updateGroupData(
+          { id: appointment.group_id },
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          [response.data]
+        );
+        return true;
+      }
+      return false;
+    },
+    updateAppointment: async (appointment) => {
+      // const response = await actions.updateGroupAppointment(appointment);
+      const response = false;
+      if (response) {
+        return true;
+      }
+      return false;
+    },
+    deleteAppointment: async (id) => {
+      // const response = await actions.deleteGroupAppointment(id);
+      const response = false;
+      if (response) {
         return true;
       }
       return false;

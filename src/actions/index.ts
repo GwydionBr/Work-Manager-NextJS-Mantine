@@ -56,6 +56,7 @@ export {
 export { insertGroupMembers } from "./group/insertGroupMemebers";
 export { createSingleGroupTask } from "./group/task/createSingleTask";
 export { createRecurringGroupTask } from "./group/task/createRecurringTask";
+export { createGroupAppointment } from "./group/appointment/createGroupAppointment";
 
 // Grocery Item Actions
 export {
@@ -64,7 +65,7 @@ export {
   createGroceryItem,
   updateGroceryItem,
   deleteGroceryItem,
-} from "./group/groceryItemActions";
+} from "./group/grocery/groceryItemActions";
 
 // Profile Actions
 export {
