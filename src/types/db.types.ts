@@ -174,13 +174,14 @@ export type Database = {
             foreignKeyName: "group_appointment_group_id_fkey";
             columns: ["group_id"];
             isOneToOne: false;
-            referencedRelation: "group_member";
+            referencedRelation: "group";
             referencedColumns: ["id"];
           },
         ];
       };
       group_member: {
         Row: {
+          color: string;
           created_at: string;
           group_id: string;
           id: string;
@@ -189,6 +190,7 @@ export type Database = {
           user_id: string;
         };
         Insert: {
+          color?: string;
           created_at?: string;
           group_id?: string;
           id?: string;
@@ -197,6 +199,7 @@ export type Database = {
           user_id?: string;
         };
         Update: {
+          color?: string;
           created_at?: string;
           group_id?: string;
           id?: string;

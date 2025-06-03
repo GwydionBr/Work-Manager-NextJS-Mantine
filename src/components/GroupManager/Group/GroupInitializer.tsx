@@ -1,9 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { useWorkStore } from "@/stores/workManagerStore";
-import { useSettingsStore } from "@/stores/settingsStore";
-
 import {
   Stack,
   Text,
@@ -16,28 +12,9 @@ import {
 } from "@mantine/core";
 import { IconUsersGroup } from "@tabler/icons-react";
 import GroupForm from "./GroupForm";
-import { Currency } from "@/types/settings.types";
 import Link from "next/link";
 
 export default function WorkInitializer() {
-  const [submitting, setSubmitting] = useState(false);
-  const { addProject } = useWorkStore();
-  const { defaultSalaryCurrency, defaultSalaryAmount } = useSettingsStore();
-
-  async function handleSubmit(values: {
-    title: string;
-    description: string;
-    salary: number;
-    currency: Currency;
-  }) {
-    setSubmitting(true);
-    const success = await addProject({ ...values });
-    if (success) {
-      close();
-    }
-    setSubmitting(false);
-  }
-
   return (
     <Container size="md" py="xl">
       <Paper shadow="md" p="xl" radius="lg" withBorder>

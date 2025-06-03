@@ -96,7 +96,7 @@ export default function AppointmentForm({
   }
 
   const groupMembers = activeGroup
-    ? [...activeGroup.admins, ...activeGroup.members].map((member) => ({
+    ? activeGroup.members.map((member) => ({
         value: member.id,
         label: member.username,
       }))

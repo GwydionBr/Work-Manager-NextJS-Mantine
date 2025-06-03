@@ -69,7 +69,11 @@ export async function getGroupById(groupId: string): Promise<
       .eq("group_id", groupId);
 
   if (recurringGroupTaskError) {
-    return { success: false, data: null, error: recurringGroupTaskError.message };
+    return {
+      success: false,
+      data: null,
+      error: recurringGroupTaskError.message,
+    };
   }
 
   // Get all members for the group
@@ -109,22 +113,23 @@ export async function getGroupById(groupId: string): Promise<
   const groupContent: Group = {
     ...groupData,
     groceryItems: groceryData,
-    admins: profileData.filter((profile) =>
-      allMembers.some(
-        (member) =>
-          member.user_id === profile.id &&
-          member.is_Admin &&
-          member.status === "accepted"
+    members: profileData
+      .filter((profile) =>
+        allMembers.some(
+          (member) =>
+            member.user_id === profile.id && member.status === "accepted"
+        )
       )
-    ),
-    members: profileData.filter((profile) =>
-      allMembers.some(
-        (member) =>
-          member.user_id === profile.id &&
-          !member.is_Admin &&
-          member.status === "accepted"
-      )
-    ),
+      .map((profile) => {
+        const member = allMembers.find(
+          (member) => member.user_id === profile.id
+        );
+        return {
+          ...profile,
+          isAdmin: member?.is_Admin || false,
+          color: member?.color || "#40c057",
+        };
+      }),
     invitedMemebers: profileData.filter((profile) =>
       allMembers.some(
         (member) => member.user_id === profile.id && member.status === "pending"

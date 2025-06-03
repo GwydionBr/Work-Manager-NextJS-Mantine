@@ -61,16 +61,6 @@ export default function RecurringTaskForm({
       };
     }) || [];
 
-  const adminIds =
-    activeGroup?.admins.map((admin) => {
-      return {
-        value: admin.id,
-        label: admin.username,
-      };
-    }) || [];
-
-  const allMemberIds = [...memberIDs, ...adminIds];
-
   function handleFormSubmit(values: RecurringTaskFormValues) {
     handleSubmit({
       ...values,
@@ -89,7 +79,7 @@ export default function RecurringTaskForm({
         />
         <Select
           label="Member"
-          data={allMemberIds}
+          data={memberIDs}
           {...form.getInputProps("memberID")}
         />
         <Group grow>

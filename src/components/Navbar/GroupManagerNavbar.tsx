@@ -50,9 +50,6 @@ export default function FinanceNavbar() {
         <Text fw={600}>Group Members</Text>
         {isFetching && <Skeleton height={25} w={200} mx="md" />}
         <Stack gap="xs">
-          {activeGroup?.admins.map((admin) => (
-            <ProfileRow key={admin.id} profile={admin} isAdmin={true} />
-          ))}
           {activeGroup?.members.map((member) => (
             <ProfileRow key={member.id} profile={member} />
           ))}

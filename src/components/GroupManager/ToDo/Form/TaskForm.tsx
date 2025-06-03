@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useSettingsStore } from "@/stores/settingsStore";
 import { useGroupStore } from "@/stores/groupStore";
 
 import { Stack, Text, Switch, Group, Alert } from "@mantine/core";
@@ -21,7 +20,6 @@ export default function TaskForm({ onClose }: TaskFormProps) {
   const [isRecurring, setIsRecurring] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { defaultFinanceCurrency: financeCurrency } = useSettingsStore();
   const { addSingleGroupTask, addRecurringGroupTask, activeGroup } =
     useGroupStore();
 

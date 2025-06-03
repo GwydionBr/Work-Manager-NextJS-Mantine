@@ -11,13 +11,17 @@ export interface GroupRequest {
   createdAt: string;
 }
 
+export interface GroupMember extends Tables<"profiles"> {
+  isAdmin: boolean;
+  color: string;
+}
+
 export interface Group extends Tables<"group"> {
   groceryItems: Tables<"grocery_item">[];
   appointments: Tables<"group_appointment">[];
   groupTasks: Tables<"group_task">[];
   recurringGroupTasks: Tables<"recurring_group_task">[];
-  admins: Tables<"profiles">[];
-  members: Tables<"profiles">[];
+  members: GroupMember[];
   invitedMemebers: Tables<"profiles">[];
 }
 
@@ -35,7 +39,7 @@ interface GroupActions {
   updateGroupData: (
     group: TablesUpdate<"group">,
     invitedMembers?: Tables<"profiles">[],
-    groupAdmins?: Tables<"profiles">[],
+    members?: GroupMember[],
     groupTasks?: Tables<"group_task">[],
     recurringGroupTasks?: Tables<"recurring_group_task">[],
     appointments?: Tables<"group_appointment">[],
@@ -87,7 +91,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
     updateGroupData: (
       group: TablesUpdate<"group">,
       invitedMembers?: Tables<"profiles">[],
-      groupAdmins?: Tables<"profiles">[],
+      members?: GroupMember[],
       groupTasks?: Tables<"group_task">[],
       recurringGroupTasks?: Tables<"recurring_group_task">[],
       appointments?: Tables<"group_appointment">[],
@@ -101,7 +105,6 @@ export const useGroupStore = create<GroupState & GroupActions>()(
           appointments: [],
           groupTasks: [],
           recurringGroupTasks: [],
-          admins: groupAdmins || [],
           members: [],
           invitedMemebers: invitedMembers || [],
         };
@@ -113,6 +116,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
             ? {
                 ...g,
                 ...group,
+                members: [...g.members, ...(members || [])],
                 groupTasks: [...g.groupTasks, ...(groupTasks || [])],
                 recurringGroupTasks: [
                   ...(g.recurringGroupTasks || []),
@@ -123,7 +127,6 @@ export const useGroupStore = create<GroupState & GroupActions>()(
                   ...g.invitedMemebers,
                   ...(invitedMembers || []),
                 ],
-                admins: [...g.admins, ...(groupAdmins || [])],
               }
             : g
         );
@@ -132,6 +135,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
           const newActiveGroup: Group = {
             ...activeGroup,
             ...group,
+            members: [...activeGroup.members, ...(members || [])],
             groupTasks: [...activeGroup.groupTasks, ...(groupTasks || [])],
             recurringGroupTasks: [
               ...(activeGroup.recurringGroupTasks || []),
@@ -187,7 +191,13 @@ export const useGroupStore = create<GroupState & GroupActions>()(
         updateGroupData(
           response.data.group,
           response.data.invitedMembers,
-          [response.data.admin],
+          [
+            {
+              ...response.data.admin,
+              isAdmin: true,
+              color: "#40c057",
+            },
+          ],
           undefined,
           undefined,
           undefined,

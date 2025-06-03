@@ -60,16 +60,6 @@ export default function SingleTaskForm({
       };
     }) || [];
 
-  const adminIds =
-    activeGroup?.admins.map((admin) => {
-      return {
-        value: admin.id,
-        label: admin.username,
-      };
-    }) || [];
-
-  const allMemberIds = [...memberIDs, ...adminIds];
-
   function handleFormSubmit(values: SingleTaskFormValues) {
     handleSubmit({
       ...values,
@@ -90,7 +80,7 @@ export default function SingleTaskForm({
           withAsterisk
           label="Member"
           placeholder="Select member"
-          data={allMemberIds}
+          data={memberIDs}
           {...form.getInputProps("memberID")}
         />
         <DatePickerInput

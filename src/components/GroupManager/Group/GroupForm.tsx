@@ -92,9 +92,6 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
           data={friends
             .filter(
               (friend) =>
-                !group?.admins.some(
-                  (admin) => admin.id === friend.profile.id
-                ) &&
                 !group?.members.some(
                   (member) => member.id === friend.profile.id
                 ) &&

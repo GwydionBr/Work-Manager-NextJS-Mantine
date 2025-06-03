@@ -141,29 +141,30 @@ export async function getAllGroups(): Promise<
     const groupMembers = allMembers.filter(
       (member) => member.group_id === group.id
     );
-    const groupProfiles = profileData.filter((profile) =>
-      groupMembers.some((member) => member.user_id === profile.id)
-    );
+    const groupProfiles = profileData
+      .filter((profile) =>
+        groupMembers.some((member) => member.user_id === profile.id)
+      )
+      .map((profile) => {
+        const member = groupMembers.find(
+          (member) => member.user_id === profile.id
+        );
+        return {
+          ...profile,
+          isAdmin: member?.is_Admin || false,
+          color: member?.color || "#40c057",
+        };
+      });
 
     allGroupContent.push({
       ...group,
       groceryItems: groceryData.filter(
         (grocery) => grocery.group_id === group.id
       ),
-      admins: groupProfiles.filter((profile) =>
-        groupMembers.some(
-          (member) =>
-            member.user_id === profile.id &&
-            member.is_Admin &&
-            member.status === "accepted"
-        )
-      ),
       members: groupProfiles.filter((profile) =>
         groupMembers.some(
           (member) =>
-            member.user_id === profile.id &&
-            !member.is_Admin &&
-            member.status === "accepted"
+            member.user_id === profile.id && member.status === "accepted"
         )
       ),
       invitedMemebers: groupProfiles.filter((profile) =>
