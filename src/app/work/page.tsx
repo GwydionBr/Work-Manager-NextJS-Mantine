@@ -2,7 +2,7 @@
 
 import { useWorkStore } from "@/stores/workManagerStore";
 
-import { Center, Loader, Stack } from "@mantine/core";
+import { Loader, Stack } from "@mantine/core";
 import SessionList from "@/components/Work/Session/SessionList";
 import NewSessionButton from "@/components/Work/Session/NewSessionButton";
 import EditProjectButton from "@/components/Work/Project/EditProjectButton";

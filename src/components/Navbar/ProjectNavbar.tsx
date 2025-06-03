@@ -27,7 +27,6 @@ export default function ProjectNavbar() {
 
   useEffect(() => {
     setIsOverview(pathname === "/work/overview");
-    console.log("isOverview", pathname === "/work/overview");
   }, [pathname]);
 
   function handleSelection(timerProject: TimerProject) {

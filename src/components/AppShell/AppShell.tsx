@@ -18,31 +18,14 @@ import TimeTrackerComponent from "../TimeTracker/TimeTrackerComponent";
 import NotificationAside from "../Notification/NotificationAside";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const {
-    fetchGroupData,
-    isFetching: isGroupFetching,
-    lastFetch: lastGroupFetch,
-  } = useGroupStore();
-  const {
-    fetchUserData,
-    isFetching: isUserFetching,
-    lastFetch: lastUserFetch,
-  } = useUserStore();
-  const {
-    fetchFinanceData,
-    isFetching: isFinanceFetching,
-    lastFetch: lastFinanceFetch,
-  } = useFinanceStore();
-  const {
-    fetchWorkData,
-    isFetching: isWorkFetching,
-    lastFetch: lastWorkFetch,
-  } = useWorkStore();
+  const { fetchGroupData, lastFetch: lastGroupFetch } = useGroupStore();
+  const { fetchUserData, lastFetch: lastUserFetch } = useUserStore();
+  const { fetchFinanceData, lastFetch: lastFinanceFetch } = useFinanceStore();
+  const { fetchWorkData, lastFetch: lastWorkFetch } = useWorkStore();
   const {
     isAsideOpen,
     setIsAsideOpen,
     fetchSettings,
-    isFetching: isSettingsFetching,
     lastFetch: lastSettingsFetch,
   } = useSettingsStore();
 
@@ -56,45 +39,57 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   // Define fetch intervals in milliseconds (5 minutes)
   const FETCH_INTERVAL = 5 * 60 * 1000;
 
-  useEffect(() => {
-    if (isHome || isAuth) return;
-
+  const fetchAllData = async () => {
     const currentTime = Date.now();
 
     // Helper function to check if data needs to be fetched
     const shouldFetch = (lastFetch: Date | null) => {
-      return !lastFetch || currentTime - lastFetch.getTime() > FETCH_INTERVAL;
+      if (lastFetch === null) return true;
+      const lastFetchTime =
+        lastFetch instanceof Date
+          ? lastFetch.getTime()
+          : new Date(lastFetch).getTime();
+      return currentTime - lastFetchTime > FETCH_INTERVAL;
     };
 
-    // Prioritized fetching based on current route
-    if (pathname.startsWith("/settings") && shouldFetch(lastSettingsFetch)) {
-      fetchSettings();
-    } else if (
-      pathname.startsWith("/finances") &&
-      shouldFetch(lastFinanceFetch)
-    ) {
-      fetchFinanceData();
-    } else if (pathname.startsWith("/work") && shouldFetch(lastWorkFetch)) {
-      fetchWorkData();
-    } else if (pathname.startsWith("/group") && shouldFetch(lastGroupFetch)) {
-      fetchGroupData();
-    } else if (pathname.startsWith("/account") && shouldFetch(lastUserFetch)) {
-      fetchUserData();
-    }
+    const fetchData = async () => {
+      // Prioritized fetching based on current route
+      if (pathname.startsWith("/settings") && shouldFetch(lastSettingsFetch)) {
+        await fetchSettings();
+      } else if (
+        pathname.startsWith("/finances") &&
+        shouldFetch(lastFinanceFetch)
+      ) {
+        await fetchFinanceData();
+      } else if (pathname.startsWith("/work") && shouldFetch(lastWorkFetch)) {
+        await fetchWorkData();
+      } else if (pathname.startsWith("/group") && shouldFetch(lastGroupFetch)) {
+        await fetchGroupData();
+      } else if (
+        pathname.startsWith("/account") &&
+        shouldFetch(lastUserFetch)
+      ) {
+        await fetchUserData();
+      }
 
-    // Background fetching for other data
-    const backgroundFetch = async () => {
-      if (shouldFetch(lastUserFetch)) await fetchUserData();
-      if (shouldFetch(lastSettingsFetch)) await fetchSettings();
-      if (shouldFetch(lastFinanceFetch)) await fetchFinanceData();
-      if (shouldFetch(lastWorkFetch)) await fetchWorkData();
-      if (shouldFetch(lastGroupFetch)) await fetchGroupData();
+      // Background fetching for other data
+      const backgroundFetch = () => {
+        if (shouldFetch(lastUserFetch)) fetchUserData();
+        if (shouldFetch(lastSettingsFetch)) fetchSettings();
+        if (shouldFetch(lastFinanceFetch)) fetchFinanceData();
+        if (shouldFetch(lastWorkFetch)) fetchWorkData();
+        if (shouldFetch(lastGroupFetch)) fetchGroupData();
+      };
+
+      backgroundFetch();
     };
 
-    // Execute background fetch after a short delay
-    const timeoutId = setTimeout(backgroundFetch, 1000);
+    fetchData();
+  };
 
-    return () => clearTimeout(timeoutId);
+  useEffect(() => {
+    if (isHome || isAuth) return;
+    fetchAllData();
   }, [pathname, isHome, isAuth]);
 
   function toggleAside() {
