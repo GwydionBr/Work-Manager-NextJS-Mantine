@@ -81,8 +81,8 @@ export default function TimeTrackerComponentBig({
         </ActionIcon>
       </Indicator>
       <Collapse in={isTimeTrackerMinimized} transitionDuration={400}>
-        <Card shadow="sm" padding="xs" radius="md" withBorder>
-          <Group align="center" gap="md">
+        <Card shadow="sm" padding="xs" radius="md" withBorder w={270}>
+          <Group align="center" justify="center" gap="xs">
             <Card shadow="sm" padding="xs" radius="md" withBorder>
               <Stack>
                 <Text size="xs" c="dimmed">
@@ -122,7 +122,7 @@ export default function TimeTrackerComponentBig({
               in={state === "running" || state === "paused"}
               transitionDuration={400}
             >
-              <Group gap="md" align="center" justify="center">
+              <Group gap="xs" align="center" justify="center">
                 <ActionIcon onClick={submitTimer} size="md" color="red">
                   <IconPlayerStop />
                 </ActionIcon>
@@ -140,7 +140,7 @@ export default function TimeTrackerComponentBig({
           padding="lg"
           radius="md"
           withBorder
-          miw={270}
+          w={270}
           className={classes.timeTrackerContainer}
         >
           <Stack gap="md" align="center">

@@ -19,17 +19,27 @@ export default function CalendarAsideBig({
     }
     return appointments.map((appointment) => (
       <Stack key={appointment.id}>
-        <Text>{appointment.title}</Text>
-        <Text>{appointment.description}</Text>
-        <Text>{appointment.profile.username}</Text>
+        <Text size="xs" fw={700}>
+          {appointment.title}
+        </Text>
+        <Text size="xs" c="dimmed">
+          {appointment.description}
+        </Text>
+        <Text size="xs" c="dimmed">
+          {appointment.profile.username}
+        </Text>
       </Stack>
     ));
   };
 
   return (
-    <Card shadow="sm" radius="md" p="md" withBorder>
-      <Text>{date?.toLocaleDateString()}</Text>
-      {renderAppointments()}
+    <Card shadow="sm" radius="md" p="md" withBorder w={270}>
+      <Stack>
+        <Text size="lg" fw={700}>
+          {date?.toLocaleDateString()}
+        </Text>
+        {renderAppointments()}
+      </Stack>
     </Card>
   );
 }
