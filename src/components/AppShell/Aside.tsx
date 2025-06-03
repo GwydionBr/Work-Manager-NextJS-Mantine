@@ -16,6 +16,7 @@ import TimeTrackerComponent from "../TimeTracker/TimeTrackerComponent";
 import CalendarAside from "../Calendar/CalendarAside/CalendarAside";
 
 import classes from "./AppShell.module.css";
+import TransitionDivider from "../UI/TransitionDivider";
 
 interface AsideProps {
   toggleAside: () => void;
@@ -49,59 +50,23 @@ export default function Aside({ toggleAside, isAsideOpen }: AsideProps) {
           />
         </Group>
       </Stack>
-      <Transition
+      <TransitionDivider
         mounted={isAsideOpen}
         transition="fade"
         duration={200}
         enterDelay={200}
-      >
-        {(styles) => (
-          <div style={{ ...styles, width: "100%" }}>
-            <Divider size="sm" w="100%" />
-          </div>
-        )}
-      </Transition>
-      <Transition
-        mounted={!isAsideOpen}
-        transition="fade"
-        duration={200}
-        enterDelay={200}
-      >
-        {(styles) => (
-          <div style={{ ...styles, width: "100%" }}>
-            <Divider size="sm" w="100%" />
-          </div>
-        )}
-      </Transition>
+      />
       <TimeTrackerComponent
         isBig={isAsideOpen}
         isTimeTrackerMinimized={isTimeTrackerMinimized}
         setIsTimeTrackerMinimized={setIsTimeTrackerMinimized}
       />
-      <Transition
+      <TransitionDivider
         mounted={isAsideOpen}
         transition="fade"
         duration={200}
         enterDelay={200}
-      >
-        {(styles) => (
-          <div style={{ ...styles, width: "100%" }}>
-            <Divider size="sm" w="100%" />
-          </div>
-        )}
-      </Transition>
-      <Transition
-        mounted={!isAsideOpen}
-        transition="fade"
-        duration={200}
-        enterDelay={200}
-      >
-        {(styles) => (
-          <div style={{ ...styles, width: "100%" }}>
-            <Divider size="sm" w="100%" />
-          </div>
-        )}
-      </Transition>
+      />
       <CalendarAside isBig={isAsideOpen} />
     </Stack>
   );
