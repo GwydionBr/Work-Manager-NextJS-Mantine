@@ -6,7 +6,7 @@ import { Box } from "@mantine/core";
 import GroupManagerNavbar from "@/components/Navbar/GroupManagerNavbar";
 import GroupInitializer from "@/components/GroupManager/Group/GroupInitializer";
 
-export default function FinanceLayout({
+export default function GroupManagerLayout({
   children,
 }: {
   children: React.ReactNode;
