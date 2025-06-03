@@ -1,12 +1,14 @@
 import { Box, Stack } from "@mantine/core";
-import { CalendarEntry } from "./types";
 import CalendarCell from "./CalendarCell";
+
+import { Tables } from "@/types/db.types";
+
 import classes from "./Calendar.module.css";
 
 interface CalendarGridProps {
   currentDate: Date;
   selectedDate: Date | null;
-  entries: CalendarEntry[];
+  entries: Tables<"group_appointment">[];
   onDateSelect: (date: Date) => void;
 }
 

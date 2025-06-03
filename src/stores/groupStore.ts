@@ -13,6 +13,7 @@ export interface GroupRequest {
 
 export interface Group extends Tables<"group"> {
   groceryItems: Tables<"grocery_item">[];
+  appointments: Tables<"group_appointment">[];
   groupTasks: Tables<"group_task">[];
   recurringGroupTasks: Tables<"recurring_group_task">[];
   admins: Tables<"profiles">[];
@@ -85,6 +86,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
         const newGroup: Group = {
           ...(group as Tables<"group">),
           groceryItems: [],
+          appointments: [],
           groupTasks: [],
           recurringGroupTasks: [],
           admins: groupAdmins || [],

@@ -1,19 +1,22 @@
+"use client";
+
 import { useState } from "react";
+import { useGroupStore } from "@/stores/groupStore";
+
 import { Paper } from "@mantine/core";
-import { CalendarEntry } from "./types";
 import CalendarHeader from "./CalendarHeader";
 import CalendarGrid from "./CalendarGrid";
+
+import { Tables } from "@/types/db.types";
+
 import classes from "./Calendar.module.css";
 
 interface CalendarProps {
-  entries?: CalendarEntry[];
   onDateSelect?: (date: Date) => void;
 }
 
-export default function Calendar({
-  entries = [],
-  onDateSelect,
-}: CalendarProps) {
+export default function Calendar({ onDateSelect }: CalendarProps) {
+  const { activeGroup } = useGroupStore();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
@@ -50,7 +53,7 @@ export default function Calendar({
       <CalendarGrid
         currentDate={currentDate}
         selectedDate={selectedDate}
-        entries={entries}
+        entries={activeGroup?.appointments || []}
         onDateSelect={handleDateSelect}
       />
     </Paper>

@@ -121,6 +121,19 @@ export async function getAllGroups(): Promise<
     return { success: false, data: null, error: profileError.message };
   }
 
+  // Get all appointments for the groups
+  const { data: appointmentData, error: appointmentError } = await supabase
+    .from("group_appointment")
+    .select("*")
+    .in(
+      "group_id",
+      groupData.map((group) => group.id)
+    );
+
+  if (appointmentError) {
+    return { success: false, data: null, error: appointmentError.message };
+  }
+
   // Create a new array of group content with the combined data
   const allGroupContent: Group[] = [];
 
@@ -162,6 +175,9 @@ export async function getAllGroups(): Promise<
       groupTasks: groupTaskData.filter((task) => task.group_id === group.id),
       recurringGroupTasks: recurringGroupTaskData.filter(
         (task) => task.group_id === group.id
+      ),
+      appointments: appointmentData.filter(
+        (appointment) => appointment.group_id === group.id
       ),
     });
   }

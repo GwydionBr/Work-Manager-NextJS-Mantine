@@ -1,12 +1,14 @@
 import { Box, Stack, Text } from "@mantine/core";
-import { CalendarEntry as CalendarEntryType } from "./types";
 import CalendarEntry from "./CalendarEntry";
+
+import { Tables } from "@/types/db.types";
+
 import classes from "./Calendar.module.css";
 
 interface CalendarCellProps {
   day: number;
   date: Date;
-  entries: CalendarEntryType[];
+  entries: Tables<"group_appointment">[];
   isSelected: boolean;
   isToday: boolean;
   isOtherMonth?: boolean;
@@ -46,7 +48,7 @@ export default function CalendarCell({
             key={entry.id}
             id={entry.id}
             title={entry.title}
-            color={entry.color}
+            color={"red"}
           />
         ))}
       </Stack>
