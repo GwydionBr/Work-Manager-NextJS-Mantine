@@ -16,6 +16,7 @@ import { IconArrowBarLeft } from "@tabler/icons-react";
 import Navbar from "@/components/Navbar/Navbar";
 import TimeTrackerComponent from "../TimeTracker/TimeTrackerComponent";
 import NotificationAside from "../Notification/NotificationAside";
+import CalendarAside from "../Calendar/CalendarAside/CalendarAside";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const {
@@ -151,6 +152,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </Group>
           </Stack>
           <TimeTrackerComponent isBig={isAsideOpen} />
+          <CalendarAside isBig={isAsideOpen} />
           <Group pl="sm" justify="flex-start" w="100%">
             <ActionIcon
               onClick={toggleAside}

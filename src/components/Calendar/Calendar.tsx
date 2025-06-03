@@ -7,18 +7,11 @@ import { Paper } from "@mantine/core";
 import CalendarHeader from "./CalendarHeader";
 import CalendarGrid from "./CalendarGrid";
 
-import { Tables } from "@/types/db.types";
-
 import classes from "./Calendar.module.css";
 
-interface CalendarProps {
-  onDateSelect?: (date: Date) => void;
-}
-
-export default function Calendar({ onDateSelect }: CalendarProps) {
-  const { activeGroup } = useGroupStore();
+export default function Calendar() {
+  const { activeGroup, selectedDate, setSelectedDate } = useGroupStore();
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const handlePreviousMonth = () => {
     setCurrentDate(
@@ -30,11 +23,6 @@ export default function Calendar({ onDateSelect }: CalendarProps) {
     setCurrentDate(
       new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
     );
-  };
-
-  const handleDateSelect = (date: Date) => {
-    setSelectedDate(date);
-    onDateSelect?.(date);
   };
 
   return (
@@ -54,7 +42,7 @@ export default function Calendar({ onDateSelect }: CalendarProps) {
         currentDate={currentDate}
         selectedDate={selectedDate}
         entries={activeGroup?.appointments || []}
-        onDateSelect={handleDateSelect}
+        onDateSelect={setSelectedDate}
       />
     </Paper>
   );

@@ -27,6 +27,7 @@ interface GroupState {
   activeGroup: Group | null;
   isFetching: boolean;
   lastFetch: Date | null;
+  selectedDate: Date | null;
 }
 
 interface GroupActions {
@@ -71,6 +72,7 @@ interface GroupActions {
   addRecurringGroupTask: (
     task: TablesInsert<"recurring_group_task">
   ) => Promise<boolean>;
+  setSelectedDate: (date: Date) => void;
 }
 
 export const useGroupStore = create<GroupState & GroupActions>()(
@@ -80,6 +82,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
     activeGroup: null,
     isFetching: true,
     lastFetch: null,
+    selectedDate: null,
 
     updateGroupData: (
       group: TablesUpdate<"group">,
@@ -385,6 +388,9 @@ export const useGroupStore = create<GroupState & GroupActions>()(
         return true;
       }
       return false;
+    },
+    setSelectedDate: (date: Date) => {
+      set({ selectedDate: date });
     },
   })
 );

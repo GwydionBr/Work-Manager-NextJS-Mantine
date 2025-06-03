@@ -5,8 +5,8 @@
   height: 45px;
 
   background-color: light-dark(
-    var(--mantine-color-gray-2),
-    var(--mantine-color-dark-6)
+    var(--mantine-color-gray-5),
+    var(--mantine-color-gray-7)
   );
   color: light-dark(var(--mantine-color-dark-6), var(--mantine-color-gray-0));
 }
@@ -49,6 +49,7 @@
   min-height: 0; /* Important for flex child */
   border: 1px solid
     light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+  border-radius: var(--mantine-radius-md);
   padding: 4px;
   cursor: pointer;
   background-color: light-dark(
@@ -57,27 +58,41 @@
   );
   display: flex;
   flex-direction: column;
-}
 
-.calendarCell:hover {
-  background-color: light-dark(
-    var(--mantine-color-gray-0),
-    var(--mantine-color-dark-5)
-  );
+  &:hover {
+    background-color: light-dark(
+      var(--mantine-color-gray-1),
+      var(--mantine-color-dark-5)
+    );
+  }
 }
 
 .calendarCellSelected {
   background-color: light-dark(
-    var(--mantine-color-blue-0),
+    var(--mantine-color-blue-3),
     var(--mantine-color-blue-9)
   );
+
+  &:hover {
+    background-color: light-dark(
+      var(--mantine-color-blue-4),
+      var(--mantine-color-blue-8)
+    );
+  }
 }
 
 .calendarCellToday {
   background-color: light-dark(
-    var(--mantine-color-yellow-0),
+    var(--mantine-color-yellow-3),
     var(--mantine-color-yellow-9)
   );
+
+  &:hover {
+    background-color: light-dark(
+      var(--mantine-color-yellow-4),
+      var(--mantine-color-yellow-8)
+    );
+  }
 }
 
 .calendarCellOtherMonth {
@@ -90,11 +105,13 @@
 }
 
 .calendarDayNumberToday {
-  color: light-dark(var(--mantine-color-blue-6), var(--mantine-color-blue-4));
+  color: light-dark(var(--mantine-color-blue-6), var(--mantine-color-dark-9));
+  font-weight: 800;
 }
 
 .calendarDayNumberNormal {
   color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-0));
+  font-weight: 600;
 }
 
 .calendarEntry {

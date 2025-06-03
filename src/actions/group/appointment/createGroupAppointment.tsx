@@ -18,5 +18,10 @@ export async function createGroupAppointment(
   if (error) {
     return { success: false, error: error.message, data: null };
   }
-  return { success: true, data: data, error: null };
+
+  return {
+    success: true,
+    data,
+    error: null,
+  };
 }
