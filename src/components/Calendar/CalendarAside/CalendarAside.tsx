@@ -6,6 +6,7 @@ import CalendarAsideBig from "./CalendarAsideBig";
 import CalendarAsideSmall from "./CalendarAsideSmall";
 import { Tables } from "@/types/db.types";
 import { useEffect, useState } from "react";
+import { Box, Transition } from "@mantine/core";
 
 export interface Appointment extends Tables<"group_appointment"> {
   profile: Tables<"profiles">;
@@ -51,9 +52,32 @@ export default function CalendarAside({ isBig }: CalendarAsideProps) {
     }
   }, [activeGroup, selectedDate]);
 
-  return isBig ? (
-    <CalendarAsideBig date={selectedDate} appointments={appointments} />
-  ) : (
-    <CalendarAsideSmall date={selectedDate} />
+  return (
+    <Box>
+      <Transition
+        mounted={isBig}
+        transition="fade"
+        duration={200}
+        enterDelay={200}
+      >
+        {(styles) => (
+          <div style={styles}>
+            <CalendarAsideBig date={selectedDate} appointments={appointments} />
+          </div>
+        )}
+      </Transition>
+      <Transition
+        mounted={!isBig}
+        transition="fade"
+        duration={200}
+        enterDelay={200}
+      >
+        {(styles) => (
+          <div style={styles}>
+            <CalendarAsideSmall date={selectedDate} />
+          </div>
+        )}
+      </Transition>
+    </Box>
   );
 }
