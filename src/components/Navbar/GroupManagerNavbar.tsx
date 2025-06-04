@@ -15,10 +15,13 @@ import {
 import NewGroupButton from "../GroupManager/Group/NewGroupButton";
 
 import classes from "./Navbar.module.css";
-import ProfileRow from "../Account/ProfileRow";
+import MemberRow from "../GroupManager/MemberRow";
 
 export default function FinanceNavbar() {
-  const { groups, activeGroup, isFetching, setActiveGroup } = useGroupStore();
+  const { groups, activeGroupId, isFetching, setActiveGroup } = useGroupStore();
+  const activeGroup = useGroupStore((state) =>
+    state.groups.find((g) => g.id === activeGroupId)
+  );
 
   return (
     <Box className={classes.main} w="250px">
@@ -50,21 +53,30 @@ export default function FinanceNavbar() {
         <Text fw={600}>Group Members</Text>
         {isFetching && <Skeleton height={25} w={200} mx="md" />}
         <Stack gap="xs">
-          {activeGroup?.admins.map((admin) => (
-            <ProfileRow key={admin.id} profile={admin} isAdmin={true} />
-          ))}
           {activeGroup?.members.map((member) => (
-            <ProfileRow key={member.id} profile={member} />
+            <MemberRow
+              key={member.id}
+              groupId={activeGroup.id}
+              member={member}
+            />
           ))}
         </Stack>
         <Divider />
-        {activeGroup?.invitedMemebers &&
-          activeGroup.invitedMemebers.length > 0 && (
+        {activeGroup?.invitedMembers &&
+          activeGroup.invitedMembers.length > 0 && (
             <Stack gap="sm">
               <Text fw={600}>Invited Members</Text>
               <Stack gap="xs">
-                {activeGroup.invitedMemebers.map((member) => (
-                  <ProfileRow key={member.id} profile={member} />
+                {activeGroup.invitedMembers.map((member) => (
+                  <MemberRow
+                    key={member.id}
+                    groupId={activeGroup.id}
+                    member={{
+                      ...member,
+                      isAdmin: false,
+                      color: "",
+                    }}
+                  />
                 ))}
               </Stack>
             </Stack>

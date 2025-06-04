@@ -23,8 +23,6 @@ export async function getGroupById({
   return { success: true, data, error: null };
 }
 
-
-
 export async function deleteGroup({
   groupId,
 }: {

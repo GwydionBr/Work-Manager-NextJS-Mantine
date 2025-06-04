@@ -7,6 +7,7 @@ import FinanceSettings from "@/components/Settings/FinanceSettings";
 import WorkSettings from "@/components/Settings/WorkSettings";
 
 import classes from "./Settings.module.css";
+import GroupSettings from "@/components/Settings/GroupSettings";
 
 export default function SettingsPage() {
   return (
@@ -26,6 +27,7 @@ export default function SettingsPage() {
         />
         <SettingsRow title="Work Settings" children={<WorkSettings />} />
         <SettingsRow title="Finances" children={<FinanceSettings />} />
+        <SettingsRow title="Group" children={<GroupSettings />} />
       </Stack>
     </Box>
   );

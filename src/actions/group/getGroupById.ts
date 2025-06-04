@@ -69,7 +69,11 @@ export async function getGroupById(groupId: string): Promise<
       .eq("group_id", groupId);
 
   if (recurringGroupTaskError) {
-    return { success: false, data: null, error: recurringGroupTaskError.message };
+    return {
+      success: false,
+      data: null,
+      error: recurringGroupTaskError.message,
+    };
   }
 
   // Get all members for the group
@@ -95,31 +99,43 @@ export async function getGroupById(groupId: string): Promise<
     return { success: false, data: null, error: profileError.message };
   }
 
+  // Get all appointments for the group
+  const { data: appointmentData, error: appointmentError } = await supabase
+    .from("group_appointment")
+    .select("*")
+    .eq("group_id", groupId);
+
+  if (appointmentError) {
+    return { success: false, data: null, error: appointmentError.message };
+  }
+
   // Create the group content with the combined data
   const groupContent: Group = {
     ...groupData,
     groceryItems: groceryData,
-    admins: profileData.filter((profile) =>
-      allMembers.some(
-        (member) =>
-          member.user_id === profile.id &&
-          member.is_Admin &&
-          member.status === "accepted"
+    members: profileData
+      .filter((profile) =>
+        allMembers.some(
+          (member) =>
+            member.user_id === profile.id && member.status === "accepted"
+        )
       )
-    ),
-    members: profileData.filter((profile) =>
-      allMembers.some(
-        (member) =>
-          member.user_id === profile.id &&
-          !member.is_Admin &&
-          member.status === "accepted"
-      )
-    ),
-    invitedMemebers: profileData.filter((profile) =>
+      .map((profile) => {
+        const member = allMembers.find(
+          (member) => member.user_id === profile.id
+        );
+        return {
+          ...profile,
+          isAdmin: member?.is_Admin || false,
+          color: member?.color || "#40c057",
+        };
+      }),
+    invitedMembers: profileData.filter((profile) =>
       allMembers.some(
         (member) => member.user_id === profile.id && member.status === "pending"
       )
     ),
+    appointments: appointmentData,
     groupTasks: groupTaskData,
     recurringGroupTasks: recurringGroupTaskData,
   };

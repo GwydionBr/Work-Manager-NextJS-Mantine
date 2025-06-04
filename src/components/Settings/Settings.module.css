@@ -1,6 +1,9 @@
 .settingRowContainer {
   align-items: center;
-  background-color: light-dark( var(--mantine-color-gray-0), var(--mantine-color-dark-5));
+  background-color: light-dark(
+    var(--mantine-color-gray-0),
+    var(--mantine-color-dark-5)
+  );
   border-radius: var(--mantine-radius-lg);
   padding: var(--mantine-spacing-md);
   width: 100%;
@@ -11,7 +14,8 @@
   align-items: center;
   justify-content: center;
   height: 70px;
-  border-right: 1px solid light-dark( var(--mantine-color-dark-6), var(--mantine-color-blue-2));
+  border-right: 1px solid
+    light-dark(var(--mantine-color-dark-6), var(--mantine-color-blue-2));
 }
 
 .childrenContainer {
@@ -22,8 +26,17 @@
 }
 
 .customRoundingAmountContainer {
-  border: 1px solid light-dark( var(--mantine-color-teal-6), var(--mantine-color-teal-4));
+  border: 1px solid
+    light-dark(var(--mantine-color-teal-6), var(--mantine-color-teal-4));
   border-radius: var(--mantine-radius-md);
   padding: var(--mantine-spacing-xs);
+}
 
+.colorPoint {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+
+  border: 1px solid
+    light-dark(var(--mantine-color-gray-9), var(--mantine-color-dark-1));
 }

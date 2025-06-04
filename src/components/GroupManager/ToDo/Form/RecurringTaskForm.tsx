@@ -40,7 +40,10 @@ export default function RecurringTaskForm({
   handleSubmit,
   isLoading,
 }: RecurringTaskFormProps) {
-  const { activeGroup } = useGroupStore();
+  const { activeGroupId } = useGroupStore();
+  const activeGroup = useGroupStore((state) =>
+    state.groups.find((g) => g.id === activeGroupId)
+  );
   const { profile } = useUserStore();
 
   const form = useForm({
@@ -61,16 +64,6 @@ export default function RecurringTaskForm({
       };
     }) || [];
 
-  const adminIds =
-    activeGroup?.admins.map((admin) => {
-      return {
-        value: admin.id,
-        label: admin.username,
-      };
-    }) || [];
-
-  const allMemberIds = [...memberIDs, ...adminIds];
-
   function handleFormSubmit(values: RecurringTaskFormValues) {
     handleSubmit({
       ...values,
@@ -89,7 +82,7 @@ export default function RecurringTaskForm({
         />
         <Select
           label="Member"
-          data={allMemberIds}
+          data={memberIDs}
           {...form.getInputProps("memberID")}
         />
         <Group grow>

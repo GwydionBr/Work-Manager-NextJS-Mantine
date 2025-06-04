@@ -21,7 +21,11 @@ interface GroupFormProps {
 }
 
 export default function GroupForm({ onClose, group }: GroupFormProps) {
-  const { addGroup, updateGroup, updateGroupMembers } = useGroupStore();
+  const {
+    addGroup,
+    updateGroup,
+    addGroupMembers: updateGroupMembers,
+  } = useGroupStore();
   const { friends } = useUserStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -92,13 +96,10 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
           data={friends
             .filter(
               (friend) =>
-                !group?.admins.some(
-                  (admin) => admin.id === friend.profile.id
-                ) &&
                 !group?.members.some(
                   (member) => member.id === friend.profile.id
                 ) &&
-                !group?.invitedMemebers.some(
+                !group?.invitedMembers.some(
                   (invitedMember) => invitedMember.id === friend.profile.id
                 )
             )
@@ -109,7 +110,7 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
           {...form.getInputProps("memberIds")}
         />
         <Button type="submit" loading={isLoading}>
-          Create
+          {group ? "Update" : "Create"}
         </Button>
         {error && (
           <Alert variant="light" color="red">

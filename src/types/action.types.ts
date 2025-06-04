@@ -6,6 +6,7 @@ export type TableNames =
   | "group_member"
   | "grocery_item"
   | "group_task"
+  | "group_appointment"
   | "recurring_group_task"
   | "profiles"
   | "recurring_cash_flow"

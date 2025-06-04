@@ -4,15 +4,19 @@ import { useGroupStore } from "@/stores/groupStore";
 
 import classes from "./GroupManager.module.css";
 
-import { Box, Loader, Tabs, Text } from "@mantine/core";
+import { Box, Loader, Tabs } from "@mantine/core";
 import { IconCalendar, IconList, IconChecklist } from "@tabler/icons-react";
 import Header from "@/components/Header/Header";
 import GroceryList from "@/components/GroupManager/Grocery/GroceryList";
 import EditGroupButton from "@/components/GroupManager/Group/EditGroupButton";
 import TaskList from "@/components/GroupManager/ToDo/TaskList";
+import Calendar from "@/components/Calendar/Calendar";
 
 export default function GroupManagerPage() {
-  const { isFetching, groups, activeGroup } = useGroupStore();
+  const { isFetching, groups, activeGroupId } = useGroupStore();
+  const activeGroup = useGroupStore((state) =>
+    state.groups.find((g) => g.id === activeGroupId)
+  );
 
   return (
     <Box className={classes.groupManagerMainContainer} px="xl">
@@ -22,8 +26,8 @@ export default function GroupManagerPage() {
       />
       {isFetching && <Loader />}
       {!isFetching && groups.length > 0 && (
-        <Tabs defaultValue="Grocery List" w="100%" color={"teal.5"}>
-          <Tabs.List grow my="xl">
+        <Tabs defaultValue="Calendar" w="100%" color={"teal.5"}>
+          <Tabs.List grow mb="xl">
             <Tabs.Tab
               leftSection={<IconCalendar color="light-dark(blue, cyan)" />}
               value="Calendar"
@@ -45,7 +49,9 @@ export default function GroupManagerPage() {
           </Tabs.List>
 
           <Tabs.Panel value="Calendar">
-            <Text>Calendar</Text>
+            <Box className={classes.mainCalendarContainer}>
+              <Calendar />
+            </Box>
           </Tabs.Panel>
           <Tabs.Panel
             value="Grocery List"

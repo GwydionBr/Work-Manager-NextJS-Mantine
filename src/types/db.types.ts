@@ -138,8 +138,50 @@ export type Database = {
         };
         Relationships: [];
       };
+      group_appointment: {
+        Row: {
+          created_at: string;
+          date: string;
+          description: string | null;
+          group_id: string;
+          id: string;
+          reminder: string | null;
+          title: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          date?: string;
+          description?: string | null;
+          group_id?: string;
+          id?: string;
+          reminder?: string | null;
+          title?: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          date?: string;
+          description?: string | null;
+          group_id?: string;
+          id?: string;
+          reminder?: string | null;
+          title?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "group_appointment_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "group";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       group_member: {
         Row: {
+          color: string;
           created_at: string;
           group_id: string;
           id: string;
@@ -148,6 +190,7 @@ export type Database = {
           user_id: string;
         };
         Insert: {
+          color?: string;
           created_at?: string;
           group_id?: string;
           id?: string;
@@ -156,6 +199,7 @@ export type Database = {
           user_id?: string;
         };
         Update: {
+          color?: string;
           created_at?: string;
           group_id?: string;
           id?: string;
@@ -335,6 +379,7 @@ export type Database = {
           created_at: string;
           default_currency: Database["public"]["Enums"]["currency"];
           default_finance_currency: Database["public"]["Enums"]["currency"];
+          default_group_color: string | null;
           default_salary_amount: number;
           id: string;
           rounding_amount: Database["public"]["Enums"]["roundingAmount"];
@@ -347,6 +392,7 @@ export type Database = {
           created_at?: string;
           default_currency?: Database["public"]["Enums"]["currency"];
           default_finance_currency?: Database["public"]["Enums"]["currency"];
+          default_group_color?: string | null;
           default_salary_amount?: number;
           id?: string;
           rounding_amount?: Database["public"]["Enums"]["roundingAmount"];
@@ -359,6 +405,7 @@ export type Database = {
           created_at?: string;
           default_currency?: Database["public"]["Enums"]["currency"];
           default_finance_currency?: Database["public"]["Enums"]["currency"];
+          default_group_color?: string | null;
           default_salary_amount?: number;
           id?: string;
           rounding_amount?: Database["public"]["Enums"]["roundingAmount"];

@@ -5,7 +5,7 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import { useTimeTracker } from "@/stores/timeTrackerStore";
 import { useWorkStore } from "@/stores/workManagerStore";
 
-import { Transition } from "@mantine/core";
+import { Box, Transition } from "@mantine/core";
 import TimeTrackerComponentBig from "./TimeTrackerComponentBig";
 import TimeTrackerComponentSmall from "./TimeTrackerComponentSmall";
 
@@ -14,7 +14,17 @@ import {
   getRoundingInterval,
 } from "@/utils/workHelperFunctions";
 
-export default function TimeTrackerComponent({ isBig }: { isBig: boolean }) {
+interface TimeTrackerComponentProps {
+  isBig: boolean;
+  isTimeTrackerMinimized: boolean;
+  setIsTimeTrackerMinimized: (value: boolean) => void;
+}
+
+export default function TimeTrackerComponent({
+  isBig,
+  isTimeTrackerMinimized,
+  setIsTimeTrackerMinimized,
+}: TimeTrackerComponentProps) {
   const {
     projectTitle,
     moneyEarned,
@@ -90,7 +100,7 @@ export default function TimeTrackerComponent({ isBig }: { isBig: boolean }) {
   }
 
   return (
-    <>
+    <Box>
       <Transition
         mounted={isBig}
         transition="fade"
@@ -100,6 +110,8 @@ export default function TimeTrackerComponent({ isBig }: { isBig: boolean }) {
         {(styles) => (
           <div style={styles}>
             <TimeTrackerComponentBig
+              isTimeTrackerMinimized={isTimeTrackerMinimized}
+              setIsTimeTrackerMinimized={setIsTimeTrackerMinimized}
               state={state}
               projectTitle={projectTitle}
               moneyEarned={moneyEarned}
@@ -141,6 +153,6 @@ export default function TimeTrackerComponent({ isBig }: { isBig: boolean }) {
           </div>
         )}
       </Transition>
-    </>
+    </Box>
   );
 }

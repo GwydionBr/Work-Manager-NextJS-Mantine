@@ -38,7 +38,10 @@ export default function SingleTaskForm({
   handleSubmit,
   task,
 }: SingleTaskFormProps) {
-  const { activeGroup } = useGroupStore();
+  const { activeGroupId } = useGroupStore();
+  const activeGroup = useGroupStore((state) =>
+    state.groups.find((g) => g.id === activeGroupId)
+  );
   const { profile } = useUserStore();
 
   const focusTrapRef = useFocusTrap();
@@ -60,16 +63,6 @@ export default function SingleTaskForm({
       };
     }) || [];
 
-  const adminIds =
-    activeGroup?.admins.map((admin) => {
-      return {
-        value: admin.id,
-        label: admin.username,
-      };
-    }) || [];
-
-  const allMemberIds = [...memberIDs, ...adminIds];
-
   function handleFormSubmit(values: SingleTaskFormValues) {
     handleSubmit({
       ...values,
@@ -90,7 +83,7 @@ export default function SingleTaskForm({
           withAsterisk
           label="Member"
           placeholder="Select member"
-          data={allMemberIds}
+          data={memberIDs}
           {...form.getInputProps("memberID")}
         />
         <DatePickerInput

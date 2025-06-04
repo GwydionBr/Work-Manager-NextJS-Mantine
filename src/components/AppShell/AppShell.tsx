@@ -11,11 +11,9 @@ import { useWorkStore } from "@/stores/workManagerStore";
 
 import classes from "./AppShell.module.css";
 
-import { AppShell, Burger, Group, Stack, ActionIcon } from "@mantine/core";
-import { IconArrowBarLeft } from "@tabler/icons-react";
+import { AppShell, Burger, Group } from "@mantine/core";
 import Navbar from "@/components/Navbar/Navbar";
-import TimeTrackerComponent from "../TimeTracker/TimeTrackerComponent";
-import NotificationAside from "../Notification/NotificationAside";
+import Aside from "./Aside";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { fetchGroupData, lastFetch: lastGroupFetch } = useGroupStore();
@@ -127,38 +125,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </AppShell.Navbar>
       <AppShell.Main className={classes.main}>{children}</AppShell.Main>
       <AppShell.Aside className={classes.aside}>
-        <Stack py="md" h="100%" justify="space-between" align="center">
-          <Stack align="flex-start" w="100%">
-            <Group pl="sm" justify="flex-start" w="100%">
-              <ActionIcon
-                onClick={toggleAside}
-                aria-label="Toggle aside"
-                variant="transparent"
-              >
-                <IconArrowBarLeft
-                  className={classes.icon}
-                  style={{ transform: isAsideOpen ? "rotate(180deg)" : "none" }}
-                />
-              </ActionIcon>
-            </Group>
-            <Group pl="sm">
-              <NotificationAside asideOpened={isAsideOpen} />
-            </Group>
-          </Stack>
-          <TimeTrackerComponent isBig={isAsideOpen} />
-          <Group pl="sm" justify="flex-start" w="100%">
-            <ActionIcon
-              onClick={toggleAside}
-              aria-label="Toggle aside"
-              variant="transparent"
-            >
-              <IconArrowBarLeft
-                className={classes.icon}
-                style={{ transform: isAsideOpen ? "rotate(180deg)" : "none" }}
-              />
-            </ActionIcon>
-          </Group>
-        </Stack>
+        <Aside toggleAside={toggleAside} isAsideOpen={isAsideOpen} />
       </AppShell.Aside>
     </AppShell>
   );

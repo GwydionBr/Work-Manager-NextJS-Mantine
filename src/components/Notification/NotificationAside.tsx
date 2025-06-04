@@ -4,7 +4,14 @@ import { useState, useEffect } from "react";
 import { useUserStore } from "@/stores/userStore";
 import { useGroupStore } from "@/stores/groupStore";
 
-import { ActionIcon, Box, Indicator, Popover, Transition } from "@mantine/core";
+import {
+  ActionIcon,
+  Box,
+  Collapse,
+  Indicator,
+  Popover,
+  Transition,
+} from "@mantine/core";
 import { IconBellFilled } from "@tabler/icons-react";
 import NotificationAsideCard from "./NotificationAsideCard";
 import NotificationPopover from "./NotificationPopover";
@@ -12,9 +19,13 @@ import NotificationPopover from "./NotificationPopover";
 import classes from "./Notification.module.css";
 
 export default function NotificationAside({
+  isNotificationOpen,
   asideOpened,
+  setIsNotificationOpen,
 }: {
+  isNotificationOpen: boolean;
   asideOpened: boolean;
+  setIsNotificationOpen: (value: boolean) => void;
 }) {
   const { requestedFriends } = useUserStore();
   const { groupRequests } = useGroupStore();
@@ -34,8 +45,11 @@ export default function NotificationAside({
 
   function toggleOpened() {
     if (asideOpened) {
+      const newNotificationOpen = !isNotificationOpen;
+      setIsNotificationOpen(newNotificationOpen);
       setOpened(false);
     } else {
+      setIsNotificationOpen(false);
       const newOpened = !opened;
       setOpened(newOpened);
     }
@@ -69,18 +83,20 @@ export default function NotificationAside({
           </Popover.Dropdown>
         )}
       </Popover>
-      <Transition
-        mounted={showCard}
-        transition="fade"
-        duration={200}
-        enterDelay={200}
-      >
-        {(styles) => (
-          <div style={styles}>
-            <NotificationAsideCard />
-          </div>
-        )}
-      </Transition>
+      <Collapse in={isNotificationOpen} transitionDuration={500}>
+        <Transition
+          mounted={showCard}
+          transition="fade"
+          duration={200}
+          enterDelay={200}
+        >
+          {(styles) => (
+            <div style={styles}>
+              <NotificationAsideCard />
+            </div>
+          )}
+        </Transition>
+      </Collapse>
     </Box>
   );
 }

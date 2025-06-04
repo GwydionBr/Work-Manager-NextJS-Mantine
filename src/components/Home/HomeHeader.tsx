@@ -4,7 +4,7 @@ import { getCurrentUserProfile } from "@/actions/profile/getCurrentUserProfile";
 import { Box, Card, Stack, Text } from "@mantine/core";
 
 import classes from "./Home.module.css";
-import ProfileRow from "../Account/ProfileRow";
+import MemberRow from "../GroupManager/MemberRow";
 import LogoutButton from "../Auth/LogoutButton";
 
 export default async function HomeHeader() {
@@ -19,8 +19,8 @@ export default async function HomeHeader() {
     <Card className={classes.homeHeader} withBorder shadow="sm">
       <Stack>
         <Text>Currently logged in as</Text>
-        <Box >
-          <ProfileRow profile={profile} />
+        <Box>
+          <MemberRow profile={profile} />
         </Box>
         <LogoutButton />
       </Stack>

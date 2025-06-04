@@ -121,6 +121,19 @@ export async function getAllGroups(): Promise<
     return { success: false, data: null, error: profileError.message };
   }
 
+  // Get all appointments for the groups
+  const { data: appointmentData, error: appointmentError } = await supabase
+    .from("group_appointment")
+    .select("*")
+    .in(
+      "group_id",
+      groupData.map((group) => group.id)
+    );
+
+  if (appointmentError) {
+    return { success: false, data: null, error: appointmentError.message };
+  }
+
   // Create a new array of group content with the combined data
   const allGroupContent: Group[] = [];
 
@@ -128,32 +141,33 @@ export async function getAllGroups(): Promise<
     const groupMembers = allMembers.filter(
       (member) => member.group_id === group.id
     );
-    const groupProfiles = profileData.filter((profile) =>
-      groupMembers.some((member) => member.user_id === profile.id)
-    );
+    const groupProfiles = profileData
+      .filter((profile) =>
+        groupMembers.some((member) => member.user_id === profile.id)
+      )
+      .map((profile) => {
+        const member = groupMembers.find(
+          (member) => member.user_id === profile.id
+        );
+        return {
+          ...profile,
+          isAdmin: member?.is_Admin || false,
+          color: member?.color || "#40c057",
+        };
+      });
 
     allGroupContent.push({
       ...group,
       groceryItems: groceryData.filter(
         (grocery) => grocery.group_id === group.id
       ),
-      admins: groupProfiles.filter((profile) =>
-        groupMembers.some(
-          (member) =>
-            member.user_id === profile.id &&
-            member.is_Admin &&
-            member.status === "accepted"
-        )
-      ),
       members: groupProfiles.filter((profile) =>
         groupMembers.some(
           (member) =>
-            member.user_id === profile.id &&
-            !member.is_Admin &&
-            member.status === "accepted"
+            member.user_id === profile.id && member.status === "accepted"
         )
       ),
-      invitedMemebers: groupProfiles.filter((profile) =>
+      invitedMembers: groupProfiles.filter((profile) =>
         groupMembers.some(
           (member) =>
             member.user_id === profile.id && member.status === "pending"
@@ -162,6 +176,9 @@ export async function getAllGroups(): Promise<
       groupTasks: groupTaskData.filter((task) => task.group_id === group.id),
       recurringGroupTasks: recurringGroupTaskData.filter(
         (task) => task.group_id === group.id
+      ),
+      appointments: appointmentData.filter(
+        (appointment) => appointment.group_id === group.id
       ),
     });
   }

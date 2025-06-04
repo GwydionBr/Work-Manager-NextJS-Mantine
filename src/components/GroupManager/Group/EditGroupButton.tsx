@@ -3,16 +3,19 @@
 import { useDisclosure } from "@mantine/hooks";
 import { useGroupStore } from "@/stores/groupStore";
 
-import { ActionIcon, Flex, Drawer } from "@mantine/core";
+import { ActionIcon, Flex, Drawer, Box } from "@mantine/core";
 import { IconPencil } from "@tabler/icons-react";
 import GroupForm from "@/components/GroupManager/Group/GroupForm";
 
 export default function EditGroupButton() {
   const [opened, { open, close }] = useDisclosure(false);
-  const { activeGroup } = useGroupStore();
+  const { activeGroupId } = useGroupStore();
+  const activeGroup = useGroupStore((state) =>
+    state.groups.find((g) => g.id === activeGroupId)
+  );
 
   return (
-    <>
+    <Box>
       <Drawer
         opened={opened}
         onClose={close}
@@ -21,10 +24,7 @@ export default function EditGroupButton() {
         padding="md"
       >
         <Flex direction="column" gap="xl">
-          <GroupForm
-            onClose={close}
-            group={activeGroup}
-          />
+          <GroupForm onClose={close} group={activeGroup} />
         </Flex>
       </Drawer>
 
@@ -36,6 +36,6 @@ export default function EditGroupButton() {
       >
         <IconPencil size={24} />
       </ActionIcon>
-    </>
+    </Box>
   );
 }
