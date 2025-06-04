@@ -4,7 +4,6 @@ import { getCurrentUserProfile } from "@/actions/profile/getCurrentUserProfile";
 import { Box, Card, Stack, Text } from "@mantine/core";
 
 import classes from "./Home.module.css";
-import MemberRow from "../GroupManager/MemberRow";
 import LogoutButton from "../Auth/LogoutButton";
 
 export default async function HomeHeader() {
@@ -20,7 +19,7 @@ export default async function HomeHeader() {
       <Stack>
         <Text>Currently logged in as</Text>
         <Box>
-          <MemberRow profile={profile} />
+          <Text>{profile.username}</Text>
         </Box>
         <LogoutButton />
       </Stack>
