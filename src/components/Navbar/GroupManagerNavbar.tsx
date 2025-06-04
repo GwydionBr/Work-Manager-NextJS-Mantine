@@ -18,7 +18,10 @@ import classes from "./Navbar.module.css";
 import MemberRow from "../GroupManager/MemberRow";
 
 export default function FinanceNavbar() {
-  const { groups, activeGroup, isFetching, setActiveGroup } = useGroupStore();
+  const { groups, activeGroupId, isFetching, setActiveGroup } = useGroupStore();
+  const activeGroup = useGroupStore((state) =>
+    state.groups.find((g) => g.id === activeGroupId)
+  );
 
   return (
     <Box className={classes.main} w="250px">
@@ -59,12 +62,12 @@ export default function FinanceNavbar() {
           ))}
         </Stack>
         <Divider />
-        {activeGroup?.invitedMemebers &&
-          activeGroup.invitedMemebers.length > 0 && (
+        {activeGroup?.invitedMembers &&
+          activeGroup.invitedMembers.length > 0 && (
             <Stack gap="sm">
               <Text fw={600}>Invited Members</Text>
               <Stack gap="xs">
-                {activeGroup.invitedMemebers.map((member) => (
+                {activeGroup.invitedMembers.map((member) => (
                   <MemberRow
                     key={member.id}
                     groupId={activeGroup.id}

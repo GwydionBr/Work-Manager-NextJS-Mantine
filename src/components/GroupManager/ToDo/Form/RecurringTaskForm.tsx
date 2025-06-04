@@ -40,7 +40,10 @@ export default function RecurringTaskForm({
   handleSubmit,
   isLoading,
 }: RecurringTaskFormProps) {
-  const { activeGroup } = useGroupStore();
+  const { activeGroupId } = useGroupStore();
+  const activeGroup = useGroupStore((state) =>
+    state.groups.find((g) => g.id === activeGroupId)
+  );
   const { profile } = useUserStore();
 
   const form = useForm({

@@ -9,15 +9,21 @@ import AppointmentForm from "./AppointmentForm";
 
 export default function AddAppointmentButton() {
   const [opened, { open, close }] = useDisclosure(false);
-  const { activeGroup } = useGroupStore();
+  const { activeGroupId } = useGroupStore();
 
-  if (!activeGroup) return null;
+  if (!activeGroupId) return null;
 
   return (
     <Box>
-      <AddActionIcon onClick={open}/>
-      <Modal opened={opened} onClose={close} title="Add Appointment" size="md" padding="md">
-        <AppointmentForm onClose={close} groupId={activeGroup.id} />
+      <AddActionIcon onClick={open} />
+      <Modal
+        opened={opened}
+        onClose={close}
+        title="Add Appointment"
+        size="md"
+        padding="md"
+      >
+        <AppointmentForm onClose={close} groupId={activeGroupId} />
       </Modal>
     </Box>
   );

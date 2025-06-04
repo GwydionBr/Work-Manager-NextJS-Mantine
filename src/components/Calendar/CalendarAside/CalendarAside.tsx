@@ -17,7 +17,10 @@ interface CalendarAsideProps {
 }
 
 export default function CalendarAside({ isBig }: CalendarAsideProps) {
-  const { selectedDate, activeGroup } = useGroupStore();
+  const { selectedDate, activeGroupId } = useGroupStore();
+  const activeGroup = useGroupStore((state) =>
+    state.groups.find((g) => g.id === activeGroupId)
+  );
   const [appointments, setAppointments] = useState<Appointment[]>([]);
 
   useEffect(() => {

@@ -16,7 +16,7 @@ export async function updateGroup({
       success: true;
       data: {
         group: Tables<"group">;
-        groupMember: Tables<"profiles">[] | null;
+        invitedMembers: Tables<"profiles">[] | null;
       };
       error: null;
     }
@@ -70,14 +70,14 @@ export async function updateGroup({
 
     return {
       success: true,
-      data: { group: data, groupMember: profileData },
+      data: { group: data, invitedMembers: profileData },
       error: null,
     };
   }
 
   return {
     success: true,
-    data: { group: data, groupMember: null },
+    data: { group: data, invitedMembers: null },
     error: null,
   };
 }

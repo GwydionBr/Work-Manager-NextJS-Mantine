@@ -167,7 +167,7 @@ export async function getAllGroups(): Promise<
             member.user_id === profile.id && member.status === "accepted"
         )
       ),
-      invitedMemebers: groupProfiles.filter((profile) =>
+      invitedMembers: groupProfiles.filter((profile) =>
         groupMembers.some(
           (member) =>
             member.user_id === profile.id && member.status === "pending"

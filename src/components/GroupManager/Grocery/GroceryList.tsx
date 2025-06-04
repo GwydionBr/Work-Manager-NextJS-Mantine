@@ -10,8 +10,15 @@ import GroceryInput from "./GroceryInput";
 import { Tables } from "@/types/db.types";
 
 export default function GroceryList() {
-  const { addGroceryItem, activeGroup, toggleGroceryItem, deleteGroceryItem } =
-    useGroupStore();
+  const {
+    addGroceryItem,
+    activeGroupId,
+    toggleGroceryItem,
+    deleteGroceryItem,
+  } = useGroupStore();
+  const activeGroup = useGroupStore((state) =>
+    state.groups.find((g) => g.id === activeGroupId)
+  );
 
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);

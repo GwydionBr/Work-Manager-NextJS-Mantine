@@ -13,7 +13,10 @@ import TaskList from "@/components/GroupManager/ToDo/TaskList";
 import Calendar from "@/components/Calendar/Calendar";
 
 export default function GroupManagerPage() {
-  const { isFetching, groups, activeGroup } = useGroupStore();
+  const { isFetching, groups, activeGroupId } = useGroupStore();
+  const activeGroup = useGroupStore((state) =>
+    state.groups.find((g) => g.id === activeGroupId)
+  );
 
   return (
     <Box className={classes.groupManagerMainContainer} px="xl">

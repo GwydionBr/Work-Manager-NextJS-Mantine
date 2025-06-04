@@ -99,7 +99,7 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
                 !group?.members.some(
                   (member) => member.id === friend.profile.id
                 ) &&
-                !group?.invitedMemebers.some(
+                !group?.invitedMembers.some(
                   (invitedMember) => invitedMember.id === friend.profile.id
                 )
             )
@@ -110,7 +110,7 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
           {...form.getInputProps("memberIds")}
         />
         <Button type="submit" loading={isLoading}>
-          Create
+          {group ? "Update" : "Create"}
         </Button>
         {error && (
           <Alert variant="light" color="red">

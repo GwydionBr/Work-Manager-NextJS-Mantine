@@ -10,7 +10,10 @@ import CalendarGrid from "./CalendarGrid";
 import classes from "./Calendar.module.css";
 
 export default function Calendar() {
-  const { activeGroup, selectedDate, setSelectedDate } = useGroupStore();
+  const { activeGroupId, selectedDate, setSelectedDate } = useGroupStore();
+  const activeGroup = useGroupStore((state) =>
+    state.groups.find((g) => g.id === activeGroupId)
+  );
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const handlePreviousMonth = () => {

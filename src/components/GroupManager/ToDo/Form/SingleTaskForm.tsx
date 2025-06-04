@@ -38,7 +38,10 @@ export default function SingleTaskForm({
   handleSubmit,
   task,
 }: SingleTaskFormProps) {
-  const { activeGroup } = useGroupStore();
+  const { activeGroupId } = useGroupStore();
+  const activeGroup = useGroupStore((state) =>
+    state.groups.find((g) => g.id === activeGroupId)
+  );
   const { profile } = useUserStore();
 
   const focusTrapRef = useFocusTrap();

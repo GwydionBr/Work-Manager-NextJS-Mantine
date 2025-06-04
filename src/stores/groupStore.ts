@@ -22,13 +22,13 @@ export interface Group extends Tables<"group"> {
   groupTasks: Tables<"group_task">[];
   recurringGroupTasks: Tables<"recurring_group_task">[];
   members: GroupMember[];
-  invitedMemebers: Tables<"profiles">[];
+  invitedMembers: Tables<"profiles">[];
 }
 
 interface GroupState {
   groups: Group[];
   groupRequests: GroupRequest[];
-  activeGroup: Group | null;
+  activeGroupId: string | null;
   isFetching: boolean;
   lastFetch: Date | null;
   selectedDate: Date | null;
@@ -36,15 +36,6 @@ interface GroupState {
 
 interface GroupActions {
   fetchGroupData: () => void;
-  updateGroupData: (
-    group: TablesUpdate<"group">,
-    invitedMembers?: Tables<"profiles">[],
-    members?: GroupMember[],
-    groupTasks?: Tables<"group_task">[],
-    recurringGroupTasks?: Tables<"recurring_group_task">[],
-    appointments?: Tables<"group_appointment">[],
-    isNewGroup?: boolean
-  ) => void;
   addGroup: (
     group: TablesInsert<"group">,
     memberIds?: string[],
@@ -86,80 +77,13 @@ export const useGroupStore = create<GroupState & GroupActions>()(
   (set, get) => ({
     groups: [],
     groupRequests: [],
-    activeGroup: null,
+    activeGroupId: null,
     isFetching: true,
     lastFetch: null,
     selectedDate: null,
 
-    updateGroupData: (
-      group: TablesUpdate<"group">,
-      invitedMembers?: Tables<"profiles">[],
-      members?: GroupMember[],
-      groupTasks?: Tables<"group_task">[],
-      recurringGroupTasks?: Tables<"recurring_group_task">[],
-      appointments?: Tables<"group_appointment">[],
-      isNewGroup: boolean = false
-    ) => {
-      const { groups, activeGroup } = get();
-      if (isNewGroup) {
-        const newGroup: Group = {
-          ...(group as Tables<"group">),
-          groceryItems: [],
-          appointments: [],
-          groupTasks: [],
-          recurringGroupTasks: [],
-          members: [],
-          invitedMemebers: invitedMembers || [],
-        };
-        const newGroups: Group[] = [...groups, newGroup];
-        set({ groups: newGroups, activeGroup: newGroup });
-      } else {
-        const newGroups: Group[] = groups.map((g) =>
-          g.id === group.id
-            ? {
-                ...g,
-                ...group,
-                members: [...g.members, ...(members || [])],
-                groupTasks: [...g.groupTasks, ...(groupTasks || [])],
-                recurringGroupTasks: [
-                  ...(g.recurringGroupTasks || []),
-                  ...(recurringGroupTasks || []),
-                ],
-                appointments: [...g.appointments, ...(appointments || [])],
-                invitedMemebers: [
-                  ...g.invitedMemebers,
-                  ...(invitedMembers || []),
-                ],
-              }
-            : g
-        );
-        set({ groups: newGroups });
-        if (activeGroup && activeGroup.id === group.id) {
-          const newActiveGroup: Group = {
-            ...activeGroup,
-            ...group,
-            members: [...activeGroup.members, ...(members || [])],
-            groupTasks: [...activeGroup.groupTasks, ...(groupTasks || [])],
-            recurringGroupTasks: [
-              ...(activeGroup.recurringGroupTasks || []),
-              ...(recurringGroupTasks || []),
-            ],
-            appointments: [
-              ...activeGroup.appointments,
-              ...(appointments || []),
-            ],
-            invitedMemebers: [
-              ...activeGroup.invitedMemebers,
-              ...(invitedMembers || []),
-            ],
-          };
-          set({ activeGroup: newActiveGroup });
-        }
-      }
-    },
-
     fetchGroupData: async () => {
-      const activeGroup = get().activeGroup;
+      const activeGroup = get().activeGroupId;
       set({ selectedDate: new Date() });
       const groupResponse = await actions.getAllGroups();
 
@@ -171,7 +95,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
         });
         if (!activeGroup) {
           set({
-            activeGroup: groupResponse.data[0] || null,
+            activeGroupId: groupResponse.data[0]?.id || null,
           });
         }
       } else {
@@ -188,44 +112,55 @@ export const useGroupStore = create<GroupState & GroupActions>()(
     },
 
     addGroup: async (group, memberIds) => {
-      const { updateGroupData } = get();
+      const { groups } = get();
       const response = await actions.createGroup({ group, memberIds });
 
       if (response.success) {
-        updateGroupData(
-          response.data.group,
-          response.data.invitedMembers,
-          [
+        const newGroup: Group = {
+          ...response.data.group,
+          groceryItems: [],
+          appointments: [],
+          groupTasks: [],
+          recurringGroupTasks: [],
+          members: [
             {
               ...response.data.admin,
               isAdmin: true,
               color: "#40c057",
             },
           ],
-          undefined,
-          undefined,
-          undefined,
-          true
-        );
+          invitedMembers: response.data.invitedMembers,
+        };
+        const newGroups: Group[] = [...groups, newGroup];
+        set({ groups: newGroups, activeGroupId: newGroup.id });
         return true;
       }
       return true;
     },
+
     updateGroup: async (group, memberIds) => {
-      const { updateGroupData } = get();
+      const { groups } = get();
 
       const response = await actions.updateGroup({ group, memberIds });
       if (response.success) {
-        updateGroupData(
-          response.data.group,
-          response.data.groupMember || undefined
+        const newGroups = groups.map((g) =>
+          g.id === group.id
+            ? {
+                ...g,
+                ...response.data.group,
+                invitedMembers: [
+                  ...g.invitedMembers,
+                  ...(response.data.invitedMembers || []),
+                ],
+              }
+            : g
         );
+        set({ groups: newGroups });
         return true;
       }
       return response.success;
     },
     updateGroupMember: async (groupId, memberId, isAdmin, color) => {
-      const { updateGroupData } = get();
       const newMember: TablesUpdate<"group_member"> = {
         user_id: memberId,
         group_id: groupId,
@@ -233,97 +168,121 @@ export const useGroupStore = create<GroupState & GroupActions>()(
         color: color,
       };
       const response = await actions.updateGroupMember(newMember);
+      const { groups } = get();
       if (response.success) {
+        const newGroups = groups.map((g) =>
+          g.id === groupId
+            ? {
+                ...g,
+                members: g.members.map((m) =>
+                  m.id === memberId
+                    ? {
+                        ...m,
+                        isAdmin: isAdmin || false,
+                        color: color || "#40c057",
+                      }
+                    : m
+                ),
+              }
+            : g
+        );
+        set({ groups: newGroups });
         return true;
       }
       return false;
     },
+
     addGroupMembers: async (groupId, memberIds) => {
-      const { updateGroupData } = get();
+      const { groups } = get();
       const response = await actions.insertGroupMembers(groupId, memberIds);
       if (response.success) {
-        updateGroupData({ id: groupId }, response.data);
+        const newGroups = groups.map((g) =>
+          g.id === groupId
+            ? {
+                ...g,
+                members: [
+                  ...g.members,
+                  ...response.data.map((m) => ({
+                    ...m,
+                    isAdmin: false,
+                    color: "#40c057",
+                  })),
+                ],
+              }
+            : g
+        );
+        set({ groups: newGroups });
         return true;
       }
       return false;
     },
     setActiveGroup: (id: string) => {
-      const group = get().groups.find((g) => g.id === id);
-      if (group) {
-        set({ activeGroup: group });
-      }
+      set({ activeGroupId: id });
     },
     addGroceryItem: async (groceryItem) => {
-      const { activeGroup, groups } = get();
-      if (activeGroup) {
+      const { activeGroupId, groups } = get();
+      if (activeGroupId) {
         const response = await actions.createGroceryItem({
           item: {
             ...groceryItem,
-            group_id: activeGroup.id,
+            group_id: activeGroupId,
           },
         });
 
         if (response.success) {
-          const newActiveGroup = {
-            ...activeGroup,
-            groceryItems: [...activeGroup.groceryItems, response.data],
-          };
           const newGroups = groups.map((g) =>
-            g.id === activeGroup.id ? newActiveGroup : g
+            g.id === activeGroupId
+              ? { ...g, groceryItems: [...g.groceryItems, response.data] }
+              : g
           );
-          set({ activeGroup: newActiveGroup, groups: newGroups });
+          set({ groups: newGroups });
           return true;
         }
       }
       return false;
     },
     toggleGroceryItem: async (id: string, checked: boolean) => {
-      const { activeGroup, groups } = get();
+      const { activeGroupId, groups } = get();
 
-      if (activeGroup) {
-        const item = activeGroup.groceryItems.find((i) => i.id === id);
-        if (item) {
-          // Update active and other groups
-          const newActiveGroup = {
-            ...activeGroup,
-            groceryItems: activeGroup.groceryItems.map((i) =>
-              i.id === id ? { ...i, checked } : i
-            ),
-          };
-          const newGroups = groups.map((g) =>
-            g.id === activeGroup.id ? newActiveGroup : g
-          );
-          set({ activeGroup: newActiveGroup, groups: newGroups });
+      if (activeGroupId) {
+        const newGroups = groups.map((g) =>
+          g.id === activeGroupId
+            ? {
+                ...g,
+                groceryItems: g.groceryItems.map((i) =>
+                  i.id === id ? { ...i, checked } : i
+                ),
+              }
+            : g
+        );
+        set({ groups: newGroups });
 
-          const response = await actions.updateGroceryItem({
-            item: {
-              id,
-              checked,
-            },
-          });
-          if (response.success) {
-            return true;
-          }
+        const response = await actions.updateGroceryItem({
+          item: {
+            id,
+            checked,
+          },
+        });
+        if (response.success) {
+          return true;
         }
       }
-      // TODO: Handle error and retry updating the item
       return false;
     },
     deleteGroceryItem: async (id: string) => {
-      const { activeGroup, groups } = get();
+      const { activeGroupId, groups } = get();
       const response = await actions.deleteGroceryItem({ itemId: id });
 
       if (response.success) {
-        if (activeGroup) {
-          const newActiveGroup = {
-            ...activeGroup,
-            groceryItems: activeGroup.groceryItems.filter((i) => i.id !== id),
-          };
-          const newGroups = groups.map((g) =>
-            g.id === activeGroup.id ? newActiveGroup : g
-          );
-          set({ activeGroup: newActiveGroup, groups: newGroups });
-        }
+        const newGroups = groups.map((g) =>
+          g.id === activeGroupId
+            ? {
+                ...g,
+                groceryItems: g.groceryItems.filter((i) => i.id !== id),
+              }
+            : g
+        );
+        set({ groups: newGroups });
         return true;
       }
       return false;
@@ -340,7 +299,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
           );
           if (groupResponse.success) {
             const newGroups = [...groups, groupResponse.data];
-            set({ groups: newGroups, activeGroup: groupResponse.data });
+            set({ groups: newGroups, activeGroupId: groupResponse.data.id });
           }
           const newGroupRequests = groupRequests.filter(
             (r) => r.requestId !== requestId
@@ -360,43 +319,47 @@ export const useGroupStore = create<GroupState & GroupActions>()(
       }
     },
     addSingleGroupTask: async (task) => {
-      const { updateGroupData } = get();
+      const { groups } = get();
       const response = await actions.createSingleGroupTask(task);
       if (response.success) {
-        updateGroupData({ id: task.group_id }, undefined, undefined, [
-          response.data,
-        ]);
+        const newGroups = groups.map((g) =>
+          g.id === task.group_id
+            ? { ...g, groupTasks: [...g.groupTasks, response.data] }
+            : g
+        );
+        set({ groups: newGroups });
         return true;
       }
       return false;
     },
     addRecurringGroupTask: async (task) => {
+      const { groups } = get();
       const response = await actions.createRecurringGroupTask(task);
       if (response.success) {
-        const { updateGroupData } = get();
-        updateGroupData(
-          { id: task.group_id },
-          undefined,
-          undefined,
-          undefined,
-          [response.data]
+        const newGroups = groups.map((g) =>
+          g.id === task.group_id
+            ? {
+                ...g,
+                recurringGroupTasks: [...g.recurringGroupTasks, response.data],
+              }
+            : g
         );
+        set({ groups: newGroups });
         return true;
       }
       return false;
     },
     addAppointment: async (appointment) => {
+      const { groups } = get();
       const response = await actions.createGroupAppointment(appointment);
       if (response.success) {
-        const { updateGroupData } = get();
-        updateGroupData(
-          { id: appointment.group_id },
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          [response.data]
+        const newGroups = groups.map((g) =>
+          g.id === appointment.group_id
+            ? { ...g, appointments: [...g.appointments, response.data] }
+            : g
         );
+        set({ groups: newGroups });
+
         return true;
       }
       return false;

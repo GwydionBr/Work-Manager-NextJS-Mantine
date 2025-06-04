@@ -20,8 +20,11 @@ export default function TaskForm({ onClose }: TaskFormProps) {
   const [isRecurring, setIsRecurring] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { addSingleGroupTask, addRecurringGroupTask, activeGroup } =
-    useGroupStore();
+  const {
+    addSingleGroupTask,
+    addRecurringGroupTask,
+    activeGroupId: activeGroup,
+  } = useGroupStore();
 
   async function handleSingleTaskSubmit(values: SingleTaskFormValues) {
     setIsLoading(true);

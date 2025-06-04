@@ -1,5 +1,7 @@
 "use client";
 
+import { useGroupStore } from "@/stores/groupStore";
+
 import { Card, Stack, Text } from "@mantine/core";
 
 import { Appointment } from "./CalendarAside";
@@ -13,23 +15,38 @@ export default function CalendarAsideBig({
   date,
   appointments,
 }: CalendarAsideBigProps) {
+  const { activeGroupId } = useGroupStore();
+  const activeGroup = useGroupStore((state) =>
+    state.groups.find((g) => g.id === activeGroupId)
+  );
+
   const renderAppointments = () => {
     if (appointments.length === 0) {
       return <Text>Keine Termine</Text>;
     }
-    return appointments.map((appointment) => (
-      <Stack key={appointment.id}>
-        <Text size="xs" fw={700}>
-          {appointment.title}
-        </Text>
-        <Text size="xs" c="dimmed">
-          {appointment.description}
-        </Text>
-        <Text size="xs" c="dimmed">
-          {appointment.profile.username}
-        </Text>
-      </Stack>
-    ));
+    return appointments.map((appointment) => {
+      const color = activeGroup?.members.find(
+        (m) => m.id === appointment.user_id
+      )?.color;
+      return (
+        <Stack
+          key={appointment.id}
+          style={{
+            backgroundColor: color || "#40c057",
+          }}
+        >
+          <Text size="xs" fw={700}>
+            {appointment.title}
+          </Text>
+          <Text size="xs" c="dimmed">
+            {appointment.description}
+          </Text>
+          <Text size="xs" c="dimmed">
+            {appointment.profile.username}
+          </Text>
+        </Stack>
+      );
+    });
   };
 
   return (

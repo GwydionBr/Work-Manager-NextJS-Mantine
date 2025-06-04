@@ -46,9 +46,7 @@ export default function CalendarCell({
         {entries.map((entry) => (
           <CalendarEntry
             key={entry.id}
-            id={entry.id}
-            title={entry.title}
-            color={"red"}
+            appointment={entry}
           />
         ))}
       </Stack>

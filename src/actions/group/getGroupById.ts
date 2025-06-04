@@ -130,7 +130,7 @@ export async function getGroupById(groupId: string): Promise<
           color: member?.color || "#40c057",
         };
       }),
-    invitedMemebers: profileData.filter((profile) =>
+    invitedMembers: profileData.filter((profile) =>
       allMembers.some(
         (member) => member.user_id === profile.id && member.status === "pending"
       )

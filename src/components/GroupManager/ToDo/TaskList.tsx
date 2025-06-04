@@ -6,7 +6,10 @@ import { useGroupStore } from "@/stores/groupStore";
 import TaskRow from "./TaskRow";
 
 export default function TaskList() {
-  const { activeGroup } = useGroupStore();
+  const { activeGroupId } = useGroupStore();
+  const activeGroup = useGroupStore((state) =>
+    state.groups.find((g) => g.id === activeGroupId)
+  );
 
   return (
     <Stack w="100%" align="center">

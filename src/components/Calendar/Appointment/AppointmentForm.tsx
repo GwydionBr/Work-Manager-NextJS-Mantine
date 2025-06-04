@@ -34,7 +34,10 @@ export default function AppointmentForm({
   appointment,
   groupId,
 }: AppointmentFormProps) {
-  const { activeGroup, addAppointment, updateAppointment } = useGroupStore();
+  const { activeGroupId, addAppointment, updateAppointment } = useGroupStore();
+  const activeGroup = useGroupStore((state) =>
+    state.groups.find((g) => g.id === activeGroupId)
+  );
   const { profile } = useUserStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
