@@ -34,7 +34,6 @@ export default function MemberRow({
   const [color, setColor] = useState(member.color);
 
   function handleColorChange() {
-    console.log(color);
     updateGroupMember(groupId, member.id, member.isAdmin, color);
   }
 

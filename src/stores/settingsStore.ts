@@ -17,6 +17,7 @@ interface SettingsState {
   roundingAmount: RoundingAmount;
   roundingMode: RoundingDirection;
   customRoundingAmount: number;
+  defaultGroupColor: string | null;
   isAsideOpen: boolean;
   isFetching: boolean;
   lastFetch: Date | null;
@@ -30,6 +31,7 @@ interface SettingsActions {
   setRoundingAmount: (roundingAmount: RoundingAmount) => void;
   setRoundingMode: (roundingMode: RoundingDirection) => void;
   setCustomRoundingAmount: (customRoundingAmount: number) => void;
+  setDefaultGroupColor: (color: string | null) => void;
   setIsAsideOpen: (isAsideOpen: boolean) => void;
 }
 
@@ -43,6 +45,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       roundingMode: "up",
       customRoundingAmount: 0,
       defaultSalaryAmount: 0,
+      defaultGroupColor: null,
       isAsideOpen: true,
       isFetching: true,
       lastFetch: null,
@@ -58,6 +61,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
             roundingAmount: data.rounding_amount,
             roundingMode: data.rounding_direction,
             customRoundingAmount: data.rounding_custom_amount,
+            defaultGroupColor: data.default_group_color,
           });
         }
         set({ isFetching: false, lastFetch: new Date() });
@@ -103,6 +107,13 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
           default_finance_currency: financeCurrency,
         });
         set({ defaultFinanceCurrency: financeCurrency });
+      },
+      setDefaultGroupColor: async (color: string | null) => {
+        await actions.updateSettings({
+          id: get().settingsId ?? "",
+          default_group_color: color,
+        });
+        set({ defaultGroupColor: color });
       },
       setIsAsideOpen: (isAsideOpen: boolean) => {
         set({ isAsideOpen: isAsideOpen });
