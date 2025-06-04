@@ -54,9 +54,12 @@ interface GroupActions {
     group: TablesUpdate<"group">,
     memberIds?: string[]
   ) => Promise<boolean>;
-  updateGroupMembers: (
+  addGroupMembers: (groupId: string, memberIds: string[]) => Promise<boolean>;
+  updateGroupMember: (
     groupId: string,
-    memberIds: string[]
+    memberId: string,
+    isAdmin?: boolean,
+    color?: string
   ) => Promise<boolean>;
   addGroceryItem: (
     groceryItem: TablesInsert<"grocery_item">
@@ -157,6 +160,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
 
     fetchGroupData: async () => {
       const activeGroup = get().activeGroup;
+      set({ selectedDate: new Date() });
       const groupResponse = await actions.getAllGroups();
 
       if (groupResponse.success) {
@@ -220,7 +224,21 @@ export const useGroupStore = create<GroupState & GroupActions>()(
       }
       return response.success;
     },
-    updateGroupMembers: async (groupId, memberIds) => {
+    updateGroupMember: async (groupId, memberId, isAdmin, color) => {
+      const { updateGroupData } = get();
+      const newMember: TablesUpdate<"group_member"> = {
+        user_id: memberId,
+        group_id: groupId,
+        is_Admin: isAdmin,
+        color: color,
+      };
+      const response = await actions.updateGroupMember(newMember);
+      if (response.success) {
+        return true;
+      }
+      return false;
+    },
+    addGroupMembers: async (groupId, memberIds) => {
       const { updateGroupData } = get();
       const response = await actions.insertGroupMembers(groupId, memberIds);
       if (response.success) {

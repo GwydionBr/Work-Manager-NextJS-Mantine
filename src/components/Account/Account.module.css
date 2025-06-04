@@ -1,6 +1,0 @@
-.profileRow {
-  padding: 5;
-  padding-left: var(--mantine-spacing-xs);
-  border-radius: var(--mantine-radius-md);
-  background-color: light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
-}

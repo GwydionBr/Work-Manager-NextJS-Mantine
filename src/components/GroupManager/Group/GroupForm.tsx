@@ -21,7 +21,11 @@ interface GroupFormProps {
 }
 
 export default function GroupForm({ onClose, group }: GroupFormProps) {
-  const { addGroup, updateGroup, updateGroupMembers } = useGroupStore();
+  const {
+    addGroup,
+    updateGroup,
+    addGroupMembers: updateGroupMembers,
+  } = useGroupStore();
   const { friends } = useUserStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -15,7 +15,7 @@ import {
 import NewGroupButton from "../GroupManager/Group/NewGroupButton";
 
 import classes from "./Navbar.module.css";
-import ProfileRow from "../Account/ProfileRow";
+import MemberRow from "../GroupManager/MemberRow";
 
 export default function FinanceNavbar() {
   const { groups, activeGroup, isFetching, setActiveGroup } = useGroupStore();
@@ -51,7 +51,11 @@ export default function FinanceNavbar() {
         {isFetching && <Skeleton height={25} w={200} mx="md" />}
         <Stack gap="xs">
           {activeGroup?.members.map((member) => (
-            <ProfileRow key={member.id} profile={member} />
+            <MemberRow
+              key={member.id}
+              groupId={activeGroup.id}
+              member={member}
+            />
           ))}
         </Stack>
         <Divider />
@@ -61,7 +65,15 @@ export default function FinanceNavbar() {
               <Text fw={600}>Invited Members</Text>
               <Stack gap="xs">
                 {activeGroup.invitedMemebers.map((member) => (
-                  <ProfileRow key={member.id} profile={member} />
+                  <MemberRow
+                    key={member.id}
+                    groupId={activeGroup.id}
+                    member={{
+                      ...member,
+                      isAdmin: false,
+                      color: "",
+                    }}
+                  />
                 ))}
               </Stack>
             </Stack>
