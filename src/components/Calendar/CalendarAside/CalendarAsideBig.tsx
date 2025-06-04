@@ -3,8 +3,9 @@
 import { useGroupStore } from "@/stores/groupStore";
 
 import { Card, Stack, Text } from "@mantine/core";
-
 import { Appointment } from "./CalendarAside";
+
+import classes from "./ClalendarAside.module.css";
 
 interface CalendarAsideBigProps {
   date: Date | null;
@@ -31,6 +32,7 @@ export default function CalendarAsideBig({
       return (
         <Stack
           key={appointment.id}
+          className={classes.appointmentRow}
           style={{
             backgroundColor: color || "#40c057",
           }}
@@ -38,10 +40,12 @@ export default function CalendarAsideBig({
           <Text size="xs" fw={700}>
             {appointment.title}
           </Text>
-          <Text size="xs" c="dimmed">
-            {appointment.description}
-          </Text>
-          <Text size="xs" c="dimmed">
+          {appointment.description && (
+            <Text size="xs" c="dimmed">
+              {appointment.description}
+            </Text>
+          )}
+          <Text size="xs" c="dimmed" >
             {appointment.profile.username}
           </Text>
         </Stack>
