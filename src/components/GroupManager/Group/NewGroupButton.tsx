@@ -2,7 +2,7 @@
 
 import { useDisclosure } from "@mantine/hooks";
 
-import { ActionIcon, Flex, Modal } from "@mantine/core";
+import { ActionIcon, Box, Flex, Modal } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import GroupForm from "@/components/GroupManager/Group/GroupForm";
 
@@ -10,7 +10,7 @@ export default function NewGroupButton() {
   const [opened, { open, close }] = useDisclosure(false);
 
   return (
-    <>
+    <Box>
       <Modal
         opened={opened}
         closeOnClickOutside={false}
@@ -32,6 +32,6 @@ export default function NewGroupButton() {
       >
         <IconPlus />
       </ActionIcon>
-    </>
+    </Box>
   );
 }

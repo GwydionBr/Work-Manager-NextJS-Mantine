@@ -13,6 +13,7 @@ import {
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { currencies } from "@/constants/settings";
+import CancelButton from "@/components/UI/Buttons/CancelButton";
 
 interface ProjectFormProps {
   initialValues: {
@@ -72,14 +73,15 @@ export default function ProjectForm({
           data={currencies}
           {...form.getInputProps("currency")}
         />
-        <Button type="submit" loading={submitting} disabled={submitting} mt="md">
+        <Button
+          type="submit"
+          loading={submitting}
+          disabled={submitting}
+          mt="md"
+        >
           {newProject ? "Create Project" : "Save Changes"}
         </Button>
-        {onCancel && (
-          <Button onClick={onCancel} color="red" variant="outline">
-            Cancel
-          </Button>
-        )}
+        {onCancel && <CancelButton onClick={onCancel} />}
       </Stack>
     </form>
   );

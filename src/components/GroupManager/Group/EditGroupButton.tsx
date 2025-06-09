@@ -3,16 +3,32 @@
 import { useDisclosure } from "@mantine/hooks";
 import { useGroupStore } from "@/stores/groupStore";
 
-import { ActionIcon, Flex, Drawer, Box } from "@mantine/core";
-import { IconPencil } from "@tabler/icons-react";
+import { Flex, Drawer, Box } from "@mantine/core";
 import GroupForm from "@/components/GroupManager/Group/GroupForm";
+import EditActionIcon from "@/components/UI/Buttons/EditActionIcon";
+import DeleteButton from "@/components/UI/Buttons/DeleteButton";
+import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
 
 export default function EditGroupButton() {
   const [opened, { open, close }] = useDisclosure(false);
-  const { activeGroupId } = useGroupStore();
+  const [
+    deleteModalOpened,
+    { open: openDeleteModal, close: closeDeleteModal },
+  ] = useDisclosure(false);
+  const { activeGroupId, deleteGroup } = useGroupStore();
   const activeGroup = useGroupStore((state) =>
     state.groups.find((g) => g.id === activeGroupId)
   );
+
+  async function handleDelete() {
+    if (activeGroup) {
+      const result = await deleteGroup(activeGroup.id);
+      if (result) {
+        closeDeleteModal();
+        close();
+      }
+    }
+  }
 
   return (
     <Box>
@@ -25,17 +41,19 @@ export default function EditGroupButton() {
       >
         <Flex direction="column" gap="xl">
           <GroupForm onClose={close} group={activeGroup} />
+          <DeleteButton onClick={openDeleteModal} />
         </Flex>
       </Drawer>
 
-      <ActionIcon
-        variant="transparent"
-        aria-label="Edit group"
-        onClick={open}
-        size="md"
-      >
-        <IconPencil size={24} />
-      </ActionIcon>
+      <ConfirmDeleteModal
+        opened={deleteModalOpened}
+        onClose={closeDeleteModal}
+        onDelete={handleDelete}
+        title="Delete Group"
+        message="Are you sure you want to delete this group? This action cannot be undone."
+      />
+
+      <EditActionIcon aria-label="Edit group" onClick={open} size="md" />
     </Box>
   );
 }

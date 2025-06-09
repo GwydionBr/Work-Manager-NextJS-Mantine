@@ -45,6 +45,7 @@ interface GroupActions {
     group: TablesUpdate<"group">,
     memberIds?: string[]
   ) => Promise<boolean>;
+  deleteGroup: (groupId: string) => Promise<boolean>;
   addGroupMembers: (groupId: string, memberIds: string[]) => Promise<boolean>;
   updateGroupMember: (
     groupId: string,
@@ -191,7 +192,17 @@ export const useGroupStore = create<GroupState & GroupActions>()(
       }
       return false;
     },
-
+    deleteGroup: async (groupId) => {
+      const { groups } = get();
+      const response = await actions.deleteGroup({ groupId });
+      if (response.success) {
+        const newGroups = groups.filter((g) => g.id !== groupId);
+        const newActiveGroupId = newGroups[0]?.id || null;
+        set({ groups: newGroups, activeGroupId: newActiveGroupId });
+        return true;
+      }
+      return false;
+    },
     addGroupMembers: async (groupId, memberIds) => {
       const { groups } = get();
       const response = await actions.insertGroupMembers(groupId, memberIds);

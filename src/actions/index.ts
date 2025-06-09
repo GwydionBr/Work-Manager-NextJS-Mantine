@@ -46,7 +46,7 @@ export {
 // Group Actions
 export { getAllGroups } from "./group/getAllGroups";
 export { getGroupById } from "./group/getGroupById";
-export { deleteGroup } from "./group/groupActions";
+export { deleteGroup } from "./group/deleteGroup";
 export { updateGroup } from "./group/updateGroup";
 export { createGroup } from "./group/createGroup";
 export {

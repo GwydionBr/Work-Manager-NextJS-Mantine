@@ -5,7 +5,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Drawer, Flex } from "@mantine/core";
+import { Box, Flex, Modal } from "@mantine/core";
 import ProjectForm from "@/components/Work/Project/ProjectForm";
 import AddActionIcon from "@/components/UI/Buttons/AddActionIcon";
 
@@ -32,8 +32,8 @@ export default function NewProjectButton() {
   }
 
   return (
-    <>
-      <Drawer
+    <Box>
+      <Modal
         opened={opened}
         onClose={close}
         title="Add Project"
@@ -54,9 +54,9 @@ export default function NewProjectButton() {
             submitting={submitting}
           />
         </Flex>
-      </Drawer>
+      </Modal>
 
       <AddActionIcon aria-label="Add project" onClick={open} size="md" />
-    </>
+    </Box>
   );
 }
