@@ -4,6 +4,7 @@ import { useForm } from "@mantine/form";
 import { useState } from "react";
 import { useGroupStore, Group } from "@/stores/groupStore";
 import { useUserStore } from "@/stores/userStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { TextInput, Stack, Button, Alert, MultiSelect } from "@mantine/core";
 import { z } from "zod";
@@ -28,6 +29,7 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
     addGroupMembers: updateGroupMembers,
   } = useGroupStore();
   const { friends } = useUserStore();
+  const { defaultGroupColor } = useSettingsStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -65,6 +67,7 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
           title: values.title,
           description: values.description,
         },
+        defaultGroupColor,
         values.memberIds
       );
     }

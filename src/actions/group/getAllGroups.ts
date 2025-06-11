@@ -153,6 +153,7 @@ export async function getAllGroups(): Promise<
           ...profile,
           isAdmin: member?.is_Admin || false,
           color: member?.color || "#40c057",
+          memberId: member?.id || "",
         };
       });
 

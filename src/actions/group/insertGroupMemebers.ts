@@ -2,15 +2,19 @@
 
 import { createClient } from "@/utils/supabase/server";
 
-import { ApiResponseList } from "@/types/action.types";
-import { Enums } from "@/types/db.types";
+import { ErrorResponse } from "@/types/action.types";
+import { Enums, Tables } from "@/types/db.types";
 
 export async function insertGroupMembers(
   groupId: string,
   memberIds: string[]
-): Promise<ApiResponseList<"profiles">> {
+): Promise<ErrorResponse | {
+  success: true;
+  data: (Tables<"profiles"> & { memberId: string })[];
+  error: null;
+}> {
   const supabase = await createClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("group_member")
     .insert(
       memberIds.map((id) => ({
@@ -42,5 +46,10 @@ export async function insertGroupMembers(
     };
   }
 
-  return { success: true, data: profileData, error: null };
+  const dataWithMemberId = profileData.map((profile) => ({
+    ...profile,
+    memberId: data.find((d) => d.user_id === profile.id)?.id || "",
+  }));
+
+  return { success: true, data: dataWithMemberId, error: null };
 }

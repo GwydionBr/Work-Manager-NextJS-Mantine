@@ -128,13 +128,25 @@ export async function getGroupById(groupId: string): Promise<
           ...profile,
           isAdmin: member?.is_Admin || false,
           color: member?.color || "#40c057",
+          memberId: member?.id || "",
         };
       }),
-    invitedMembers: profileData.filter((profile) =>
-      allMembers.some(
-        (member) => member.user_id === profile.id && member.status === "pending"
+    invitedMembers: profileData
+      .filter((profile) =>
+        allMembers.some(
+          (member) =>
+            member.user_id === profile.id && member.status === "pending"
+        )
       )
-    ),
+      .map((profile) => {
+        const member = allMembers.find(
+          (member) => member.user_id === profile.id
+        );
+        return {
+          ...profile,
+          memberId: member?.id || "",
+        };
+      }),
     appointments: appointmentData,
     groupTasks: groupTaskData,
     recurringGroupTasks: recurringGroupTaskData,

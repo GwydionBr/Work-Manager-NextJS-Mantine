@@ -7,8 +7,10 @@ import { Tables } from "@/types/db.types";
 
 export async function acceptGroupRequest({
   groupRequestId,
+  color,
 }: {
   groupRequestId: string;
+  color: null | string;
 }): Promise<
   | ErrorResponse
   | {
@@ -20,7 +22,7 @@ export async function acceptGroupRequest({
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("group_member")
-    .update({ status: "accepted" })
+    .update({ status: "accepted", color: color || undefined })
     .eq("id", groupRequestId)
     .select()
     .single();

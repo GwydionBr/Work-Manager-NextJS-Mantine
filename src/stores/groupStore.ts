@@ -12,8 +12,13 @@ export interface GroupRequest {
 }
 
 export interface GroupMember extends Tables<"profiles"> {
+  memberId: string;
   isAdmin: boolean;
   color: string;
+}
+
+export interface InvitedMember extends Tables<"profiles"> {
+  memberId: string;
 }
 
 export interface Group extends Tables<"group"> {
@@ -22,7 +27,7 @@ export interface Group extends Tables<"group"> {
   groupTasks: Tables<"group_task">[];
   recurringGroupTasks: Tables<"recurring_group_task">[];
   members: GroupMember[];
-  invitedMembers: Tables<"profiles">[];
+  invitedMembers: InvitedMember[];
 }
 
 interface GroupState {
@@ -38,8 +43,8 @@ interface GroupActions {
   fetchGroupData: () => void;
   addGroup: (
     group: TablesInsert<"group">,
-    memberIds?: string[],
-    admins?: string[]
+    color: null | string,
+    memberIds?: string[]
   ) => Promise<boolean>;
   updateGroup: (
     group: TablesUpdate<"group">,
@@ -66,7 +71,11 @@ interface GroupActions {
   setActiveGroup: (id: string) => void;
   toggleGroceryItem: (id: string, checked: boolean) => Promise<boolean>;
   deleteGroceryItem: (id: string) => Promise<boolean>;
-  answerGroupRequest: (requestId: string, answer: boolean) => void;
+  answerGroupRequest: (
+    requestId: string,
+    answer: boolean,
+    color: null | string
+  ) => void;
   addSingleGroupTask: (task: TablesInsert<"group_task">) => Promise<boolean>;
   addRecurringGroupTask: (
     task: TablesInsert<"recurring_group_task">
@@ -112,9 +121,9 @@ export const useGroupStore = create<GroupState & GroupActions>()(
       }
     },
 
-    addGroup: async (group, memberIds) => {
+    addGroup: async (group, color, memberIds) => {
       const { groups } = get();
-      const response = await actions.createGroup({ group, memberIds });
+      const response = await actions.createGroup({ group, memberIds, color });
 
       if (response.success) {
         const newGroup: Group = {
@@ -127,7 +136,8 @@ export const useGroupStore = create<GroupState & GroupActions>()(
             {
               ...response.data.admin,
               isAdmin: true,
-              color: "#40c057",
+              color: color || "#40c057",
+              memberId: response.data.admin.memberId,
             },
           ],
           invitedMembers: response.data.invitedMembers,
@@ -217,6 +227,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
                     ...m,
                     isAdmin: false,
                     color: "#40c057",
+                    memberId: m.memberId,
                   })),
                 ],
               }
@@ -298,11 +309,16 @@ export const useGroupStore = create<GroupState & GroupActions>()(
       }
       return false;
     },
-    answerGroupRequest: async (requestId: string, answer: boolean) => {
+    answerGroupRequest: async (
+      requestId: string,
+      answer: boolean,
+      color: null | string
+    ) => {
       const { groupRequests, groups } = get();
       if (answer) {
         const response = await actions.acceptGroupRequest({
           groupRequestId: requestId,
+          color,
         });
         if (response.success) {
           const groupResponse = await actions.getGroupById(

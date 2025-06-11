@@ -1,4 +1,5 @@
-import { Card, Text } from "@mantine/core";
+import { ActionIcon, Card } from "@mantine/core";
+import { IconCalendarWeek } from "@tabler/icons-react";
 
 interface CalendarAsideSmallProps {
   date: Date | null;
@@ -7,7 +8,14 @@ interface CalendarAsideSmallProps {
 export default function CalendarAsideSmall({ date }: CalendarAsideSmallProps) {
   return (
     <Card shadow="sm" radius="md" p="md">
-      <Text>{date?.toLocaleDateString()}</Text>
+      <ActionIcon
+        variant="transparent"
+        aria-label="Toggle Small Calendar"
+        onClick={() => {}}
+        size="md"
+      >
+        <IconCalendarWeek />
+      </ActionIcon>
     </Card>
   );
 }

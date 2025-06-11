@@ -55,7 +55,7 @@ export default function FinanceNavbar() {
         <Stack gap="xs">
           {activeGroup?.members.map((member) => (
             <MemberRow
-              key={member.id}
+              key={member.memberId}
               groupId={activeGroup.id}
               member={member}
             />
@@ -69,12 +69,13 @@ export default function FinanceNavbar() {
               <Stack gap="xs">
                 {activeGroup.invitedMembers.map((member) => (
                   <MemberRow
-                    key={member.id}
+                    key={member.memberId}
                     groupId={activeGroup.id}
                     member={{
                       ...member,
                       isAdmin: false,
                       color: "",
+                      memberId: member.memberId,
                     }}
                   />
                 ))}

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useUserStore } from "@/stores/userStore";
 import { useGroupStore } from "@/stores/groupStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
   Divider,
@@ -22,6 +23,7 @@ import XActionIcon from "../UI/Buttons/XActionIcon";
 export default function NotificationAsideCard() {
   const { requestedFriends, acceptFriend, declineFriend } = useUserStore();
   const { groupRequests, answerGroupRequest } = useGroupStore();
+  const { defaultGroupColor } = useSettingsStore();
   const [friendRequestsOpened, setFriendRequestsOpened] = useState(false);
   const [groupRequestsOpened, setGroupRequestsOpened] = useState(false);
 
@@ -113,14 +115,14 @@ export default function NotificationAsideCard() {
                         size="sm"
                         iconSize={20}
                         onClick={() =>
-                          answerGroupRequest(request.requestId, true)
+                          answerGroupRequest(request.requestId, true, defaultGroupColor)
                         }
                       />
                       <XActionIcon
                         size="sm"
                         iconSize={20}
                         onClick={() =>
-                          answerGroupRequest(request.requestId, false)
+                          answerGroupRequest(request.requestId, false, defaultGroupColor)
                         }
                       />
                     </Group>

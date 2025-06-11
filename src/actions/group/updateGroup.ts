@@ -3,6 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { ErrorResponse } from "@/types/action.types";
 import { Enums, Tables, TablesUpdate } from "@/types/db.types";
+import { InvitedMember } from "@/stores/groupStore";
 
 export async function updateGroup({
   group,
@@ -16,7 +17,7 @@ export async function updateGroup({
       success: true;
       data: {
         group: Tables<"group">;
-        invitedMembers: Tables<"profiles">[] | null;
+        invitedMembers: InvitedMember[] | null;
       };
       error: null;
     }
@@ -43,9 +44,10 @@ export async function updateGroup({
       user_id: id,
       status: "pending" as Enums<"status">,
     }));
-    const { error: memberError } = await supabase
+    const { data: memberData,error: memberError } = await supabase
       .from("group_member")
-      .insert(memberInsertData);
+      .insert(memberInsertData)
+      .select();
 
     if (memberError) {
       return {
@@ -68,9 +70,19 @@ export async function updateGroup({
       };
     }
 
+    const invitedMembers = profileData.map((profile) => {
+      const member = memberData.find(
+        (member) => member.user_id === profile.id
+      );
+      return {
+        ...profile,
+        memberId: member?.id || "",
+      };
+    });
+
     return {
       success: true,
-      data: { group: data, invitedMembers: profileData },
+      data: { group: data, invitedMembers },
       error: null,
     };
   }

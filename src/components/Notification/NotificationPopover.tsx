@@ -2,6 +2,7 @@
 
 import { useUserStore } from "@/stores/userStore";
 import { useGroupStore } from "@/stores/groupStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Group, Indicator, Stack, Text } from "@mantine/core";
 import { IconUserPlus, IconUsersPlus } from "@tabler/icons-react";
@@ -13,7 +14,8 @@ import XActionIcon from "../UI/Buttons/XActionIcon";
 export default function NotificationPopover() {
   const { requestedFriends, acceptFriend, declineFriend } = useUserStore();
   const { groupRequests, answerGroupRequest } = useGroupStore();
-
+  const { defaultGroupColor } = useSettingsStore();
+  
   return (
     <Stack gap="xs">
       {requestedFriends.length > 0 && (
@@ -69,12 +71,16 @@ export default function NotificationPopover() {
                   <CheckActionIcon
                     size="sm"
                     iconSize={20}
-                    onClick={() => answerGroupRequest(request.requestId, true)}
+                    onClick={() =>
+                      answerGroupRequest(request.requestId, true, defaultGroupColor)
+                    }
                   />
                   <XActionIcon
                     size="sm"
                     iconSize={20}
-                    onClick={() => answerGroupRequest(request.requestId, false)}
+                    onClick={() =>
+                      answerGroupRequest(request.requestId, false, defaultGroupColor)
+                    }
                   />
                 </Group>
               </Group>
