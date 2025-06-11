@@ -7,7 +7,7 @@ import {
   mantineHtmlProps,
   MantineProvider,
 } from "@mantine/core";
-import Script from "next/script";
+// import Script from "next/script";
 import { Notifications } from "@mantine/notifications";
 import Layout from "@/components/AppShell/AppShell";
 import { mantineTheme } from "@/theme";
@@ -18,7 +18,7 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }: { children: any }) {
-  const isProduction = process.env.NODE_ENV === "production";
+  // const isProduction = process.env.NODE_ENV === "production";
 
   return (
     <html lang="en" {...mantineHtmlProps}>
@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: any }) {
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
         />
-        {isProduction && (
+        {/* {isProduction && (
           <>
             <Script
               id="sitetran-config"
@@ -44,7 +44,7 @@ export default function RootLayout({ children }: { children: any }) {
               strategy="afterInteractive"
             />
           </>
-        )}
+        )} */}
       </head>
       <body>
         <MantineProvider defaultColorScheme="auto" theme={mantineTheme}>
@@ -53,7 +53,7 @@ export default function RootLayout({ children }: { children: any }) {
             {children}
           </Layout>
         </MantineProvider>
-        {isProduction && <div id="sitetran_translate_element" />}
+        {/* {isProduction && <div id="sitetran_translate_element" />} */}
       </body>
     </html>
   );

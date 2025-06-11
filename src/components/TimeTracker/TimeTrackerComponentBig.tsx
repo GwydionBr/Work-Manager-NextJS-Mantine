@@ -13,7 +13,6 @@ import {
   ActionIcon,
   Collapse,
   Indicator,
-  Transition,
 } from "@mantine/core";
 import {
   IconClock,
@@ -134,7 +133,7 @@ export default function TimeTrackerComponentBig({
           </Group>
         </Card>
       </Collapse>
-      <Collapse in={!isTimeTrackerMinimized} transitionDuration={500}>
+      <Collapse in={!isTimeTrackerMinimized} transitionDuration={400}>
         <Card
           shadow="sm"
           padding="lg"

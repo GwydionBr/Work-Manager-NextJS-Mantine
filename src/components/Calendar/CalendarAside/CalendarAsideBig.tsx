@@ -23,7 +23,7 @@ export default function CalendarAsideBig({
 
   const renderAppointments = () => {
     if (appointments.length === 0) {
-      return <Text>Keine Termine</Text>;
+      return <Text>No appointments</Text>;
     }
     return appointments.map((appointment) => {
       const color = activeGroup?.members.find(
@@ -45,7 +45,7 @@ export default function CalendarAsideBig({
               {appointment.description}
             </Text>
           )}
-          <Text size="xs" c="dimmed" >
+          <Text size="xs" c="dimmed">
             {appointment.profile.username}
           </Text>
         </Stack>

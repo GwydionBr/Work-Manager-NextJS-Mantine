@@ -2,14 +2,7 @@
 
 import { useState } from "react";
 
-import {
-  ActionIcon,
-  Collapse,
-  Divider,
-  Group,
-  Stack,
-  Transition,
-} from "@mantine/core";
+import { ActionIcon, Group, Stack } from "@mantine/core";
 import { IconArrowBarLeft } from "@tabler/icons-react";
 import NotificationAside from "../Notification/NotificationAside";
 import TimeTrackerComponent from "../TimeTracker/TimeTrackerComponent";

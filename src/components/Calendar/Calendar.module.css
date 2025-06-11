@@ -115,12 +115,11 @@
 }
 
 .calendarEntry {
-  background-color: var(--mantine-color-blue-6);
-  color: var(--mantine-color-white);
+  /* background-color: var(--mantine-color-blue-6); */
   padding: 2px 4px;
   border-radius: 4px;
   overflow: hidden;
-  text-overflow: ellipsis;
+  /* text-overflow: ellipsis; */
   white-space: nowrap;
-  font-size: var(--mantine-font-size-xs);
+  /* font-size: var(--mantine-font-size-xs); */
 }
