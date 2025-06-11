@@ -2,7 +2,7 @@
 
 import { useGroupStore } from "@/stores/groupStore";
 
-import { Card, Stack, Text } from "@mantine/core";
+import { Card, ScrollArea, Stack, Text } from "@mantine/core";
 import { Appointment } from "./CalendarAside";
 
 import classes from "./ClalendarAside.module.css";
@@ -55,12 +55,14 @@ export default function CalendarAsideBig({
 
   return (
     <Card shadow="sm" radius="md" p="md" withBorder w={270}>
-      <Stack>
-        <Text size="lg" fw={700}>
-          {date?.toLocaleDateString()}
-        </Text>
-        {renderAppointments()}
-      </Stack>
+      <ScrollArea h={250} type="scroll">
+        <Stack>
+          <Text size="lg" fw={700}>
+            {date?.toLocaleDateString()}
+          </Text>
+          {renderAppointments()}
+        </Stack>
+      </ScrollArea>
     </Card>
   );
 }

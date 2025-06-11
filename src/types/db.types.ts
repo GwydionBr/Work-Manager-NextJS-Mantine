@@ -141,31 +141,34 @@ export type Database = {
       group_appointment: {
         Row: {
           created_at: string;
-          date: string;
           description: string | null;
+          end_date: string | null;
           group_id: string;
           id: string;
           reminder: string | null;
+          start_date: string;
           title: string;
           user_id: string;
         };
         Insert: {
           created_at?: string;
-          date?: string;
           description?: string | null;
+          end_date?: string | null;
           group_id?: string;
           id?: string;
           reminder?: string | null;
+          start_date?: string;
           title?: string;
           user_id?: string;
         };
         Update: {
           created_at?: string;
-          date?: string;
           description?: string | null;
+          end_date?: string | null;
           group_id?: string;
           id?: string;
           reminder?: string | null;
+          start_date?: string;
           title?: string;
           user_id?: string;
         };

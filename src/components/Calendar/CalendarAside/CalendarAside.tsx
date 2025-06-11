@@ -26,7 +26,7 @@ export default function CalendarAside({ isBig }: CalendarAsideProps) {
   useEffect(() => {
     if (activeGroup) {
       const appointments = activeGroup.appointments.filter((appointment) => {
-        const appointmentDate = new Date(appointment.date);
+        const appointmentDate = new Date(appointment.start_date);
         return (
           appointmentDate.getDate() === selectedDate?.getDate() &&
           appointmentDate.getMonth() === selectedDate?.getMonth() &&

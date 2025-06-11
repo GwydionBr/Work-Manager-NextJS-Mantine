@@ -35,7 +35,7 @@ export default function CalendarGrid({
 
   const getEntriesForDate = (date: Date) => {
     return entries.filter((entry) => {
-      const entryDate = new Date(entry.date);
+      const entryDate = new Date(entry.start_date);
       return (
         entryDate.getDate() === date.getDate() &&
         entryDate.getMonth() === date.getMonth() &&

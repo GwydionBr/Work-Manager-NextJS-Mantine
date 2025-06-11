@@ -15,7 +15,8 @@ import { Tables } from "@/types/db.types";
 const schema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters"),
   description: z.string().optional(),
-  date: z.string().transform((str) => new Date(str)),
+  start_date: z.string().transform((str) => new Date(str)),
+  end_date: z.string().nullable().transform((str) => (str ? new Date(str) : null)),
   reminder: z
     .string()
     .nullable()
@@ -23,7 +24,7 @@ const schema = z.object({
   userId: z.string().min(1, "Please select a responsible person"),
 });
 
-interface AppointmentFormProps {
+interface AppointmentFormProps {  
   onClose: () => void;
   appointment?: Tables<"group_appointment"> | null;
   groupId: string;
@@ -46,9 +47,12 @@ export default function AppointmentForm({
     initialValues: {
       title: appointment?.title || "",
       description: appointment?.description || "",
-      date: appointment?.date
-        ? new Date(appointment.date).toISOString()
+      start_date: appointment?.start_date
+        ? new Date(appointment.start_date).toISOString()
         : new Date().toISOString(),
+      end_date: appointment?.end_date
+        ? new Date(appointment.end_date).toISOString()
+        : null,
       reminder: appointment?.reminder
         ? new Date(appointment.reminder).toISOString()
         : null,
@@ -60,7 +64,8 @@ export default function AppointmentForm({
   async function handleFormSubmit(values: {
     title: string;
     description: string;
-    date: string;
+    start_date: string;
+    end_date: string | null;
     reminder: string | null;
     userId: string;
   }) {
@@ -70,7 +75,8 @@ export default function AppointmentForm({
       const response = await addAppointment({
         title: values.title,
         description: values.description,
-        date: values.date,
+        start_date: values.start_date,
+        end_date: values.end_date,
         reminder: values.reminder,
         user_id: values.userId,
         group_id: groupId,
@@ -85,7 +91,8 @@ export default function AppointmentForm({
         id: appointment.id,
         title: values.title,
         description: values.description,
-        date: values.date,
+        start_date: values.start_date,
+        end_date: values.end_date,
         reminder: values.reminder,
         user_id: values.userId,
       });
@@ -117,11 +124,16 @@ export default function AppointmentForm({
         <TextInput label="Description" {...form.getInputProps("description")} />
         <DateTimePicker
           withAsterisk
-          label="Date and Time"
-          placeholder="Pick date and time"
-          {...form.getInputProps("date")}
+          label="Start"
+          placeholder="Pick start date and time"
+          {...form.getInputProps("start_date")}
         />
         <DateTimePicker
+          label="End"
+          placeholder="Pick end date and time"
+          {...form.getInputProps("end_date")}
+        />
+        <DateTimePicker 
           label="Reminder"
           placeholder="Set reminder (optional)"
           clearable

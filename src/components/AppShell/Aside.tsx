@@ -17,7 +17,7 @@ interface AsideProps {
 }
 
 export default function Aside({ toggleAside, isAsideOpen }: AsideProps) {
-  const [isNotificationOpen, setIsNotificationOpen] = useState(true);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isTimeTrackerMinimized, setIsTimeTrackerMinimized] = useState(false);
 
   return (
