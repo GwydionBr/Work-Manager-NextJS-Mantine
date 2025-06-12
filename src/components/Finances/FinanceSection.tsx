@@ -18,7 +18,7 @@ export default function FinanceSection({
       <Text ta="center" fz="lg" p="xs">
         {title}
       </Text>
-      <ScrollArea className={classes.financeSectionContent}>
+      <ScrollArea className={classes.financeSectionContent} scrollbarSize={7}>
         {cashFlows.map((cashFlow) => (
           <Box className={classes.cashFlowBox} my="xs" key={cashFlow.id}>
             <Text p="xs" fz={12}>

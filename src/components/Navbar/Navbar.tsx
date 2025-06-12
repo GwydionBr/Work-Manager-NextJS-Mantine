@@ -30,11 +30,11 @@ const mainLinksData = [
     label: "Finance",
     to: paths.finances.financesPage(),
   },
-  {
-    icon: IconDeviceDesktopAnalytics,
-    label: "Analytics",
-    to: paths.analytics.analyticsPage(),
-  },
+  // {
+  //   icon: IconDeviceDesktopAnalytics,
+  //   label: "Analytics",
+  //   to: paths.analytics.analyticsPage(),
+  // },
   {
     icon: IconUsersGroup,
     label: "Group Manager",

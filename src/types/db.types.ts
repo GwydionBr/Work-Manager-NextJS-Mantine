@@ -422,30 +422,39 @@ export type Database = {
       single_cash_flow: {
         Row: {
           amount: number;
+          changed_date: string | null;
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
           date: string;
           id: string;
+          is_active: boolean;
+          is_from_recurring: boolean;
           title: string;
           type: Database["public"]["Enums"]["cash_flow_type"];
           user_id: string;
         };
         Insert: {
           amount: number;
+          changed_date?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           date: string;
           id?: string;
+          is_active?: boolean;
+          is_from_recurring?: boolean;
           title?: string;
           type?: Database["public"]["Enums"]["cash_flow_type"];
           user_id?: string;
         };
         Update: {
           amount?: number;
+          changed_date?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           date?: string;
           id?: string;
+          is_active?: boolean;
+          is_from_recurring?: boolean;
           title?: string;
           type?: Database["public"]["Enums"]["cash_flow_type"];
           user_id?: string;
