@@ -30,12 +30,13 @@ export { signInWithGithub } from "./auth/github/signInWithGithub";
 export { getSettings, updateSettings } from "./settings/settingsActions";
 
 // Finance Actions
-export {
-  getAllSingleCashFlows,
-  createSingleCashFlow,
-  updateSingleCashFlow,
-  deleteSingleCashFlow,
-} from "./finance/singleCashFlowActions";
+
+export { getAllSingleCashFlows } from "./finance/getAllSingleCashFlows";
+export { createSingleCashFlow } from "./finance/createSingleCashFlow";
+export { updateSingleCashFlow } from "./finance/updateSingleCashFlow";
+export { deleteSingleCashFlow } from "./finance/deleteSingleCashFlow";
+export { createMultipleSingleCashFlows } from "./finance/createMultipleSingleCashFlows";
+
 export {
   getAllRecurringCashFlows,
   createRecurringCashFlow,
@@ -44,6 +45,7 @@ export {
 } from "./finance/recurringCashFlowActions";
 
 // Group Actions
+
 export { getAllGroups } from "./group/getAllGroups";
 export { getGroupById } from "./group/getGroupById";
 export { deleteGroup } from "./group/deleteGroup";
@@ -60,6 +62,7 @@ export { createRecurringGroupTask } from "./group/task/createRecurringTask";
 export { createGroupAppointment } from "./group/appointment/createGroupAppointment";
 
 // Grocery Item Actions
+
 export {
   getGroceryItemsByGroup,
   getGroceryItemById,
@@ -69,6 +72,7 @@ export {
 } from "./group/grocery/groceryItemActions";
 
 // Profile Actions
+
 export {
   getOtherProfiles as getAllProfiles,
   getProfile,
@@ -78,6 +82,7 @@ export {
 } from "./profile/profileActions";
 
 // Friendship Actions
+
 export { getAllFriends } from "./profile/getAllFriends";
 export {
   createFriendship,
@@ -87,4 +92,5 @@ export {
 } from "./profile/friendshipActions";
 
 // Notification Actions
+
 export { getGroupRequests } from "./group/getGroupRequests";

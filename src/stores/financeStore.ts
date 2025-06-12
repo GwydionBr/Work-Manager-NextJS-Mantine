@@ -4,6 +4,7 @@ import { create } from "zustand";
 import * as actions from "@/actions";
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { FinanceInterval } from "@/types/settings.types";
+import { processRecurringCashFlows } from "@/utils/financeHelperFunction";
 
 interface FinanceStoreState {
   singleCashFlows: Tables<"single_cash_flow">[];
@@ -51,6 +52,17 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
       if (!singleCashFlows.success || !recurringCashFlows.success) {
         return;
       }
+
+      const { pastAndCurrentFlows, futureFlows } = processRecurringCashFlows(
+        recurringCashFlows.data,
+        singleCashFlows.data
+      );
+
+      const newSingleCashFlows = await actions.createMultipleSingleCashFlows({
+        cashFlows: futureFlows,
+      });
+
+      if (!newSingleCashFlows.success) return;
 
       set({
         singleCashFlows: singleCashFlows.data,

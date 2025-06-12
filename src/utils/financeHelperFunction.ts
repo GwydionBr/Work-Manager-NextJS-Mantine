@@ -1,4 +1,4 @@
-import { Tables } from "@/types/db.types";
+import { Tables, TablesInsert } from "@/types/db.types";
 import {
   addMonths,
   addDays,
@@ -8,35 +8,40 @@ import {
   isSameDay,
 } from "date-fns";
 
+interface ProcessedRecurringCashFlows {
+  pastAndCurrentFlows: TablesInsert<"single_cash_flow">[];
+  futureFlows: Tables<"single_cash_flow">[];
+}
+
 export const processRecurringCashFlows = (
   recurringCashFlows: Tables<"recurring_cash_flow">[],
-  singleCashFlows: Tables<"single_cash_flow">[]
-) => {
-  const processedRecurringCashFlows = recurringCashFlows.map((flow) => {
+  existingSingleCashFlows: Tables<"single_cash_flow">[]
+): ProcessedRecurringCashFlows => {
+  const pastAndCurrentFlows: TablesInsert<"single_cash_flow">[] = [];
+  const futureFlows: Tables<"single_cash_flow">[] = [];
+  const today = new Date();
+  const sixMonthsFromNow = addMonths(today, 6);
+
+  recurringCashFlows.forEach((flow) => {
     const startDate = new Date(flow.start_date);
     const endDate = flow.end_date ? new Date(flow.end_date) : null;
-    const sixMonthsFromNow = addMonths(new Date(), 6);
 
     // Calculate the actual end date (either the recurring flow's end date or 6 months from now, whichever comes first)
     const actualEndDate =
       endDate && endDate < sixMonthsFromNow ? endDate : sixMonthsFromNow;
 
-    const generatedSingleFlows: Tables<"single_cash_flow">[] = [];
     let currentDate = new Date(startDate);
 
     while (currentDate <= actualEndDate) {
-      // Check if this date already exists in singleCashFlows
-      const existingFlow = singleCashFlows.find(
+      // Check if this date already exists in existingSingleCashFlows
+      const existingFlow = existingSingleCashFlows.find(
         (singleFlow) =>
           isSameDay(new Date(singleFlow.date), currentDate) &&
-          singleFlow.title === flow.title &&
-          singleFlow.amount === flow.amount &&
-          singleFlow.type === flow.type
+          singleFlow.recurring_cash_flow_id === flow.id
       );
 
       if (!existingFlow) {
-        generatedSingleFlows.push({
-          id: crypto.randomUUID(),
+        const baseFlow = {
           amount: flow.amount,
           currency: flow.currency,
           date: currentDate.toISOString(),
@@ -44,10 +49,21 @@ export const processRecurringCashFlows = (
           type: flow.type,
           is_active: true,
           user_id: flow.user_id,
-          created_at: new Date().toISOString(),
-          changed_date: null,
-          is_from_recurring: true,
-        });
+          recurring_cash_flow_id: flow.id,
+        };
+
+        if (currentDate <= today) {
+          // Past or current flow - only include fields needed for insertion
+          pastAndCurrentFlows.push(baseFlow);
+        } else {
+          // Future flow - include all fields
+          futureFlows.push({
+            ...baseFlow,
+            id: crypto.randomUUID(),
+            created_at: new Date().toISOString(),
+            changed_date: null,
+          });
+        }
       }
 
       // Calculate next date based on interval
@@ -72,12 +88,10 @@ export const processRecurringCashFlows = (
           break;
       }
     }
-
-    return {
-      ...flow,
-      generatedSingleFlows,
-    };
   });
 
-  return processedRecurringCashFlows;
+  return {
+    pastAndCurrentFlows,
+    futureFlows,
+  };
 };

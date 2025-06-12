@@ -428,7 +428,7 @@ export type Database = {
           date: string;
           id: string;
           is_active: boolean;
-          is_from_recurring: boolean;
+          recurring_cash_flow_id: string | null;
           title: string;
           type: Database["public"]["Enums"]["cash_flow_type"];
           user_id: string;
@@ -441,7 +441,7 @@ export type Database = {
           date: string;
           id?: string;
           is_active?: boolean;
-          is_from_recurring?: boolean;
+          recurring_cash_flow_id?: string | null;
           title?: string;
           type?: Database["public"]["Enums"]["cash_flow_type"];
           user_id?: string;
@@ -454,12 +454,20 @@ export type Database = {
           date?: string;
           id?: string;
           is_active?: boolean;
-          is_from_recurring?: boolean;
+          recurring_cash_flow_id?: string | null;
           title?: string;
           type?: Database["public"]["Enums"]["cash_flow_type"];
           user_id?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "single_cash_flow_recurring_cash_flow_id_fkey";
+            columns: ["recurring_cash_flow_id"];
+            isOneToOne: false;
+            referencedRelation: "recurring_cash_flow";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       timerProject: {
         Row: {
