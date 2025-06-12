@@ -11,7 +11,11 @@
   padding: 1rem 0.5rem;
   width: 100%;
   flex-direction: column;
-  border-top: 1px solid
+}
+
+.financeSectionTitle {
+  width: 100%;
+  border-bottom: 1px solid
     light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-2));
 }
 

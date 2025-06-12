@@ -1,4 +1,11 @@
-import { Container, Text, ScrollArea, Box } from "@mantine/core";
+import {
+  Container,
+  Text,
+  ScrollArea,
+  Box,
+  Skeleton,
+  Stack,
+} from "@mantine/core";
 
 import { Tables } from "@/types/db.types";
 
@@ -7,27 +14,36 @@ import classes from "./Finances.module.css";
 interface FinanceSectionProps {
   title: string;
   cashFlows: Tables<"single_cash_flow">[];
+  isFetching: boolean;
 }
 
 export default function FinanceSection({
   title,
   cashFlows,
+  isFetching,
 }: FinanceSectionProps) {
   return (
     <Container className={classes.financeSection}>
-      <Text ta="center" fz="lg" p="xs">
+      <Text ta="center" fz="lg" p="xs" className={classes.financeSectionTitle}>
         {title}
       </Text>
-      <ScrollArea className={classes.financeSectionContent} scrollbarSize={7}>
-        {cashFlows.map((cashFlow) => (
-          <Box className={classes.cashFlowBox} my="xs" key={cashFlow.id}>
-            <Text p="xs" fz={12}>
-              {cashFlow.title}
-            </Text>
-            <Text p="xs">{cashFlow.amount}</Text>
-          </Box>
-        ))}
-      </ScrollArea>
+      {isFetching ? (
+        <Stack>
+          <Skeleton height={30} mt="md" />
+          <Skeleton height={30} mt="xs" />
+        </Stack>
+      ) : (
+        <ScrollArea className={classes.financeSectionContent} scrollbarSize={7}>
+          {cashFlows.map((cashFlow) => (
+            <Box className={classes.cashFlowBox} my="xs" key={cashFlow.id}>
+              <Text p="xs" fz={12}>
+                {cashFlow.title}
+              </Text>
+              <Text p="xs">{cashFlow.amount}</Text>
+            </Box>
+          ))}
+        </ScrollArea>
+      )}
     </Container>
   );
 }

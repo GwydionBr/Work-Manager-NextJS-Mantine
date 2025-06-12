@@ -46,7 +46,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       customRoundingAmount: 0,
       defaultSalaryAmount: 0,
       defaultGroupColor: null,
-      isAsideOpen: true,
+      isAsideOpen: false,
       isFetching: true,
       lastFetch: null,
 
