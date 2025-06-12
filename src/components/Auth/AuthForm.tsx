@@ -22,6 +22,7 @@ import {
 import GithubButton from "../SocialButtons/GithubButton";
 
 import { login, signup, signInWithGithub } from "@/actions";
+import { useRouter } from "next/navigation";
 
 type AuthType = "login" | "register";
 
@@ -35,6 +36,8 @@ export default function AuthenticationForm({
 }: AuthenticationFormProps) {
   const [type, toggle] = useToggle(["login", "register"] as const);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     toggle(defaultType);
@@ -43,9 +46,21 @@ export default function AuthenticationForm({
   async function handleSubmit(values: any) {
     setIsLoading(true);
     if (type === "login") {
-      await login(values);
+      console.log("login", values);
+      const { success, error } = await login(values);
+      if (success) {
+        router.push("/work");
+      } else {
+        setError(error);
+      }
     } else {
-      await signup(values);
+      console.log("signup", values);
+      const { success, error } = await signup(values);
+      if (success) {
+        router.push("/work");
+      } else {
+        setError(error);
+      }
     }
     setIsLoading(false);
   }
@@ -140,6 +155,11 @@ export default function AuthenticationForm({
                 form.setFieldValue("terms", event.currentTarget.checked)
               }
             />
+          )}
+          {error && (
+            <Text c="red" size="sm">
+              {error}
+            </Text>
           )}
         </Stack>
         <Group justify="space-between" mt="xl">

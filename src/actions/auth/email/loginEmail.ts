@@ -1,7 +1,5 @@
 "use server";
 
-import { redirect } from "next/navigation";
-
 import { createClient } from "@/utils/supabase/server";
 
 interface AuthFormData {
@@ -11,7 +9,10 @@ interface AuthFormData {
   terms: boolean;
 }
 
-export async function login(authFormData: AuthFormData) {
+export async function login(authFormData: AuthFormData): Promise<{
+  success: boolean;
+  error: string | null;
+}> {
   const supabase = await createClient();
 
   // type-casting here for convenience
@@ -24,8 +25,8 @@ export async function login(authFormData: AuthFormData) {
   const { error } = await supabase.auth.signInWithPassword(data);
 
   if (error) {
-    redirect("/error");
+    return { success: false, error: error.message };
   }
 
-  redirect("/work");
+  return { success: true, error: null };
 }
