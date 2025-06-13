@@ -8,6 +8,7 @@ import { processRecurringCashFlows } from "@/utils/financeHelperFunction";
 
 interface FinanceStoreState {
   singleCashFlows: Tables<"single_cash_flow">[];
+  futureSingleCashFlows: Tables<"single_cash_flow">[];
   recurringCashFlows: Tables<"recurring_cash_flow">[];
   isFetching: boolean;
   lastFetch: Date | null;
@@ -39,6 +40,7 @@ interface FinanceStoreActions {
 export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
   (set, get) => ({
     singleCashFlows: [],
+    futureSingleCashFlows: [],
     recurringCashFlows: [],
     isFetching: true,
     lastFetch: null,
@@ -59,13 +61,14 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
       );
 
       const newSingleCashFlows = await actions.createMultipleSingleCashFlows({
-        cashFlows: futureFlows,
+        cashFlows: pastAndCurrentFlows,
       });
 
       if (!newSingleCashFlows.success) return;
 
       set({
-        singleCashFlows: singleCashFlows.data,
+        singleCashFlows: [...singleCashFlows.data, ...newSingleCashFlows.data],
+        futureSingleCashFlows: futureFlows,
         recurringCashFlows: recurringCashFlows.data,
         isFetching: false,
         lastFetch: new Date(),
@@ -90,7 +93,8 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
     },
 
     async addRecurringCashFlow(recurringCashFlow) {
-      const { recurringCashFlows } = get();
+      const { recurringCashFlows, futureSingleCashFlows, singleCashFlows } =
+        get();
 
       const newRecurringCashFlow = await actions.createRecurringCashFlow({
         cashFlow: recurringCashFlow,
@@ -105,6 +109,36 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
       set({
         recurringCashFlows: newRecurringCashFlows,
       });
+
+      const { pastAndCurrentFlows, futureFlows } = processRecurringCashFlows(
+        [newRecurringCashFlow.data],
+        []
+      );
+
+      const {
+        data: newSingleCashFlowsData,
+        success: newSingleCashFlowsSuccess,
+      } = await actions.createMultipleSingleCashFlows({
+        cashFlows: pastAndCurrentFlows,
+      });
+
+      if (!newSingleCashFlowsSuccess) return false;
+
+      const newFutureSingleCashFlows = [
+        ...futureSingleCashFlows,
+        ...futureFlows,
+      ];
+
+      const newSingleCashFlows = [
+        ...singleCashFlows,
+        ...newSingleCashFlowsData,
+      ];
+
+      set({
+        singleCashFlows: newSingleCashFlows,
+        futureSingleCashFlows: newFutureSingleCashFlows,
+      });
+
       return true;
     },
 
