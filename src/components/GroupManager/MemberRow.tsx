@@ -4,19 +4,12 @@ import { useState } from "react";
 import { useUserStore } from "@/stores/userStore";
 import { useGroupStore } from "@/stores/groupStore";
 
-import {
-  Text,
-  Group,
-  Avatar,
-  Box,
-  Indicator,
-  Popover,
-  ColorPicker,
-} from "@mantine/core";
+import { Text, Group, Avatar, Box, Indicator, Popover } from "@mantine/core";
 
 import { GroupMember } from "@/stores/groupStore";
 
 import classes from "./GroupManager.module.css";
+import DefaultColorPicker from "../UI/DefaultColorPicker";
 
 interface MemberRowProps {
   groupId: string;
@@ -79,27 +72,7 @@ export default function MemberRow({
             <Box className={classes.colorPoint} bg={color} />
           </Popover.Target>
           <Popover.Dropdown>
-            <ColorPicker
-              format="hex"
-              value={color}
-              onChange={setColor}
-              swatches={[
-                "#2e2e2e",
-                "#868e96",
-                "#fa5252",
-                "#e64980",
-                "#be4bdb",
-                "#7950f2",
-                "#4c6ef5",
-                "#228be6",
-                "#15aabf",
-                "#12b886",
-                "#40c057",
-                "#82c91e",
-                "#fab005",
-                "#fd7e14",
-              ]}
-            />
+            <DefaultColorPicker color={color} setColor={setColor} />
           </Popover.Dropdown>
         </Popover>
       ) : (

@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Box, ColorPicker, Group, Popover, Text } from "@mantine/core";
+import { Box, DEFAULT_THEME, Group, Popover, Text } from "@mantine/core";
 
 import classes from "./Settings.module.css";
+import DefaultColorPicker from "../UI/DefaultColorPicker";
 
 export default function GroupSettings() {
   const { defaultGroupColor: groupColor, setDefaultGroupColor: setGroupColor } =
@@ -36,26 +37,9 @@ export default function GroupSettings() {
           />
         </Popover.Target>
         <Popover.Dropdown>
-          <ColorPicker
-            format="hex"
-            value={color || "#40c057"}
-            onChange={setColor}
-            swatches={[
-              "#2e2e2e",
-              "#868e96",
-              "#fa5252",
-              "#e64980",
-              "#be4bdb",
-              "#7950f2",
-              "#4c6ef5",
-              "#228be6",
-              "#15aabf",
-              "#12b886",
-              "#40c057",
-              "#82c91e",
-              "#fab005",
-              "#fd7e14",
-            ]}
+          <DefaultColorPicker
+            color={color || DEFAULT_THEME.colors.lime[6]}
+            setColor={setColor}
           />
         </Popover.Dropdown>
       </Popover>

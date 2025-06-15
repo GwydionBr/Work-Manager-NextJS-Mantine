@@ -34,6 +34,30 @@ export type Database = {
   };
   public: {
     Tables: {
+      cash_flow_category: {
+        Row: {
+          created_at: string;
+          description: string | null;
+          id: string;
+          title: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          title: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          title?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       friendships: {
         Row: {
           addressee_id: string;
@@ -294,6 +318,7 @@ export type Database = {
       recurring_cash_flow: {
         Row: {
           amount: number;
+          category_id: string | null;
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
           description: string;
@@ -307,6 +332,7 @@ export type Database = {
         };
         Insert: {
           amount: number;
+          category_id?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           description: string;
@@ -320,6 +346,7 @@ export type Database = {
         };
         Update: {
           amount?: number;
+          category_id?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           description?: string;
@@ -331,7 +358,15 @@ export type Database = {
           type?: Database["public"]["Enums"]["cash_flow_type"];
           user_id?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "recurring_cash_flow_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "cash_flow_category";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       recurring_group_task: {
         Row: {
@@ -422,6 +457,7 @@ export type Database = {
       single_cash_flow: {
         Row: {
           amount: number;
+          category_id: string | null;
           changed_date: string | null;
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
@@ -435,6 +471,7 @@ export type Database = {
         };
         Insert: {
           amount: number;
+          category_id?: string | null;
           changed_date?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
@@ -448,6 +485,7 @@ export type Database = {
         };
         Update: {
           amount?: number;
+          category_id?: string | null;
           changed_date?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
@@ -461,6 +499,13 @@ export type Database = {
         };
         Relationships: [
           {
+            foreignKeyName: "single_cash_flow_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "cash_flow_category";
+            referencedColumns: ["id"];
+          },
+          {
             foreignKeyName: "single_cash_flow_recurring_cash_flow_id_fkey";
             columns: ["recurring_cash_flow_id"];
             isOneToOne: false;
@@ -469,8 +514,44 @@ export type Database = {
           },
         ];
       };
+      timer_project_category: {
+        Row: {
+          created_at: string;
+          description: string | null;
+          id: string;
+          sub_category: string | null;
+          title: string;
+          user_id: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          sub_category?: string | null;
+          title: string;
+          user_id?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          sub_category?: string | null;
+          title?: string;
+          user_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "timer_project_category_sub_category_fkey";
+            columns: ["sub_category"];
+            isOneToOne: false;
+            referencedRelation: "timer_project_category";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       timerProject: {
         Row: {
+          category_id: string | null;
           created_at: string | null;
           currency: Database["public"]["Enums"]["currency"];
           description: string;
@@ -481,6 +562,7 @@ export type Database = {
           user_id: string;
         };
         Insert: {
+          category_id?: string | null;
           created_at?: string | null;
           currency?: Database["public"]["Enums"]["currency"];
           description: string;
@@ -491,6 +573,7 @@ export type Database = {
           user_id?: string;
         };
         Update: {
+          category_id?: string | null;
           created_at?: string | null;
           currency?: Database["public"]["Enums"]["currency"];
           description?: string;
@@ -500,7 +583,15 @@ export type Database = {
           title?: string;
           user_id?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "timerProject_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "timer_project_category";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       timerSession: {
         Row: {
