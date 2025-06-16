@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useFinanceStore } from "@/stores/financeStore";
 
@@ -36,7 +36,7 @@ interface FinanceFormProps {
 }
 
 export default function FinanceForm({ onClose }: FinanceFormProps) {
-  const [type, setType] = useState<CashFlowType>("expense");
+  const [type, setType] = useState<CashFlowType>("income");
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [isRecurring, setIsRecurring] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -44,6 +44,12 @@ export default function FinanceForm({ onClose }: FinanceFormProps) {
   const { defaultFinanceCurrency: financeCurrency } = useSettingsStore();
   const { addSingleCashFlow, addRecurringCashFlow, financeCategories } =
     useFinanceStore();
+
+  useEffect(() => {
+    if (financeCategories.length > 0) {
+      setCategoryId(financeCategories[0].id);
+    }
+  }, []);
 
   async function handleSingleFinanceSubmit(values: SingleFinanceFormValues) {
     setIsLoading(true);

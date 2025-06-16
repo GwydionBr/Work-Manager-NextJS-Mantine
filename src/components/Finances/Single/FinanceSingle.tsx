@@ -2,7 +2,7 @@
 
 import { useFinanceStore } from "@/stores/financeStore";
 
-import { Box, Table } from "@mantine/core";
+import { Box, Table, alpha } from "@mantine/core";
 
 import classes from "./FinanceSingle.module.css";
 
@@ -13,25 +13,41 @@ export default function FinanceSingle() {
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
+  const totalAmount = sortedSingleCashFlows.reduce(
+    (acc, cashFlow) => acc + cashFlow.amount,
+    0
+  );
+
   return (
     <Box className={classes.financeSingleContainer}>
-      <Table striped>
+      <Table>
         <Table.Thead>
           <Table.Tr>
             <Table.Th>Date</Table.Th>
             <Table.Th>Name</Table.Th>
             <Table.Th>Amount</Table.Th>
-            <Table.Th>Type</Table.Th>
             <Table.Th>Category</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
           {sortedSingleCashFlows.map((cashFlow) => (
-            <Table.Tr key={cashFlow.id}>
-              <Table.Td>{cashFlow.date}</Table.Td>
+            <Table.Tr
+              key={cashFlow.id}
+              bg={
+                cashFlow.type === "expense"
+                  ? alpha("var(--mantine-color-red-5)", 0.3)
+                  : alpha("var(--mantine-color-green-5)", 0.3)
+              }
+            >
+              <Table.Td>
+                {new Date(cashFlow.date).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </Table.Td>
               <Table.Td>{cashFlow.title}</Table.Td>
               <Table.Td>{cashFlow.amount}</Table.Td>
-              <Table.Td>{cashFlow.type}</Table.Td>
               <Table.Td>
                 {
                   financeCategories.find(
