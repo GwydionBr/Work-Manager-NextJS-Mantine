@@ -50,6 +50,7 @@ export const processRecurringCashFlows = (
           is_active: true,
           user_id: flow.user_id,
           recurring_cash_flow_id: flow.id,
+          category_id: flow.category_id,
         };
 
         if (currentDate <= today) {
