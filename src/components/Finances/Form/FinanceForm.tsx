@@ -12,6 +12,7 @@ import {
   Switch,
   Group,
   Alert,
+  Select,
 } from "@mantine/core";
 import {
   IconMinus,
@@ -36,11 +37,13 @@ interface FinanceFormProps {
 
 export default function FinanceForm({ onClose }: FinanceFormProps) {
   const [type, setType] = useState<CashFlowType>("expense");
+  const [categoryId, setCategoryId] = useState<string | null>(null);
   const [isRecurring, setIsRecurring] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { defaultFinanceCurrency: financeCurrency } = useSettingsStore();
-  const { addSingleCashFlow, addRecurringCashFlow } = useFinanceStore();
+  const { addSingleCashFlow, addRecurringCashFlow, financeCategories } =
+    useFinanceStore();
 
   async function handleSingleFinanceSubmit(values: SingleFinanceFormValues) {
     setIsLoading(true);
@@ -49,6 +52,7 @@ export default function FinanceForm({ onClose }: FinanceFormProps) {
       amount: values.amount,
       currency: values.currency,
       date: values.date.toISOString(),
+      category_id: categoryId,
       type,
     });
     if (!success) {
@@ -72,6 +76,7 @@ export default function FinanceForm({ onClose }: FinanceFormProps) {
       start_date: values.startDate.toISOString(),
       end_date: values.endDate?.toISOString(),
       interval: values.interval,
+      category_id: categoryId,
       type,
     });
     if (!success) {
@@ -110,18 +115,34 @@ export default function FinanceForm({ onClose }: FinanceFormProps) {
           },
         ]}
       />
-      <Group justify="center">
-        <Text>Single</Text>
-        <IconCircleDashedNumber1 size={16} />
-        <Switch
-          checked={isRecurring}
-          onChange={(event) => setIsRecurring(event.currentTarget.checked)}
-          classNames={classes}
-          size="md"
+      <Stack gap="xs">
+        <Group justify="center">
+          <Text>Single</Text>
+          <IconCircleDashedNumber1 size={16} />
+          <Switch
+            checked={isRecurring}
+            onChange={(event) => setIsRecurring(event.currentTarget.checked)}
+            classNames={classes}
+            size="md"
+          />
+          <IconReload size={16} />
+          <Text>Recurring</Text>
+        </Group>
+        <Select
+          data={financeCategories.map((category) => ({
+            label: category.title,
+            value: category.id,
+          }))}
+          label="Category"
+          placeholder="Select a category"
+          value={categoryId}
+          onChange={(value) => setCategoryId(value)}
+          searchable
+          clearable
+          nothingFoundMessage="No categories found"
+          size="sm"
         />
-        <IconReload size={16} />
-        <Text>Recurring</Text>
-      </Group>
+      </Stack>
       {isRecurring ? (
         <RecurringFinanceForm
           financeCurrency={financeCurrency}
