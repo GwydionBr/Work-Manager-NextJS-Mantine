@@ -62,6 +62,7 @@ export const processRecurringCashFlows = (
             id: crypto.randomUUID(),
             created_at: new Date().toISOString(),
             changed_date: null,
+            category_id: flow.category_id,
           });
         }
       }
