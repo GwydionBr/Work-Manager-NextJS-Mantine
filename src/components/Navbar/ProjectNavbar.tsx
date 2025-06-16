@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 
 import {
   Box,
+  ActionIcon,
   Divider,
   Group,
   ScrollArea,
@@ -14,6 +15,7 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
+import { IconCategoryPlus } from "@tabler/icons-react";
 import NewProjectButton from "../Work/Project/NewProjectButton";
 
 import classes from "./Navbar.module.css";
@@ -67,6 +69,13 @@ export default function ProjectNavbar() {
       >
         Overview
       </Box>
+      <Divider />
+      <Group className={classes.projectCategoriesRow} justify="space-around">
+        <Text size="xs">Categories</Text>
+        <ActionIcon variant="subtle" size="sm">
+          <IconCategoryPlus />
+        </ActionIcon>
+      </Group>
       <Divider />
 
       <ScrollArea className={classes.scrollArea}>

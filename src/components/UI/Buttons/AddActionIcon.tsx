@@ -17,7 +17,7 @@ export default function AddActionIcon({
     <ActionIcon
       onClick={onClick}
       size="md"
-      variant="transparent"
+      variant="subtle"
       {...props}
     >
       <IconPlus size={iconSize} color={iconColor} />
