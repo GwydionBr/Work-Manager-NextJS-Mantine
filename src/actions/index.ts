@@ -44,6 +44,13 @@ export {
   deleteRecurringCashFlow,
 } from "./finance/recurringCashFlowActions";
 
+export {
+  getAllFinanceCategories,
+  createFinanceCategory,
+  updateFinanceCategory,
+  deleteFinanceCategory,
+} from "./finance/financeCategoryActions";
+
 // Group Actions
 
 export { getAllGroups } from "./group/getAllGroups";

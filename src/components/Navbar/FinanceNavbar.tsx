@@ -59,8 +59,13 @@ export default function FinanceNavbar() {
           />
         </Stack>
       </ScrollArea>
-      <Modal opened={opened} onClose={close} title="Finance Manager">
-        <FinanceAdjustments />
+      <Modal
+        opened={opened}
+        onClose={close}
+        title="Finance Manager"
+        size="70%"
+      >
+        <FinanceAdjustments onClose={close} />
       </Modal>
     </Box>
   );

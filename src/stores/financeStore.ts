@@ -10,6 +10,7 @@ interface FinanceStoreState {
   singleCashFlows: Tables<"single_cash_flow">[];
   futureSingleCashFlows: Tables<"single_cash_flow">[];
   recurringCashFlows: Tables<"recurring_cash_flow">[];
+  financeCategories: Tables<"cash_flow_category">[];
   isFetching: boolean;
   lastFetch: Date | null;
 }
@@ -30,6 +31,13 @@ interface FinanceStoreActions {
   ) => Promise<boolean>;
   deleteSingleCashFlow: (id: string) => Promise<boolean>;
   deleteRecurringCashFlow: (id: string) => Promise<boolean>;
+  addFinanceCategory: (
+    category: TablesInsert<"cash_flow_category">
+  ) => Promise<boolean>;
+  updateFinanceCategory: (
+    category: TablesUpdate<"cash_flow_category">
+  ) => Promise<boolean>;
+  deleteFinanceCategory: (id: string) => Promise<boolean>;
 
   // filter functions
   getChartData: (
@@ -42,16 +50,23 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
     singleCashFlows: [],
     futureSingleCashFlows: [],
     recurringCashFlows: [],
+    financeCategories: [],
     isFetching: true,
     lastFetch: null,
 
     async fetchFinanceData() {
-      const [singleCashFlows, recurringCashFlows] = await Promise.all([
-        actions.getAllSingleCashFlows(),
-        actions.getAllRecurringCashFlows(),
-      ]);
+      const [singleCashFlows, recurringCashFlows, financeCategories] =
+        await Promise.all([
+          actions.getAllSingleCashFlows(),
+          actions.getAllRecurringCashFlows(),
+          actions.getAllFinanceCategories(),
+        ]);
 
-      if (!singleCashFlows.success || !recurringCashFlows.success) {
+      if (
+        !singleCashFlows.success ||
+        !recurringCashFlows.success ||
+        !financeCategories.success
+      ) {
         return;
       }
 
@@ -70,6 +85,7 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
         singleCashFlows: [...singleCashFlows.data, ...newSingleCashFlows.data],
         futureSingleCashFlows: futureFlows,
         recurringCashFlows: recurringCashFlows.data,
+        financeCategories: financeCategories.data,
         isFetching: false,
         lastFetch: new Date(),
       });
@@ -272,6 +288,59 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
         .sort((a, b) => a.date.localeCompare(b.date));
 
       return chartData;
+    },
+
+    async addFinanceCategory(category) {
+      const { financeCategories } = get();
+
+      const newCategory = await actions.createFinanceCategory({
+        category,
+      });
+      if (!newCategory.success) return false;
+
+      const newFinanceCategories = [...financeCategories, newCategory.data];
+
+      set({
+        financeCategories: newFinanceCategories,
+      });
+
+      return true;
+    },
+
+    async updateFinanceCategory(category) {
+      const { financeCategories } = get();
+
+      const updatedCategory = await actions.updateFinanceCategory({
+        category,
+      });
+      if (!updatedCategory.success) return false;
+
+      const updatedFinanceCategories = financeCategories.map((c) =>
+        c.id === category.id ? updatedCategory.data : c
+      );
+
+      set({
+        financeCategories: updatedFinanceCategories,
+      });
+      return true;
+    },
+
+    async deleteFinanceCategory(id) {
+      const { financeCategories } = get();
+
+      const deleted = await actions.deleteFinanceCategory({
+        categoryId: id,
+      });
+      if (!deleted.success) return false;
+
+      const updatedFinanceCategories = financeCategories.filter(
+        (c) => c.id !== id
+      );
+
+      set({
+        financeCategories: updatedFinanceCategories,
+      });
+      return true;
     },
   })
 );

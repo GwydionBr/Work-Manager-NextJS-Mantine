@@ -14,7 +14,8 @@ export type TableNames =
   | "single_cash_flow"
   | "timerProject"
   | "timerSession"
-  | "friendships";
+  | "friendships"
+  | "cash_flow_category";
 
 // Response after an error occurs
 export interface ErrorResponse {
