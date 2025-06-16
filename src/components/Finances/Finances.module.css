@@ -1,7 +1,7 @@
 .financeSection {
   display: flex;
   flex-direction: column;
-  height: 45vh;
+  height: 47vh;
   width: 100%;
   /* border: 1px solid red; */
 }

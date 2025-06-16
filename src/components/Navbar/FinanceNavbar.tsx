@@ -27,6 +27,7 @@ export default function FinanceNavbar() {
   const incomeCashFlows = singleCashFlows.filter(
     (cashFlow) => cashFlow.type === "income"
   );
+
   const expenseCashFlows = singleCashFlows.filter(
     (cashFlow) => cashFlow.type === "expense"
   );
@@ -44,27 +45,20 @@ export default function FinanceNavbar() {
           </Group>
         )}
       </Group>
-      <ScrollArea className={classes.scrollArea}>
-        <Stack className={classes.financeSections} gap={0}>
-          <FinanceSection
-            title="Income"
-            cashFlows={incomeCashFlows}
-            isFetching={isFetching}
-          />
-          <Divider className={classes.divider} />
-          <FinanceSection
-            title="Expenses"
-            cashFlows={expenseCashFlows}
-            isFetching={isFetching}
-          />
-        </Stack>
-      </ScrollArea>
-      <Modal
-        opened={opened}
-        onClose={close}
-        title="Finance Manager"
-        size="70%"
-      >
+      <Box className={classes.financeSections}>
+        <FinanceSection
+          title="Income"
+          cashFlows={incomeCashFlows}
+          isFetching={isFetching}
+        />
+        <Divider className={classes.divider} />
+        <FinanceSection
+          title="Expenses"
+          cashFlows={expenseCashFlows}
+          isFetching={isFetching}
+        />
+      </Box>
+      <Modal opened={opened} onClose={close} title="Finance Manager" size="70%">
         <FinanceAdjustments onClose={close} />
       </Modal>
     </Box>
