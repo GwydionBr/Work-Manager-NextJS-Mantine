@@ -16,7 +16,7 @@ export default function NewProjectButton() {
   const [submitting, setSubmitting] = useState(false);
   const { addProject } = useWorkStore();
   const { defaultSalaryCurrency, defaultSalaryAmount } = useSettingsStore();
-  
+
   async function handleSubmit(values: {
     title: string;
     description: string;

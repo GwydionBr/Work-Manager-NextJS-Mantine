@@ -514,12 +514,12 @@ export type Database = {
           },
         ];
       };
-      timer_project_category: {
+      timer_project_folder: {
         Row: {
           created_at: string;
           description: string | null;
           id: string;
-          sub_category: string | null;
+          parent_folder: string | null;
           title: string;
           user_id: string | null;
         };
@@ -527,7 +527,7 @@ export type Database = {
           created_at?: string;
           description?: string | null;
           id?: string;
-          sub_category?: string | null;
+          parent_folder?: string | null;
           title: string;
           user_id?: string | null;
         };
@@ -535,16 +535,16 @@ export type Database = {
           created_at?: string;
           description?: string | null;
           id?: string;
-          sub_category?: string | null;
+          parent_folder?: string | null;
           title?: string;
           user_id?: string | null;
         };
         Relationships: [
           {
-            foreignKeyName: "timer_project_category_sub_category_fkey";
-            columns: ["sub_category"];
+            foreignKeyName: "timer_project_folder_parent_folder_fkey";
+            columns: ["parent_folder"];
             isOneToOne: false;
-            referencedRelation: "timer_project_category";
+            referencedRelation: "timer_project_folder";
             referencedColumns: ["id"];
           },
         ];
@@ -588,7 +588,7 @@ export type Database = {
             foreignKeyName: "timerProject_category_id_fkey";
             columns: ["category_id"];
             isOneToOne: false;
-            referencedRelation: "timer_project_category";
+            referencedRelation: "timer_project_folder";
             referencedColumns: ["id"];
           },
         ];
