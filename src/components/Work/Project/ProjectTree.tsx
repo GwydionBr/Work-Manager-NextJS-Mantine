@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation";
 import { NodeRendererProps, Tree } from "react-arborist";
 import {
   IconFile,
+  IconFileFilled,
   IconFolderFilled,
   IconFolderOpen,
 } from "@tabler/icons-react";
+import { Group } from "@mantine/core";
 
 export default function ProjectTree() {
   const { projectTree, setActiveProject, moveProject, moveFolder } =
@@ -77,16 +79,28 @@ export default function ProjectTree() {
 }
 
 function Node({ node, style, dragHandle }: NodeRendererProps<ProjectTreeItem>) {
+  const { activeProject } = useWorkStore();
+  const isSelected = activeProject?.project.id === node.id;
+
   return (
-    <div style={style} ref={dragHandle} onClick={() => node.toggle()}>
+    <Group
+      style={style}
+      ref={dragHandle}
+      onClick={() => node.toggle()}
+      gap={10}
+    >
       {node.isLeaf ? (
-        <IconFile color="gray" />
+        isSelected ? (
+          <IconFileFilled color="green" size={20} />
+        ) : (
+          <IconFile color="gray" size={20} />
+        )
       ) : node.isOpen ? (
-        <IconFolderOpen color="orange" />
+        <IconFolderOpen color="orange" size={20} />
       ) : (
-        <IconFolderFilled color="orange" />
+        <IconFolderFilled color="orange" size={20} />
       )}{" "}
       {node.data.name}
-    </div>
+    </Group>
   );
 }

@@ -1,4 +1,66 @@
 import { ProjectTreeItem } from "@/stores/workManagerStore";
+import { Tables } from "@/types/db.types";
+
+export function createTree(
+  projects: Tables<"timerProject">[],
+  folders: Tables<"timer_project_folder">[]
+): ProjectTreeItem[] {
+  const folderMap = new Map();
+
+  // 1. Füge alle Ordner als leere Knoten ein
+  folders.forEach((folder) => {
+    folderMap.set(folder.id, {
+      id: folder.id,
+      name: folder.title,
+      index: folder.order_index,
+      type: "folder" as const,
+      children: [],
+    });
+  });
+
+  // 2. Ordne die Ordner ihrer Eltern zu (für verschachtelte Struktur)
+  folders.forEach((folder) => {
+    if (folder.parent_folder && folderMap.has(folder.parent_folder)) {
+      folderMap
+        .get(folder.parent_folder)
+        .children.push(folderMap.get(folder.id));
+    }
+  });
+
+  // 3. Füge Projekte in ihre jeweiligen Ordner
+  projects.forEach((project) => {
+    const folderId = project.folder_id;
+    if (folderId && folderMap.has(folderId)) {
+      folderMap.get(folderId).children.push({
+        id: project.id,
+        name: project.title,
+        type: "project" as const,
+      });
+    }
+  });
+
+  // 4. Gib nur die Root-Ordner (ohne parent_folder) zurück
+  const root: ProjectTreeItem[] = [];
+
+  projects.forEach((project) => {
+    if (!project.folder_id) {
+      root.push({
+        id: project.id,
+        name: project.title,
+        type: "project",
+        index: project.order_index || 0,
+      });
+    }
+  });
+
+  folders.forEach((folder) => {
+    if (!folder.parent_folder) {
+      root.push(folderMap.get(folder.id));
+    }
+  });
+
+  return root;
+}
 
 export function findNode(
   tree: ProjectTreeItem[],
@@ -94,7 +156,7 @@ export function addNode(
   newNode: ProjectTreeItem
 ): ProjectTreeItem[] {
   if (parentId === null) {
-    return [...tree, newNode]; // Root-Level
+    return [...tree, { ...newNode, children: [] }]; // Root-Level
   }
 
   return tree.map((node) => {
@@ -114,4 +176,29 @@ export function addNode(
 
     return node;
   });
+}
+
+function orderTree(tree: ProjectTreeItem[]): ProjectTreeItem[] {
+  // Sort the current level by index
+  const sortedTree = [...tree].sort((a, b) => {
+    // If both have valid indexes, sort by index
+    if (a.index !== undefined && b.index !== undefined) {
+      return a.index - b.index;
+    }
+    // If only one has an index, prioritize the one with index
+    if (a.index !== undefined) return -1;
+    if (b.index !== undefined) return 1;
+    // If neither has an index, maintain original order
+    return 0;
+  });
+
+  // Update indexes to ensure sequential ordering
+  const updatedTree = sortedTree.map((node, newIndex) => ({
+    ...node,
+    index: newIndex,
+    // Recursively order children if they exist
+    children: node.children ? orderTree(node.children) : undefined,
+  }));
+
+  return updatedTree;
 }

@@ -4,6 +4,7 @@ import { create } from "zustand";
 
 import * as actions from "@/actions";
 import {
+  createTree,
   deleteNode,
   renameNode,
   moveNode,
@@ -239,7 +240,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
       const newFolder = await actions.createProjectFolder({ category: folder });
       if (!newFolder.success) {
         return false;
-      };
+      }
 
       const newProjectTree = addNode(get().projectTree, null, {
         id: newFolder.data.id,
@@ -283,6 +284,14 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
       const project = get().projects.find((p) => p.project.id === projectId);
       if (!project) return false;
 
+      const newProjectTree = moveNode(
+        get().projectTree,
+        projectId,
+        newFolderId,
+        index
+      );
+      set({ projectTree: newProjectTree });
+
       const updatedProject = await actions.updateProject({
         project: {
           id: projectId,
@@ -292,18 +301,18 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
       if (!updatedProject.success) {
         return false;
       }
-
-      const newProjectTree = moveNode(
-        get().projectTree,
-        projectId,
-        newFolderId,
-        index
-      );
-      set({ projectTree: newProjectTree });
       return true;
     },
 
     async moveFolder(folderId, newParentFolderId, index) {
+      const newProjectTree = moveNode(
+        get().projectTree,
+        folderId,
+        newParentFolderId,
+        index
+      );
+      set({ projectTree: newProjectTree });
+
       const updatedFolder = await actions.updateProjectFolder({
         category: {
           id: folderId,
@@ -313,73 +322,12 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
       if (!updatedFolder.success) {
         return false;
       }
-
-      const newProjectTree = moveNode(
-        get().projectTree,
-        folderId,
-        newParentFolderId,
-        index
-      );
-      set({ projectTree: newProjectTree });
       return true;
     },
 
     createProjectTree(projects, folders) {
-      const folderMap = new Map();
-
-      // 1. Füge alle Ordner als leere Knoten ein
-      folders.forEach((folder) => {
-        folderMap.set(folder.id, {
-          id: folder.id,
-          name: folder.title,
-          index: 0,
-          type: "folder" as const,
-          children: [],
-        });
-      });
-
-      // 2. Ordne die Ordner ihrer Eltern zu (für verschachtelte Struktur)
-      folders.forEach((folder) => {
-        if (folder.parent_folder && folderMap.has(folder.parent_folder)) {
-          folderMap
-            .get(folder.parent_folder)
-            .children.push(folderMap.get(folder.id));
-        }
-      });
-
-      // 3. Füge Projekte in ihre jeweiligen Ordner
-      projects.forEach((project) => {
-        const folderId = project.folder_id;
-        if (folderId && folderMap.has(folderId)) {
-          folderMap.get(folderId).children.push({
-            id: project.id,
-            name: project.title,
-            type: "project" as const,
-          });
-        }
-      });
-
-      // 4. Gib nur die Root-Ordner (ohne parent_folder) zurück
-      const root: ProjectTreeItem[] = [];
-
-      projects.forEach((project) => {
-        if (!project.folder_id) {
-          root.push({
-            id: project.id,
-            name: project.title,
-            type: "project",
-            index: 0,
-          });
-        }
-      });
-
-      folders.forEach((folder) => {
-        if (!folder.parent_folder) {
-          root.push(folderMap.get(folder.id));
-        }
-      });
-
-      set({ projectTree: root });
+      const tree = createTree(projects, folders);
+      set({ projectTree: tree });
     },
   })
 );
