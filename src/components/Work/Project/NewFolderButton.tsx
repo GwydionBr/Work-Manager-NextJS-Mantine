@@ -4,11 +4,19 @@ import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 
-import { Box, Modal, TextInput, Button, Group, Stack } from "@mantine/core";
+import {
+  Box,
+  Modal,
+  TextInput,
+  Button,
+  Group,
+  Stack,
+  ActionIcon,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
-import AddActionIcon from "@/components/UI/Buttons/AddActionIcon";
+import { IconFolderPlus } from "@tabler/icons-react";
 
 const folderSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -35,6 +43,7 @@ export default function NewFolderButton() {
       close();
       form.reset();
     }
+    console.log(success);
     setSubmitting(false);
   }
 
@@ -72,7 +81,9 @@ export default function NewFolderButton() {
         </form>
       </Modal>
 
-      <AddActionIcon aria-label="Add folder" onClick={open} size="sm" />
+      <ActionIcon aria-label="Add folder" onClick={open} size="sm" variant="transparent">
+        <IconFolderPlus />
+      </ActionIcon>
     </Box>
   );
 }

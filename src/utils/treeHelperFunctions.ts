@@ -46,7 +46,8 @@ export function renameNode(
 export function moveNode(
   tree: ProjectTreeItem[],
   nodeId: string,
-  targetFolderId: string | null
+  targetFolderId: string | null,
+  index: number
 ): ProjectTreeItem[] {
   let nodeToMove: ProjectTreeItem | null = null;
 

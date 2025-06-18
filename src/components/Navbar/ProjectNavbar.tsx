@@ -21,7 +21,7 @@ import NewFolderButton from "@/components/Work/Project/NewFolderButton";
 import classes from "./Navbar.module.css";
 
 export default function ProjectNavbar() {
-  const { projects, isFetching } = useWorkStore();
+  const { isFetching } = useWorkStore();
 
   const router = useRouter();
   const pathname = usePathname();

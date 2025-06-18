@@ -62,11 +62,15 @@ export async function createProjectFolder({
   category: TablesInsert<"timer_project_folder">;
 }): Promise<ApiResponseSingle<"timer_project_folder">> {
   const supabase = await createClient();
+
   const { data, error } = await supabase
     .from("timer_project_folder")
     .insert(category)
     .select()
     .single();
+
+  console.log(data);
+  console.log(error);
 
   if (error) {
     return { success: false, data: null, error: error.message };

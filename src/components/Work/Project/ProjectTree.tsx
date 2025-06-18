@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { ProjectTreeItem, useWorkStore } from "@/stores/workManagerStore";
 import { useRouter } from "next/navigation";
-import { useSettingsStore } from "@/stores/settingsStore";
 
 import { NodeRendererProps, Tree } from "react-arborist";
 import {
@@ -18,14 +16,18 @@ export default function ProjectTree() {
 
   const router = useRouter();
 
-  const handleMove = async (dragIds: string[], parentId: string | null) => {
+  const handleMove = async (
+    dragIds: string[],
+    parentId: string | null,
+    index: number
+  ) => {
     for (const id of dragIds) {
       // Prüfe, ob es ein Projekt oder Ordner ist
       const node = findNodeById(projectTree, id);
       if (node?.type === "project") {
-        await moveProject(id, parentId);
+        await moveProject(id, parentId, index);
       } else if (node?.type === "folder") {
-        await moveFolder(id, parentId);
+        await moveFolder(id, parentId, index);
       }
     }
   };
@@ -65,8 +67,8 @@ export default function ProjectTree() {
           }
         }
       }}
-      onMove={({ dragIds, parentId }) => {
-        handleMove(dragIds, parentId);
+      onMove={({ dragIds, parentId, index }) => {
+        handleMove(dragIds, parentId, index);
       }}
     >
       {Node}

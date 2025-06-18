@@ -20,6 +20,7 @@ export interface TimerProject {
 export interface ProjectTreeItem {
   id: string;
   name: string;
+  index: number;
   type: "project" | "folder";
   children?: ProjectTreeItem[];
 }
@@ -57,11 +58,13 @@ interface WorkStoreActions {
   deleteProjectFolder: (id: string) => Promise<boolean>;
   moveProject: (
     projectId: string,
-    newFolderId: string | null
+    newFolderId: string | null,
+    index: number
   ) => Promise<boolean>;
   moveFolder: (
     folderId: string,
-    newParentFolderId: string | null
+    newParentFolderId: string | null,
+    index: number
   ) => Promise<boolean>;
   createProjectTree: (
     projects: Tables<"timerProject">[],
@@ -236,12 +239,13 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
       const newFolder = await actions.createProjectFolder({ category: folder });
       if (!newFolder.success) {
         return false;
-      }
+      };
 
       const newProjectTree = addNode(get().projectTree, null, {
         id: newFolder.data.id,
         name: newFolder.data.title,
         type: "folder",
+        index: 0,
       });
       set({ projectTree: newProjectTree });
       return true;
@@ -275,7 +279,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
       return true;
     },
 
-    async moveProject(projectId, newFolderId) {
+    async moveProject(projectId, newFolderId, index) {
       const project = get().projects.find((p) => p.project.id === projectId);
       if (!project) return false;
 
@@ -292,13 +296,14 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
       const newProjectTree = moveNode(
         get().projectTree,
         projectId,
-        newFolderId
+        newFolderId,
+        index
       );
       set({ projectTree: newProjectTree });
       return true;
     },
 
-    async moveFolder(folderId, newParentFolderId) {
+    async moveFolder(folderId, newParentFolderId, index) {
       const updatedFolder = await actions.updateProjectFolder({
         category: {
           id: folderId,
@@ -312,7 +317,8 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
       const newProjectTree = moveNode(
         get().projectTree,
         folderId,
-        newParentFolderId
+        newParentFolderId,
+        index
       );
       set({ projectTree: newProjectTree });
       return true;
@@ -326,6 +332,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
         folderMap.set(folder.id, {
           id: folder.id,
           name: folder.title,
+          index: 0,
           type: "folder" as const,
           children: [],
         });
@@ -361,6 +368,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
             id: project.id,
             name: project.title,
             type: "project",
+            index: 0,
           });
         }
       });
