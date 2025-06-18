@@ -12,6 +12,7 @@ export interface TimerProject {
 export interface ProjectTreeItem {
   id: string;
   name: string;
+  type: "project" | "folder";
   children?: ProjectTreeItem[];
 }
 
@@ -39,6 +40,22 @@ interface WorkStoreActions {
   ) => Promise<boolean>;
   deleteProject: (id: string) => Promise<boolean>;
   deleteTimerSession: (id: string) => Promise<boolean>;
+  addProjectFolder: (
+    folder: TablesInsert<"timer_project_folder">
+  ) => Promise<boolean>;
+  updateProjectFolder: (
+    folder: TablesUpdate<"timer_project_folder">
+  ) => Promise<boolean>;
+  deleteProjectFolder: (id: string) => Promise<boolean>;
+  moveProject: (
+    projectId: string,
+    newFolderId: string | null
+  ) => Promise<boolean>;
+  moveFolder: (
+    folderId: string,
+    newParentFolderId: string | null
+  ) => Promise<boolean>;
+  refreshProjectTree: () => Promise<void>;
 }
 
 export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
@@ -80,6 +97,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
         folderMap.set(folder.id, {
           id: folder.id,
           name: folder.title,
+          type: "folder" as const,
           children: [],
         });
       });
@@ -100,6 +118,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
           folderMap.get(folderId).children.push({
             id: project.id,
             name: project.title,
+            type: "project" as const,
           });
         }
       });
@@ -112,6 +131,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
           root.push({
             id: project.id,
             name: project.title,
+            type: "project",
           });
         }
       });
@@ -252,6 +272,76 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
       }));
       updateStore(updatedProjects, updatedSessions);
       return true;
+    },
+
+    async addProjectFolder(folder) {
+      const newFolder = await actions.createProjectFolder({ category: folder });
+      if (!newFolder.success) {
+        return false;
+      }
+
+      await get().refreshProjectTree();
+      return true;
+    },
+
+    async updateProjectFolder(folder) {
+      const updatedFolder = await actions.updateProjectFolder({
+        category: folder,
+      });
+      if (!updatedFolder.success) {
+        return false;
+      }
+
+      await get().refreshProjectTree();
+      return true;
+    },
+
+    async deleteProjectFolder(id) {
+      const deleted = await actions.deleteProjectFolder({ categoryId: id });
+      if (!deleted.success) {
+        return false;
+      }
+
+      await get().refreshProjectTree();
+      return true;
+    },
+
+    async moveProject(projectId, newFolderId) {
+      const project = get().projects.find((p) => p.project.id === projectId);
+      if (!project) return false;
+
+      const updatedProject = await actions.updateProject({
+        project: {
+          id: projectId,
+          folder_id: newFolderId,
+        },
+      });
+      if (!updatedProject.success) {
+        return false;
+      }
+
+      await get().refreshProjectTree();
+      return true;
+    },
+
+    async moveFolder(folderId, newParentFolderId) {
+      const updatedFolder = await actions.updateProjectFolder({
+        category: {
+          id: folderId,
+          parent_folder: newParentFolderId,
+        },
+      });
+      if (!updatedFolder.success) {
+        return false;
+      }
+
+      await get().refreshProjectTree();
+      return true;
+    },
+
+    async refreshProjectTree() {
+      const { fetchWorkData } = get();
+      await fetchWorkData();
     },
   })
 );

@@ -1,14 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useListState } from "@mantine/hooks";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
-import { useWorkStore, type TimerProject } from "@/stores/workManagerStore";
+import { useWorkStore } from "@/stores/workManagerStore";
 
 import {
   Box,
-  ActionIcon,
   Divider,
   Group,
   ScrollArea,
@@ -16,61 +14,22 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
-import { IconCategoryPlus } from "@tabler/icons-react";
 import NewProjectButton from "../Work/Project/NewProjectButton";
-import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import ProjectTree from "../Work/Project/ProjectTree";
+import NewFolderButton from "@/components/Work/Project/NewFolderButton";
 
 import classes from "./Navbar.module.css";
 
 export default function ProjectNavbar() {
-  const { projects, activeProject, isFetching, setActiveProject } =
-    useWorkStore();
-  const [list, handlers] = useListState(projects);
+  const { projects, isFetching } = useWorkStore();
 
   const router = useRouter();
   const pathname = usePathname();
   const [isOverview, setIsOverview] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!isFetching && projects.length > 0) {
-      handlers.setState(projects);
-    }
-  }, [isFetching, projects]);
-
-  useEffect(() => {
     setIsOverview(pathname === "/work/overview");
   }, [pathname]);
-
-  function handleSelection(timerProject: TimerProject) {
-    setActiveProject(timerProject.project.id);
-    router.push("/work");
-  }
-
-  const links = list.map((timerProject, index) => (
-    <Draggable
-      key={timerProject.project.id}
-      index={index}
-      draggableId={timerProject.project.id}
-    >
-      {(provided, snapshot) => (
-        <Box
-          className={classes.link}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          ref={provided.innerRef}
-          data-active={
-            timerProject.project.id === activeProject?.project.id && !isOverview
-              ? true
-              : undefined
-          }
-          onClick={() => handleSelection(timerProject)}
-        >
-          {timerProject.project.title}
-        </Box>
-      )}
-    </Draggable>
-  ));
 
   return (
     <div className={classes.main}>
@@ -93,9 +52,7 @@ export default function ProjectNavbar() {
       <Divider />
       <Group className={classes.projectCategoriesRow} justify="space-around">
         <Text size="xs">Categories</Text>
-        <ActionIcon variant="subtle" size="sm">
-          <IconCategoryPlus />
-        </ActionIcon>
+        {!isFetching && <NewFolderButton />}
       </Group>
       <Divider />
 
@@ -107,23 +64,6 @@ export default function ProjectNavbar() {
             <Skeleton height={25} w={160} mx="md" />
           </Stack>
         ) : (
-          // <DragDropContext
-          //   onDragEnd={({ destination, source }) =>
-          //     handlers.reorder({
-          //       from: source.index,
-          //       to: destination?.index || 0,
-          //     })
-          //   }
-          // >
-          //   <Droppable droppableId="dnd-list" direction="vertical">
-          //     {(provided) => (
-          //       <div {...provided.droppableProps} ref={provided.innerRef}>
-          //         {links}
-          //         {provided.placeholder}
-          //       </div>
-          //     )}
-          //   </Droppable>
-          // </DragDropContext>
           <ProjectTree />
         )}
       </ScrollArea>

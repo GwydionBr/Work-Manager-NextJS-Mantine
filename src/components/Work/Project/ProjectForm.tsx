@@ -21,11 +21,14 @@ interface ProjectFormProps {
     description: string;
     salary: number;
     currency: string;
+    folder_id?: string | null;
   };
   onSubmit: (values: any) => void;
   onCancel?: () => void;
   newProject: boolean;
   submitting?: boolean;
+  showFolderSelect?: boolean;
+  folders?: Array<{ id: string; title: string }>;
 }
 
 const schema = z.object({
@@ -33,6 +36,7 @@ const schema = z.object({
   description: z.string().min(1, { message: "Description is required" }),
   salary: z.number().min(0, { message: "Salary must be positive" }),
   currency: z.string().min(1, { message: "Currency is required" }),
+  folder_id: z.string().nullable().optional(),
 });
 
 export default function ProjectForm({
@@ -41,11 +45,18 @@ export default function ProjectForm({
   onCancel,
   newProject,
   submitting,
+  showFolderSelect = false,
+  folders = [],
 }: ProjectFormProps) {
   const form = useForm({
     initialValues,
     validate: zodResolver(schema),
   });
+
+  const folderOptions = folders.map((folder) => ({
+    value: folder.id,
+    label: folder.title,
+  }));
 
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
@@ -73,6 +84,15 @@ export default function ProjectForm({
           data={currencies}
           {...form.getInputProps("currency")}
         />
+        {showFolderSelect && (
+          <Select
+            label="Folder"
+            placeholder="Select folder (optional)"
+            data={folderOptions}
+            clearable
+            {...form.getInputProps("folder_id")}
+          />
+        )}
         <Button
           type="submit"
           loading={submitting}
