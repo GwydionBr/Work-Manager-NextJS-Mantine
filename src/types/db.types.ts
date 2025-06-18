@@ -551,10 +551,10 @@ export type Database = {
       };
       timerProject: {
         Row: {
-          category_id: string | null;
           created_at: string | null;
           currency: Database["public"]["Enums"]["currency"];
           description: string;
+          folder_id: string | null;
           id: string;
           is_favorite: boolean;
           salary: number;
@@ -562,10 +562,10 @@ export type Database = {
           user_id: string;
         };
         Insert: {
-          category_id?: string | null;
           created_at?: string | null;
           currency?: Database["public"]["Enums"]["currency"];
           description: string;
+          folder_id?: string | null;
           id?: string;
           is_favorite?: boolean;
           salary: number;
@@ -573,10 +573,10 @@ export type Database = {
           user_id?: string;
         };
         Update: {
-          category_id?: string | null;
           created_at?: string | null;
           currency?: Database["public"]["Enums"]["currency"];
           description?: string;
+          folder_id?: string | null;
           id?: string;
           is_favorite?: boolean;
           salary?: number;
@@ -585,8 +585,8 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: "timerProject_category_id_fkey";
-            columns: ["category_id"];
+            foreignKeyName: "timerProject_folder_id_fkey";
+            columns: ["folder_id"];
             isOneToOne: false;
             referencedRelation: "timer_project_folder";
             referencedColumns: ["id"];

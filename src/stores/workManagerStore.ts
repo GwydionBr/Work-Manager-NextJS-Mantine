@@ -9,7 +9,14 @@ export interface TimerProject {
   sessions: Tables<"timerSession">[];
 }
 
+export interface ProjectTreeItem {
+  id: string;
+  name: string;
+  children?: ProjectTreeItem[];
+}
+
 interface WorkStoreState {
+  projectTree: ProjectTreeItem[];
   projects: TimerProject[];
   activeProject: TimerProject | null;
   timerSessions: Tables<"timerSession">[];
@@ -36,6 +43,7 @@ interface WorkStoreActions {
 
 export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
   (set, get) => ({
+    projectTree: [],
     projects: [],
     activeProject: null,
     timerSessions: [],
@@ -44,12 +52,13 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
 
     async fetchWorkData() {
       const { updateStore } = get();
-      const [projects, timerSessions] = await Promise.all([
+      const [projects, timerSessions, folders] = await Promise.all([
         actions.getAllProjects(),
         actions.getAllSessions(),
+        actions.getAllProjectFolders(),
       ]);
 
-      if (!projects.success || !timerSessions.success) {
+      if (!projects.success || !timerSessions.success || !folders.success) {
         return;
       }
 
@@ -63,6 +72,57 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
       if (projectsData.length !== 0) {
         set({ activeProject: projectsData[0] });
       }
+
+      const folderMap = new Map();
+
+      // 1. Füge alle Ordner als leere Knoten ein
+      folders.data.forEach((folder) => {
+        folderMap.set(folder.id, {
+          id: folder.id,
+          name: folder.title,
+          children: [],
+        });
+      });
+
+      // 2. Ordne die Ordner ihrer Eltern zu (für verschachtelte Struktur)
+      folders.data.forEach((folder) => {
+        if (folder.parent_folder && folderMap.has(folder.parent_folder)) {
+          folderMap
+            .get(folder.parent_folder)
+            .children.push(folderMap.get(folder.id));
+        }
+      });
+
+      // 3. Füge Projekte in ihre jeweiligen Ordner
+      projects.data.forEach((project) => {
+        const folderId = project.folder_id;
+        if (folderId && folderMap.has(folderId)) {
+          folderMap.get(folderId).children.push({
+            id: project.id,
+            name: project.title,
+          });
+        }
+      });
+
+      // 4. Gib nur die Root-Ordner (ohne parent_folder) zurück
+      const root: ProjectTreeItem[] = [];
+
+      projects.data.forEach((project) => {
+        if (!project.folder_id) {
+          root.push({
+            id: project.id,
+            name: project.title,
+          });
+        }
+      });
+
+      folders.data.forEach((folder) => {
+        if (!folder.parent_folder) {
+          root.push(folderMap.get(folder.id));
+        }
+      });
+
+      set({ projectTree: root });
 
       updateStore(projectsData, timerSessions.data);
       set({ isFetching: false, lastFetch: new Date() });

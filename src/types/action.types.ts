@@ -15,7 +15,8 @@ export type TableNames =
   | "timerProject"
   | "timerSession"
   | "friendships"
-  | "cash_flow_category";
+  | "cash_flow_category"
+  | "timer_project_folder";
 
 // Response after an error occurs
 export interface ErrorResponse {

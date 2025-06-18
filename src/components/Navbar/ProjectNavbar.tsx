@@ -19,6 +19,7 @@ import {
 import { IconCategoryPlus } from "@tabler/icons-react";
 import NewProjectButton from "../Work/Project/NewProjectButton";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
+import ProjectTree from "../Work/Project/ProjectTree";
 
 import classes from "./Navbar.module.css";
 
@@ -106,23 +107,24 @@ export default function ProjectNavbar() {
             <Skeleton height={25} w={160} mx="md" />
           </Stack>
         ) : (
-          <DragDropContext
-            onDragEnd={({ destination, source }) =>
-              handlers.reorder({
-                from: source.index,
-                to: destination?.index || 0,
-              })
-            }
-          >
-            <Droppable droppableId="dnd-list" direction="vertical">
-              {(provided) => (
-                <div {...provided.droppableProps} ref={provided.innerRef}>
-                  {links}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
+          // <DragDropContext
+          //   onDragEnd={({ destination, source }) =>
+          //     handlers.reorder({
+          //       from: source.index,
+          //       to: destination?.index || 0,
+          //     })
+          //   }
+          // >
+          //   <Droppable droppableId="dnd-list" direction="vertical">
+          //     {(provided) => (
+          //       <div {...provided.droppableProps} ref={provided.innerRef}>
+          //         {links}
+          //         {provided.placeholder}
+          //       </div>
+          //     )}
+          //   </Droppable>
+          // </DragDropContext>
+          <ProjectTree />
         )}
       </ScrollArea>
     </div>
