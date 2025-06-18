@@ -1,7 +1,15 @@
 "use client";
 
 import { create } from "zustand";
+
 import * as actions from "@/actions";
+import {
+  deleteNode,
+  renameNode,
+  moveNode,
+  addNode,
+} from "@/utils/treeHelperFunctions";
+
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 
 export interface TimerProject {
@@ -59,7 +67,6 @@ interface WorkStoreActions {
     projects: Tables<"timerProject">[],
     folders: Tables<"timer_project_folder">[]
   ) => void;
-  refreshProjectTree: () => Promise<void>;
 }
 
 export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
@@ -231,7 +238,12 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
         return false;
       }
 
-      await get().refreshProjectTree();
+      const newProjectTree = addNode(get().projectTree, null, {
+        id: newFolder.data.id,
+        name: newFolder.data.title,
+        type: "folder",
+      });
+      set({ projectTree: newProjectTree });
       return true;
     },
 
@@ -243,7 +255,12 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
         return false;
       }
 
-      await get().refreshProjectTree();
+      const newProjectTree = renameNode(
+        get().projectTree,
+        folder.id!,
+        folder.title || "project"
+      );
+      set({ projectTree: newProjectTree });
       return true;
     },
 
@@ -253,7 +270,8 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
         return false;
       }
 
-      await get().refreshProjectTree();
+      const newProjectTree = deleteNode(get().projectTree, id);
+      set({ projectTree: newProjectTree });
       return true;
     },
 
@@ -271,7 +289,12 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
         return false;
       }
 
-      await get().refreshProjectTree();
+      const newProjectTree = moveNode(
+        get().projectTree,
+        projectId,
+        newFolderId
+      );
+      set({ projectTree: newProjectTree });
       return true;
     },
 
@@ -286,7 +309,12 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
         return false;
       }
 
-      await get().refreshProjectTree();
+      const newProjectTree = moveNode(
+        get().projectTree,
+        folderId,
+        newParentFolderId
+      );
+      set({ projectTree: newProjectTree });
       return true;
     },
 
@@ -344,11 +372,6 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
       });
 
       set({ projectTree: root });
-    },
-
-    async refreshProjectTree() {
-      const { fetchWorkData } = get();
-      await fetchWorkData();
     },
   })
 );
