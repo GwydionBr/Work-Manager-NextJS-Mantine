@@ -180,6 +180,13 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
         { project: newProject.data, sessions: [] },
       ];
       updateStore(updatedProjects, timerSessions);
+      const newProjectTree = addNode(get().projectTree, null, {
+        id: newProject.data.id,
+        name: newProject.data.title,
+        type: "project",
+        index: 0,
+      });
+      set({ projectTree: newProjectTree });
       return true;
     },
 

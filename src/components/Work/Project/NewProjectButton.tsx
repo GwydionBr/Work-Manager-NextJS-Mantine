@@ -5,7 +5,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { ActionIcon, Flex, Group, Modal } from "@mantine/core";
+import { ActionIcon, Flex, Group, Modal, Tooltip } from "@mantine/core";
 import { IconFilePlus } from "@tabler/icons-react";
 import ProjectForm from "@/components/Work/Project/ProjectForm";
 import AddActionIcon from "@/components/UI/Buttons/AddActionIcon";
@@ -64,14 +64,16 @@ export default function NewProjectButton({
       {plusIcon ? (
         <AddActionIcon aria-label="Add project" onClick={open} size="md" />
       ) : (
-        <ActionIcon
-          aria-label="Add project"
-          onClick={open}
-          size="sm"
-          variant="transparent"
-        >
-          <IconFilePlus />
-        </ActionIcon>
+        <Tooltip label="Add project">
+          <ActionIcon
+            aria-label="Add project"
+            onClick={open}
+            size="sm"
+            variant="transparent"
+          >
+            <IconFilePlus />
+          </ActionIcon>
+        </Tooltip>
       )}
     </Group>
   );

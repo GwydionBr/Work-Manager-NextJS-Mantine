@@ -12,6 +12,7 @@ import {
   Group,
   Stack,
   ActionIcon,
+  Tooltip,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { z } from "zod";
@@ -80,9 +81,16 @@ export default function NewFolderButton() {
         </form>
       </Modal>
 
-      <ActionIcon aria-label="Add folder" onClick={open} size="sm" variant="transparent">
-        <IconFolderPlus />
-      </ActionIcon>
+      <Tooltip label="Add folder">
+        <ActionIcon
+          aria-label="Add folder"
+          onClick={open}
+          size="sm"
+          variant="transparent"
+        >
+          <IconFolderPlus />
+        </ActionIcon>
+      </Tooltip>
     </Group>
   );
 }

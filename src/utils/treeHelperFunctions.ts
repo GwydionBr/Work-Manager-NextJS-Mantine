@@ -156,7 +156,11 @@ export function addNode(
   newNode: ProjectTreeItem
 ): ProjectTreeItem[] {
   if (parentId === null) {
-    return [...tree, { ...newNode, children: [] }]; // Root-Level
+    if (newNode.type === "project") {
+      return [...tree, { ...newNode }];
+    } else {
+      return [...tree, { ...newNode, children: [] }];
+    }
   }
 
   return tree.map((node) => {
