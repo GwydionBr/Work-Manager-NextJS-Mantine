@@ -166,21 +166,31 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
     },
 
     async deleteProject(id) {
-      const { updateStore, timerSessions, projects, activeProject } = get();
+      const {
+        updateStore,
+        timerSessions,
+        projects,
+        activeProject,
+        projectTree,
+      } = get();
       const deleted = await actions.deleteProject({ projectId: id });
       if (!deleted.success) {
         return false;
       }
 
+      // const nextProjectId = findNextProject(projectTree, id);
       const updatedProjects = get().projects.filter((p) => p.project.id !== id);
       updateStore(updatedProjects, timerSessions);
-      const newProjectTree = deleteNode(get().projectTree, id);
-      set({ projectTree: newProjectTree });
-      // const nextProjectId = findNextProject(newProjectTree, id);
+      const newProjectTree = deleteNode(projectTree, id);
       if (activeProject?.project.id === id) {
-        const newActiveProject = projects[0];
-        set({ activeProject: newActiveProject });
+        const newActiveProject = updatedProjects[0];
+        if (newActiveProject) {
+          set({ activeProject: newActiveProject });
+        } else {
+          set({ activeProject: null });
+        }
       }
+      set({ projectTree: newProjectTree });
       return true;
     },
 
