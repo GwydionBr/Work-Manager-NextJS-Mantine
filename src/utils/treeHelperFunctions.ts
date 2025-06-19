@@ -206,3 +206,97 @@ function orderTree(tree: ProjectTreeItem[]): ProjectTreeItem[] {
 
   return updatedTree;
 }
+
+export function findNextProject(
+  tree: ProjectTreeItem[],
+  deletedProjectId: string
+): string | null {
+  // First, find the deleted project to determine its location
+  const deletedProject = findNode(tree, deletedProjectId);
+  if (!deletedProject) return null;
+
+  // Find the parent folder of the deleted project
+  const parentFolder = findParentFolder(tree, deletedProjectId);
+
+  if (parentFolder) {
+    // Look for other projects in the same folder
+    const siblingProjects =
+      parentFolder.children?.filter(
+        (child) => child.type === "project" && child.id !== deletedProjectId
+      ) || [];
+
+    if (siblingProjects.length > 0) {
+      // Return the first sibling project
+      return siblingProjects[0].id;
+    }
+
+    // If no sibling projects, look in parent folders
+    return findNextProjectInParent(tree, parentFolder.id);
+  } else {
+    // Project is at root level, look for other root projects
+    const rootProjects = tree.filter(
+      (node) => node.type === "project" && node.id !== deletedProjectId
+    );
+
+    if (rootProjects.length > 0) {
+      return rootProjects[0].id;
+    }
+
+    // Look for any project in subfolders
+    return findFirstProjectInSubfolders(tree);
+  }
+}
+
+function findParentFolder(
+  tree: ProjectTreeItem[],
+  projectId: string
+): ProjectTreeItem | null {
+  for (const node of tree) {
+    if (node.type === "folder" && node.children) {
+      const hasProject = node.children.some((child) => child.id === projectId);
+      if (hasProject) return node;
+
+      const result = findParentFolder(node.children, projectId);
+      if (result) return result;
+    }
+  }
+  return null;
+}
+
+function findNextProjectInParent(
+  tree: ProjectTreeItem[],
+  parentFolderId: string
+): string | null {
+  const parentFolder = findNode(tree, parentFolderId);
+  if (!parentFolder) return null;
+
+  // Look for projects in this parent folder
+  const projectsInParent =
+    parentFolder.children?.filter((child) => child.type === "project") || [];
+
+  if (projectsInParent.length > 0) {
+    return projectsInParent[0].id;
+  }
+
+  // If no projects in this parent, look in its parent
+  const grandParent = findParentFolder(tree, parentFolderId);
+  if (grandParent) {
+    return findNextProjectInParent(tree, grandParent.id);
+  }
+
+  // If we're at the root level, look for any project
+  return findFirstProjectInSubfolders(tree);
+}
+
+function findFirstProjectInSubfolders(tree: ProjectTreeItem[]): string | null {
+  for (const node of tree) {
+    if (node.type === "project") {
+      return node.id;
+    }
+    if (node.type === "folder" && node.children) {
+      const result = findFirstProjectInSubfolders(node.children);
+      if (result) return result;
+    }
+  }
+  return null;
+}

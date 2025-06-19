@@ -9,6 +9,7 @@ import {
   renameNode,
   moveNode,
   addNode,
+  findNextProject,
 } from "@/utils/treeHelperFunctions";
 
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
@@ -83,7 +84,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
     lastFetch: null,
 
     async fetchWorkData() {
-      const { updateStore, createProjectTree } = get();
+      const { updateStore, createProjectTree, activeProject } = get();
       const [projects, timerSessions, folders] = await Promise.all([
         actions.getAllProjects(),
         actions.getAllSessions(),
@@ -101,7 +102,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
         ),
       }));
 
-      if (projectsData.length !== 0) {
+      if (projectsData.length !== 0 && !activeProject) {
         set({ activeProject: projectsData[0] });
       }
 
@@ -153,11 +154,19 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
           : p
       );
       updateStore(updatedProjects, timerSessions);
+      if (project.id && project.title) {
+        const newProjectTree = renameNode(
+          get().projectTree,
+          project.id,
+          updatedProject.data.title
+        );
+        set({ projectTree: newProjectTree });
+      }
       return true;
     },
 
     async deleteProject(id) {
-      const { updateStore, timerSessions } = get();
+      const { updateStore, timerSessions, projects, activeProject } = get();
       const deleted = await actions.deleteProject({ projectId: id });
       if (!deleted.success) {
         return false;
@@ -165,6 +174,13 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
 
       const updatedProjects = get().projects.filter((p) => p.project.id !== id);
       updateStore(updatedProjects, timerSessions);
+      const newProjectTree = deleteNode(get().projectTree, id);
+      set({ projectTree: newProjectTree });
+      // const nextProjectId = findNextProject(newProjectTree, id);
+      if (activeProject?.project.id === id) {
+        const newActiveProject = projects[0];
+        set({ activeProject: newActiveProject });
+      }
       return true;
     },
 
