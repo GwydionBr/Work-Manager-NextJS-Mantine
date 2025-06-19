@@ -7,7 +7,6 @@ import { useWorkStore } from "@/stores/workManagerStore";
 
 import {
   Box,
-  Divider,
   Group,
   ScrollArea,
   Skeleton,
@@ -49,12 +48,16 @@ export default function ProjectNavbar() {
       >
         Overview
       </Box>
-      <Divider />
-      <Group className={classes.projectCategoriesRow} justify="space-around">
-        <Text size="xs">Categories</Text>
+      <Group
+        className={classes.projectCategoriesRow}
+        justify="flex-end"
+        align="center"
+        gap={10}
+        px={10}
+      >
+        {!isFetching && <NewProjectButton plusIcon={false} />}
         {!isFetching && <NewFolderButton />}
       </Group>
-      <Divider />
 
       <ScrollArea className={classes.scrollArea}>
         {isFetching ? (

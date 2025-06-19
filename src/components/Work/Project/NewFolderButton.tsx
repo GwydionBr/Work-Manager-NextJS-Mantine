@@ -43,12 +43,11 @@ export default function NewFolderButton() {
       close();
       form.reset();
     }
-    console.log(success);
     setSubmitting(false);
   }
 
   return (
-    <Box>
+    <Group align="center" justify="flex-end">
       <Modal
         opened={opened}
         onClose={close}
@@ -84,6 +83,6 @@ export default function NewFolderButton() {
       <ActionIcon aria-label="Add folder" onClick={open} size="sm" variant="transparent">
         <IconFolderPlus />
       </ActionIcon>
-    </Box>
+    </Group>
   );
 }

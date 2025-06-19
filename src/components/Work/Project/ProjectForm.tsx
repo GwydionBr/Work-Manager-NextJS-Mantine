@@ -33,7 +33,7 @@ interface ProjectFormProps {
 
 const schema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
-  description: z.string().min(1, { message: "Description is required" }),
+  description: z.string().optional(),
   salary: z.number().min(0, { message: "Salary must be positive" }),
   currency: z.string().min(1, { message: "Currency is required" }),
   folder_id: z.string().nullable().optional(),
@@ -62,6 +62,7 @@ export default function ProjectForm({
     <form onSubmit={form.onSubmit(onSubmit)}>
       <Stack>
         <TextInput
+          withAsterisk
           data-autofocus
           label="Title"
           placeholder="Enter project title"
@@ -73,12 +74,14 @@ export default function ProjectForm({
           {...form.getInputProps("description")}
         />
         <NumberInput
+          withAsterisk
           label="Salary"
           min={0}
           step={0.01}
           {...form.getInputProps("salary")}
         />
         <Select
+          withAsterisk
           label="Currency"
           placeholder="Select currency"
           data={currencies}

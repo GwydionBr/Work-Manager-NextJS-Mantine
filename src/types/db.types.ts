@@ -556,7 +556,7 @@ export type Database = {
         Row: {
           created_at: string | null;
           currency: Database["public"]["Enums"]["currency"];
-          description: string;
+          description: string | null;
           folder_id: string | null;
           id: string;
           is_favorite: boolean;
@@ -568,7 +568,7 @@ export type Database = {
         Insert: {
           created_at?: string | null;
           currency?: Database["public"]["Enums"]["currency"];
-          description: string;
+          description?: string | null;
           folder_id?: string | null;
           id?: string;
           is_favorite?: boolean;
@@ -580,7 +580,7 @@ export type Database = {
         Update: {
           created_at?: string | null;
           currency?: Database["public"]["Enums"]["currency"];
-          description?: string;
+          description?: string | null;
           folder_id?: string | null;
           id?: string;
           is_favorite?: boolean;

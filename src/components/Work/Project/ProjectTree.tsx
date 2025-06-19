@@ -2,6 +2,7 @@
 
 import { ProjectTreeItem, useWorkStore } from "@/stores/workManagerStore";
 import { useRouter } from "next/navigation";
+import { useContextMenu } from "mantine-contextmenu";
 
 import { NodeRendererProps, Tree } from "react-arborist";
 import {
@@ -9,8 +10,10 @@ import {
   IconFileFilled,
   IconFolderFilled,
   IconFolderOpen,
+  IconCopy,
+  IconDownload,
 } from "@tabler/icons-react";
-import { Group } from "@mantine/core";
+import { Group, Text } from "@mantine/core";
 
 export default function ProjectTree() {
   const { projectTree, setActiveProject, moveProject, moveFolder } =
@@ -80,27 +83,53 @@ export default function ProjectTree() {
 
 function Node({ node, style, dragHandle }: NodeRendererProps<ProjectTreeItem>) {
   const { activeProject } = useWorkStore();
+  const { showContextMenu } = useContextMenu();
   const isSelected = activeProject?.project.id === node.id;
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    // Toggle folder open/close
+    if (!node.isLeaf) {
+      node.toggle();
+    }
+
+    // Select the node
+    node.select();
+  };
+
   return (
-    <Group
-      style={style}
+    <div
+      style={{
+        ...style,
+        display: "flex",
+        alignItems: "center",
+        paddingLeft: `${node.level * 16}px`,
+        backgroundColor: isSelected ? "#e3f2fd" : "transparent",
+        cursor: "pointer",
+        userSelect: "none",
+        paddingTop: 5,
+        paddingBottom: 5,
+      }}
       ref={dragHandle}
-      onClick={() => node.toggle()}
-      gap={10}
+      onClick={handleClick}
     >
-      {node.isLeaf ? (
-        isSelected ? (
-          <IconFileFilled color="green" size={20} />
+      <Group gap="xs" style={{ flex: 1 }}>
+        {node.isLeaf ? (
+          isSelected ? (
+            <IconFileFilled color="green" size={20} />
+          ) : (
+            <IconFile color="gray" size={20} />
+          )
+        ) : node.isOpen ? (
+          <IconFolderOpen color="orange" size={20} />
         ) : (
-          <IconFile color="gray" size={20} />
-        )
-      ) : node.isOpen ? (
-        <IconFolderOpen color="orange" size={20} />
-      ) : (
-        <IconFolderFilled color="orange" size={20} />
-      )}{" "}
-      {node.data.name}
-    </Group>
+          <IconFolderFilled color="orange" size={20} />
+        )}
+        <Text size="sm" style={{ flex: 1 }}>
+          {node.data.name}
+        </Text>
+      </Group>
+    </div>
   );
 }

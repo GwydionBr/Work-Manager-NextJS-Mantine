@@ -8,6 +8,7 @@ import {
   MantineProvider,
 } from "@mantine/core";
 // import Script from "next/script";
+import { ContextMenuProvider } from "mantine-contextmenu";
 import { Notifications } from "@mantine/notifications";
 import Layout from "@/components/AppShell/AppShell";
 import { mantineTheme } from "@/theme";
@@ -48,10 +49,12 @@ export default function RootLayout({ children }: { children: any }) {
       </head>
       <body>
         <MantineProvider defaultColorScheme="auto" theme={mantineTheme}>
-          <Layout>
-            <Notifications />
-            {children}
-          </Layout>
+          <ContextMenuProvider>
+            <Layout>
+              <Notifications />
+              {children}
+            </Layout>
+          </ContextMenuProvider>
         </MantineProvider>
         {/* {isProduction && <div id="sitetran_translate_element" />} */}
       </body>

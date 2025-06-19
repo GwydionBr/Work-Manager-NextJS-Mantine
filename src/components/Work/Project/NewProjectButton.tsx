@@ -5,13 +5,18 @@ import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Box, Flex, Modal } from "@mantine/core";
+import { ActionIcon, Flex, Group, Modal } from "@mantine/core";
+import { IconFilePlus } from "@tabler/icons-react";
 import ProjectForm from "@/components/Work/Project/ProjectForm";
 import AddActionIcon from "@/components/UI/Buttons/AddActionIcon";
 
 import { Currency } from "@/types/settings.types";
 
-export default function NewProjectButton() {
+export default function NewProjectButton({
+  plusIcon = true,
+}: {
+  plusIcon?: boolean;
+}) {
   const [opened, { open, close }] = useDisclosure(false);
   const [submitting, setSubmitting] = useState(false);
   const { addProject } = useWorkStore();
@@ -32,7 +37,7 @@ export default function NewProjectButton() {
   }
 
   return (
-    <Box>
+    <Group align="center" justify="center">
       <Modal
         opened={opened}
         onClose={close}
@@ -56,7 +61,18 @@ export default function NewProjectButton() {
         </Flex>
       </Modal>
 
-      <AddActionIcon aria-label="Add project" onClick={open} size="md" />
-    </Box>
+      {plusIcon ? (
+        <AddActionIcon aria-label="Add project" onClick={open} size="md" />
+      ) : (
+        <ActionIcon
+          aria-label="Add project"
+          onClick={open}
+          size="sm"
+          variant="transparent"
+        >
+          <IconFilePlus />
+        </ActionIcon>
+      )}
+    </Group>
   );
 }
