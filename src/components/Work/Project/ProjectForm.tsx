@@ -18,7 +18,7 @@ import CancelButton from "@/components/UI/Buttons/CancelButton";
 interface ProjectFormProps {
   initialValues: {
     title: string;
-    description: string;
+    description: string | null;
     salary: number;
     currency: string;
     folder_id?: string | null;

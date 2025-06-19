@@ -21,7 +21,7 @@ export default function EditProjectButton() {
 
   async function handleSubmit(values: {
     title: string;
-    description: string;
+    description: string | null;
     salary: number;
     currency: Currency;
   }) {
