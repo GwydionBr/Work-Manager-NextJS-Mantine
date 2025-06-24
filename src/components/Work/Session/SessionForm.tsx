@@ -9,7 +9,7 @@ import { currencies } from "@/constants/settings";
 import { Currency } from "@/types/settings.types";
 
 interface NewSession {
-  start_time: Date;
+  start_time: string;
   active_seconds: number;
   paused_seconds: number;
   currency: Currency;
@@ -25,7 +25,7 @@ interface SessionFormProps {
 }
 
 const schema = z.object({
-  start_time: z.date(),
+  start_time: z.string().transform((str) => new Date(str).toISOString()),
   active_seconds: z
     .number()
     .min(1, { message: "Active seconds must be bigger than 0" }),
@@ -51,6 +51,9 @@ export default function SessionForm({
     <form onSubmit={form.onSubmit(onSubmit)}>
       <Stack>
         <NumberInput
+          allowNegative={false}
+          allowLeadingZeros={false}
+          allowDecimal={false}
           data-autofocus
           label="Active Seconds"
           min={0}
@@ -58,6 +61,9 @@ export default function SessionForm({
           {...form.getInputProps("active_seconds")}
         />
         <NumberInput
+          allowNegative={false}
+          allowLeadingZeros={false}
+          allowDecimal={false}
           label="Paused Seconds"
           min={0}
           step={1}

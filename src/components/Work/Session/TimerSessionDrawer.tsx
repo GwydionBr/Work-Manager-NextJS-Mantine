@@ -22,14 +22,14 @@ export default function TimerSessionDrawer({
   const { updateTimerSession } = useWorkStore();
 
   async function handleSubmit(values: {
-    start_time: Date;
+    start_time: string;
     active_seconds: number;
     paused_seconds: number;
     currency: Currency;
     salary: number;
   }) {
     const endTime = new Date(
-      values.start_time.getTime() +
+      new Date(values.start_time).getTime() +
         (values.active_seconds + values.paused_seconds) * 1000
     ).toISOString();
 
@@ -39,7 +39,7 @@ export default function TimerSessionDrawer({
       id: timerSession.id,
       project_id: timerSession.project_id,
       user_id: timerSession.user_id,
-      start_time: values.start_time.toISOString(),
+      start_time: values.start_time,
       end_time: endTime,
     };
 
@@ -60,7 +60,7 @@ export default function TimerSessionDrawer({
       <Flex direction="column" gap="xl">
         <SessionForm
           initialValues={{
-            start_time: new Date(timerSession.start_time),
+            start_time: timerSession.start_time,
             active_seconds: timerSession.active_seconds,
             paused_seconds: timerSession.paused_seconds,
             currency: timerSession.currency,

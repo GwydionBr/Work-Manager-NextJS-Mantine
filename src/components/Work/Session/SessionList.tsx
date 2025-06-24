@@ -22,8 +22,8 @@ export default function SessionList({ sessions, projects }: SessionListProps) {
   return (
     <ScrollArea w="100%" pb="xl">
       {groupedSessions.length === 0 ? (
-        <Text size="lg" c="gray">
-          No Sessions
+        <Text size="lg" c="gray" ta="center">
+          Add as Session to see it here
         </Text>
       ) : (
         groupedSessions.reverse().map(({ year, data: yearData }, index) => (

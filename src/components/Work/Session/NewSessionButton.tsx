@@ -15,7 +15,7 @@ export default function NewSessionButton() {
   const { activeProject, addTimerSession } = useWorkStore();
 
   async function handleSubmit(values: {
-    start_time: Date;
+    start_time: string;
     active_seconds: number;
     paused_seconds: number;
     currency: Currency;
@@ -26,7 +26,7 @@ export default function NewSessionButton() {
     }
 
     const endTime = new Date(
-      values.start_time.getTime() +
+      new Date(values.start_time).getTime() +
         (values.active_seconds + values.paused_seconds) * 1000
     ).toISOString();
 
@@ -34,7 +34,7 @@ export default function NewSessionButton() {
       ...values,
       project_id: activeProject.project.id,
       user_id: activeProject.project.user_id,
-      start_time: values.start_time.toISOString(),
+      start_time: new Date(values.start_time).toISOString(),
       end_time: endTime,
     };
 
@@ -56,7 +56,7 @@ export default function NewSessionButton() {
         <Flex direction="column" gap="xl">
           <SessionForm
             initialValues={{
-              start_time: new Date(),
+              start_time: new Date().toISOString(),
               active_seconds: 0,
               paused_seconds: 0,
               currency: activeProject?.project.currency || "USD",
