@@ -93,7 +93,13 @@ export default function ProjectForm({
               size="xl"
               onLabel="Project"
               offLabel="Hourly"
-              {...form.getInputProps("payment_per_project")}
+              checked={form.values.payment_per_project}
+              onChange={(event) =>
+                form.setFieldValue(
+                  "payment_per_project",
+                  event.currentTarget.checked
+                )
+              }
             />
           </Tooltip>
         </Group>

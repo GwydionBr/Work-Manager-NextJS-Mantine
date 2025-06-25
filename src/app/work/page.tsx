@@ -25,7 +25,7 @@ export default function WorkPage() {
     );
   }
 
-  const description = formatMoney(
+  const salary = formatMoney(
     activeProject.project.salary,
     getCurrencySymbol(activeProject.project.currency)
   );
@@ -34,7 +34,9 @@ export default function WorkPage() {
     <Stack align="center" w="100%" px="xl">
       <Header
         headerTitle={activeProject.project.title}
-        description={description}
+        salary={salary}
+        paymentPerProject={activeProject.project.payment_per_project}
+        description={activeProject.project.description ?? undefined}
         primaryButton={<EditProjectButton />}
         secondaryButton={<NewSessionButton />}
       />
