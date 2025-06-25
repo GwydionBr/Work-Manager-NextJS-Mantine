@@ -82,7 +82,7 @@ export default function ProjectTree() {
 }
 
 function Node({ node, style, dragHandle }: NodeRendererProps<ProjectTreeItem>) {
-  const { activeProject } = useWorkStore();
+  const { activeProjectId: activeProject } = useWorkStore();
   const { showContextMenu } = useContextMenu();
   const isSelected = activeProject?.project.id === node.id;
 

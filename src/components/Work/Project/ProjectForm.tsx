@@ -9,6 +9,9 @@ import {
   Textarea,
   TextInput,
   Select,
+  Group,
+  Switch,
+  Tooltip,
 } from "@mantine/core";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
@@ -20,6 +23,7 @@ interface ProjectFormProps {
     title: string;
     description: string | null;
     salary: number;
+    payment_per_project: boolean;
     currency: string;
     folder_id?: string | null;
   };
@@ -35,6 +39,7 @@ const schema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   description: z.string().optional(),
   salary: z.number().min(0, { message: "Salary must be positive" }),
+  payment_per_project: z.boolean(),
   currency: z.string().min(1, { message: "Currency is required" }),
   folder_id: z.string().nullable().optional(),
 });
@@ -73,13 +78,25 @@ export default function ProjectForm({
           placeholder="Enter project description"
           {...form.getInputProps("description")}
         />
-        <NumberInput
-          withAsterisk
-          label="Salary"
-          min={0}
-          step={0.01}
-          {...form.getInputProps("salary")}
-        />
+        <Group align="flex-end">
+          <NumberInput
+            allowLeadingZeros={false}
+            allowNegative={false}
+            withAsterisk
+            label="Salary"
+            min={0}
+            step={0.01}
+            {...form.getInputProps("salary")}
+          />
+          <Tooltip label="Payment method" refProp="rootRef">
+            <Switch
+              size="xl"
+              onLabel="Project"
+              offLabel="Hourly"
+              {...form.getInputProps("payment_per_project")}
+            />
+          </Tooltip>
+        </Group>
         <Select
           withAsterisk
           label="Currency"

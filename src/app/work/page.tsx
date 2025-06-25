@@ -11,7 +11,7 @@ import Header from "@/components/Header/Header";
 import { formatMoney, getCurrencySymbol } from "@/utils/workHelperFunctions";
 
 export default function WorkPage() {
-  const { activeProject, isFetching } = useWorkStore();
+  const { activeProjectId: activeProject, isFetching } = useWorkStore();
 
   if (!activeProject || isFetching) {
     return (
