@@ -12,7 +12,10 @@ import { Currency } from "@/types/settings.types";
 
 export default function NewSessionButton() {
   const [opened, { open, close }] = useDisclosure(false);
-  const { activeProjectId: activeProject, addTimerSession } = useWorkStore();
+  const { activeProjectId, addTimerSession } = useWorkStore();
+  const activeProject = useWorkStore((state) =>
+    state.projects.find((p) => p.project.id === activeProjectId)
+  );
 
   async function handleSubmit(values: {
     start_time: string;

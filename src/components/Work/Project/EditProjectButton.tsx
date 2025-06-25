@@ -17,11 +17,10 @@ export default function EditProjectButton() {
     deleteModalOpened,
     { open: openDeleteModal, close: closeDeleteModal },
   ] = useDisclosure(false);
-  const {
-    activeProjectId: activeProject,
-    updateProject,
-    deleteProject,
-  } = useWorkStore();
+  const { activeProjectId, updateProject, deleteProject } = useWorkStore();
+  const activeProject = useWorkStore((state) =>
+    state.projects.find((p) => p.project.id === activeProjectId)
+  );
 
   async function handleSubmit(values: {
     title: string;

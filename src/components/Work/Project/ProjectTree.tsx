@@ -2,7 +2,6 @@
 
 import { ProjectTreeItem, useWorkStore } from "@/stores/workManagerStore";
 import { useRouter } from "next/navigation";
-import { useContextMenu } from "mantine-contextmenu";
 
 import { NodeRendererProps, Tree } from "react-arborist";
 import {
@@ -10,13 +9,11 @@ import {
   IconFileFilled,
   IconFolderFilled,
   IconFolderOpen,
-  IconCopy,
-  IconDownload,
 } from "@tabler/icons-react";
 import { Group, Text } from "@mantine/core";
 
 export default function ProjectTree() {
-  const { projectTree, setActiveProject, moveProject, moveFolder } =
+  const { projectTree, setActiveProjectId, moveProject, moveFolder } =
     useWorkStore();
 
   const router = useRouter();
@@ -67,7 +64,7 @@ export default function ProjectTree() {
         if (nodes.length > 0) {
           const node = nodes[0];
           if (node.data.type === "project") {
-            setActiveProject(node.id);
+            setActiveProjectId(node.id);
             router.push("/work");
           }
         }
@@ -82,9 +79,8 @@ export default function ProjectTree() {
 }
 
 function Node({ node, style, dragHandle }: NodeRendererProps<ProjectTreeItem>) {
-  const { activeProjectId: activeProject } = useWorkStore();
-  const { showContextMenu } = useContextMenu();
-  const isSelected = activeProject?.project.id === node.id;
+  const { activeProjectId } = useWorkStore();
+  const isSelected = activeProjectId === node.id;
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();

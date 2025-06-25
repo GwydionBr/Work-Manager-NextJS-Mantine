@@ -11,7 +11,10 @@ import Header from "@/components/Header/Header";
 import { formatMoney, getCurrencySymbol } from "@/utils/workHelperFunctions";
 
 export default function WorkPage() {
-  const { activeProjectId: activeProject, isFetching } = useWorkStore();
+  const { activeProjectId, isFetching } = useWorkStore();
+  const activeProject = useWorkStore((state) =>
+    state.projects.find((p) => p.project.id === activeProjectId)
+  );
 
   if (!activeProject || isFetching) {
     return (

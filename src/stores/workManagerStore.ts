@@ -30,7 +30,7 @@ export interface ProjectTreeItem {
 interface WorkStoreState {
   projectTree: ProjectTreeItem[];
   projects: TimerProject[];
-  activeProject: TimerProject | null;
+  activeProjectId: string | null;
   timerSessions: Tables<"timerSession">[];
   isFetching: boolean;
   lastFetch: Date | null;
@@ -42,7 +42,7 @@ interface WorkStoreActions {
     updatedProjects: TimerProject[],
     updatedSessions: Tables<"timerSession">[]
   ) => void;
-  setActiveProject: (id: string) => void;
+  setActiveProjectId: (id: string) => void;
   addProject: (project: TablesInsert<"timerProject">) => Promise<boolean>;
   addTimerSession: (session: TablesInsert<"timerSession">) => Promise<boolean>;
   updateProject: (project: TablesUpdate<"timerProject">) => Promise<boolean>;
@@ -78,13 +78,17 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
   (set, get) => ({
     projectTree: [],
     projects: [],
-    activeProject: null,
+    activeProjectId: null,
     timerSessions: [],
     isFetching: true,
     lastFetch: null,
 
     async fetchWorkData() {
-      const { updateStore, createProjectTree, activeProject } = get();
+      const {
+        updateStore,
+        createProjectTree,
+        activeProjectId: activeProject,
+      } = get();
       const [projects, timerSessions, folders] = await Promise.all([
         actions.getAllProjects(),
         actions.getAllSessions(),
@@ -103,7 +107,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
       }));
 
       if (projectsData.length !== 0 && !activeProject) {
-        set({ activeProject: projectsData[0] });
+        set({ activeProjectId: projectsData[0].project.id });
       }
 
       createProjectTree(projects.data, folders.data);
@@ -111,33 +115,23 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
       set({ isFetching: false, lastFetch: new Date() });
     },
 
+    setActiveProjectId(id: string) {
+      set({ activeProjectId: id });
+    },
+
     updateStore(
       updatedProjects: TimerProject[],
       updatedSessions: Tables<"timerSession">[]
     ) {
       set({ projects: updatedProjects, timerSessions: updatedSessions });
-      const activeProject = get().activeProject;
-      if (activeProject) {
-        const updatedActiveProject = updatedProjects.find(
-          (p) => p.project.id === activeProject.project.id
-        );
-        if (updatedActiveProject) {
-          set({ activeProject: updatedActiveProject });
-        }
-      } else {
+      const { activeProjectId } = get();
+      if (!activeProjectId) {
         const firstProject = updatedProjects[0];
         if (firstProject) {
-          set({ activeProject: firstProject });
+          set({ activeProjectId: firstProject.project.id });
         } else {
-          set({ activeProject: null });
+          set({ activeProjectId: null });
         }
-      }
-    },
-
-    setActiveProject(id) {
-      const project = get().projects.find((p) => p.project.id === id);
-      if (project) {
-        set({ activeProject: project });
       }
     },
 
@@ -166,13 +160,8 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
     },
 
     async deleteProject(id) {
-      const {
-        updateStore,
-        timerSessions,
-        projects,
-        activeProject,
-        projectTree,
-      } = get();
+      const { updateStore, timerSessions, activeProjectId, projectTree } =
+        get();
       const deleted = await actions.deleteProject({ projectId: id });
       if (!deleted.success) {
         return false;
@@ -182,12 +171,12 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
       const updatedProjects = get().projects.filter((p) => p.project.id !== id);
       updateStore(updatedProjects, timerSessions);
       const newProjectTree = deleteNode(projectTree, id);
-      if (activeProject?.project.id === id) {
+      if (activeProjectId === id) {
         const newActiveProject = updatedProjects[0];
         if (newActiveProject) {
-          set({ activeProject: newActiveProject });
+          set({ activeProjectId: newActiveProject.project.id });
         } else {
-          set({ activeProject: null });
+          set({ activeProjectId: null });
         }
       }
       set({ projectTree: newProjectTree });
@@ -212,7 +201,10 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
         type: "project",
         index: 0,
       });
-      set({ projectTree: newProjectTree });
+      set({
+        projectTree: newProjectTree,
+        activeProjectId: newProject.data.id,
+      });
       return true;
     },
 

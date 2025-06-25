@@ -1,6 +1,6 @@
 "use client";
 
-import { Accordion, Card, Group, ScrollArea, Text } from "@mantine/core";
+import { Accordion, Group, ScrollArea, Text } from "@mantine/core";
 import { IconCalendar, IconClock, IconFolder } from "@tabler/icons-react";
 import SessionRow from "@/components/Work/Session/SessionRow";
 

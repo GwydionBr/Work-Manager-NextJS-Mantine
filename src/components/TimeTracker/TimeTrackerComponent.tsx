@@ -44,7 +44,10 @@ export default function TimeTrackerComponent({
 
   const { roundingAmount, roundingMode, customRoundingAmount } =
     useSettingsStore();
-  const { addTimerSession, activeProjectId: activeProject } = useWorkStore();
+  const { addTimerSession, activeProjectId } = useWorkStore();
+  const activeProject = useWorkStore((state) =>
+    state.projects.find((p) => p.project.id === activeProjectId)
+  );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showSmall, setShowSmall] = useState(true);
 

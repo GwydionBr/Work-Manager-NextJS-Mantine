@@ -68,8 +68,6 @@ export async function createProject({
     .select()
     .single();
 
-  console.log(data, error);
-
   if (error) {
     return { success: false, data: null, error: error.message };
   }
