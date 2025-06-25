@@ -20,7 +20,11 @@ export default function NewProjectButton({
   const [opened, { open, close }] = useDisclosure(false);
   const [submitting, setSubmitting] = useState(false);
   const { addProject } = useWorkStore();
-  const { defaultSalaryCurrency, defaultSalaryAmount } = useSettingsStore();
+  const {
+    defaultSalaryCurrency,
+    defaultSalaryAmount,
+    defaultProjectHourlyPayment,
+  } = useSettingsStore();
 
   async function handleSubmit(values: {
     title: string;
@@ -55,7 +59,7 @@ export default function NewProjectButton({
               description: "",
               salary: defaultSalaryAmount,
               currency: defaultSalaryCurrency,
-              hourly_payment: false,
+              hourly_payment: defaultProjectHourlyPayment,
             }}
             onSubmit={handleSubmit}
             onCancel={close}

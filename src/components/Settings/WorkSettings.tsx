@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Button, Group, NumberInput, Select } from "@mantine/core";
+import { Button, Group, NumberInput, Select, Switch } from "@mantine/core";
 
 import { currencies } from "@/constants/settings";
 import { Currency } from "@/types/settings.types";
@@ -11,9 +11,11 @@ import { Currency } from "@/types/settings.types";
 export default function WorkSettings() {
   const {
     defaultSalaryCurrency: salaryCurrency,
-    setDefaultSalaryCurrency: setSalaryCurrency,
     defaultSalaryAmount,
+    defaultProjectHourlyPayment,
+    setDefaultSalaryCurrency: setSalaryCurrency,
     setDefaultSalaryAmount,
+    setDefaultProjectHourlyPayment,
   } = useSettingsStore();
 
   const [salaryAmount, setSalaryAmount] = useState(defaultSalaryAmount);
@@ -59,6 +61,12 @@ export default function WorkSettings() {
         placeholder="Select Salary Currency"
         value={salaryCurrency}
         onChange={(value) => setSalaryCurrency(value as Currency)}
+      />
+      <Switch
+        mt="lg"
+        label="Hourly Payment"
+        checked={defaultProjectHourlyPayment}
+        onChange={(event) => setDefaultProjectHourlyPayment(event.currentTarget.checked)}
       />
     </Group>
   );

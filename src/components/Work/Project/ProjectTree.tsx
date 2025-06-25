@@ -101,7 +101,9 @@ function Node({ node, style, dragHandle }: NodeRendererProps<ProjectTreeItem>) {
         display: "flex",
         alignItems: "center",
         paddingLeft: `${node.level * 16}px`,
-        backgroundColor: isSelected ? "#e3f2fd" : "transparent",
+        backgroundColor: isSelected
+          ? "light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))"
+          : "transparent",
         cursor: "pointer",
         userSelect: "none",
         paddingTop: 5,

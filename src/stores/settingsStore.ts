@@ -14,6 +14,7 @@ interface SettingsState {
   defaultSalaryCurrency: Currency;
   defaultSalaryAmount: number;
   defaultFinanceCurrency: Currency;
+  defaultProjectHourlyPayment: boolean;
   roundingAmount: RoundingAmount;
   roundingMode: RoundingDirection;
   customRoundingAmount: number;
@@ -28,6 +29,7 @@ interface SettingsActions {
   setDefaultSalaryCurrency: (currency: Currency) => void;
   setDefaultSalaryAmount: (salaryAmount: number) => void;
   setDefaultFinanceCurrency: (financeCurrency: Currency) => void;
+  setDefaultProjectHourlyPayment: (projectHourlyPayment: boolean) => void;
   setRoundingAmount: (roundingAmount: RoundingAmount) => void;
   setRoundingMode: (roundingMode: RoundingDirection) => void;
   setCustomRoundingAmount: (customRoundingAmount: number) => void;
@@ -41,6 +43,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       settingsId: null,
       defaultSalaryCurrency: "USD",
       defaultFinanceCurrency: "USD",
+      defaultProjectHourlyPayment: true,
       roundingAmount: "s",
       roundingMode: "up",
       customRoundingAmount: 0,
@@ -58,6 +61,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
             defaultSalaryCurrency: data.default_currency,
             defaultSalaryAmount: data.default_salary_amount,
             defaultFinanceCurrency: data.default_finance_currency,
+            defaultProjectHourlyPayment: data.default_project_hourly_payment,
             roundingAmount: data.rounding_amount,
             roundingMode: data.rounding_direction,
             customRoundingAmount: data.rounding_custom_amount,
@@ -79,6 +83,13 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
           default_salary_amount: salaryAmount,
         });
         set({ defaultSalaryAmount: salaryAmount });
+      },
+      setDefaultProjectHourlyPayment: async (projectHourlyPayment: boolean) => {
+        await actions.updateSettings({
+          id: get().settingsId ?? "",
+          default_project_hourly_payment: projectHourlyPayment,
+        });
+        set({ defaultProjectHourlyPayment: projectHourlyPayment });
       },
       setRoundingAmount: async (roundingAmount: RoundingAmount) => {
         await actions.updateSettings({
