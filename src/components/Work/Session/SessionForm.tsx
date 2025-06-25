@@ -2,9 +2,11 @@ import { useForm } from "@mantine/form";
 
 import { Button, NumberInput, Select, Stack } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
+import { IconPlayerPlay, IconPlayerPause } from "@tabler/icons-react";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { currencies } from "@/constants/settings";
+import TimeInput from "@/components/Work/Session/SessionTimeInput";
 
 import { Currency } from "@/types/settings.types";
 
@@ -28,10 +30,10 @@ const schema = z.object({
   start_time: z.string().transform((str) => new Date(str).toISOString()),
   active_seconds: z
     .number()
-    .min(1, { message: "Active seconds must be bigger than 0" }),
+    .min(1, { message: "Active time must be greater than 0" }),
   paused_seconds: z
     .number()
-    .min(0, { message: "Paused seconds must be positive or 0" }),
+    .min(0, { message: "Paused time must be positive or 0" }),
   currency: z.string().min(1, { message: "Currency is required" }),
   salary: z.number().min(0, { message: "Salary must be positive" }),
 });
@@ -49,25 +51,23 @@ export default function SessionForm({
 
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
-      <Stack>
-        <NumberInput
-          allowNegative={false}
-          allowLeadingZeros={false}
-          allowDecimal={false}
-          data-autofocus
-          label="Active Seconds"
-          min={0}
-          step={1}
-          {...form.getInputProps("active_seconds")}
+      <Stack gap="lg">
+        <TimeInput
+          label="Active Time"
+          value={form.values.active_seconds}
+          onChange={(value) => form.setFieldValue("active_seconds", value)}
+          error={form.errors.active_seconds}
+          icon={<IconPlayerPlay size={18} />}
+          color="green"
+          autoFocus={true}
         />
-        <NumberInput
-          allowNegative={false}
-          allowLeadingZeros={false}
-          allowDecimal={false}
-          label="Paused Seconds"
-          min={0}
-          step={1}
-          {...form.getInputProps("paused_seconds")}
+        <TimeInput
+          label="Paused Time"
+          value={form.values.paused_seconds}
+          onChange={(value) => form.setFieldValue("paused_seconds", value)}
+          error={form.errors.paused_seconds}
+          icon={<IconPlayerPause size={18} />}
+          color="orange"
         />
         <NumberInput
           label="Salary"
@@ -86,7 +86,7 @@ export default function SessionForm({
           data={currencies}
           {...form.getInputProps("currency")}
         />
-        <Button type="submit">
+        <Button type="submit" mt="md">
           {newSession ? "Create Session" : "Save Changes"}
         </Button>
         <Button onClick={onCancel} color="red" variant="outline">
