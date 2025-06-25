@@ -19,6 +19,19 @@ interface SessionListProps {
 export default function SessionList({ sessions, projects }: SessionListProps) {
   const groupedSessions = groupSessions(sessions);
 
+  const renderTime = (seconds: number) => (
+    <Text
+      size="sm"
+      c="light-dark(var(--mantine-color-blue-9), var(--mantine-color-blue-4))"
+    >
+      {formatTime(seconds)}
+    </Text>
+  );
+
+  const areEarningsEmpty = (earnings: Earnings[]) => {
+    return earnings.every((e) => e.amount === 0);
+  };
+
   return (
     <ScrollArea w="100%" pb="xl">
       {groupedSessions.length === 0 ? (
@@ -43,11 +56,12 @@ export default function SessionList({ sessions, projects }: SessionListProps) {
               >
                 <Group>
                   {year}
-                  {yearData.totalEarnings.length > 0 && (
+                  {!areEarningsEmpty(yearData.totalEarnings) && (
                     <Text size="sm" c="dimmed">
                       {formatEarnings(yearData.totalEarnings)}
                     </Text>
                   )}
+                  {yearData.totalTime > 0 && renderTime(yearData.totalTime)}
                 </Group>
               </Accordion.Control>
               <Accordion.Panel>
@@ -71,11 +85,13 @@ export default function SessionList({ sessions, projects }: SessionListProps) {
                         >
                           <Group>
                             {helper.formatMonth(Number(month))}
-                            {monthData.totalEarnings.length > 0 && (
+                            {!areEarningsEmpty(monthData.totalEarnings) && (
                               <Text size="sm" c="dimmed">
                                 {formatEarnings(monthData.totalEarnings)}
                               </Text>
                             )}
+                            {monthData.totalTime > 0 &&
+                              renderTime(monthData.totalTime)}
                           </Group>
                         </Accordion.Control>
                         <Accordion.Panel>
@@ -105,13 +121,17 @@ export default function SessionList({ sessions, projects }: SessionListProps) {
                                   >
                                     <Group>
                                       Week {week}
-                                      {weekData.totalEarnings.length > 0 && (
+                                      {!areEarningsEmpty(
+                                        weekData.totalEarnings
+                                      ) && (
                                         <Text size="sm" c="dimmed">
                                           {formatEarnings(
                                             weekData.totalEarnings
                                           )}
                                         </Text>
                                       )}
+                                      {weekData.totalTime > 0 &&
+                                        renderTime(weekData.totalTime)}
                                     </Group>
                                   </Accordion.Control>
                                   <Accordion.Panel>
@@ -147,14 +167,17 @@ export default function SessionList({ sessions, projects }: SessionListProps) {
                                                 {helper.formatDate(
                                                   new Date(day)
                                                 )}
-                                                {dayData.totalEarnings.length >
-                                                  0 && (
+                                                {!areEarningsEmpty(
+                                                  dayData.totalEarnings
+                                                ) && (
                                                   <Text size="sm" c="dimmed">
                                                     {formatEarnings(
                                                       dayData.totalEarnings
                                                     )}
                                                   </Text>
                                                 )}
+                                                {dayData.totalTime > 0 &&
+                                                  renderTime(dayData.totalTime)}
                                               </Group>
                                             </Accordion.Control>
                                             <Accordion.Panel>
@@ -164,13 +187,11 @@ export default function SessionList({ sessions, projects }: SessionListProps) {
                                                   <SessionRow
                                                     key={session.id}
                                                     session={session}
-                                                    project={
-                                                      projects?.find(
-                                                        (p) =>
-                                                          p.id ===
-                                                          session.project_id
-                                                      )
-                                                    }
+                                                    project={projects?.find(
+                                                      (p) =>
+                                                        p.id ===
+                                                        session.project_id
+                                                    )}
                                                   />
                                                 ))}
                                             </Accordion.Panel>
@@ -201,18 +222,22 @@ interface Earnings {
 
 type Year = {
   totalEarnings: Earnings[];
+  totalTime: number;
   months: Record<
     number,
     {
       totalEarnings: Earnings[];
+      totalTime: number;
       weeks: Record<
         number,
         {
           totalEarnings: Earnings[];
+          totalTime: number;
           days: Record<
             string,
             {
               totalEarnings: Earnings[];
+              totalTime: number;
               sessions: Tables<"timerSession">[];
             }
           >;
@@ -223,7 +248,7 @@ type Year = {
 };
 
 function groupSessions(
-  sessions: Tables<"timerSession">[],
+  sessions: Tables<"timerSession">[]
 ): { year: number; data: Year }[] {
   const groupedSessions: Record<number, Year> = sessions.reduce(
     (acc, session) => {
@@ -238,45 +263,59 @@ function groupSessions(
       const day = startTime.toISOString().split("T")[0];
 
       const earnings: Earnings = {
-        amount: Number(
-          ((session.active_seconds * session.salary) / 3600).toFixed(2)
-        ),
+        amount: session.hourly_payment
+          ? Number(
+              ((session.active_seconds * session.salary) / 3600).toFixed(2)
+            )
+          : 0,
         currency: session.currency,
       };
 
+      const timeInSeconds = session.active_seconds || 0;
+
       // Year
-      acc[year] = acc[year] || { totalEarnings: [], months: {} };
+      acc[year] = acc[year] || { totalEarnings: [], totalTime: 0, months: {} };
       acc[year].totalEarnings = addEarnings(acc[year].totalEarnings, earnings);
+      acc[year].totalTime += timeInSeconds;
 
       // Month
       acc[year].months[month] = acc[year].months[month] || {
         totalEarnings: [],
+        totalTime: 0,
         weeks: {},
       };
       acc[year].months[month].totalEarnings = addEarnings(
         acc[year].months[month].totalEarnings,
         earnings
       );
+      acc[year].months[month].totalTime += timeInSeconds;
 
       // Week
       acc[year].months[month].weeks[week] = acc[year].months[month].weeks[
         week
       ] || {
         totalEarnings: [],
+        totalTime: 0,
         days: {},
       };
       acc[year].months[month].weeks[week].totalEarnings = addEarnings(
         acc[year].months[month].weeks[week].totalEarnings,
         earnings
       );
+      acc[year].months[month].weeks[week].totalTime += timeInSeconds;
 
       // Day
       acc[year].months[month].weeks[week].days[day] = acc[year].months[month]
-        .weeks[week].days[day] || { totalEarnings: [], sessions: [] };
+        .weeks[week].days[day] || {
+        totalEarnings: [],
+        totalTime: 0,
+        sessions: [],
+      };
       acc[year].months[month].weeks[week].days[day].totalEarnings = addEarnings(
         acc[year].months[month].weeks[week].days[day].totalEarnings,
         earnings
       );
+      acc[year].months[month].weeks[week].days[day].totalTime += timeInSeconds;
       acc[year].months[month].weeks[week].days[day].sessions.push(session);
 
       return acc;
@@ -318,4 +357,15 @@ function formatEarnings(earnings: Earnings[]): string {
       return helper.formatEarningsAmount(e.amount, shortCurrency);
     })
     .join(", ");
+}
+
+function formatTime(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  } else {
+    return `${minutes} min`;
+  }
 }

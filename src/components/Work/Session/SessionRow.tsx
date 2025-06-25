@@ -81,10 +81,12 @@ export default function SessionRow({ session, project }: SessionRowProps) {
               </Text>
             )}
             <Text>
-              {helper.formatMoney(
-                earnings,
-                helper.getCurrencySymbol(session.currency)
-              )}
+              {session.hourly_payment
+                ? helper.formatMoney(
+                    earnings,
+                    helper.getCurrencySymbol(session.currency)
+                  )
+                : ""}
             </Text>
           </Group>
         </Group>

@@ -87,7 +87,14 @@ export const useTimeTracker = create(
       roundingInterval: 60,
       roundingMode: "up",
 
-      configureProject: (projectId, projectTitle, currency, salary, hourlyPayment, userId) => {
+      configureProject: (
+        projectId,
+        projectTitle,
+        currency,
+        salary,
+        hourlyPayment,
+        userId
+      ) => {
         if (get().state !== TimerState.Stopped) {
           return;
         }
@@ -293,15 +300,26 @@ export const useTimeTracker = create(
       },
 
       getCurrentSession: () => {
+        const {
+          userId,
+          projectId,
+          startTime,
+          hourlyPayment,
+          activeSeconds,
+          pausedSeconds,
+          salary,
+          currency,
+        } = get();
         const newTimerSession: TablesInsert<"timerSession"> = {
-          user_id: get().userId,
-          project_id: get().projectId,
-          start_time: new Date(get().startTime ?? 0).toISOString(),
+          user_id: userId,
+          project_id: projectId,
+          start_time: new Date(startTime ?? 0).toISOString(),
           end_time: new Date().toISOString(),
-          active_seconds: get().activeSeconds,
-          paused_seconds: get().pausedSeconds,
-          salary: get().salary,
-          currency: get().currency,
+          hourly_payment: hourlyPayment,
+          active_seconds: activeSeconds,
+          paused_seconds: pausedSeconds,
+          salary: salary,
+          currency: currency,
         };
 
         return newTimerSession;
