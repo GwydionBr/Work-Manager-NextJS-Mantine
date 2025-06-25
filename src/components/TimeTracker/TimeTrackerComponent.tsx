@@ -32,6 +32,7 @@ export default function TimeTrackerComponent({
     pausedTime,
     currency,
     state,
+    hourlyPayment,
     startTimer,
     pauseTimer,
     resumeTimer,
@@ -58,6 +59,7 @@ export default function TimeTrackerComponent({
         activeProject.project.title,
         activeProject.project.currency,
         activeProject.project.salary,
+        activeProject.project.hourly_payment,
         activeProject.project.user_id
       );
     }
@@ -121,6 +123,7 @@ export default function TimeTrackerComponent({
               activeTime={activeTime}
               pausedTime={pausedTime}
               currency={currency}
+              hourlyPayment={hourlyPayment}
               errorMessage={errorMessage}
               startTimer={startTimer}
               pauseTimer={pauseTimer}

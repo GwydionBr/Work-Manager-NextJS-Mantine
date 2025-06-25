@@ -55,7 +55,7 @@ export default function NewProjectButton({
               description: "",
               salary: defaultSalaryAmount,
               currency: defaultSalaryCurrency,
-              payment_per_project: false,
+              hourly_payment: false,
             }}
             onSubmit={handleSubmit}
             onCancel={close}

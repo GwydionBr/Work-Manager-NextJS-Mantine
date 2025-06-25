@@ -28,6 +28,7 @@ interface TimeTrackerState {
   projectTitle: string;
   currency: Currency;
   salary: number;
+  hourlyPayment: boolean;
   projectId: string;
   userId: string;
   startTime: number | null;
@@ -51,6 +52,7 @@ interface TimeTrackerState {
     projectTitle: string,
     currency: Currency,
     salary: number,
+    hourlyPayment: boolean,
     userId: string
   ) => void;
   setRoundingAmount: (
@@ -73,6 +75,7 @@ export const useTimeTracker = create(
       projectTitle: "",
       currency: "USD",
       salary: 0,
+      hourlyPayment: false,
       projectId: "",
       userId: "",
       startTime: null,
@@ -84,7 +87,7 @@ export const useTimeTracker = create(
       roundingInterval: 60,
       roundingMode: "up",
 
-      configureProject: (projectId, projectTitle, currency, salary, userId) => {
+      configureProject: (projectId, projectTitle, currency, salary, hourlyPayment, userId) => {
         if (get().state !== TimerState.Stopped) {
           return;
         }
@@ -94,6 +97,7 @@ export const useTimeTracker = create(
           projectTitle,
           currency,
           salary,
+          hourlyPayment,
           userId,
           moneyEarned: "0.00",
           activeTime: "00:00",

@@ -40,6 +40,7 @@ export default function TimerSessionDrawer({
       project_id: timerSession.project_id,
       user_id: timerSession.user_id,
       start_time: values.start_time,
+      hourly_payment: timerSession.hourly_payment,
       end_time: endTime,
     };
 

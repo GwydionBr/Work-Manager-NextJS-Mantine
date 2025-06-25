@@ -558,10 +558,10 @@ export type Database = {
           currency: Database["public"]["Enums"]["currency"];
           description: string | null;
           folder_id: string | null;
+          hourly_payment: boolean;
           id: string;
           is_favorite: boolean;
           order_index: number | null;
-          payment_per_project: boolean;
           salary: number;
           title: string;
           user_id: string;
@@ -571,10 +571,10 @@ export type Database = {
           currency?: Database["public"]["Enums"]["currency"];
           description?: string | null;
           folder_id?: string | null;
+          hourly_payment?: boolean;
           id?: string;
           is_favorite?: boolean;
           order_index?: number | null;
-          payment_per_project?: boolean;
           salary: number;
           title: string;
           user_id?: string;
@@ -584,10 +584,10 @@ export type Database = {
           currency?: Database["public"]["Enums"]["currency"];
           description?: string | null;
           folder_id?: string | null;
+          hourly_payment?: boolean;
           id?: string;
           is_favorite?: boolean;
           order_index?: number | null;
-          payment_per_project?: boolean;
           salary?: number;
           title?: string;
           user_id?: string;
@@ -608,6 +608,7 @@ export type Database = {
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
           end_time: string;
+          hourly_payment: boolean;
           id: string;
           paused_seconds: number;
           project_id: string;
@@ -620,6 +621,7 @@ export type Database = {
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           end_time: string;
+          hourly_payment?: boolean;
           id?: string;
           paused_seconds?: number;
           project_id?: string;
@@ -632,6 +634,7 @@ export type Database = {
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           end_time?: string;
+          hourly_payment?: boolean;
           id?: string;
           paused_seconds?: number;
           project_id?: string;

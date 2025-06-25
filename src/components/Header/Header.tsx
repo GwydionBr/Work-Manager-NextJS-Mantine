@@ -3,7 +3,7 @@ import { Text, Title, Stack, Group } from "@mantine/core";
 interface HeaderProps {
   headerTitle?: string;
   salary?: string;
-  paymentPerProject?: boolean;
+  hourlyPayment?: boolean;
   description?: string;
   primaryButton?: React.ReactNode;
   secondaryButton?: React.ReactNode;
@@ -12,7 +12,7 @@ interface HeaderProps {
 export default function Header({
   headerTitle,
   salary,
-  paymentPerProject,
+  hourlyPayment,
   description,
   primaryButton,
   secondaryButton,
@@ -20,9 +20,9 @@ export default function Header({
   return (
     <Stack align="center" justify="center" py="xl">
       <Group align="center" justify="center">
-        {paymentPerProject && <Text>{salary}</Text>}
+        {!hourlyPayment && <Text>{salary}</Text>}
         <Title order={1}>{headerTitle}</Title>
-        {!paymentPerProject && <Text>{salary} / hour</Text>}
+        {hourlyPayment && <Text>{salary} / hour</Text>}
         {primaryButton && primaryButton}
       </Group>
       {description && (

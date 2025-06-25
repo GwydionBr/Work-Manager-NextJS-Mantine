@@ -35,7 +35,7 @@ export default function WorkPage() {
       <Header
         headerTitle={activeProject.project.title}
         salary={salary}
-        paymentPerProject={activeProject.project.payment_per_project}
+        hourlyPayment={activeProject.project.hourly_payment}
         description={activeProject.project.description ?? undefined}
         primaryButton={<EditProjectButton />}
         secondaryButton={<NewSessionButton />}

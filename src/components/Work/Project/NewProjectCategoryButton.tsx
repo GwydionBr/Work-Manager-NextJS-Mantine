@@ -22,7 +22,7 @@ export default function NewProjectButton() {
     description: string;
     salary: number;
     currency: Currency;
-    payment_per_project: boolean;
+    hourly_payment: boolean;
   }) {
     setSubmitting(true);
     const success = await addProject({
@@ -50,7 +50,7 @@ export default function NewProjectButton() {
               description: "",
               salary: defaultSalaryAmount,
               currency: defaultSalaryCurrency,
-              payment_per_project: false,
+              hourly_payment: false,
             }}
             onSubmit={handleSubmit}
             onCancel={close}

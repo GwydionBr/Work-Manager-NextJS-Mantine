@@ -91,7 +91,7 @@ export default function WorkInitializer() {
                 description: "",
                 salary: defaultSalaryAmount,
                 currency: defaultSalaryCurrency,
-                payment_per_project: false,
+                hourly_payment: false,
               }}
               onSubmit={handleSubmit}
               newProject={true}

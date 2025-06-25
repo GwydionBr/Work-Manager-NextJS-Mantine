@@ -23,7 +23,7 @@ interface ProjectFormProps {
     title: string;
     description: string | null;
     salary: number;
-    payment_per_project: boolean;
+    hourly_payment: boolean;
     currency: string;
     folder_id?: string | null;
   };
@@ -39,7 +39,7 @@ const schema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   description: z.string().optional(),
   salary: z.number().min(0, { message: "Salary must be positive" }),
-  payment_per_project: z.boolean(),
+  hourly_payment: z.boolean(),
   currency: z.string().min(1, { message: "Currency is required" }),
   folder_id: z.string().nullable().optional(),
 });
@@ -91,12 +91,12 @@ export default function ProjectForm({
           <Tooltip label="Payment method" refProp="rootRef">
             <Switch
               size="xl"
-              onLabel="Project"
-              offLabel="Hourly"
-              checked={form.values.payment_per_project}
+              onLabel="Hourly"
+              offLabel="Project"
+              checked={form.values.hourly_payment}
               onChange={(event) =>
                 form.setFieldValue(
-                  "payment_per_project",
+                  "hourly_payment",
                   event.currentTarget.checked
                 )
               }

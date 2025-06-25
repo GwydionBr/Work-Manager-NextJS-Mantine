@@ -37,6 +37,7 @@ interface TimeTrackerComponentBigProps {
   activeTime: string;
   pausedTime: string;
   currency: string;
+  hourlyPayment: boolean;
   errorMessage: string | null;
   startTimer: () => void;
   pauseTimer: () => void;
@@ -55,6 +56,7 @@ export default function TimeTrackerComponentBig({
   activeTime,
   pausedTime,
   currency,
+  hourlyPayment,
   errorMessage,
   startTimer,
   pauseTimer,
@@ -161,19 +163,21 @@ export default function TimeTrackerComponentBig({
             )}
 
             <Stack gap="md">
-              <TimeTrackerRow
-                icon={
-                  currency === "EUR" ? (
-                    <IconCurrencyEuro size={20} />
-                  ) : (
-                    <IconCurrencyDollar size={20} />
-                  )
-                }
-                value={moneyEarned}
-                state={state}
-                activationState={TimerState.Running}
-                color="yellow"
-              />
+              {hourlyPayment && (
+                <TimeTrackerRow
+                  icon={
+                    currency === "EUR" ? (
+                      <IconCurrencyEuro size={20} />
+                    ) : (
+                      <IconCurrencyDollar size={20} />
+                    )
+                  }
+                  value={moneyEarned}
+                  state={state}
+                  activationState={TimerState.Running}
+                  color="yellow"
+                />
+              )}
               <TimeTrackerRow
                 icon={<IconClock size={20} />}
                 value={activeTime}
