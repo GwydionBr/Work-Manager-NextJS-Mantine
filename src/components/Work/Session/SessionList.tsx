@@ -131,11 +131,17 @@ export default function SessionList({
                     selectedSessions.length < unpaidSessions.length
                   }
                   onChange={handleSelectAll}
+                  disabled={unpaidSessions.length === 0}
                 />
                 {selectedSessions.length > 0 && (
                   <Text size="sm" c="dimmed">
                     {selectedSessions.length} session
                     {selectedSessions.length > 1 ? "s" : ""} selected
+                  </Text>
+                )}
+                {unpaidSessions.length === 0 && (
+                  <Text size="sm" c="dimmed">
+                    All sessions paid
                   </Text>
                 )}
               </Group>

@@ -306,10 +306,11 @@ export default function PayoutMenu({
           variant="light"
           size="md"
           color="teal"
+          disabled={unpaidSessions.length === 0}
           leftSection={<IconBrandCashapp size={20} />}
           loading={isProcessing}
         >
-          Payout
+          {unpaidSessions.length === 0 ? "All Paid" : "Payout"}
         </Button>
       </Menu.Target>
       <Menu.Dropdown>
