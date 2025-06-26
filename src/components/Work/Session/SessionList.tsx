@@ -9,11 +9,14 @@ import {
   Checkbox,
   Stack,
   Button,
+  Select,
+  Divider,
 } from "@mantine/core";
 import { IconCalendar, IconClock, IconFolder } from "@tabler/icons-react";
 import SessionRow from "@/components/Work/Session/SessionRow";
 
 import * as helper from "@/utils/workHelperFunctions";
+import { useFinanceStore } from "@/stores/financeStore";
 
 import type { Tables } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
@@ -23,6 +26,7 @@ const Radius = 20;
 interface SessionListProps {
   sessions: Tables<"timerSession">[];
   projects?: Tables<"timerProject">[];
+  folders?: Tables<"timer_project_folder">[];
   selectedSessions?: string[];
   onSessionsChange?: (sessions: string[]) => void;
   project?: Tables<"timerProject">;
@@ -32,6 +36,7 @@ interface SessionListProps {
 export default function SessionList({
   sessions,
   projects,
+  folders,
   selectedSessions: externalSelectedSessions,
   onSessionsChange,
   project,
@@ -40,6 +45,7 @@ export default function SessionList({
   const [internalSelectedSessions, setInternalSelectedSessions] = useState<
     string[]
   >([]);
+  const { financeCategories } = useFinanceStore();
   const groupedSessions = groupSessions(sessions);
 
   // Use external state if provided, otherwise use internal state
@@ -110,6 +116,98 @@ export default function SessionList({
     }
   };
 
+  const handleSelectByProject = (projectId: string | null) => {
+    if (!showSelectionControls || !projectId) return;
+
+    const projectSessions = unpaidSessions.filter(
+      (session) => session.project_id === projectId
+    );
+    const projectSessionIds = projectSessions.map((s) => s.id);
+
+    if (onSessionsChange) {
+      // External state management
+      const newSelectedSessions = selectedSessions.filter(
+        (id) => !projectSessionIds.includes(id)
+      );
+      onSessionsChange([...newSelectedSessions, ...projectSessionIds]);
+    } else {
+      // Internal state management
+      const newSelectedSessions = internalSelectedSessions.filter(
+        (id) => !projectSessionIds.includes(id)
+      );
+      setInternalSelectedSessions([
+        ...newSelectedSessions,
+        ...projectSessionIds,
+      ]);
+    }
+  };
+
+  const handleSelectByCategory = (categoryId: string | null) => {
+    if (!showSelectionControls || !categoryId || !projects) return;
+
+    const categoryProjects = projects.filter(
+      (project) => project.folder_id === categoryId
+    );
+    const categoryProjectIds = categoryProjects.map((p) => p.id);
+    const categorySessions = unpaidSessions.filter((session) =>
+      categoryProjectIds.includes(session.project_id)
+    );
+    const categorySessionIds = categorySessions.map((s) => s.id);
+
+    if (onSessionsChange) {
+      // External state management
+      const newSelectedSessions = selectedSessions.filter(
+        (id) => !categorySessionIds.includes(id)
+      );
+      onSessionsChange([...newSelectedSessions, ...categorySessionIds]);
+    } else {
+      // Internal state management
+      const newSelectedSessions = internalSelectedSessions.filter(
+        (id) => !categorySessionIds.includes(id)
+      );
+      setInternalSelectedSessions([
+        ...newSelectedSessions,
+        ...categorySessionIds,
+      ]);
+    }
+  };
+
+  const handleSelectByCashFlowCategory = (
+    cashFlowCategoryId: string | null
+  ) => {
+    if (!showSelectionControls || !cashFlowCategoryId || !projects) return;
+
+    const cashFlowCategoryProjects = projects.filter(
+      (project) => project.cash_flow_category_id === cashFlowCategoryId
+    );
+    const cashFlowCategoryProjectIds = cashFlowCategoryProjects.map(
+      (p) => p.id
+    );
+    const cashFlowCategorySessions = unpaidSessions.filter((session) =>
+      cashFlowCategoryProjectIds.includes(session.project_id)
+    );
+    const cashFlowCategorySessionIds = cashFlowCategorySessions.map(
+      (s) => s.id
+    );
+
+    if (onSessionsChange) {
+      // External state management
+      const newSelectedSessions = selectedSessions.filter(
+        (id) => !cashFlowCategorySessionIds.includes(id)
+      );
+      onSessionsChange([...newSelectedSessions, ...cashFlowCategorySessionIds]);
+    } else {
+      // Internal state management
+      const newSelectedSessions = internalSelectedSessions.filter(
+        (id) => !cashFlowCategorySessionIds.includes(id)
+      );
+      setInternalSelectedSessions([
+        ...newSelectedSessions,
+        ...cashFlowCategorySessionIds,
+      ]);
+    }
+  };
+
   const renderTime = (seconds: number) => (
     <Text
       size="sm"
@@ -142,6 +240,46 @@ export default function SessionList({
     return areEarningsEmpty(earnings.paid) && areEarningsEmpty(earnings.unpaid);
   };
 
+  // Get unique categories and projects for selection dropdowns
+  const getCategories = () => {
+    if (!projects || !folders) return [];
+
+    const categories = new Map<string, { id: string; title: string }>();
+
+    // Get categories from projects that have folder_id
+    projects.forEach((project) => {
+      if (project.folder_id) {
+        const folder = folders.find((f) => f.id === project.folder_id);
+        if (folder) {
+          categories.set(project.folder_id, {
+            id: project.folder_id,
+            title: folder.title,
+          });
+        }
+      }
+    });
+
+    return Array.from(categories.values());
+  };
+
+  const getProjects = () => {
+    if (!projects) return [];
+
+    return projects.map((project) => ({
+      value: project.id,
+      label: project.title,
+    }));
+  };
+
+  const getCashFlowCategories = () => {
+    if (!financeCategories) return [];
+
+    return financeCategories.map((category) => ({
+      value: category.id,
+      label: category.title,
+    }));
+  };
+
   return (
     <ScrollArea w="100%" pb="xl">
       {groupedSessions.length === 0 ? (
@@ -158,31 +296,71 @@ export default function SessionList({
               bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
               style={{ borderRadius: Radius }}
             >
-              <Group justify="space-between">
-                <Checkbox
-                  label={`Select All (${unpaidSessions.length} unpaid sessions)`}
-                  checked={
-                    selectedSessions.length === unpaidSessions.length &&
-                    unpaidSessions.length > 0
-                  }
-                  indeterminate={
-                    selectedSessions.length > 0 &&
-                    selectedSessions.length < unpaidSessions.length
-                  }
-                  onChange={handleSelectAll}
-                  disabled={unpaidSessions.length === 0}
-                />
-                {selectedSessions.length > 0 && (
-                  <Text size="sm" c="dimmed">
-                    {selectedSessions.length} session
-                    {selectedSessions.length > 1 ? "s" : ""} selected
-                  </Text>
-                )}
-                {unpaidSessions.length === 0 && (
-                  <Text size="sm" c="dimmed">
-                    All sessions paid
-                  </Text>
-                )}
+              <Group justify="space-between" align="flex-start">
+                <Stack gap="xs" style={{ flex: 1 }}>
+                  <Checkbox
+                    label={`Select All (${unpaidSessions.length} unpaid sessions)`}
+                    checked={
+                      selectedSessions.length === unpaidSessions.length &&
+                      unpaidSessions.length > 0
+                    }
+                    indeterminate={
+                      selectedSessions.length > 0 &&
+                      selectedSessions.length < unpaidSessions.length
+                    }
+                    onChange={handleSelectAll}
+                    disabled={unpaidSessions.length === 0}
+                  />
+
+                  {isOverview && projects && projects.length > 0 && (
+                    <>
+                      <Divider my="xs" />
+                      <Group gap="md" align="flex-end">
+                        <Select
+                          label="Select by Folder"
+                          placeholder="Choose a folder"
+                          data={getCategories().map((cat) => ({
+                            value: cat.id,
+                            label: cat.title,
+                          }))}
+                          onChange={handleSelectByCategory}
+                          clearable
+                          style={{ flex: 1 }}
+                        />
+                        <Select
+                          label="Select by Project"
+                          placeholder="Choose a project"
+                          data={getProjects()}
+                          onChange={handleSelectByProject}
+                          clearable
+                          style={{ flex: 1 }}
+                        />
+                        <Select
+                          label="Select by Category"
+                          placeholder="Choose a category"
+                          data={getCashFlowCategories()}
+                          onChange={handleSelectByCashFlowCategory}
+                          clearable
+                          style={{ flex: 1 }}
+                        />
+                      </Group>
+                    </>
+                  )}
+                </Stack>
+
+                <Stack gap="xs" align="flex-end">
+                  {selectedSessions.length > 0 && (
+                    <Text size="sm" c="dimmed">
+                      {selectedSessions.length} session
+                      {selectedSessions.length > 1 ? "s" : ""} selected
+                    </Text>
+                  )}
+                  {unpaidSessions.length === 0 && (
+                    <Text size="sm" c="dimmed">
+                      All sessions paid
+                    </Text>
+                  )}
+                </Stack>
               </Group>
             </Stack>
           )}

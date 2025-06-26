@@ -80,7 +80,12 @@ export default function SessionRow({
         ref={ref}
         style={{
           opacity: sessionPaid ? 0.6 : 1,
-          borderColor: sessionPaid ? "var(--mantine-color-green-4)" : undefined,
+          borderColor: sessionPaid
+            ? "var(--mantine-color-green-4)"
+            : isSelected
+              ? "var(--mantine-color-blue-4)"
+              : undefined,
+          borderWidth: isSelected ? "2px" : undefined,
         }}
       >
         <Group justify="space-between">

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
+import { useFinanceStore } from "@/stores/financeStore";
 
 import { Stack } from "@mantine/core";
 import Header from "@/components/Header/Header";
@@ -9,7 +10,8 @@ import SessionList from "@/components/Work/Session/SessionList";
 import PayoutMenu from "@/components/Work/Project/PayoutMenu";
 
 export default function WorkOverviewPage() {
-  const { projects: timerProjects } = useWorkStore();
+  const { projects: timerProjects, folders } = useWorkStore();
+  const { financeCategories, fetchFinanceData } = useFinanceStore();
   const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
 
   const sessions = timerProjects.flatMap((project) => project.sessions);
@@ -32,6 +34,7 @@ export default function WorkOverviewPage() {
       <SessionList
         sessions={sessions}
         projects={projects}
+        folders={folders}
         selectedSessions={selectedSessions}
         onSessionsChange={setSelectedSessions}
         isOverview={true}

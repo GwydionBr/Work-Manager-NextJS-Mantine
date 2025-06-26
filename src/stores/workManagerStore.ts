@@ -30,6 +30,7 @@ export interface ProjectTreeItem {
 interface WorkStoreState {
   projectTree: ProjectTreeItem[];
   projects: TimerProject[];
+  folders: Tables<"timer_project_folder">[];
   activeProjectId: string | null;
   timerSessions: Tables<"timerSession">[];
   isFetching: boolean;
@@ -80,6 +81,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
   (set, get) => ({
     projectTree: [],
     projects: [],
+    folders: [],
     activeProjectId: null,
     timerSessions: [],
     isFetching: true,
@@ -114,7 +116,11 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
 
       createProjectTree(projects.data, folders.data);
       updateStore(projectsData, timerSessions.data);
-      set({ isFetching: false, lastFetch: new Date() });
+      set({
+        folders: folders.data,
+        isFetching: false,
+        lastFetch: new Date(),
+      });
     },
 
     setActiveProjectId(id: string) {
@@ -327,7 +333,10 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
         type: "folder",
         index: 0,
       });
-      set({ projectTree: newProjectTree });
+      set({
+        projectTree: newProjectTree,
+        folders: [...get().folders, newFolder.data],
+      });
       return true;
     },
 
@@ -344,7 +353,13 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
         folder.id!,
         folder.title || "project"
       );
-      set({ projectTree: newProjectTree });
+      const updatedFolders = get().folders.map((f) =>
+        f.id === folder.id ? updatedFolder.data : f
+      );
+      set({
+        projectTree: newProjectTree,
+        folders: updatedFolders,
+      });
       return true;
     },
 
@@ -355,7 +370,11 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
       }
 
       const newProjectTree = deleteNode(get().projectTree, id);
-      set({ projectTree: newProjectTree });
+      const updatedFolders = get().folders.filter((f) => f.id !== id);
+      set({
+        projectTree: newProjectTree,
+        folders: updatedFolders,
+      });
       return true;
     },
 
