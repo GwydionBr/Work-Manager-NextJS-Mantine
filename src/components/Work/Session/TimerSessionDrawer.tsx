@@ -47,6 +47,7 @@ export default function TimerSessionDrawer({
       start_time: values.start_time,
       hourly_payment: timerSession.hourly_payment,
       end_time: endTime,
+      payed: false,
       // If project doesn't have hourly payment, set salary to 0 and currency to project currency
       salary: project?.hourly_payment ? values.salary : 0,
       currency: project?.hourly_payment
