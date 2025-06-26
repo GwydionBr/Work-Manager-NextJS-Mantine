@@ -119,8 +119,27 @@ export default function SessionList({
     </Text>
   );
 
+  const renderEarnings = (earnings: EarningsBreakdown) => (
+    <Group gap="xs">
+      {!areEarningsEmpty(earnings.unpaid) && (
+        <Text size="sm" c="red">
+          {formatEarnings(earnings.unpaid)} unpaid
+        </Text>
+      )}
+      {!areEarningsEmpty(earnings.paid) && (
+        <Text size="sm" c="green">
+          {formatEarnings(earnings.paid)} paid
+        </Text>
+      )}
+    </Group>
+  );
+
   const areEarningsEmpty = (earnings: Earnings[]) => {
     return earnings.every((e) => e.amount === 0);
+  };
+
+  const areEarningsBreakdownEmpty = (earnings: EarningsBreakdown) => {
+    return areEarningsEmpty(earnings.paid) && areEarningsEmpty(earnings.unpaid);
   };
 
   return (
@@ -185,11 +204,8 @@ export default function SessionList({
                 >
                   <Group>
                     {year}
-                    {!areEarningsEmpty(yearData.totalEarnings) && (
-                      <Text size="sm" c="dimmed">
-                        {formatEarnings(yearData.totalEarnings)}
-                      </Text>
-                    )}
+                    {!areEarningsBreakdownEmpty(yearData.totalEarnings) &&
+                      renderEarnings(yearData.totalEarnings)}
                     {yearData.totalTime > 0 && renderTime(yearData.totalTime)}
                   </Group>
                 </Accordion.Control>
@@ -214,11 +230,9 @@ export default function SessionList({
                           >
                             <Group>
                               {helper.formatMonth(Number(month))}
-                              {!areEarningsEmpty(monthData.totalEarnings) && (
-                                <Text size="sm" c="dimmed">
-                                  {formatEarnings(monthData.totalEarnings)}
-                                </Text>
-                              )}
+                              {!areEarningsBreakdownEmpty(
+                                monthData.totalEarnings
+                              ) && renderEarnings(monthData.totalEarnings)}
                               {monthData.totalTime > 0 &&
                                 renderTime(monthData.totalTime)}
                             </Group>
@@ -253,15 +267,12 @@ export default function SessionList({
                                     >
                                       <Group>
                                         Week {week}
-                                        {!areEarningsEmpty(
+                                        {!areEarningsBreakdownEmpty(
                                           weekData.totalEarnings
-                                        ) && (
-                                          <Text size="sm" c="dimmed">
-                                            {formatEarnings(
-                                              weekData.totalEarnings
-                                            )}
-                                          </Text>
-                                        )}
+                                        ) &&
+                                          renderEarnings(
+                                            weekData.totalEarnings
+                                          )}
                                         {weekData.totalTime > 0 &&
                                           renderTime(weekData.totalTime)}
                                       </Group>
@@ -303,15 +314,12 @@ export default function SessionList({
                                                   {helper.formatDate(
                                                     new Date(day)
                                                   )}
-                                                  {!areEarningsEmpty(
+                                                  {!areEarningsBreakdownEmpty(
                                                     dayData.totalEarnings
-                                                  ) && (
-                                                    <Text size="sm" c="dimmed">
-                                                      {formatEarnings(
-                                                        dayData.totalEarnings
-                                                      )}
-                                                    </Text>
-                                                  )}
+                                                  ) &&
+                                                    renderEarnings(
+                                                      dayData.totalEarnings
+                                                    )}
                                                   {dayData.totalTime > 0 &&
                                                     renderTime(
                                                       dayData.totalTime
@@ -371,23 +379,28 @@ interface Earnings {
   currency: Currency;
 }
 
+interface EarningsBreakdown {
+  paid: Earnings[];
+  unpaid: Earnings[];
+}
+
 type Year = {
-  totalEarnings: Earnings[];
+  totalEarnings: EarningsBreakdown;
   totalTime: number;
   months: Record<
     number,
     {
-      totalEarnings: Earnings[];
+      totalEarnings: EarningsBreakdown;
       totalTime: number;
       weeks: Record<
         number,
         {
-          totalEarnings: Earnings[];
+          totalEarnings: EarningsBreakdown;
           totalTime: number;
           days: Record<
             string,
             {
-              totalEarnings: Earnings[];
+              totalEarnings: EarningsBreakdown;
               totalTime: number;
               sessions: Tables<"timerSession">[];
             }
@@ -413,61 +426,101 @@ function groupSessions(
       const week = helper.getWeekNumber(startTime);
       const day = startTime.toISOString().split("T")[0];
 
-      // Only calculate earnings for unpaid sessions
+      // Calculate earnings for all sessions (both paid and unpaid)
       const earnings: Earnings = {
-        amount:
-          session.hourly_payment && !session.payed
-            ? Number(
-                ((session.active_seconds * session.salary) / 3600).toFixed(2)
-              )
-            : 0,
+        amount: session.hourly_payment
+          ? Number(
+              ((session.active_seconds * session.salary) / 3600).toFixed(2)
+            )
+          : 0,
         currency: session.currency,
       };
 
       const timeInSeconds = session.active_seconds || 0;
 
       // Year
-      acc[year] = acc[year] || { totalEarnings: [], totalTime: 0, months: {} };
-      acc[year].totalEarnings = addEarnings(acc[year].totalEarnings, earnings);
+      acc[year] = acc[year] || {
+        totalEarnings: { paid: [], unpaid: [] },
+        totalTime: 0,
+        months: {},
+      };
+
+      if (session.payed) {
+        acc[year].totalEarnings.paid = addEarnings(
+          acc[year].totalEarnings.paid,
+          earnings
+        );
+      } else {
+        acc[year].totalEarnings.unpaid = addEarnings(
+          acc[year].totalEarnings.unpaid,
+          earnings
+        );
+      }
       acc[year].totalTime += timeInSeconds;
 
       // Month
       acc[year].months[month] = acc[year].months[month] || {
-        totalEarnings: [],
+        totalEarnings: { paid: [], unpaid: [] },
         totalTime: 0,
         weeks: {},
       };
-      acc[year].months[month].totalEarnings = addEarnings(
-        acc[year].months[month].totalEarnings,
-        earnings
-      );
+
+      if (session.payed) {
+        acc[year].months[month].totalEarnings.paid = addEarnings(
+          acc[year].months[month].totalEarnings.paid,
+          earnings
+        );
+      } else {
+        acc[year].months[month].totalEarnings.unpaid = addEarnings(
+          acc[year].months[month].totalEarnings.unpaid,
+          earnings
+        );
+      }
       acc[year].months[month].totalTime += timeInSeconds;
 
       // Week
       acc[year].months[month].weeks[week] = acc[year].months[month].weeks[
         week
       ] || {
-        totalEarnings: [],
+        totalEarnings: { paid: [], unpaid: [] },
         totalTime: 0,
         days: {},
       };
-      acc[year].months[month].weeks[week].totalEarnings = addEarnings(
-        acc[year].months[month].weeks[week].totalEarnings,
-        earnings
-      );
+
+      if (session.payed) {
+        acc[year].months[month].weeks[week].totalEarnings.paid = addEarnings(
+          acc[year].months[month].weeks[week].totalEarnings.paid,
+          earnings
+        );
+      } else {
+        acc[year].months[month].weeks[week].totalEarnings.unpaid = addEarnings(
+          acc[year].months[month].weeks[week].totalEarnings.unpaid,
+          earnings
+        );
+      }
       acc[year].months[month].weeks[week].totalTime += timeInSeconds;
 
       // Day
       acc[year].months[month].weeks[week].days[day] = acc[year].months[month]
         .weeks[week].days[day] || {
-        totalEarnings: [],
+        totalEarnings: { paid: [], unpaid: [] },
         totalTime: 0,
         sessions: [],
       };
-      acc[year].months[month].weeks[week].days[day].totalEarnings = addEarnings(
-        acc[year].months[month].weeks[week].days[day].totalEarnings,
-        earnings
-      );
+
+      if (session.payed) {
+        acc[year].months[month].weeks[week].days[day].totalEarnings.paid =
+          addEarnings(
+            acc[year].months[month].weeks[week].days[day].totalEarnings.paid,
+            earnings
+          );
+      } else {
+        acc[year].months[month].weeks[week].days[day].totalEarnings.unpaid =
+          addEarnings(
+            acc[year].months[month].weeks[week].days[day].totalEarnings.unpaid,
+            earnings
+          );
+      }
       acc[year].months[month].weeks[week].days[day].totalTime += timeInSeconds;
       acc[year].months[month].weeks[week].days[day].sessions.push(session);
 

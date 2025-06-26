@@ -52,8 +52,16 @@ export default function WorkPage() {
     <Stack align="center" w="100%" px="xl">
       <Header
         headerTitle={activeProject.project.title}
-        leftSalary={activeProject.project.hourly_payment ? undefined : salary}
-        rightSalary={hourlySalary}
+        leftSalary={
+          activeProject.project.hourly_payment
+            ? undefined
+            : activeProject.project.salary === 0
+              ? "Hobby"
+              : salary
+        }
+        rightSalary={
+          activeProject.project.salary === 0 ? undefined : hourlySalary
+        }
         description={activeProject.project.description ?? undefined}
         secondaryButton={<NewSessionButton />}
         rightButton={<EditProjectButton />}
