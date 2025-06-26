@@ -3,14 +3,13 @@
 import { useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
 
-import { ActionIcon, Loader, Stack, Button } from "@mantine/core";
+import { Loader, Stack } from "@mantine/core";
 import SessionList from "@/components/Work/Session/SessionList";
 import NewSessionButton from "@/components/Work/Session/NewSessionButton";
 import EditProjectButton from "@/components/Work/Project/EditProjectButton";
 import Header from "@/components/Header/Header";
 
 import { formatMoney, getCurrencySymbol } from "@/utils/workHelperFunctions";
-import { IconBrandCashapp, IconEdit } from "@tabler/icons-react";
 import PayoutMenu from "@/components/Work/Project/PayoutMenu";
 
 export default function WorkPage() {

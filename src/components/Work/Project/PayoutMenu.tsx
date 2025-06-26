@@ -27,6 +27,8 @@ interface PayoutMenuProps {
   project?: Tables<"timerProject">;
   selectedSessions?: string[];
   onSessionsChange?: (sessions: string[]) => void;
+  isOverview?: boolean;
+  projects?: Tables<"timerProject">[];
 }
 
 export default function PayoutMenu({
@@ -34,6 +36,8 @@ export default function PayoutMenu({
   project,
   selectedSessions: externalSelectedSessions,
   onSessionsChange,
+  isOverview = false,
+  projects,
 }: PayoutMenuProps) {
   const [internalSelectedSessions, setInternalSelectedSessions] = useState<
     string[]
@@ -49,7 +53,25 @@ export default function PayoutMenu({
   const setSelectedSessions = onSessionsChange || setInternalSelectedSessions;
 
   // Filter out already paid sessions
-  const unpaidSessions = sessions.filter((session) => !session.payed);
+  const unpaidSessions = sessions.filter((session) => {
+    if (isOverview) {
+      // In overview mode, we need to find the project for each session
+      const sessionProject = projects?.find((p) => p.id === session.project_id);
+      if (!sessionProject) return false;
+
+      // For hourly payment projects, check if session is paid
+      if (sessionProject.hourly_payment) {
+        return !session.payed;
+      }
+
+      // For non-hourly payment projects, check if project is fully paid
+      const projectTotalPayout = sessionProject.total_payout || 0;
+      return projectTotalPayout < sessionProject.salary;
+    }
+
+    // Normal mode - just check session.payed
+    return !session.payed;
+  });
 
   // Filter selected sessions to only include unpaid ones
   const selectedUnpaidSessions = selectedSessions.filter((id) =>
@@ -293,7 +315,7 @@ export default function PayoutMenu({
     );
   }
 
-  // Hourly payment project - session-based payout
+  // Hourly payment project or overview mode - session-based payout
   return (
     <Menu
       trigger="click-hover"
@@ -316,7 +338,9 @@ export default function PayoutMenu({
       <Menu.Dropdown>
         <Stack p="md" gap="md">
           <Text size="sm" fw={500}>
-            Select Sessions for Payout
+            {isOverview
+              ? "Select Sessions for Payout (All Projects)"
+              : "Select Sessions for Payout"}
           </Text>
 
           {unpaidSessions.length === 0 ? (
@@ -351,14 +375,25 @@ export default function PayoutMenu({
                       )
                     : 0;
 
+                  const sessionProject = projects?.find(
+                    (p) => p.id === session.project_id
+                  );
+
                   return (
                     <Checkbox
                       key={session.id}
                       label={
                         <Group justify="space-between" w="100%">
-                          <Text size="sm" truncate>
-                            {helper.formatDate(new Date(session.start_time))}
-                          </Text>
+                          <Stack gap={5}>
+                            <Text size="sm" truncate>
+                              {helper.formatDate(new Date(session.start_time))}
+                            </Text>
+                            {isOverview && sessionProject && (
+                              <Text size="xs" c="dimmed" ml="xs">
+                                - {sessionProject.title}
+                              </Text>
+                            )}
+                          </Stack>
                           <Text size="sm" c="dimmed">
                             {session.hourly_payment
                               ? helper.formatMoney(

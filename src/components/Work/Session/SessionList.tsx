@@ -26,6 +26,7 @@ interface SessionListProps {
   selectedSessions?: string[];
   onSessionsChange?: (sessions: string[]) => void;
   project?: Tables<"timerProject">;
+  isOverview?: boolean;
 }
 
 export default function SessionList({
@@ -34,6 +35,7 @@ export default function SessionList({
   selectedSessions: externalSelectedSessions,
   onSessionsChange,
   project,
+  isOverview = false,
 }: SessionListProps) {
   const [internalSelectedSessions, setInternalSelectedSessions] = useState<
     string[]
@@ -45,10 +47,28 @@ export default function SessionList({
   const setSelectedSessions = onSessionsChange || setInternalSelectedSessions;
 
   // Only show selection controls for hourly payment projects
-  const showSelectionControls = project?.hourly_payment;
+  const showSelectionControls = project?.hourly_payment || isOverview;
 
   // Filter out paid sessions for selection
-  const unpaidSessions = sessions.filter((session) => !session.payed);
+  const unpaidSessions = sessions.filter((session) => {
+    if (isOverview) {
+      // In overview mode, we need to find the project for each session
+      const sessionProject = projects?.find((p) => p.id === session.project_id);
+      if (!sessionProject) return false;
+
+      // For hourly payment projects, check if session is paid
+      if (sessionProject.hourly_payment) {
+        return !session.payed;
+      }
+
+      // For non-hourly payment projects, check if project is fully paid
+      const projectTotalPayout = sessionProject.total_payout || 0;
+      return projectTotalPayout < sessionProject.salary;
+    }
+
+    // Normal mode - just check session.payed
+    return !session.payed;
+  });
 
   const handleSessionToggle = (sessionId: string) => {
     if (!showSelectionControls) return;
@@ -305,7 +325,14 @@ export default function SessionList({
                                                     <SessionRow
                                                       key={session.id}
                                                       session={session}
-                                                      project={project}
+                                                      project={
+                                                        project ||
+                                                        projects?.find(
+                                                          (p) =>
+                                                            p.id ===
+                                                            session.project_id
+                                                        )
+                                                      }
                                                       isSelected={selectedSessions.includes(
                                                         session.id
                                                       )}
@@ -314,6 +341,7 @@ export default function SessionList({
                                                           session.id
                                                         )
                                                       }
+                                                      isOverview={isOverview}
                                                     />
                                                   ))}
                                               </Accordion.Panel>

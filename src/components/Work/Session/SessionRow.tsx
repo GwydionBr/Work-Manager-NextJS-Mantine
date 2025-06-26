@@ -19,6 +19,7 @@ interface SessionRowProps {
   project?: Tables<"timerProject">;
   isSelected?: boolean;
   onToggleSelection?: () => void;
+  isOverview?: boolean;
 }
 
 export default function SessionRow({
@@ -26,6 +27,7 @@ export default function SessionRow({
   project,
   isSelected,
   onToggleSelection,
+  isOverview = false,
 }: SessionRowProps) {
   const [deleteModalOpened, deleteModalHandler] = useDisclosure(false);
   const [editDrawerOpened, editDrawerHandler] = useDisclosure(false);
@@ -44,9 +46,25 @@ export default function SessionRow({
     ((session.active_seconds * session.salary) / 3600).toFixed(2)
   );
 
+  // Determine if session should be considered paid
+  const isSessionPaid = () => {
+    if (!project) return session.payed;
+    // For hourly payment projects, check if session is paid
+    if (project.hourly_payment) {
+      return session.payed;
+    }
+
+    // For non-hourly payment projects, check if project is fully paid
+    return project.total_payout >= project.salary;
+  };
+
+  const sessionPaid = isSessionPaid();
+
   // Only show checkbox for hourly payment projects and unpaid sessions
   const showCheckbox =
-    project?.hourly_payment && onToggleSelection && !session.payed;
+    (project?.hourly_payment || isOverview) &&
+    onToggleSelection &&
+    !sessionPaid;
 
   return (
     <Box>
@@ -58,19 +76,17 @@ export default function SessionRow({
         radius={20}
         ref={ref}
         style={{
-          opacity: session.payed ? 0.6 : 1,
-          borderColor: session.payed
-            ? "var(--mantine-color-green-4)"
-            : undefined,
+          opacity: sessionPaid ? 0.6 : 1,
+          borderColor: sessionPaid ? "var(--mantine-color-green-4)" : undefined,
         }}
       >
         <Group justify="space-between">
           <Group gap="xl">
-            {showCheckbox && (
+            {showCheckbox && project?.hourly_payment && (
               <Checkbox
                 checked={isSelected}
                 onChange={onToggleSelection}
-                disabled={session.payed}
+                disabled={sessionPaid}
               />
             )}
             <Stack gap="xs">
@@ -82,7 +98,7 @@ export default function SessionRow({
                     new Date(session.end_time)
                   )}
                 </Text>
-                {session.payed && (
+                {sessionPaid && (
                   <Text size="xs" c="green" fw={500}>
                     ✓ Paid
                   </Text>
@@ -97,7 +113,7 @@ export default function SessionRow({
                 </Text>
               </Group>
             </Stack>
-            {hovered && !session.payed && (
+            {hovered && !sessionPaid && (
               <Group>
                 <PencilActionIcon
                   onClick={() => editDrawerHandler.open()}
@@ -111,17 +127,15 @@ export default function SessionRow({
             )}
           </Group>
           <Group>
-            {project && (
+            {isOverview && project && (
               <Text size="sm" c="dimmed">
                 {project.title}
               </Text>
             )}
             <Text
               style={{
-                textDecoration: session.payed ? "line-through" : "none",
-                color: session.payed
-                  ? "var(--mantine-color-green-6)"
-                  : undefined,
+                textDecoration: sessionPaid ? "line-through" : "none",
+                color: sessionPaid ? "var(--mantine-color-green-6)" : undefined,
               }}
             >
               {session.hourly_payment
