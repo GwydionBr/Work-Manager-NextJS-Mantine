@@ -517,6 +517,45 @@ export type Database = {
           },
         ];
       };
+      single_cash_flow_category: {
+        Row: {
+          cash_flow_category: string;
+          created_at: string;
+          id: string;
+          single_cash_flow_id: string;
+          user_id: string;
+        };
+        Insert: {
+          cash_flow_category?: string;
+          created_at?: string;
+          id?: string;
+          single_cash_flow_id?: string;
+          user_id?: string;
+        };
+        Update: {
+          cash_flow_category?: string;
+          created_at?: string;
+          id?: string;
+          single_cash_flow_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "single_cash_flow_category_cash_flow_category_fkey";
+            columns: ["cash_flow_category"];
+            isOneToOne: false;
+            referencedRelation: "cash_flow_category";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "single_cash_flow_category_single_cash_flow_id_fkey";
+            columns: ["single_cash_flow_id"];
+            isOneToOne: false;
+            referencedRelation: "single_cash_flow";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       timer_project_folder: {
         Row: {
           created_at: string;
@@ -557,6 +596,7 @@ export type Database = {
       };
       timerProject: {
         Row: {
+          cash_flow_category_id: string | null;
           created_at: string | null;
           currency: Database["public"]["Enums"]["currency"];
           description: string | null;
@@ -571,6 +611,7 @@ export type Database = {
           user_id: string;
         };
         Insert: {
+          cash_flow_category_id?: string | null;
           created_at?: string | null;
           currency?: Database["public"]["Enums"]["currency"];
           description?: string | null;
@@ -585,6 +626,7 @@ export type Database = {
           user_id?: string;
         };
         Update: {
+          cash_flow_category_id?: string | null;
           created_at?: string | null;
           currency?: Database["public"]["Enums"]["currency"];
           description?: string | null;
@@ -599,6 +641,13 @@ export type Database = {
           user_id?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: "timerProject_cash_flow_category_id_fkey";
+            columns: ["cash_flow_category_id"];
+            isOneToOne: false;
+            referencedRelation: "cash_flow_category";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "timerProject_folder_id_fkey";
             columns: ["folder_id"];

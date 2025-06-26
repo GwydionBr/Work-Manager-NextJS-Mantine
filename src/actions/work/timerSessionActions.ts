@@ -124,10 +124,20 @@ export async function payoutSessions({
     return { success: false, data: null, error: "User not found" };
   }
 
-  // Get the sessions to calculate total payout
+  // Get the sessions with project information to access category_id
   const { data: sessions, error: sessionsError } = await supabase
     .from("timerSession")
-    .select("*")
+    .select(
+      `
+      *,
+      timerProject!inner(
+        id,
+        title,
+        cash_flow_category_id,
+        currency
+      )
+    `
+    )
     .in("id", sessionIds)
     .eq("payed", false);
 
@@ -139,37 +149,40 @@ export async function payoutSessions({
     return { success: false, data: null, error: "No unpaid sessions found" };
   }
 
-  // Group sessions by currency to create separate income entries
-  const sessionsByCurrency = sessions.reduce(
+  // Group sessions by currency and category to create separate income entries
+  const sessionsByCurrencyAndCategory = sessions.reduce(
     (acc, session) => {
       const currency = session.currency;
-      if (!acc[currency]) {
-        acc[currency] = [];
+      const categoryId = session.timerProject?.cash_flow_category_id || null;
+      const key = `${currency}-${categoryId || "no-category"}`;
+
+      if (!acc[key]) {
+        acc[key] = {
+          currency,
+          categoryId,
+          sessions: [],
+          totalAmount: 0,
+        };
       }
-      acc[currency].push(session);
+
+      const earnings = session.hourly_payment
+        ? Number(((session.active_seconds * session.salary) / 3600).toFixed(2))
+        : 0;
+
+      acc[key].sessions.push(session);
+      acc[key].totalAmount += earnings;
+
       return acc;
     },
-    {} as Record<string, typeof sessions>
-  );
-
-  // Calculate total payout for each currency
-  const payouts = Object.entries(sessionsByCurrency).map(
-    ([currency, currencySessions]) => {
-      const totalAmount = currencySessions.reduce((sum, session) => {
-        const earnings = session.hourly_payment
-          ? Number(
-              ((session.active_seconds * session.salary) / 3600).toFixed(2)
-            )
-          : 0;
-        return sum + earnings;
-      }, 0);
-
-      return {
-        currency,
-        amount: totalAmount,
-        sessionCount: currencySessions.length,
-      };
-    }
+    {} as Record<
+      string,
+      {
+        currency: string;
+        categoryId: string | null;
+        sessions: typeof sessions;
+        totalAmount: number;
+      }
+    >
   );
 
   // Start a transaction
@@ -182,17 +195,17 @@ export async function payoutSessions({
     return { success: false, data: null, error: updateError.message };
   }
 
-  // Create income entries for each currency
-  const incomeEntries = payouts
-    .filter((payout) => payout.amount > 0)
-    .map((payout) => ({
-      title: `Work Payout - ${payout.sessionCount} session${payout.sessionCount > 1 ? "s" : ""}`,
-      amount: payout.amount,
-      currency: payout.currency as any,
+  // Create income entries for each currency and category combination
+  const incomeEntries = Object.values(sessionsByCurrencyAndCategory)
+    .filter((group) => group.totalAmount > 0)
+    .map((group) => ({
+      title: `Work Payout - ${group.sessions.length} session${group.sessions.length > 1 ? "s" : ""}`,
+      amount: group.totalAmount,
+      currency: group.currency as any,
       date: new Date().toISOString(),
       type: "income" as const,
       user_id: user.id,
-      category_id: null, // You might want to add a default work category
+      category_id: group.categoryId,
     }));
 
   if (incomeEntries.length > 0) {
@@ -306,7 +319,7 @@ export async function payoutProjectSalary({
       date: new Date().toISOString(),
       type: "income",
       user_id: user.id,
-      category_id: null,
+      category_id: project.cash_flow_category_id,
     });
 
   if (incomeError) {

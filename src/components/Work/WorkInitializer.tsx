@@ -30,6 +30,7 @@ export default function WorkInitializer() {
     salary: number;
     currency: Currency;
     payment_per_project: boolean;
+    cash_flow_category_id?: string | null;
   }) {
     setSubmitting(true);
     const success = await addProject({
@@ -92,6 +93,7 @@ export default function WorkInitializer() {
                 salary: defaultSalaryAmount,
                 currency: defaultSalaryCurrency,
                 hourly_payment: false,
+                cash_flow_category_id: null,
               }}
               onSubmit={handleSubmit}
               newProject={true}

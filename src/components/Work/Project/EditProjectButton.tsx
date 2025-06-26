@@ -28,6 +28,7 @@ export default function EditProjectButton() {
     salary: number;
     currency: Currency;
     hourly_payment: boolean;
+    cash_flow_category_id?: string | null;
   }) {
     if (!activeProject) {
       return;
@@ -73,6 +74,8 @@ export default function EditProjectButton() {
               salary: activeProject.project.salary,
               currency: activeProject.project.currency ?? "",
               hourly_payment: activeProject.project.hourly_payment,
+              cash_flow_category_id:
+                activeProject.project.cash_flow_category_id,
             }}
             onSubmit={handleSubmit}
             onCancel={close}

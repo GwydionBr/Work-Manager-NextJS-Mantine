@@ -127,7 +127,7 @@ export default function SessionList({
         </Text>
       )}
       {!areEarningsEmpty(earnings.paid) && (
-        <Text size="sm" c="green">
+        <Text size="sm" c="dimmed">
           {formatEarnings(earnings.paid)} paid
         </Text>
       )}

@@ -1,6 +1,8 @@
 "use client";
 
 import { useForm } from "@mantine/form";
+import { useEffect } from "react";
+import { useFinanceStore } from "@/stores/financeStore";
 
 import {
   Button,
@@ -26,6 +28,7 @@ interface ProjectFormProps {
     hourly_payment: boolean;
     currency: string;
     folder_id?: string | null;
+    cash_flow_category_id?: string | null;
   };
   onSubmit: (values: any) => void;
   onCancel?: () => void;
@@ -42,6 +45,7 @@ const schema = z.object({
   hourly_payment: z.boolean(),
   currency: z.string().min(1, { message: "Currency is required" }),
   folder_id: z.string().nullable().optional(),
+  cash_flow_category_id: z.string().nullable().optional(),
 });
 
 export default function ProjectForm({
@@ -58,9 +62,22 @@ export default function ProjectForm({
     validate: zodResolver(schema),
   });
 
+  const { financeCategories, fetchFinanceData, isFetching } = useFinanceStore();
+
+  useEffect(() => {
+    if (financeCategories.length === 0 && !isFetching) {
+      fetchFinanceData();
+    }
+  }, [financeCategories.length, isFetching, fetchFinanceData]);
+
   const folderOptions = folders.map((folder) => ({
     value: folder.id,
     label: folder.title,
+  }));
+
+  const categoryOptions = financeCategories.map((category) => ({
+    value: category.id,
+    label: category.title,
   }));
 
   return (
@@ -109,6 +126,15 @@ export default function ProjectForm({
           placeholder="Select currency"
           data={currencies}
           {...form.getInputProps("currency")}
+        />
+        <Select
+          label="Category"
+          placeholder="Select category (optional)"
+          data={categoryOptions}
+          clearable
+          searchable
+          nothingFoundMessage="No categories found"
+          {...form.getInputProps("cash_flow_category_id")}
         />
         {showFolderSelect && (
           <Select
