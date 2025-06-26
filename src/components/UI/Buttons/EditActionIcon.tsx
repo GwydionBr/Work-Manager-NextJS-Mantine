@@ -1,5 +1,5 @@
 import { ActionIcon, ActionIconProps } from "@mantine/core";
-import { IconPencil } from "@tabler/icons-react";
+import { IconEdit } from "@tabler/icons-react";
 
 interface EditActionIconProps extends ActionIconProps {
   onClick: () => void;
@@ -14,13 +14,8 @@ export default function EditActionIcon({
   ...props
 }: EditActionIconProps) {
   return (
-    <ActionIcon
-      variant="transparent"
-      onClick={onClick}
-      size="md"
-      {...props}
-    >
-      <IconPencil size={iconSize} color={iconColor} />
+    <ActionIcon variant="light" onClick={onClick} size="md" {...props}>
+      <IconEdit size={iconSize} color={iconColor} />
     </ActionIcon>
   );
 }

@@ -3,7 +3,7 @@
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 
-import { Drawer, Flex } from "@mantine/core";
+import { Drawer, Flex, Tooltip } from "@mantine/core";
 import ProjectForm from "@/components/Work/Project/ProjectForm";
 import EditActionIcon from "@/components/UI/Buttons/EditActionIcon";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
@@ -90,7 +90,9 @@ export default function EditProjectButton() {
         message="Are you sure you want to delete this project? This action cannot be undone."
       />
 
-      <EditActionIcon aria-label="Edit project" onClick={open} size="md" />
+      <Tooltip label="Edit project">
+        <EditActionIcon aria-label="Edit project" onClick={open} size="md" />
+      </Tooltip>
     </>
   );
 }

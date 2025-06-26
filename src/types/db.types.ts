@@ -614,6 +614,7 @@ export type Database = {
           hourly_payment: boolean;
           id: string;
           paused_seconds: number;
+          payed: boolean;
           project_id: string;
           salary: number;
           start_time: string;
@@ -627,6 +628,7 @@ export type Database = {
           hourly_payment?: boolean;
           id?: string;
           paused_seconds?: number;
+          payed?: boolean;
           project_id?: string;
           salary: number;
           start_time: string;
@@ -640,6 +642,7 @@ export type Database = {
           hourly_payment?: boolean;
           id?: string;
           paused_seconds?: number;
+          payed?: boolean;
           project_id?: string;
           salary?: number;
           start_time?: string;

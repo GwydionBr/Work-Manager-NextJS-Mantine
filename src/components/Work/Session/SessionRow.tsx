@@ -6,7 +6,7 @@ import { useDisclosure, useHover } from "@mantine/hooks";
 import { Card, Group, Stack, Text } from "@mantine/core";
 import { IconClock } from "@tabler/icons-react";
 import DeleteActionIcon from "@/components/UI/Buttons/DeleteActionIcon";
-import EditActionIcon from "@/components/UI/Buttons/EditActionIcon";
+import PencilActionIcon from "@/components/UI/Buttons/PencilActionIcon";
 import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
 import TimerSessionDrawer from "@/components/Work/Session/TimerSessionDrawer";
 
@@ -63,7 +63,7 @@ export default function SessionRow({ session, project }: SessionRowProps) {
             </Stack>
             {hovered && (
               <Group>
-                <EditActionIcon
+                <PencilActionIcon
                   onClick={() => editDrawerHandler.open()}
                   aria-label="Edit session"
                 />

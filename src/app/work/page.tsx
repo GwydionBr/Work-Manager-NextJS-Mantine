@@ -2,13 +2,14 @@
 
 import { useWorkStore } from "@/stores/workManagerStore";
 
-import { Loader, Stack } from "@mantine/core";
+import { ActionIcon, Loader, Stack, Button } from "@mantine/core";
 import SessionList from "@/components/Work/Session/SessionList";
 import NewSessionButton from "@/components/Work/Session/NewSessionButton";
 import EditProjectButton from "@/components/Work/Project/EditProjectButton";
 import Header from "@/components/Header/Header";
 
 import { formatMoney, getCurrencySymbol } from "@/utils/workHelperFunctions";
+import { IconBrandCashapp, IconEdit } from "@tabler/icons-react";
 
 export default function WorkPage() {
   const { activeProjectId, isFetching } = useWorkStore();
@@ -52,8 +53,19 @@ export default function WorkPage() {
         leftSalary={activeProject.project.hourly_payment ? undefined : salary}
         rightSalary={hourlySalary}
         description={activeProject.project.description ?? undefined}
-        primaryButton={<EditProjectButton />}
+
         secondaryButton={<NewSessionButton />}
+        rightButton={<EditProjectButton />}
+        leftButton={
+          <Button
+            variant="light"
+            size="md"
+            color="teal"
+            leftSection={<IconBrandCashapp size={20} />}
+          >
+            Payout
+          </Button>
+        }
       />
       <SessionList sessions={activeProject.sessions} />
     </Stack>

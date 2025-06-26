@@ -8,7 +8,6 @@ import {
   IconSettings,
   IconUser,
   IconBrandCashapp,
-  IconDeviceDesktopAnalytics,
   IconUsersGroup,
 } from "@tabler/icons-react";
 import Link from "next/link";

@@ -5,7 +5,7 @@ import { useGroupStore } from "@/stores/groupStore";
 
 import { Flex, Drawer, Box } from "@mantine/core";
 import GroupForm from "@/components/GroupManager/Group/GroupForm";
-import EditActionIcon from "@/components/UI/Buttons/EditActionIcon";
+import PencilActionIcon from "@/components/UI/Buttons/PencilActionIcon";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
 
@@ -53,7 +53,7 @@ export default function EditGroupButton() {
         message="Are you sure you want to delete this group? This action cannot be undone."
       />
 
-      <EditActionIcon aria-label="Edit group" onClick={open} size="md" />
+      <PencilActionIcon aria-label="Edit group" onClick={open} size="md" />
     </Box>
   );
 }

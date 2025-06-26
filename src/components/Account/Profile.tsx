@@ -15,7 +15,7 @@ import {
 } from "@mantine/core";
 import { IconCheck } from "@tabler/icons-react";
 import LogoutButton from "../Auth/LogoutButton";
-import EditActionIcon from "../UI/Buttons/EditActionIcon";
+import PencilActionIcon from "../UI/Buttons/PencilActionIcon";
 
 export default function Profile() {
   const {
@@ -100,7 +100,7 @@ export default function Profile() {
               {profile.username}
             </Text>
           </Stack>
-          <EditActionIcon onClick={() => setIsOpen(!isOpen)} />
+          <PencilActionIcon onClick={() => setIsOpen(!isOpen)} />
         </Group>
 
         <Collapse in={isOpen}>
