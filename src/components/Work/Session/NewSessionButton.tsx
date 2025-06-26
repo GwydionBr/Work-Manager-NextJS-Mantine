@@ -39,6 +39,10 @@ export default function NewSessionButton() {
       user_id: activeProject.project.user_id,
       start_time: new Date(values.start_time).toISOString(),
       end_time: endTime,
+      salary: activeProject.project.hourly_payment ? values.salary : 0,
+      currency: activeProject.project.hourly_payment
+        ? values.currency
+        : activeProject.project.currency,
     };
 
     const success = await addTimerSession(newSession);
@@ -63,11 +67,14 @@ export default function NewSessionButton() {
               active_seconds: 0,
               paused_seconds: 0,
               currency: activeProject?.project.currency || "USD",
-              salary: activeProject?.project.salary || 0,
+              salary: activeProject?.project.hourly_payment
+                ? activeProject?.project.salary || 0
+                : 0,
             }}
             onSubmit={handleSubmit}
             onCancel={close}
             newSession
+            project={activeProject?.project}
           />
         </Flex>
       </Drawer>

@@ -19,7 +19,12 @@ export default function TimerSessionDrawer({
   opened,
   close,
 }: TimerSessionModalProps) {
-  const { updateTimerSession } = useWorkStore();
+  const { updateTimerSession, projects } = useWorkStore();
+
+  // Find the project for this session
+  const project = projects.find(
+    (p) => p.project.id === timerSession.project_id
+  )?.project;
 
   async function handleSubmit(values: {
     start_time: string;
@@ -42,6 +47,11 @@ export default function TimerSessionDrawer({
       start_time: values.start_time,
       hourly_payment: timerSession.hourly_payment,
       end_time: endTime,
+      // If project doesn't have hourly payment, set salary to 0 and currency to project currency
+      salary: project?.hourly_payment ? values.salary : 0,
+      currency: project?.hourly_payment
+        ? values.currency
+        : project?.currency || timerSession.currency,
     };
 
     const success = await updateTimerSession(newSession);
@@ -64,12 +74,15 @@ export default function TimerSessionDrawer({
             start_time: timerSession.start_time,
             active_seconds: timerSession.active_seconds,
             paused_seconds: timerSession.paused_seconds,
-            currency: timerSession.currency,
-            salary: timerSession.salary,
+            currency: project?.hourly_payment
+              ? timerSession.currency
+              : project?.currency || timerSession.currency,
+            salary: project?.hourly_payment ? timerSession.salary : 0,
           }}
           onSubmit={handleSubmit}
           onCancel={close}
           newSession={false}
+          project={project}
         />
       </Flex>
     </Drawer>

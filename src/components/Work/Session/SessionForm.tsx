@@ -9,6 +9,7 @@ import { currencies } from "@/constants/settings";
 import TimeInput from "@/components/Work/Session/SessionTimeInput";
 
 import { Currency } from "@/types/settings.types";
+import { Tables } from "@/types/db.types";
 
 interface NewSession {
   start_time: string;
@@ -24,26 +25,36 @@ interface SessionFormProps {
   onSubmit: (values: NewSession) => void;
   onCancel: () => void;
   newSession: boolean;
+  project?: Tables<"timerProject">;
 }
-
-const schema = z.object({
-  start_time: z.string().transform((str) => new Date(str).toISOString()),
-  active_seconds: z
-    .number()
-    .min(1, { message: "Active time must be greater than 0" }),
-  paused_seconds: z
-    .number()
-    .min(0, { message: "Paused time must be positive or 0" }),
-  currency: z.string().min(1, { message: "Currency is required" }),
-  salary: z.number().min(0, { message: "Salary must be positive" }),
-});
 
 export default function SessionForm({
   initialValues,
   onSubmit,
   onCancel,
   newSession,
+  project,
 }: SessionFormProps) {
+  // If project doesn't have hourly payment, set salary to 0 and currency to project currency
+  const shouldShowPaymentFields = project?.hourly_payment ?? true;
+
+  // Create conditional schema based on hourly_payment
+  const schema = z.object({
+    start_time: z.string().transform((str) => new Date(str).toISOString()),
+    active_seconds: z
+      .number()
+      .min(1, { message: "Active time must be greater than 0" }),
+    paused_seconds: z
+      .number()
+      .min(0, { message: "Paused time must be positive or 0" }),
+    currency: shouldShowPaymentFields
+      ? z.string().min(1, { message: "Currency is required" })
+      : z.string().optional(),
+    salary: shouldShowPaymentFields
+      ? z.number().min(0, { message: "Salary must be positive" })
+      : z.number().optional(),
+  });
+
   const form = useForm<NewSession>({
     initialValues,
     validate: zodResolver(schema),
@@ -69,22 +80,32 @@ export default function SessionForm({
           icon={<IconPlayerPause size={18} />}
           color="orange"
         />
-        <NumberInput
-          label="Salary"
-          min={0}
-          step={0.01}
-          {...form.getInputProps("salary")}
-        />
+        {shouldShowPaymentFields ? (
+          <>
+            <NumberInput
+              label="Salary"
+              min={0}
+              step={0.01}
+              {...form.getInputProps("salary")}
+            />
+            <Select
+              label="Currency"
+              placeholder="Select currency"
+              data={currencies}
+              {...form.getInputProps("currency")}
+            />
+          </>
+        ) : (
+          // Hidden fields for non-hourly payment projects
+          <>
+            <input type="hidden" {...form.getInputProps("salary")} />
+            <input type="hidden" {...form.getInputProps("currency")} />
+          </>
+        )}
         <DateTimePicker
           label="Start Time"
           value={form.values.start_time}
           {...form.getInputProps("start_time")}
-        />
-        <Select
-          label="Currency"
-          placeholder="Select currency"
-          data={currencies}
-          {...form.getInputProps("currency")}
         />
         <Button type="submit" mt="md">
           {newSession ? "Create Session" : "Save Changes"}

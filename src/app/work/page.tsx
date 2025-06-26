@@ -30,12 +30,27 @@ export default function WorkPage() {
     getCurrencySymbol(activeProject.project.currency)
   );
 
+  // Calculate total active seconds from all sessions
+  const totalActiveSeconds = activeProject.sessions.reduce(
+    (total, session) => total + session.active_seconds,
+    0
+  );
+
+  const hourlySalary = formatMoney(
+    activeProject.project.hourly_payment
+      ? activeProject.project.salary
+      : totalActiveSeconds > 0
+        ? (activeProject.project.salary / totalActiveSeconds) * 3600
+        : 0,
+    getCurrencySymbol(activeProject.project.currency)
+  );
+
   return (
     <Stack align="center" w="100%" px="xl">
       <Header
         headerTitle={activeProject.project.title}
-        salary={salary}
-        hourlyPayment={activeProject.project.hourly_payment}
+        leftSalary={activeProject.project.hourly_payment ? undefined : salary}
+        rightSalary={hourlySalary}
         description={activeProject.project.description ?? undefined}
         primaryButton={<EditProjectButton />}
         secondaryButton={<NewSessionButton />}
