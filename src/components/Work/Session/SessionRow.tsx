@@ -55,7 +55,10 @@ export default function SessionRow({
     }
 
     // For non-hourly payment projects, check if project is fully paid
-    return project.total_payout >= project.salary;
+    if (project.salary !== 0) {
+      return project.total_payout >= project.salary;
+    }
+    return false;
   };
 
   const sessionPaid = isSessionPaid();
