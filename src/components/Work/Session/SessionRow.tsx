@@ -3,7 +3,7 @@
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useDisclosure, useHover } from "@mantine/hooks";
 
-import { Card, Group, Stack, Text } from "@mantine/core";
+import { Card, Group, Stack, Text, Checkbox, Box } from "@mantine/core";
 import { IconClock } from "@tabler/icons-react";
 import DeleteActionIcon from "@/components/UI/Buttons/DeleteActionIcon";
 import PencilActionIcon from "@/components/UI/Buttons/PencilActionIcon";
@@ -17,9 +17,16 @@ import type { Tables } from "@/types/db.types";
 interface SessionRowProps {
   session: Tables<"timerSession">;
   project?: Tables<"timerProject">;
+  isSelected?: boolean;
+  onToggleSelection?: () => void;
 }
 
-export default function SessionRow({ session, project }: SessionRowProps) {
+export default function SessionRow({
+  session,
+  project,
+  isSelected,
+  onToggleSelection,
+}: SessionRowProps) {
   const [deleteModalOpened, deleteModalHandler] = useDisclosure(false);
   const [editDrawerOpened, editDrawerHandler] = useDisclosure(false);
   const { deleteTimerSession } = useWorkStore();
@@ -37,11 +44,35 @@ export default function SessionRow({ session, project }: SessionRowProps) {
     ((session.active_seconds * session.salary) / 3600).toFixed(2)
   );
 
+  // Only show checkbox for hourly payment projects and unpaid sessions
+  const showCheckbox =
+    project?.hourly_payment && onToggleSelection && !session.payed;
+
   return (
-    <>
-      <Card shadow="xs" withBorder p="sm" mt="sm" radius={20} ref={ref}>
+    <Box>
+      <Card
+        shadow="xs"
+        withBorder
+        p="sm"
+        mt="sm"
+        radius={20}
+        ref={ref}
+        style={{
+          opacity: session.payed ? 0.6 : 1,
+          borderColor: session.payed
+            ? "var(--mantine-color-green-4)"
+            : undefined,
+        }}
+      >
         <Group justify="space-between">
           <Group gap="xl">
+            {showCheckbox && (
+              <Checkbox
+                checked={isSelected}
+                onChange={onToggleSelection}
+                disabled={session.payed}
+              />
+            )}
             <Stack gap="xs">
               <Group>
                 <IconClock size={14} color="gray" />
@@ -51,6 +82,11 @@ export default function SessionRow({ session, project }: SessionRowProps) {
                     new Date(session.end_time)
                   )}
                 </Text>
+                {session.payed && (
+                  <Text size="xs" c="green" fw={500}>
+                    ✓ Paid
+                  </Text>
+                )}
               </Group>
               <Group>
                 <Text size="sm" c="teal">
@@ -61,7 +97,7 @@ export default function SessionRow({ session, project }: SessionRowProps) {
                 </Text>
               </Group>
             </Stack>
-            {hovered && (
+            {hovered && !session.payed && (
               <Group>
                 <PencilActionIcon
                   onClick={() => editDrawerHandler.open()}
@@ -80,7 +116,14 @@ export default function SessionRow({ session, project }: SessionRowProps) {
                 {project.title}
               </Text>
             )}
-            <Text>
+            <Text
+              style={{
+                textDecoration: session.payed ? "line-through" : "none",
+                color: session.payed
+                  ? "var(--mantine-color-green-6)"
+                  : undefined,
+              }}
+            >
               {session.hourly_payment
                 ? helper.formatMoney(
                     earnings,
@@ -105,6 +148,6 @@ export default function SessionRow({ session, project }: SessionRowProps) {
         title="Delete Session"
         message="Are you sure you want to delete this session? This action cannot be undone."
       />
-    </>
+    </Box>
   );
 }

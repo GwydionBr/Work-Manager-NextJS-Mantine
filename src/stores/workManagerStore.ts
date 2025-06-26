@@ -51,6 +51,8 @@ interface WorkStoreActions {
   ) => Promise<boolean>;
   deleteProject: (id: string) => Promise<boolean>;
   deleteTimerSession: (id: string) => Promise<boolean>;
+  payoutSessions: (sessionIds: string[]) => Promise<boolean>;
+  payoutProjectSalary: (projectId: string, amount: number) => Promise<boolean>;
   addProjectFolder: (
     folder: TablesInsert<"timer_project_folder">
   ) => Promise<boolean>;
@@ -257,6 +259,58 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
           s.id === session.id ? updatedSession.data : s
         ),
       }));
+      updateStore(updatedProjects, updatedSessions);
+      return true;
+    },
+
+    async payoutSessions(sessionIds) {
+      const { updateStore, projects, timerSessions } = get();
+      const payoutResult = await actions.payoutSessions({ sessionIds });
+      if (!payoutResult.success) {
+        return false;
+      }
+
+      // Update sessions to mark them as paid
+      const updatedSessions = timerSessions.map((s) =>
+        sessionIds.includes(s.id) ? { ...s, payed: true } : s
+      );
+      const updatedProjects = projects.map((p) => ({
+        project: p.project,
+        sessions: p.sessions.map((s) =>
+          sessionIds.includes(s.id) ? { ...s, payed: true } : s
+        ),
+      }));
+      updateStore(updatedProjects, updatedSessions);
+      return true;
+    },
+
+    async payoutProjectSalary(projectId, amount) {
+      const { updateStore, projects, timerSessions } = get();
+      const payoutResult = await actions.payoutProjectSalary({
+        projectId,
+        amount,
+      });
+      if (!payoutResult.success) {
+        return false;
+      }
+
+      // Update project total_payout in the store
+      const updatedProjects = projects.map((p) => {
+        if (p.project.id === projectId) {
+          const newTotalPayout = (p.project.total_payout || 0) + amount;
+          return {
+            project: { ...p.project, total_payout: newTotalPayout },
+            sessions: p.sessions.map((s) => ({ ...s, payed: true })),
+          };
+        }
+        return p;
+      });
+
+      // Update all sessions for this project to mark them as paid
+      const updatedSessions = timerSessions.map((s) =>
+        s.project_id === projectId ? { ...s, payed: true } : s
+      );
+
       updateStore(updatedProjects, updatedSessions);
       return true;
     },

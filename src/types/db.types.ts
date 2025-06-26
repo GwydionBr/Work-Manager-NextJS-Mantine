@@ -567,6 +567,7 @@ export type Database = {
           order_index: number | null;
           salary: number;
           title: string;
+          total_payout: number;
           user_id: string;
         };
         Insert: {
@@ -580,6 +581,7 @@ export type Database = {
           order_index?: number | null;
           salary: number;
           title: string;
+          total_payout?: number;
           user_id?: string;
         };
         Update: {
@@ -593,6 +595,7 @@ export type Database = {
           order_index?: number | null;
           salary?: number;
           title?: string;
+          total_payout?: number;
           user_id?: string;
         };
         Relationships: [

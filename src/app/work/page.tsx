@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
 
 import { ActionIcon, Loader, Stack, Button } from "@mantine/core";
@@ -10,12 +11,14 @@ import Header from "@/components/Header/Header";
 
 import { formatMoney, getCurrencySymbol } from "@/utils/workHelperFunctions";
 import { IconBrandCashapp, IconEdit } from "@tabler/icons-react";
+import PayoutMenu from "@/components/Work/Project/PayoutMenu";
 
 export default function WorkPage() {
   const { activeProjectId, isFetching } = useWorkStore();
   const activeProject = useWorkStore((state) =>
     state.projects.find((p) => p.project.id === activeProjectId)
   );
+  const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
 
   if (!activeProject || isFetching) {
     return (
@@ -53,21 +56,23 @@ export default function WorkPage() {
         leftSalary={activeProject.project.hourly_payment ? undefined : salary}
         rightSalary={hourlySalary}
         description={activeProject.project.description ?? undefined}
-
         secondaryButton={<NewSessionButton />}
         rightButton={<EditProjectButton />}
         leftButton={
-          <Button
-            variant="light"
-            size="md"
-            color="teal"
-            leftSection={<IconBrandCashapp size={20} />}
-          >
-            Payout
-          </Button>
+          <PayoutMenu
+            sessions={activeProject.sessions}
+            project={activeProject.project}
+            selectedSessions={selectedSessions}
+            onSessionsChange={setSelectedSessions}
+          />
         }
       />
-      <SessionList sessions={activeProject.sessions} />
+      <SessionList
+        sessions={activeProject.sessions}
+        selectedSessions={selectedSessions}
+        onSessionsChange={setSelectedSessions}
+        project={activeProject.project}
+      />
     </Stack>
   );
 }

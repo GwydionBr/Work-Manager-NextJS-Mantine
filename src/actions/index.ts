@@ -18,13 +18,13 @@ export {
 
 // Session Actions
 
-export {
-  getAllSessions,
-  getProjectSessions,
-  createSession,
-  deleteSession,
-  updateSession,
-} from "./work/timerSessionActions";
+export { getAllSessions } from "./work/timerSessionActions";
+export { createSession } from "./work/timerSessionActions";
+export { updateSession } from "./work/timerSessionActions";
+export { deleteSession } from "./work/timerSessionActions";
+export { payoutSessions } from "./work/timerSessionActions";
+export { updateMultipleSessions } from "./work/timerSessionActions";
+export { payoutProjectSalary } from "./work/timerSessionActions";
 
 // Auth Actions
 

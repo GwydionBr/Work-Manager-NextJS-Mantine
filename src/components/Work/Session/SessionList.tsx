@@ -1,6 +1,15 @@
 "use client";
 
-import { Accordion, Group, ScrollArea, Text } from "@mantine/core";
+import { useState } from "react";
+import {
+  Accordion,
+  Group,
+  ScrollArea,
+  Text,
+  Checkbox,
+  Stack,
+  Button,
+} from "@mantine/core";
 import { IconCalendar, IconClock, IconFolder } from "@tabler/icons-react";
 import SessionRow from "@/components/Work/Session/SessionRow";
 
@@ -14,10 +23,72 @@ const Radius = 20;
 interface SessionListProps {
   sessions: Tables<"timerSession">[];
   projects?: Tables<"timerProject">[];
+  selectedSessions?: string[];
+  onSessionsChange?: (sessions: string[]) => void;
+  project?: Tables<"timerProject">;
 }
 
-export default function SessionList({ sessions, projects }: SessionListProps) {
+export default function SessionList({
+  sessions,
+  projects,
+  selectedSessions: externalSelectedSessions,
+  onSessionsChange,
+  project,
+}: SessionListProps) {
+  const [internalSelectedSessions, setInternalSelectedSessions] = useState<
+    string[]
+  >([]);
   const groupedSessions = groupSessions(sessions);
+
+  // Use external state if provided, otherwise use internal state
+  const selectedSessions = externalSelectedSessions || internalSelectedSessions;
+  const setSelectedSessions = onSessionsChange || setInternalSelectedSessions;
+
+  // Only show selection controls for hourly payment projects
+  const showSelectionControls = project?.hourly_payment;
+
+  // Filter out paid sessions for selection
+  const unpaidSessions = sessions.filter((session) => !session.payed);
+
+  const handleSessionToggle = (sessionId: string) => {
+    if (!showSelectionControls) return;
+
+    if (onSessionsChange) {
+      // External state management
+      onSessionsChange(
+        selectedSessions.includes(sessionId)
+          ? selectedSessions.filter((id) => id !== sessionId)
+          : [...selectedSessions, sessionId]
+      );
+    } else {
+      // Internal state management
+      setInternalSelectedSessions((prev) =>
+        prev.includes(sessionId)
+          ? prev.filter((id) => id !== sessionId)
+          : [...prev, sessionId]
+      );
+    }
+  };
+
+  const handleSelectAll = () => {
+    if (!showSelectionControls) return;
+
+    if (onSessionsChange) {
+      // External state management
+      if (selectedSessions.length === unpaidSessions.length) {
+        onSessionsChange([]);
+      } else {
+        onSessionsChange(unpaidSessions.map((s) => s.id));
+      }
+    } else {
+      // Internal state management
+      if (internalSelectedSessions.length === unpaidSessions.length) {
+        setInternalSelectedSessions([]);
+      } else {
+        setInternalSelectedSessions(unpaidSessions.map((s) => s.id));
+      }
+    }
+  };
 
   const renderTime = (seconds: number) => (
     <Text
@@ -39,177 +110,223 @@ export default function SessionList({ sessions, projects }: SessionListProps) {
           Add as Session to see it here
         </Text>
       ) : (
-        groupedSessions.reverse().map(({ year, data: yearData }, index) => (
-          // Year Section
-          <Accordion
-            key={year}
-            variant="separated"
-            pt={20}
-            multiple
-            defaultValue={index === 0 ? [String(yearData.totalEarnings)] : []}
-            radius={Radius}
-          >
-            <Accordion.Item value={String(yearData.totalEarnings)}>
-              <Accordion.Control
-                icon={<IconCalendar size={18} />}
-                style={{ fontWeight: "bold" }}
-              >
-                <Group>
-                  {year}
-                  {!areEarningsEmpty(yearData.totalEarnings) && (
-                    <Text size="sm" c="dimmed">
-                      {formatEarnings(yearData.totalEarnings)}
-                    </Text>
-                  )}
-                  {yearData.totalTime > 0 && renderTime(yearData.totalTime)}
-                </Group>
-              </Accordion.Control>
-              <Accordion.Panel>
-                {Object.entries(yearData.months)
-                  .reverse()
-                  .map(([month, monthData], index) => (
-                    // Month Section
-                    <Accordion
-                      key={month}
-                      p={10}
-                      variant="separated"
-                      multiple
-                      radius={Radius}
-                      defaultValue={
-                        index === 0 ? [String(monthData.totalEarnings)] : []
-                      }
-                    >
-                      <Accordion.Item value={String(monthData.totalEarnings)}>
-                        <Accordion.Control
-                          icon={<IconFolder size={18} color="blue" />}
-                        >
-                          <Group>
-                            {helper.formatMonth(Number(month))}
-                            {!areEarningsEmpty(monthData.totalEarnings) && (
-                              <Text size="sm" c="dimmed">
-                                {formatEarnings(monthData.totalEarnings)}
-                              </Text>
-                            )}
-                            {monthData.totalTime > 0 &&
-                              renderTime(monthData.totalTime)}
-                          </Group>
-                        </Accordion.Control>
-                        <Accordion.Panel>
-                          {Object.entries(monthData.weeks)
-                            .reverse()
-                            .map(([week, weekData], index) => (
-                              // Week Section
-                              <Accordion
-                                key={week}
-                                variant="separated"
-                                multiple
-                                radius={Radius}
-                                p={5}
-                                defaultValue={
-                                  index === 0
-                                    ? [String(weekData.totalEarnings)]
-                                    : []
-                                }
-                              >
-                                <Accordion.Item
-                                  value={String(weekData.totalEarnings)}
+        <>
+          {/* Bulk Selection Controls */}
+          {showSelectionControls && (
+            <Stack
+              mb="md"
+              p="md"
+              bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
+              style={{ borderRadius: Radius }}
+            >
+              <Group justify="space-between">
+                <Checkbox
+                  label={`Select All (${unpaidSessions.length} unpaid sessions)`}
+                  checked={
+                    selectedSessions.length === unpaidSessions.length &&
+                    unpaidSessions.length > 0
+                  }
+                  indeterminate={
+                    selectedSessions.length > 0 &&
+                    selectedSessions.length < unpaidSessions.length
+                  }
+                  onChange={handleSelectAll}
+                />
+                {selectedSessions.length > 0 && (
+                  <Text size="sm" c="dimmed">
+                    {selectedSessions.length} session
+                    {selectedSessions.length > 1 ? "s" : ""} selected
+                  </Text>
+                )}
+              </Group>
+            </Stack>
+          )}
+
+          {groupedSessions.reverse().map(({ year, data: yearData }, index) => (
+            // Year Section
+            <Accordion
+              key={year}
+              variant="separated"
+              pt={20}
+              multiple
+              defaultValue={index === 0 ? [String(yearData.totalEarnings)] : []}
+              radius={Radius}
+            >
+              <Accordion.Item value={String(yearData.totalEarnings)}>
+                <Accordion.Control
+                  icon={<IconCalendar size={18} />}
+                  style={{ fontWeight: "bold" }}
+                >
+                  <Group>
+                    {year}
+                    {!areEarningsEmpty(yearData.totalEarnings) && (
+                      <Text size="sm" c="dimmed">
+                        {formatEarnings(yearData.totalEarnings)}
+                      </Text>
+                    )}
+                    {yearData.totalTime > 0 && renderTime(yearData.totalTime)}
+                  </Group>
+                </Accordion.Control>
+                <Accordion.Panel>
+                  {Object.entries(yearData.months)
+                    .reverse()
+                    .map(([month, monthData], index) => (
+                      // Month Section
+                      <Accordion
+                        key={month}
+                        p={10}
+                        variant="separated"
+                        multiple
+                        radius={Radius}
+                        defaultValue={
+                          index === 0 ? [String(monthData.totalEarnings)] : []
+                        }
+                      >
+                        <Accordion.Item value={String(monthData.totalEarnings)}>
+                          <Accordion.Control
+                            icon={<IconFolder size={18} color="blue" />}
+                          >
+                            <Group>
+                              {helper.formatMonth(Number(month))}
+                              {!areEarningsEmpty(monthData.totalEarnings) && (
+                                <Text size="sm" c="dimmed">
+                                  {formatEarnings(monthData.totalEarnings)}
+                                </Text>
+                              )}
+                              {monthData.totalTime > 0 &&
+                                renderTime(monthData.totalTime)}
+                            </Group>
+                          </Accordion.Control>
+                          <Accordion.Panel>
+                            {Object.entries(monthData.weeks)
+                              .reverse()
+                              .map(([week, weekData], index) => (
+                                // Week Section
+                                <Accordion
+                                  key={week}
+                                  variant="separated"
+                                  multiple
+                                  radius={Radius}
+                                  p={5}
+                                  defaultValue={
+                                    index === 0
+                                      ? [String(weekData.totalEarnings)]
+                                      : []
+                                  }
                                 >
-                                  <Accordion.Control
-                                    icon={
-                                      <IconCalendar size={18} color="orange" />
-                                    }
+                                  <Accordion.Item
+                                    value={String(weekData.totalEarnings)}
                                   >
-                                    <Group>
-                                      Week {week}
-                                      {!areEarningsEmpty(
-                                        weekData.totalEarnings
-                                      ) && (
-                                        <Text size="sm" c="dimmed">
-                                          {formatEarnings(
-                                            weekData.totalEarnings
-                                          )}
-                                        </Text>
-                                      )}
-                                      {weekData.totalTime > 0 &&
-                                        renderTime(weekData.totalTime)}
-                                    </Group>
-                                  </Accordion.Control>
-                                  <Accordion.Panel>
-                                    {Object.entries(weekData.days)
-                                      .sort(([dayA], [dayB]) =>
-                                        dayA.localeCompare(dayB)
-                                      )
-                                      .reverse()
-                                      .map(([day, dayData], index) => (
-                                        // Day Section
-                                        <Accordion
-                                          key={day}
-                                          variant="separated"
-                                          multiple
-                                          radius={Radius}
-                                          p={5}
-                                          defaultValue={
-                                            index === 0
-                                              ? [String(dayData.totalEarnings)]
-                                              : []
-                                          }
-                                        >
-                                          <Accordion.Item value={day}>
-                                            <Accordion.Control
-                                              icon={
-                                                <IconClock
-                                                  size={18}
-                                                  color="green"
-                                                />
-                                              }
-                                            >
-                                              <Group>
-                                                {helper.formatDate(
-                                                  new Date(day)
-                                                )}
-                                                {!areEarningsEmpty(
-                                                  dayData.totalEarnings
-                                                ) && (
-                                                  <Text size="sm" c="dimmed">
-                                                    {formatEarnings(
+                                    <Accordion.Control
+                                      icon={
+                                        <IconCalendar
+                                          size={18}
+                                          color="orange"
+                                        />
+                                      }
+                                    >
+                                      <Group>
+                                        Week {week}
+                                        {!areEarningsEmpty(
+                                          weekData.totalEarnings
+                                        ) && (
+                                          <Text size="sm" c="dimmed">
+                                            {formatEarnings(
+                                              weekData.totalEarnings
+                                            )}
+                                          </Text>
+                                        )}
+                                        {weekData.totalTime > 0 &&
+                                          renderTime(weekData.totalTime)}
+                                      </Group>
+                                    </Accordion.Control>
+                                    <Accordion.Panel>
+                                      {Object.entries(weekData.days)
+                                        .sort(([dayA], [dayB]) =>
+                                          dayA.localeCompare(dayB)
+                                        )
+                                        .reverse()
+                                        .map(([day, dayData], index) => (
+                                          // Day Section
+                                          <Accordion
+                                            key={day}
+                                            variant="separated"
+                                            multiple
+                                            radius={Radius}
+                                            p={5}
+                                            defaultValue={
+                                              index === 0
+                                                ? [
+                                                    String(
                                                       dayData.totalEarnings
-                                                    )}
-                                                  </Text>
-                                                )}
-                                                {dayData.totalTime > 0 &&
-                                                  renderTime(dayData.totalTime)}
-                                              </Group>
-                                            </Accordion.Control>
-                                            <Accordion.Panel>
-                                              {dayData.sessions
-                                                .reverse()
-                                                .map((session) => (
-                                                  <SessionRow
-                                                    key={session.id}
-                                                    session={session}
-                                                    project={projects?.find(
-                                                      (p) =>
-                                                        p.id ===
-                                                        session.project_id
-                                                    )}
+                                                    ),
+                                                  ]
+                                                : []
+                                            }
+                                          >
+                                            <Accordion.Item value={day}>
+                                              <Accordion.Control
+                                                icon={
+                                                  <IconClock
+                                                    size={18}
+                                                    color="green"
                                                   />
-                                                ))}
-                                            </Accordion.Panel>
-                                          </Accordion.Item>
-                                        </Accordion>
-                                      ))}
-                                  </Accordion.Panel>
-                                </Accordion.Item>
-                              </Accordion>
-                            ))}
-                        </Accordion.Panel>
-                      </Accordion.Item>
-                    </Accordion>
-                  ))}
-              </Accordion.Panel>
-            </Accordion.Item>
-          </Accordion>
-        ))
+                                                }
+                                              >
+                                                <Group>
+                                                  {helper.formatDate(
+                                                    new Date(day)
+                                                  )}
+                                                  {!areEarningsEmpty(
+                                                    dayData.totalEarnings
+                                                  ) && (
+                                                    <Text size="sm" c="dimmed">
+                                                      {formatEarnings(
+                                                        dayData.totalEarnings
+                                                      )}
+                                                    </Text>
+                                                  )}
+                                                  {dayData.totalTime > 0 &&
+                                                    renderTime(
+                                                      dayData.totalTime
+                                                    )}
+                                                </Group>
+                                              </Accordion.Control>
+                                              <Accordion.Panel>
+                                                {dayData.sessions
+                                                  .reverse()
+                                                  .map((session) => (
+                                                    <SessionRow
+                                                      key={session.id}
+                                                      session={session}
+                                                      project={project}
+                                                      isSelected={selectedSessions.includes(
+                                                        session.id
+                                                      )}
+                                                      onToggleSelection={() =>
+                                                        handleSessionToggle(
+                                                          session.id
+                                                        )
+                                                      }
+                                                    />
+                                                  ))}
+                                              </Accordion.Panel>
+                                            </Accordion.Item>
+                                          </Accordion>
+                                        ))}
+                                    </Accordion.Panel>
+                                  </Accordion.Item>
+                                </Accordion>
+                              ))}
+                          </Accordion.Panel>
+                        </Accordion.Item>
+                      </Accordion>
+                    ))}
+                </Accordion.Panel>
+              </Accordion.Item>
+            </Accordion>
+          ))}
+        </>
       )}
     </ScrollArea>
   );
@@ -262,12 +379,14 @@ function groupSessions(
       const week = helper.getWeekNumber(startTime);
       const day = startTime.toISOString().split("T")[0];
 
+      // Only calculate earnings for unpaid sessions
       const earnings: Earnings = {
-        amount: session.hourly_payment
-          ? Number(
-              ((session.active_seconds * session.salary) / 3600).toFixed(2)
-            )
-          : 0,
+        amount:
+          session.hourly_payment && !session.payed
+            ? Number(
+                ((session.active_seconds * session.salary) / 3600).toFixed(2)
+              )
+            : 0,
         currency: session.currency,
       };
 
