@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Accordion,
   Group,
@@ -11,6 +11,8 @@ import {
   Button,
   Select,
   Divider,
+  Slider,
+  Badge,
 } from "@mantine/core";
 import { IconCalendar, IconClock, IconFolder } from "@tabler/icons-react";
 import SessionRow from "@/components/Work/Session/SessionRow";
@@ -45,8 +47,30 @@ export default function SessionList({
   const [internalSelectedSessions, setInternalSelectedSessions] = useState<
     string[]
   >([]);
+  const [timeFilterDays, setTimeFilterDays] = useState<number>(7);
+  const [selectedTimePreset, setSelectedTimePreset] = useState<string | null>(
+    null
+  );
   const { financeCategories } = useFinanceStore();
-  const groupedSessions = groupSessions(sessions);
+
+  // Preset time periods
+  const timePresets = useMemo(
+    () => [
+      { value: "today", label: "Today", days: 1 },
+      { value: "yesterday", label: "Yesterday", days: 1 },
+      { value: "last3days", label: "Last 3 days", days: 3 },
+      { value: "last7days", label: "Last 7 days", days: 7 },
+      { value: "last14days", label: "Last 14 days", days: 14 },
+      { value: "last30days", label: "Last 30 days", days: 30 },
+      { value: "last90days", label: "Last 90 days", days: 90 },
+      {
+        value: "custom",
+        label: `Last ${timeFilterDays} days`,
+        days: timeFilterDays,
+      },
+    ],
+    [timeFilterDays]
+  );
 
   // Use external state if provided, otherwise use internal state
   const selectedSessions = externalSelectedSessions || internalSelectedSessions;
@@ -55,8 +79,59 @@ export default function SessionList({
   // Only show selection controls for hourly payment projects
   const showSelectionControls = project?.hourly_payment || isOverview;
 
+  // Filter sessions by time period
+  const getFilteredSessions = () => {
+    if (!selectedTimePreset || isOverview) {
+      return sessions;
+    }
+
+    const now = new Date();
+    const preset = timePresets.find((p) => p.value === selectedTimePreset);
+    if (!preset) return sessions;
+
+    let startDate: Date;
+    let endDate: Date;
+
+    switch (selectedTimePreset) {
+      case "today":
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        endDate = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate() + 1
+        );
+        break;
+      case "yesterday":
+        startDate = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate() - 1
+        );
+        endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        break;
+      default:
+        // For custom and other periods, go back X days from today
+        startDate = new Date(now.getTime() - preset.days * 24 * 60 * 60 * 1000);
+        endDate = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate() + 1
+        );
+        break;
+    }
+
+    return sessions.filter((session) => {
+      if (!session.start_time) return false;
+      const sessionDate = new Date(session.start_time);
+      return sessionDate >= startDate && sessionDate < endDate;
+    });
+  };
+
+  const filteredSessions = getFilteredSessions();
+  const groupedSessions = groupSessions(sessions); // Use original sessions for display
+
   // Filter out paid sessions for selection
-  const unpaidSessions = sessions.filter((session) => {
+  const unpaidSessions = filteredSessions.filter((session) => {
     if (isOverview) {
       // In overview mode, we need to find the project for each session
       const sessionProject = projects?.find((p) => p.id === session.project_id);
@@ -208,6 +283,47 @@ export default function SessionList({
     }
   };
 
+  const handleTimePresetChange = (preset: string | null) => {
+    setSelectedTimePreset(preset);
+    if (preset && preset !== "custom") {
+      const presetData = timePresets.find((p) => p.value === preset);
+      if (presetData) {
+        setTimeFilterDays(presetData.days);
+      }
+    }
+  };
+
+  const handleCustomDaysChange = (days: number) => {
+    setTimeFilterDays(days);
+    setSelectedTimePreset("custom");
+  };
+
+  const handleSelectByTimePeriod = () => {
+    if (!selectedTimePreset) return;
+
+    const timePeriodSessions = filteredSessions.filter(
+      (session) => !session.payed
+    );
+    const timePeriodSessionIds = timePeriodSessions.map((s) => s.id);
+
+    if (onSessionsChange) {
+      // External state management
+      const newSelectedSessions = selectedSessions.filter(
+        (id) => !timePeriodSessionIds.includes(id)
+      );
+      onSessionsChange([...newSelectedSessions, ...timePeriodSessionIds]);
+    } else {
+      // Internal state management
+      const newSelectedSessions = internalSelectedSessions.filter(
+        (id) => !timePeriodSessionIds.includes(id)
+      );
+      setInternalSelectedSessions([
+        ...newSelectedSessions,
+        ...timePeriodSessionIds,
+      ]);
+    }
+  };
+
   const renderTime = (seconds: number) => (
     <Text
       size="sm"
@@ -311,6 +427,75 @@ export default function SessionList({
                     onChange={handleSelectAll}
                     disabled={unpaidSessions.length === 0}
                   />
+
+                  {/* Time Period Filtering for normal projects */}
+                  {!isOverview && (
+                    <>
+                      <Divider my="xs" />
+                      <Stack gap="xs">
+                        <Text size="sm" fw={500}>
+                          Select Sessions by Time Period
+                        </Text>
+                        <Group gap="md" align="flex-end">
+                          <Select
+                            label="Time Period"
+                            placeholder="Select a time period"
+                            data={timePresets.map((preset) => ({
+                              value: preset.value,
+                              label: preset.label,
+                            }))}
+                            value={selectedTimePreset}
+                            onChange={handleTimePresetChange}
+                            clearable
+                            style={{ flex: 1 }}
+                          />
+                          {selectedTimePreset && (
+                            <Button
+                              size="sm"
+                              onClick={handleSelectByTimePeriod}
+                              variant="light"
+                            >
+                              Select{" "}
+                              {filteredSessions.filter((s) => !s.payed).length}{" "}
+                              unpaid sessions
+                            </Button>
+                          )}
+                        </Group>
+                        {selectedTimePreset === "custom" && (
+                          <Stack gap="xs">
+                            <Text size="sm">Custom Days: {timeFilterDays}</Text>
+                            <Slider
+                              value={timeFilterDays}
+                              onChange={handleCustomDaysChange}
+                              min={1}
+                              max={365}
+                              step={1}
+                              marks={[
+                                { value: 1, label: "1" },
+                                { value: 7, label: "7" },
+                                { value: 30, label: "30" },
+                                { value: 90, label: "90" },
+                                { value: 365, label: "365" },
+                              ]}
+                            />
+                          </Stack>
+                        )}
+                        {selectedTimePreset &&
+                          selectedTimePreset !== "custom" && (
+                            <Badge color="blue" variant="light">
+                              {filteredSessions.filter((s) => !s.payed).length}{" "}
+                              unpaid sessions in selected period
+                            </Badge>
+                          )}
+                        {selectedTimePreset === "custom" && (
+                          <Badge color="blue" variant="light">
+                            {filteredSessions.filter((s) => !s.payed).length}{" "}
+                            unpaid sessions in last {timeFilterDays} days
+                          </Badge>
+                        )}
+                      </Stack>
+                    </>
+                  )}
 
                   {isOverview && projects && projects.length > 0 && (
                     <>
