@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "@mantine/form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFinanceStore } from "@/stores/financeStore";
 
 import {
@@ -14,6 +14,8 @@ import {
   Group,
   Switch,
   Tooltip,
+  Transition,
+  Collapse,
 } from "@mantine/core";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
@@ -57,8 +59,22 @@ export default function ProjectForm({
   showFolderSelect = false,
   folders = [],
 }: ProjectFormProps) {
+  // State to store previous work values
+  const [previousWorkValues, setPreviousWorkValues] = useState({
+    salary: initialValues.salary,
+    hourly_payment: initialValues.hourly_payment,
+  });
+
+  const [isHobby, setIsHobby] = useState(
+    initialValues.hourly_payment === false && initialValues.salary === 0
+      ? true
+      : false
+  );
+
   const form = useForm({
-    initialValues,
+    initialValues: {
+      ...initialValues,
+    },
     validate: zodResolver(schema),
   });
 
@@ -69,6 +85,30 @@ export default function ProjectForm({
       fetchFinanceData();
     }
   }, [financeCategories.length, isFetching, fetchFinanceData]);
+
+  // Handle hobby toggle
+  const handleHobbyToggle = (checked: boolean) => {
+    if (checked) {
+      setIsHobby(true);
+      form.setFieldValue("salary", 0);
+      form.setFieldValue("hourly_payment", false);
+    } else {
+      setIsHobby(false);
+      form.setFieldValue("salary", previousWorkValues.salary);
+      form.setFieldValue("hourly_payment", previousWorkValues.hourly_payment);
+    }
+  };
+
+  // Update previous work values when user changes work-related fields
+  const handleWorkFieldChange = (field: string, value: any) => {
+    form.setFieldValue(field, value);
+    if (!isHobby) {
+      setPreviousWorkValues((prev) => ({
+        ...prev,
+        [field]: value, 
+      }));
+    }
+  };
 
   const folderOptions = folders.map((folder) => ({
     value: folder.id,
@@ -95,38 +135,67 @@ export default function ProjectForm({
           placeholder="Enter project description"
           {...form.getInputProps("description")}
         />
+
         <Group align="flex-end">
-          <NumberInput
-            allowLeadingZeros={false}
-            allowNegative={false}
-            withAsterisk
-            label="Salary"
-            min={0}
-            step={0.01}
-            {...form.getInputProps("salary")}
-          />
-          <Tooltip label="Payment method" refProp="rootRef">
+          <Tooltip label="Project type" refProp="rootRef" openDelay={500}>
             <Switch
               size="xl"
-              onLabel="Hourly"
-              offLabel="Project"
-              checked={form.values.hourly_payment}
+              pt={25}
+              onLabel="Hobby"
+              offLabel="Work"
+              checked={isHobby}
               onChange={(event) =>
-                form.setFieldValue(
-                  "hourly_payment",
-                  event.currentTarget.checked
-                )
+                handleHobbyToggle(event.currentTarget.checked)
               }
             />
           </Tooltip>
+
+          <Collapse in={!isHobby}>
+            <Group align="flex-end">
+              <NumberInput
+                allowLeadingZeros={false}
+                allowNegative={false}
+                withAsterisk
+                label="Salary"
+                min={0}
+                step={0.01}
+                value={form.values.salary}
+                onChange={(value) =>
+                  handleWorkFieldChange("salary", value || 0)
+                }
+                error={form.errors.salary}
+              />
+              <Tooltip label="Payment method" refProp="rootRef" openDelay={500}>
+                <Switch
+                  size="xl"
+                  onLabel="Hourly"
+                  offLabel="Project"
+                  checked={form.values.hourly_payment}
+                  onChange={(event) =>
+                    handleWorkFieldChange(
+                      "hourly_payment",
+                      event.currentTarget.checked
+                    )
+                  }
+                />
+              </Tooltip>
+            </Group>
+          </Collapse>
         </Group>
-        <Select
-          withAsterisk
-          label="Currency"
-          placeholder="Select currency"
-          data={currencies}
-          {...form.getInputProps("currency")}
-        />
+
+        {/* Currency - only show for work projects */}
+        <Collapse in={!isHobby}>
+          <Select
+            withAsterisk
+            label="Currency"
+            placeholder="Select currency"
+            data={currencies}
+            value={form.values.currency}
+            onChange={(value) => handleWorkFieldChange("currency", value || "")}
+            error={form.errors.currency}
+          />
+        </Collapse>
+
         <Select
           label="Category"
           placeholder="Select category (optional)"
