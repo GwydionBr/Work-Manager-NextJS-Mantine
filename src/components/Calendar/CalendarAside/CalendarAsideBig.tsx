@@ -41,11 +41,11 @@ export default function CalendarAsideBig({
             {appointment.title}
           </Text>
           {appointment.description && (
-            <Text size="xs" c="dimmed">
+            <Text size="xs" c="white">
               {appointment.description}
             </Text>
           )}
-          <Text size="xs" c="dimmed">
+          <Text size="xs" c="white">
             {appointment.profile.username}
           </Text>
         </Stack>

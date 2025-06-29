@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useGroupStore } from "@/stores/groupStore";
 
 import { ActionIcon, Group, Stack } from "@mantine/core";
 import { IconArrowBarLeft } from "@tabler/icons-react";
@@ -19,6 +20,13 @@ interface AsideProps {
 export default function Aside({ toggleAside, isAsideOpen }: AsideProps) {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isTimeTrackerMinimized, setIsTimeTrackerMinimized] = useState(false);
+
+  const { selectedDate } = useGroupStore();
+
+  useEffect(() => {
+    setIsTimeTrackerMinimized(true);
+    setIsNotificationOpen(false);
+  }, [selectedDate]);
 
   return (
     <Stack py="md" h="100%" align="center">

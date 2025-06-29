@@ -66,18 +66,19 @@ export default function MemberRow({
           {member.username}
         </Text>
       </Group>
-      {member.color !== "" && member.id === userProfile?.id ? (
-        <Popover onClose={handleColorChange}>
-          <Popover.Target>
-            <Box className={classes.colorPoint} bg={color} />
-          </Popover.Target>
-          <Popover.Dropdown>
-            <DefaultColorPicker color={color} setColor={setColor} />
-          </Popover.Dropdown>
-        </Popover>
-      ) : (
-        <Box className={classes.colorPoint} bg={member.color} />
-      )}
+      {member.color !== "" &&
+        (member.id === userProfile?.id ? (
+          <Popover onClose={handleColorChange}>
+            <Popover.Target>
+              <Box className={classes.colorPoint} bg={color} />
+            </Popover.Target>
+            <Popover.Dropdown>
+              <DefaultColorPicker color={color} setColor={setColor} />
+            </Popover.Dropdown>
+          </Popover>
+        ) : (
+          <Box className={classes.colorPoint} bg={member.color} />
+        ))}
     </Group>
   );
 }
