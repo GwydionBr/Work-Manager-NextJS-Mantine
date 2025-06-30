@@ -37,6 +37,7 @@ interface GroupState {
   isFetching: boolean;
   lastFetch: Date | null;
   selectedDate: Date | null;
+  isDateChanged: boolean;
 }
 
 interface GroupActions {
@@ -91,6 +92,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
     isFetching: true,
     lastFetch: null,
     selectedDate: null,
+    isDateChanged: false,
 
     fetchGroupData: async () => {
       const activeGroup = get().activeGroupId;
@@ -408,7 +410,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
       return false;
     },
     setSelectedDate: (date: Date) => {
-      set({ selectedDate: date });
+      set({ selectedDate: date, isDateChanged: true });
     },
   })
 );

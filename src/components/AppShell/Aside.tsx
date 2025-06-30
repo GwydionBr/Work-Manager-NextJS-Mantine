@@ -20,13 +20,19 @@ interface AsideProps {
 export default function Aside({ toggleAside, isAsideOpen }: AsideProps) {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isTimeTrackerMinimized, setIsTimeTrackerMinimized] = useState(false);
+  const [currentSelectedDate, setCurrentSelectedDate] = useState<Date | null>(
+    null
+  );
 
-  const { selectedDate } = useGroupStore();
+  const { selectedDate, isDateChanged } = useGroupStore();
 
   useEffect(() => {
-    setIsTimeTrackerMinimized(true);
-    setIsNotificationOpen(false);
-  }, [selectedDate]);
+    if (isDateChanged && selectedDate !== currentSelectedDate) {
+      setCurrentSelectedDate(selectedDate);
+      setIsTimeTrackerMinimized(true);
+      setIsNotificationOpen(false);
+    }
+  }, [selectedDate, isDateChanged]);
 
   return (
     <Stack py="md" h="100%" align="center">
