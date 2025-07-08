@@ -168,7 +168,7 @@ export default function EditCashFlowButton({
       />
 
       <Tooltip label="Edit cash flow">
-        <EditActionIcon aria-label="Edit cash flow" onClick={open} size="md" />
+        <EditActionIcon aria-label="Edit cash flow" onClick={open} size="sm" />
       </Tooltip>
     </>
   );

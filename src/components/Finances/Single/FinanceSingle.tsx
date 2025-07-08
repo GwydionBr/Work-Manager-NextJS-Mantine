@@ -32,36 +32,38 @@ export default function FinanceSingle() {
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {sortedSingleCashFlows.map((cashFlow) => (
-            <Table.Tr
-              key={cashFlow.id}
-              bg={
-                cashFlow.type === "expense"
-                  ? alpha("var(--mantine-color-red-5)", 0.3)
-                  : alpha("var(--mantine-color-green-5)", 0.3)
-              }
-            >
-              <Table.Td>
-                {new Date(cashFlow.date).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </Table.Td>
-              <Table.Td>{cashFlow.title}</Table.Td>
-              <Table.Td>{cashFlow.amount}</Table.Td>
-              <Table.Td>
-                {
-                  financeCategories.find(
-                    (category) => category.id === cashFlow.category_id
-                  )?.title
+          {sortedSingleCashFlows.map((cashFlow) => {
+            return (
+              <Table.Tr
+                key={cashFlow.id}
+                bg={
+                  cashFlow.type === "expense"
+                    ? alpha("var(--mantine-color-red-5)", 0.3)
+                    : alpha("var(--mantine-color-green-5)", 0.3)
                 }
-              </Table.Td>
-              <Table.Td>
-                <EditCashFlowButton cashFlow={cashFlow} />
-              </Table.Td>
-            </Table.Tr>
-          ))}
+              >
+                <Table.Td>
+                  {new Date(cashFlow.date).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </Table.Td>
+                <Table.Td>{cashFlow.title}</Table.Td>
+                <Table.Td>{cashFlow.amount}</Table.Td>
+                <Table.Td>
+                  {
+                    financeCategories.find(
+                      (category) => category.id === cashFlow.category_id
+                    )?.title
+                  }
+                </Table.Td>
+                <Table.Td>
+                  <EditCashFlowButton cashFlow={cashFlow} />
+                </Table.Td>
+              </Table.Tr>
+            );
+          })}
         </Table.Tbody>
       </Table>
     </Box>
