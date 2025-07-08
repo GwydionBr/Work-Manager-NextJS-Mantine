@@ -5,6 +5,7 @@ import { useFinanceStore } from "@/stores/financeStore";
 import { Box, Table } from "@mantine/core";
 
 import classes from "./FinanceRecurring.module.css";
+import EditCashFlowButton from "../EditCashFlowButton";
 
 export default function FinanceRecurring() {
   const { recurringCashFlows } = useFinanceStore();
@@ -18,6 +19,7 @@ export default function FinanceRecurring() {
             <Table.Th>Amount</Table.Th>
             <Table.Th>Type</Table.Th>
             <Table.Th>Interval</Table.Th>
+            <Table.Th></Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
@@ -27,6 +29,9 @@ export default function FinanceRecurring() {
               <Table.Td>{cashFlow.amount}</Table.Td>
               <Table.Td>{cashFlow.type}</Table.Td>
               <Table.Td>{cashFlow.interval}</Table.Td>
+              <Table.Td>
+                <EditCashFlowButton cashFlow={cashFlow} />
+              </Table.Td>
             </Table.Tr>
           ))}
         </Table.Tbody>

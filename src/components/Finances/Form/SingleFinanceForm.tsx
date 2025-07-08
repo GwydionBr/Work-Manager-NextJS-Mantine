@@ -10,9 +10,10 @@ import { zodResolver } from "mantine-form-zod-resolver";
 import { currencies } from "@/constants/settings";
 
 import { Currency } from "@/types/settings.types";
+import { Tables } from "@/types/db.types";
 
 const schema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
+  title: z.string().min(2, "Name must be at least 2 characters"),
   amount: z.number().min(0, "Amount must be greater than 0"),
   currency: z.enum(
     currencies.map((currency) => currency.value) as [string, ...string[]]
@@ -24,7 +25,7 @@ const schema = z.object({
 });
 
 export interface SingleFinanceFormValues {
-  name: string;
+  title: string;
   amount: number;
   currency: Currency;
   date: Date;
@@ -34,18 +35,20 @@ interface SingleFinanceFormProps {
   financeCurrency: Currency;
   handleSubmit: (values: SingleFinanceFormValues) => void;
   isLoading: boolean;
+  cashFlow?: Tables<"single_cash_flow">;
 }
 
 export default function SingleFinanceForm({
   financeCurrency,
   handleSubmit,
   isLoading,
+  cashFlow,
 }: SingleFinanceFormProps) {
   const form = useForm({
     initialValues: {
-      name: "",
-      amount: 0,
-      date: new Date(),
+      title: cashFlow?.title ?? "",
+      amount: cashFlow?.amount ?? 0,
+      date: cashFlow?.date ? new Date(cashFlow.date) : new Date(),
       currency: financeCurrency,
     },
     validate: zodResolver(schema),
@@ -64,7 +67,7 @@ export default function SingleFinanceForm({
         <TextInput
           withAsterisk
           label="Name"
-          {...form.getInputProps("name")}
+          {...form.getInputProps("title")}
           data-autofocus
         />
         <NumberInput

@@ -54,9 +54,7 @@ export default function FinanceForm({ onClose }: FinanceFormProps) {
   async function handleSingleFinanceSubmit(values: SingleFinanceFormValues) {
     setIsLoading(true);
     const success = await addSingleCashFlow({
-      title: values.name,
-      amount: values.amount,
-      currency: values.currency,
+      ...values,
       date: values.date.toISOString(),
       category_id: categoryId,
       type,
@@ -75,13 +73,9 @@ export default function FinanceForm({ onClose }: FinanceFormProps) {
   ) {
     setIsLoading(true);
     const success = await addRecurringCashFlow({
-      title: values.name,
-      description: values.description || "",
-      amount: values.amount,
-      currency: values.currency,
-      start_date: values.startDate.toISOString(),
-      end_date: values.endDate?.toISOString(),
-      interval: values.interval,
+      ...values,
+      end_date: values.end_date?.toISOString(),
+      start_date: values.start_date.toISOString(),
       category_id: categoryId,
       type,
     });

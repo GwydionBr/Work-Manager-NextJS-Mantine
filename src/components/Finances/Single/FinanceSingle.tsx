@@ -5,6 +5,7 @@ import { useFinanceStore } from "@/stores/financeStore";
 import { Box, Table, alpha } from "@mantine/core";
 
 import classes from "./FinanceSingle.module.css";
+import EditCashFlowButton from "../EditCashFlowButton";
 
 export default function FinanceSingle() {
   const { singleCashFlows, financeCategories } = useFinanceStore();
@@ -27,6 +28,7 @@ export default function FinanceSingle() {
             <Table.Th>Name</Table.Th>
             <Table.Th>Amount</Table.Th>
             <Table.Th>Category</Table.Th>
+            <Table.Th></Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
@@ -54,6 +56,9 @@ export default function FinanceSingle() {
                     (category) => category.id === cashFlow.category_id
                   )?.title
                 }
+              </Table.Td>
+              <Table.Td>
+                <EditCashFlowButton cashFlow={cashFlow} />
               </Table.Td>
             </Table.Tr>
           ))}

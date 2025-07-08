@@ -164,6 +164,9 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
       const updatedRecurringCashFlow = await actions.updateRecurringCashFlow({
         updateRecurringCashFlow: recurringCashFlow,
       });
+
+      console.log(updatedRecurringCashFlow);
+      
       if (!updatedRecurringCashFlow.success) return false;
 
       const updatedRecurringCashFlows = recurringCashFlows.map((c) =>
@@ -182,6 +185,7 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
       const updatedSingleCashFlow = await actions.updateSingleCashFlow({
         updateSingleCashFlow: singleCashFlow,
       });
+      console.log(updatedSingleCashFlow);
       if (!updatedSingleCashFlow.success) return false;
 
       const updatedSingleCashFlows = singleCashFlows.map((c) =>
