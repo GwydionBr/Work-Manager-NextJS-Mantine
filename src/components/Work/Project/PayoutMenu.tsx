@@ -50,7 +50,6 @@ export default function PayoutMenu({
 
   // Use external state if provided, otherwise use internal state
   const selectedSessions = externalSelectedSessions || internalSelectedSessions;
-  const setSelectedSessions = onSessionsChange || setInternalSelectedSessions;
 
   // Filter out already paid sessions
   const unpaidSessions = sessions.filter((session) => {
@@ -62,11 +61,7 @@ export default function PayoutMenu({
       // For hourly payment projects, check if session is paid
       if (sessionProject.hourly_payment) {
         return !session.payed;
-      }
-
-      // For non-hourly payment projects, check if project is fully paid
-      const projectTotalPayout = sessionProject.total_payout || 0;
-      return projectTotalPayout < sessionProject.salary;
+      } else return false;
     }
 
     // Normal mode - just check session.payed

@@ -51,6 +51,7 @@ export default function TimeTrackerComponent({
   );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showSmall, setShowSmall] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (activeProject) {
@@ -83,6 +84,8 @@ export default function TimeTrackerComponent({
   };
 
   async function submitTimer() {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     setErrorMessage(null);
     const newSession = getCurrentSession();
     const roundingInterval = getRoundingInterval(
@@ -102,6 +105,7 @@ export default function TimeTrackerComponent({
     } else {
       setErrorMessage("Error saving session");
     }
+    setIsSubmitting(false);
   }
 
   return (

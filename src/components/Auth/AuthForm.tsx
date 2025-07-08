@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useForm } from "@mantine/form";
+import { useRouter } from "next/navigation";
 import { upperFirst, useToggle } from "@mantine/hooks";
-import classes from "@/app/Auth.module.css";
 
 import {
   Anchor,
@@ -21,8 +21,9 @@ import {
 } from "@mantine/core";
 import GithubButton from "../SocialButtons/GithubButton";
 
+import classes from "@/app/Auth.module.css";
+
 import { login, signup, signInWithGithub } from "@/actions";
-import { useRouter } from "next/navigation";
 
 type AuthType = "login" | "register";
 
@@ -46,7 +47,6 @@ export default function AuthenticationForm({
   async function handleSubmit(values: any) {
     setIsLoading(true);
     if (type === "login") {
-      console.log("login", values);
       const { success, error } = await login(values);
       if (success) {
         router.push("/work");
@@ -54,7 +54,6 @@ export default function AuthenticationForm({
         setError(error);
       }
     } else {
-      console.log("signup", values);
       const { success, error } = await signup(values);
       if (success) {
         router.push("/work");
