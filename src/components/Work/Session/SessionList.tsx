@@ -142,9 +142,7 @@ export default function SessionList({
         return !session.payed;
       }
 
-      // For non-hourly payment projects, check if project is fully paid
-      const projectTotalPayout = sessionProject.total_payout || 0;
-      return projectTotalPayout < sessionProject.salary;
+      return false;
     }
 
     // Normal mode - just check session.payed
