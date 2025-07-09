@@ -25,8 +25,8 @@ import type { Tables } from "@/types/db.types";
 interface PayoutMenuProps {
   sessions: Tables<"timerSession">[];
   project?: Tables<"timerProject">;
-  selectedSessions?: string[];
-  onSessionsChange?: (sessions: string[]) => void;
+  selectedSessions: string[];
+  onSessionsChange: (sessions: string[]) => void;
   isOverview?: boolean;
   projects?: Tables<"timerProject">[];
 }
@@ -34,22 +34,16 @@ interface PayoutMenuProps {
 export default function PayoutMenu({
   sessions,
   project,
-  selectedSessions: externalSelectedSessions,
+  selectedSessions,
   onSessionsChange,
   isOverview = false,
   projects,
 }: PayoutMenuProps) {
-  const [internalSelectedSessions, setInternalSelectedSessions] = useState<
-    string[]
-  >([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [payoutAmount, setPayoutAmount] = useState<number>(0);
   const [useCustomAmount, setUseCustomAmount] = useState(false);
   const { payoutSessions, payoutProjectSalary } = useWorkStore();
   const { fetchFinanceData } = useFinanceStore();
-
-  // Use external state if provided, otherwise use internal state
-  const selectedSessions = externalSelectedSessions || internalSelectedSessions;
 
   // Filter out already paid sessions
   const unpaidSessions = sessions.filter((session) => {
@@ -85,38 +79,20 @@ export default function PayoutMenu({
   const availablePayout = calculateAvailablePayout();
 
   const handleSessionToggle = (sessionId: string) => {
-    if (onSessionsChange) {
-      // External state management
-      onSessionsChange(
-        selectedSessions.includes(sessionId)
-          ? selectedSessions.filter((id) => id !== sessionId)
-          : [...selectedSessions, sessionId]
-      );
-    } else {
-      // Internal state management
-      setInternalSelectedSessions((prev) =>
-        prev.includes(sessionId)
-          ? prev.filter((id) => id !== sessionId)
-          : [...prev, sessionId]
-      );
-    }
+    // External state management
+    onSessionsChange(
+      selectedSessions.includes(sessionId)
+        ? selectedSessions.filter((id) => id !== sessionId)
+        : [...selectedSessions, sessionId]
+    );
   };
 
   const handleSelectAll = () => {
-    if (onSessionsChange) {
-      // External state management
-      if (selectedUnpaidSessions.length === unpaidSessions.length) {
-        onSessionsChange([]);
-      } else {
-        onSessionsChange(unpaidSessions.map((s) => s.id));
-      }
+    // External state management
+    if (selectedUnpaidSessions.length === unpaidSessions.length) {
+      onSessionsChange([]);
     } else {
-      // Internal state management
-      if (internalSelectedSessions.length === unpaidSessions.length) {
-        setInternalSelectedSessions([]);
-      } else {
-        setInternalSelectedSessions(unpaidSessions.map((s) => s.id));
-      }
+      onSessionsChange(unpaidSessions.map((s) => s.id));
     }
   };
 
@@ -157,11 +133,7 @@ export default function PayoutMenu({
         // Refresh finance data to show new income entries
         await fetchFinanceData();
         // Clear selected sessions
-        if (onSessionsChange) {
-          onSessionsChange([]);
-        } else {
-          setInternalSelectedSessions([]);
-        }
+        onSessionsChange([]);
       }
     } finally {
       setIsProcessing(false);

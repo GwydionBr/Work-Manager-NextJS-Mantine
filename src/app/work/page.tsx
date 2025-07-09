@@ -34,8 +34,6 @@ export default function WorkPage() {
     handleSetDaysForPreset,
   } = useSessionFiltering(activeProject?.sessions ?? [], undefined, false);
 
-  const groupedSessions = groupSessions(activeProject?.sessions ?? []); // Use original sessions for display
-
   if (!activeProject || isFetching) {
     return (
       <Stack align="center" w="100%" px="xl">

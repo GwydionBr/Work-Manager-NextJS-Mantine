@@ -122,6 +122,7 @@ export default function BulkSelectionControls({
   };
 
   const handleTimePresetChange = (preset: string | null) => {
+    onSessionsChange([]);
     onTimePresetChange(preset);
     if (preset && preset !== "custom") {
       const presetData = timePresets.find((p) => p.value === preset);
@@ -214,7 +215,7 @@ export default function BulkSelectionControls({
               disabled={unpaidSessions.length === 0}
             />
             <Stack gap="xs" align="flex-end">
-              {selectedSessions.length > 0 && (
+              {unpaidSessions.length > 0 && selectedSessions.length > 0 && (
                 <Text size="sm" c="dimmed">
                   {selectedSessions.length} session
                   {selectedSessions.length > 1 ? "s" : ""} selected
