@@ -96,7 +96,7 @@ export default function WorkPage() {
         rightButton={<EditProjectButton />}
         leftButton={
           <PayoutMenu
-            sessions={filteredSessions}
+            sessions={unpaidSessions}
             project={activeProject.project}
             selectedSessions={selectedSessions}
             onSessionsChange={setSelectedSessions}
@@ -111,7 +111,6 @@ export default function WorkPage() {
               unpaidSessions={unpaidSessions}
               selectedSessions={selectedSessions}
               onSessionsChange={setSelectedSessions}
-              filteredSessions={filteredSessions}
               isOverview={false}
               timePresets={timePresets}
               selectedTimePreset={selectedTimePreset}

@@ -49,7 +49,7 @@ export default function WorkOverviewPage() {
         headerTitle="Work Overview"
         leftButton={
           <PayoutMenu
-            sessions={filteredSessions}
+            sessions={unpaidSessions}
             projects={projects}
             selectedSessions={selectedSessions}
             onSessionsChange={setSelectedSessions}
@@ -63,7 +63,6 @@ export default function WorkOverviewPage() {
             unpaidSessions={unpaidSessions}
             selectedSessions={selectedSessions}
             onSessionsChange={setSelectedSessions}
-            filteredSessions={filteredSessions}
             isOverview={true}
             folders={folders}
             projects={projects}

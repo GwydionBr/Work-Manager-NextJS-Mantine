@@ -31,7 +31,6 @@ interface BulkSelectionControlsProps {
   unpaidSessions: Tables<"timerSession">[];
   selectedSessions: string[];
   onSessionsChange: (sessions: string[]) => void;
-  filteredSessions: Tables<"timerSession">[];
   projects?: Tables<"timerProject">[];
   folders?: Tables<"timer_project_folder">[];
   isOverview: boolean;
@@ -63,7 +62,6 @@ export default function BulkSelectionControls({
   unpaidSessions,
   selectedSessions,
   onSessionsChange,
-  filteredSessions,
   projects,
   folders,
   isOverview,
@@ -90,21 +88,6 @@ export default function BulkSelectionControls({
     } else {
       onSessionsChange(unpaidSessions.map((s) => s.id));
     }
-  };
-
-  // Select all unpaid sessions within the current time filter
-  const handleSelectByTimePeriod = () => {
-    if (!selectedTimePreset) return;
-
-    const timePeriodSessions = filteredSessions.filter(
-      (session) => !session.payed
-    );
-    const timePeriodSessionIds = timePeriodSessions.map((s) => s.id);
-
-    const newSelectedSessions = selectedSessions.filter(
-      (id) => !timePeriodSessionIds.includes(id)
-    );
-    onSessionsChange([...newSelectedSessions, ...timePeriodSessionIds]);
   };
 
   // Handle time preset changes and update days accordingly
@@ -242,13 +225,10 @@ export default function BulkSelectionControls({
                 style={{ flex: 1 }}
               />
               {selectedTimePreset && !isOverview && (
-                <Button
-                  size="sm"
-                  onClick={handleSelectByTimePeriod}
-                  variant="light"
-                >
-                  Select {filteredSessions.filter((s) => !s.payed).length}{" "}
-                  unpaid sessions
+                <Button size="sm" onClick={handleSelectAll} variant="light">
+                  {selectedSessions.length === unpaidSessions.length
+                    ? `Deselect all Sessions`
+                    : `Select ${unpaidSessions.length} Unpaid Sessions`}
                 </Button>
               )}
             </Group>
