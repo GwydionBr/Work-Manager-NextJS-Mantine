@@ -15,11 +15,15 @@ import {
   Badge,
   Collapse,
   Indicator,
+  Tooltip,
+  MultiSelect,
+  Switch,
 } from "@mantine/core";
 import FilterActionIcon from "@/components/UI/Buttons/FilterActionIcon";
 
 import type { Tables } from "@/types/db.types";
 import type { TimePreset } from "@/types/timerSession.types";
+import type { FilterLogic } from "@/hooks/useSessionFiltering";
 
 const Radius = 20;
 
@@ -37,8 +41,24 @@ interface BulkSelectionControlsProps {
   onTimePresetChange: (preset: string | null) => void;
   onCustomDaysChange: (days: number) => void;
   onSetDaysForPreset?: (days: number) => void;
+  // New filter props
+  filterState?: {
+    selectedProjects: string[];
+    selectedFolders: string[];
+    selectedCategories: string[];
+    filterLogic: FilterLogic;
+  };
+  onProjectFilterChange?: (projectIds: string[]) => void;
+  onFolderFilterChange?: (folderIds: string[]) => void;
+  onCategoryFilterChange?: (categoryIds: string[]) => void;
+  onFilterLogicChange?: (logic: FilterLogic) => void;
+  onClearAllFilters?: () => void;
 }
 
+/**
+ * Bulk selection controls for timer sessions with filtering capabilities
+ * Allows users to select multiple sessions by various criteria (project, folder, time period)
+ */
 export default function BulkSelectionControls({
   unpaidSessions,
   selectedSessions,
@@ -53,10 +73,17 @@ export default function BulkSelectionControls({
   onTimePresetChange,
   onCustomDaysChange,
   onSetDaysForPreset,
+  filterState,
+  onProjectFilterChange,
+  onFolderFilterChange,
+  onCategoryFilterChange,
+  onFilterLogicChange,
+  onClearAllFilters,
 }: BulkSelectionControlsProps) {
   const { financeCategories } = useFinanceStore();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
+  // Toggle between selecting all sessions or none
   const handleSelectAll = () => {
     if (selectedSessions.length === unpaidSessions.length) {
       onSessionsChange([]);
@@ -65,78 +92,7 @@ export default function BulkSelectionControls({
     }
   };
 
-  const handleSelectByProject = (projectId: string | null) => {
-    if (!projectId) return;
-
-    const projectSessions = unpaidSessions.filter(
-      (session) => session.project_id === projectId
-    );
-    const projectSessionIds = projectSessions.map((s) => s.id);
-
-    const newSelectedSessions = selectedSessions.filter(
-      (id) => !projectSessionIds.includes(id)
-    );
-    onSessionsChange([...newSelectedSessions, ...projectSessionIds]);
-  };
-
-  const handleSelectByFolder = (folderId: string | null) => {
-    if (!folderId || !projects) return;
-
-    const folderProjects = projects.filter(
-      (project) => project.folder_id === folderId
-    );
-    const folderProjectIds = folderProjects.map((p) => p.id);
-    const folderSessions = unpaidSessions.filter((session) =>
-      folderProjectIds.includes(session.project_id)
-    );
-    const folderSessionIds = folderSessions.map((s) => s.id);
-
-    const newSelectedSessions = selectedSessions.filter(
-      (id) => !folderSessionIds.includes(id)
-    );
-    onSessionsChange([...newSelectedSessions, ...folderSessionIds]);
-  };
-
-  const handleSelectByCashFlowCategory = (
-    cashFlowCategoryId: string | null
-  ) => {
-    if (!cashFlowCategoryId || !projects) return;
-
-    const cashFlowCategoryProjects = projects.filter(
-      (project) => project.cash_flow_category_id === cashFlowCategoryId
-    );
-    const cashFlowCategoryProjectIds = cashFlowCategoryProjects.map(
-      (p) => p.id
-    );
-    const cashFlowCategorySessions = unpaidSessions.filter((session) =>
-      cashFlowCategoryProjectIds.includes(session.project_id)
-    );
-    const cashFlowCategorySessionIds = cashFlowCategorySessions.map(
-      (s) => s.id
-    );
-
-    const newSelectedSessions = selectedSessions.filter(
-      (id) => !cashFlowCategorySessionIds.includes(id)
-    );
-    onSessionsChange([...newSelectedSessions, ...cashFlowCategorySessionIds]);
-  };
-
-  const handleTimePresetChange = (preset: string | null) => {
-    onSessionsChange([]);
-    onTimePresetChange(preset);
-    if (preset && preset !== "custom") {
-      const presetData = timePresets.find((p) => p.value === preset);
-      if (presetData) {
-        onSetDaysForPreset?.(presetData.days);
-      }
-    }
-  };
-
-  const handleCustomDaysChange = (days: number) => {
-    onCustomDaysChange(days);
-    onTimePresetChange("custom");
-  };
-
+  // Select all unpaid sessions within the current time filter
   const handleSelectByTimePeriod = () => {
     if (!selectedTimePreset) return;
 
@@ -151,26 +107,22 @@ export default function BulkSelectionControls({
     onSessionsChange([...newSelectedSessions, ...timePeriodSessionIds]);
   };
 
-  // Get unique categories and projects for selection dropdowns
-  const getCategories = () => {
-    if (!projects || !folders) return [];
-
-    const categories = new Map<string, { id: string; title: string }>();
-
-    // Get categories from projects that have folder_id
-    projects.forEach((project) => {
-      if (project.folder_id) {
-        const folder = folders.find((f) => f.id === project.folder_id);
-        if (folder) {
-          categories.set(project.folder_id, {
-            id: project.folder_id,
-            title: folder.title,
-          });
-        }
+  // Handle time preset changes and update days accordingly
+  const handleTimePresetChange = (preset: string | null) => {
+    onSessionsChange([]);
+    onTimePresetChange(preset);
+    if (preset && preset !== "custom") {
+      const presetData = timePresets.find((p) => p.value === preset);
+      if (presetData) {
+        onSetDaysForPreset?.(presetData.days);
       }
-    });
+    }
+  };
 
-    return Array.from(categories.values());
+  // Update custom days and set preset to custom
+  const handleCustomDaysChange = (days: number) => {
+    onCustomDaysChange(days);
+    onTimePresetChange("custom");
   };
 
   const getProjects = () => {
@@ -190,6 +142,31 @@ export default function BulkSelectionControls({
       label: category.title,
     }));
   };
+
+  const getFolders = () => {
+    if (!folders) return [];
+
+    return folders.map((folder) => ({
+      value: folder.id,
+      label: folder.title,
+    }));
+  };
+
+  // Check if any filters are active
+  const hasActiveFilters =
+    selectedTimePreset !== null ||
+    (filterState &&
+      (filterState.selectedProjects.length > 0 ||
+        filterState.selectedFolders.length > 0 ||
+        filterState.selectedCategories.length > 0));
+
+  // Check if multiple filters are active
+  const hasMultipleFilters =
+    (selectedTimePreset !== null ? 1 : 0) +
+      ((filterState?.selectedProjects?.length || 0) > 0 ? 1 : 0) +
+      ((filterState?.selectedFolders?.length || 0) > 0 ? 1 : 0) +
+      ((filterState?.selectedCategories?.length || 0) > 0 ? 1 : 0) >
+    1;
 
   return (
     <Stack
@@ -228,127 +205,189 @@ export default function BulkSelectionControls({
               )}
             </Stack>
           </Group>
-          <Indicator
-            size={10}
-            color="red"
-            offset={4}
-            position="top-end"
-            disabled={
-              selectedTimePreset === null || selectedTimePreset === "custom"
-            }
-          >
-            {selectedTimePreset !== null ? (
+          <Tooltip label="Filter Sessions" openDelay={500}>
+            <Indicator
+              size={10}
+              color="red"
+              offset={4}
+              position="top-end"
+              disabled={!hasActiveFilters}
+            >
               <FilterActionIcon
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
-                filled
+                filled={hasActiveFilters}
               />
-            ) : (
-              <FilterActionIcon
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
-              />
-            )}
-          </Indicator>
+            </Indicator>
+          </Tooltip>
         </Group>
 
         <Collapse in={isFilterOpen}>
-          {/* Time Period Filtering for normal projects */}
-          {!isOverview && (
+          {/* Time Period Filtering - now available in both modes */}
+          <Divider my="xs" />
+          <Stack gap="xs">
+            <Text size="sm" fw={500}>
+              Select Sessions by Time Period
+            </Text>
+            <Group gap="md" align="flex-end">
+              <Select
+                label="Time Period"
+                placeholder="Select a time period"
+                data={timePresets.map((preset) => ({
+                  value: preset.value,
+                  label: preset.label,
+                }))}
+                value={selectedTimePreset}
+                onChange={handleTimePresetChange}
+                clearable
+                style={{ flex: 1 }}
+              />
+              {selectedTimePreset && !isOverview && (
+                <Button
+                  size="sm"
+                  onClick={handleSelectByTimePeriod}
+                  variant="light"
+                >
+                  Select {filteredSessions.filter((s) => !s.payed).length}{" "}
+                  unpaid sessions
+                </Button>
+              )}
+            </Group>
+            {selectedTimePreset === "custom" && (
+              <Stack gap="xs">
+                <Text size="sm">Custom Days: {timeFilterDays}</Text>
+                <Slider
+                  value={timeFilterDays}
+                  onChange={handleCustomDaysChange}
+                  min={1}
+                  max={365}
+                  mb="xl"
+                  step={1}
+                  marks={[
+                    { value: 1, label: "1" },
+                    { value: 7, label: "7" },
+                    { value: 30, label: "30" },
+                    { value: 90, label: "90" },
+                    { value: 365, label: "365" },
+                  ]}
+                />
+              </Stack>
+            )}
+            <Collapse in={selectedTimePreset !== null && !isOverview}>
+              <Badge
+                color={unpaidSessions.length > 0 ? "blue" : "red"}
+                variant="light"
+              >
+                {unpaidSessions.length} unpaid sessions in last {timeFilterDays}{" "}
+                days
+              </Badge>
+            </Collapse>
+          </Stack>
+
+          {/* Project-based filtering for overview mode */}
+          {isOverview && projects && projects.length > 0 && (
             <>
               <Divider my="xs" />
               <Stack gap="xs">
                 <Text size="sm" fw={500}>
-                  Select Sessions by Time Period
+                  Filter Sessions by Project Criteria
                 </Text>
+
+                {/* Filter Controls */}
                 <Group gap="md" align="flex-end">
-                  <Select
-                    label="Time Period"
-                    placeholder="Select a time period"
-                    data={timePresets.map((preset) => ({
-                      value: preset.value,
-                      label: preset.label,
-                    }))}
-                    value={selectedTimePreset}
-                    onChange={handleTimePresetChange}
+                  <MultiSelect
+                    label="Filter by Folders"
+                    placeholder="Choose folders"
+                    data={getFolders()}
+                    value={filterState?.selectedFolders || []}
+                    onChange={onFolderFilterChange}
                     clearable
                     style={{ flex: 1 }}
                   />
-                  {selectedTimePreset && (
-                    <Button
-                      size="sm"
-                      onClick={handleSelectByTimePeriod}
-                      variant="light"
-                      disabled={unpaidSessions.length === 0}
-                    >
-                      Select {filteredSessions.filter((s) => !s.payed).length}{" "}
-                      unpaid sessions
-                    </Button>
-                  )}
+                  <MultiSelect
+                    label="Filter by Projects"
+                    placeholder="Choose projects"
+                    data={getProjects()}
+                    value={filterState?.selectedProjects || []}
+                    onChange={onProjectFilterChange}
+                    clearable
+                    style={{ flex: 1 }}
+                  />
+                  <MultiSelect
+                    label="Filter by Categories"
+                    placeholder="Choose categories"
+                    data={getCashFlowCategories()}
+                    value={filterState?.selectedCategories || []}
+                    onChange={onCategoryFilterChange}
+                    clearable
+                    style={{ flex: 1 }}
+                  />
                 </Group>
-                {selectedTimePreset === "custom" && (
-                  <Stack gap="xs">
-                    <Text size="sm">Custom Days: {timeFilterDays}</Text>
-                    <Slider
-                      value={timeFilterDays}
-                      onChange={handleCustomDaysChange}
-                      min={1}
-                      max={365}
-                      mb="xl"
-                      step={1}
-                      marks={[
-                        { value: 1, label: "1" },
-                        { value: 7, label: "7" },
-                        { value: 30, label: "30" },
-                        { value: 90, label: "90" },
-                        { value: 365, label: "365" },
-                      ]}
+
+                {/* Elegant AND/OR Logic Selection - only show when multiple filters are active */}
+                <Collapse in={hasMultipleFilters || false}>
+                  <Group gap="xs" align="center">
+                    <Switch
+                      size="sm"
+                      checked={filterState?.filterLogic === "AND"}
+                      onChange={(event) =>
+                        onFilterLogicChange?.(
+                          event.currentTarget.checked ? "AND" : "OR"
+                        )
+                      }
+                      label={
+                        <Text size="sm">
+                          {filterState?.filterLogic === "AND"
+                            ? "All filters must match (AND)"
+                            : "Any filter can match (OR)"}
+                        </Text>
+                      }
                     />
-                  </Stack>
-                )}
-                <Collapse in={selectedTimePreset !== null}>
+                    <Text size="xs" c="dimmed">
+                      {filterState?.filterLogic === "AND"
+                        ? "Sessions must belong to ALL selected criteria"
+                        : "Sessions can belong to ANY selected criteria"}
+                    </Text>
+                  </Group>
+                </Collapse>
+
+                <Stack align="center">
                   <Badge
+                    mt="md"
                     color={unpaidSessions.length > 0 ? "blue" : "red"}
                     variant="light"
                   >
                     {unpaidSessions.length} unpaid sessions in last{" "}
                     {timeFilterDays} days
                   </Badge>
+                </Stack>
+
+                {/* Clear Filters Button */}
+                <Collapse in={hasActiveFilters || false}>
+                  <Stack align="center">
+                    <Stack mt="md" w="90%">
+                      {isOverview && (
+                        <Button
+                          size="sm"
+                          onClick={handleSelectAll}
+                          variant="light"
+                        >
+                          {selectedSessions.length === unpaidSessions.length
+                            ? `Deselect all Sessions`
+                            : `Select ${unpaidSessions.length} Unpaid Sessions`}
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="light"
+                        color="red"
+                        onClick={onClearAllFilters}
+                      >
+                        Clear All Filters
+                      </Button>
+                    </Stack>
+                  </Stack>
                 </Collapse>
               </Stack>
-            </>
-          )}
-
-          {isOverview && projects && projects.length > 0 && (
-            <>
-              <Divider my="xs" />
-              <Group gap="md" align="flex-end">
-                <Select
-                  label="Select by Folder"
-                  placeholder="Choose a folder"
-                  data={getCategories().map((cat) => ({
-                    value: cat.id,
-                    label: cat.title,
-                  }))}
-                  onChange={handleSelectByFolder}
-                  clearable
-                  style={{ flex: 1 }}
-                />
-                <Select
-                  label="Select by Project"
-                  placeholder="Choose a project"
-                  data={getProjects()}
-                  onChange={handleSelectByProject}
-                  clearable
-                  style={{ flex: 1 }}
-                />
-                <Select
-                  label="Select by Category"
-                  placeholder="Choose a category"
-                  data={getCashFlowCategories()}
-                  onChange={handleSelectByCashFlowCategory}
-                  clearable
-                  style={{ flex: 1 }}
-                />
-              </Group>
             </>
           )}
         </Collapse>

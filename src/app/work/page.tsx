@@ -32,7 +32,12 @@ export default function WorkPage() {
     handleTimePresetChange,
     handleCustomDaysChange,
     handleSetDaysForPreset,
-  } = useSessionFiltering(activeProject?.sessions ?? [], undefined, false);
+  } = useSessionFiltering(
+    activeProject?.sessions ?? [],
+    undefined,
+    undefined,
+    false
+  );
 
   if (!activeProject || isFetching) {
     return (

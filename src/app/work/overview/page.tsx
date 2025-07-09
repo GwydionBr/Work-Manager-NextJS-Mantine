@@ -15,19 +15,25 @@ export default function WorkOverviewPage() {
   const { projects: timerProjects, folders, timerSessions } = useWorkStore();
   const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
 
-  // Use the custom hook for filtering logic
+  const projects = timerProjects.map((project) => project.project);
+
+  // Use the custom hook for filtering logic with all new filter functionality
   const {
     timePresets,
     selectedTimePreset,
     timeFilterDays,
     filteredSessions,
     unpaidSessions,
+    filterState,
     handleTimePresetChange,
     handleCustomDaysChange,
     handleSetDaysForPreset,
-  } = useSessionFiltering(timerSessions, undefined, false);
-
-  const projects = timerProjects.map((project) => project.project);
+    handleProjectFilterChange,
+    handleFolderFilterChange,
+    handleCategoryFilterChange,
+    handleFilterLogicChange,
+    clearAllFilters,
+  } = useSessionFiltering(timerSessions, projects, folders, true);
 
   const handleSessionToggle = (sessionId: string) => {
     setSelectedSessions(
@@ -43,7 +49,7 @@ export default function WorkOverviewPage() {
         headerTitle="Work Overview"
         leftButton={
           <PayoutMenu
-            sessions={timerSessions}
+            sessions={filteredSessions}
             projects={projects}
             selectedSessions={selectedSessions}
             onSessionsChange={setSelectedSessions}
@@ -67,6 +73,12 @@ export default function WorkOverviewPage() {
             onTimePresetChange={handleTimePresetChange}
             onCustomDaysChange={handleCustomDaysChange}
             onSetDaysForPreset={handleSetDaysForPreset}
+            filterState={filterState}
+            onProjectFilterChange={handleProjectFilterChange}
+            onFolderFilterChange={handleFolderFilterChange}
+            onCategoryFilterChange={handleCategoryFilterChange}
+            onFilterLogicChange={handleFilterLogicChange}
+            onClearAllFilters={clearAllFilters}
           />
           {/* Session Hierarchy */}
           {filteredSessions.length > 0 ? (
