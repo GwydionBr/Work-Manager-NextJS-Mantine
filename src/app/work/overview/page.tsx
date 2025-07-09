@@ -5,7 +5,7 @@ import { useWorkStore } from "@/stores/workManagerStore";
 
 import { Stack } from "@mantine/core";
 import Header from "@/components/Header/Header";
-import SessionList from "@/components/Work/Session/SessionList";
+import SessionList from "@/components/Work/Session/SessionList/SessionList";
 import PayoutMenu from "@/components/Work/Project/PayoutMenu";
 
 export default function WorkOverviewPage() {
