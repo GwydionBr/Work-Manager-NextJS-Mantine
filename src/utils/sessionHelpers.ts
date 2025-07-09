@@ -1,6 +1,10 @@
 import type { Tables } from "@/types/db.types";
 import * as helper from "@/utils/workHelperFunctions";
-import type { Earnings, EarningsBreakdown, Year } from "../types";
+import type {
+  Earnings,
+  EarningsBreakdown,
+  Year,
+} from "@/types/timerSession.types";
 
 export function groupSessions(
   sessions: Tables<"timerSession">[]

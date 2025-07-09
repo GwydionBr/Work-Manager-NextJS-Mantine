@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useFinanceStore } from "@/stores/financeStore";
 
 import {
@@ -12,7 +13,10 @@ import {
   Divider,
   Slider,
   Badge,
+  Collapse,
+  Indicator,
 } from "@mantine/core";
+import FilterActionIcon from "@/components/UI/Buttons/FilterActionIcon";
 
 import type { Tables } from "@/types/db.types";
 import type { TimePreset } from "@/types/timerSession.types";
@@ -51,6 +55,7 @@ export default function BulkSelectionControls({
   onSetDaysForPreset,
 }: BulkSelectionControlsProps) {
   const { financeCategories } = useFinanceStore();
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const handleSelectAll = () => {
     if (selectedSessions.length === unpaidSessions.length) {
@@ -194,136 +199,158 @@ export default function BulkSelectionControls({
     >
       <Stack gap="xs" style={{ flex: 1 }}>
         <Group justify="space-between">
-          <Checkbox
-            label={`Select All (${unpaidSessions.length} unpaid sessions)`}
-            checked={
-              selectedSessions.length === unpaidSessions.length &&
-              unpaidSessions.length > 0
+          <Group>
+            <Checkbox
+              label={`Select All (${unpaidSessions.length} unpaid sessions)`}
+              checked={
+                selectedSessions.length === unpaidSessions.length &&
+                unpaidSessions.length > 0
+              }
+              indeterminate={
+                selectedSessions.length > 0 &&
+                selectedSessions.length < unpaidSessions.length
+              }
+              onChange={handleSelectAll}
+              disabled={unpaidSessions.length === 0}
+            />
+            <Stack gap="xs" align="flex-end">
+              {selectedSessions.length > 0 && (
+                <Text size="sm" c="dimmed">
+                  {selectedSessions.length} session
+                  {selectedSessions.length > 1 ? "s" : ""} selected
+                </Text>
+              )}
+              {unpaidSessions.length === 0 && (
+                <Text size="sm" c="dimmed">
+                  All sessions paid
+                </Text>
+              )}
+            </Stack>
+          </Group>
+          <Indicator
+            size={10}
+            color="red"
+            offset={4}
+            position="top-end"
+            disabled={
+              selectedTimePreset === null || selectedTimePreset === "custom"
             }
-            indeterminate={
-              selectedSessions.length > 0 &&
-              selectedSessions.length < unpaidSessions.length
-            }
-            onChange={handleSelectAll}
-            disabled={unpaidSessions.length === 0}
-          />
-          <Stack gap="xs" align="flex-end">
-            {selectedSessions.length > 0 && (
-              <Text size="sm" c="dimmed">
-                {selectedSessions.length} session
-                {selectedSessions.length > 1 ? "s" : ""} selected
-              </Text>
+          >
+            {selectedTimePreset !== null ? (
+              <FilterActionIcon
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                filled
+              />
+            ) : (
+              <FilterActionIcon
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+              />
             )}
-            {unpaidSessions.length === 0 && (
-              <Text size="sm" c="dimmed">
-                All sessions paid
-              </Text>
-            )}
-          </Stack>
+          </Indicator>
         </Group>
 
-        {/* Time Period Filtering for normal projects */}
-        {!isOverview && (
-          <>
-            <Divider my="xs" />
-            <Stack gap="xs">
-              <Text size="sm" fw={500}>
-                Select Sessions by Time Period
-              </Text>
+        <Collapse in={isFilterOpen}>
+          {/* Time Period Filtering for normal projects */}
+          {!isOverview && (
+            <>
+              <Divider my="xs" />
+              <Stack gap="xs">
+                <Text size="sm" fw={500}>
+                  Select Sessions by Time Period
+                </Text>
+                <Group gap="md" align="flex-end">
+                  <Select
+                    label="Time Period"
+                    placeholder="Select a time period"
+                    data={timePresets.map((preset) => ({
+                      value: preset.value,
+                      label: preset.label,
+                    }))}
+                    value={selectedTimePreset}
+                    onChange={handleTimePresetChange}
+                    clearable
+                    style={{ flex: 1 }}
+                  />
+                  {selectedTimePreset && (
+                    <Button
+                      size="sm"
+                      onClick={handleSelectByTimePeriod}
+                      variant="light"
+                      disabled={unpaidSessions.length === 0}
+                    >
+                      Select {filteredSessions.filter((s) => !s.payed).length}{" "}
+                      unpaid sessions
+                    </Button>
+                  )}
+                </Group>
+                {selectedTimePreset === "custom" && (
+                  <Stack gap="xs">
+                    <Text size="sm">Custom Days: {timeFilterDays}</Text>
+                    <Slider
+                      value={timeFilterDays}
+                      onChange={handleCustomDaysChange}
+                      min={1}
+                      max={365}
+                      mb="xl"
+                      step={1}
+                      marks={[
+                        { value: 1, label: "1" },
+                        { value: 7, label: "7" },
+                        { value: 30, label: "30" },
+                        { value: 90, label: "90" },
+                        { value: 365, label: "365" },
+                      ]}
+                    />
+                  </Stack>
+                )}
+                <Collapse in={selectedTimePreset !== null}>
+                  <Badge
+                    color={unpaidSessions.length > 0 ? "blue" : "red"}
+                    variant="light"
+                  >
+                    {unpaidSessions.length} unpaid sessions in last{" "}
+                    {timeFilterDays} days
+                  </Badge>
+                </Collapse>
+              </Stack>
+            </>
+          )}
+
+          {isOverview && projects && projects.length > 0 && (
+            <>
+              <Divider my="xs" />
               <Group gap="md" align="flex-end">
                 <Select
-                  label="Time Period"
-                  placeholder="Select a time period"
-                  data={timePresets.map((preset) => ({
-                    value: preset.value,
-                    label: preset.label,
+                  label="Select by Folder"
+                  placeholder="Choose a folder"
+                  data={getCategories().map((cat) => ({
+                    value: cat.id,
+                    label: cat.title,
                   }))}
-                  value={selectedTimePreset}
-                  onChange={handleTimePresetChange}
+                  onChange={handleSelectByFolder}
                   clearable
                   style={{ flex: 1 }}
                 />
-                {selectedTimePreset && (
-                  <Button
-                    size="sm"
-                    onClick={handleSelectByTimePeriod}
-                    variant="light"
-                  >
-                    Select {filteredSessions.filter((s) => !s.payed).length}{" "}
-                    unpaid sessions
-                  </Button>
-                )}
+                <Select
+                  label="Select by Project"
+                  placeholder="Choose a project"
+                  data={getProjects()}
+                  onChange={handleSelectByProject}
+                  clearable
+                  style={{ flex: 1 }}
+                />
+                <Select
+                  label="Select by Category"
+                  placeholder="Choose a category"
+                  data={getCashFlowCategories()}
+                  onChange={handleSelectByCashFlowCategory}
+                  clearable
+                  style={{ flex: 1 }}
+                />
               </Group>
-              {selectedTimePreset === "custom" && (
-                <Stack gap="xs">
-                  <Text size="sm">Custom Days: {timeFilterDays}</Text>
-                  <Slider
-                    value={timeFilterDays}
-                    onChange={handleCustomDaysChange}
-                    min={1}
-                    max={365}
-                    mb="xl"
-                    step={1}
-                    marks={[
-                      { value: 1, label: "1" },
-                      { value: 7, label: "7" },
-                      { value: 30, label: "30" },
-                      { value: 90, label: "90" },
-                      { value: 365, label: "365" },
-                    ]}
-                  />
-                </Stack>
-              )}
-              {selectedTimePreset && selectedTimePreset !== "custom" && (
-                <Badge color="blue" variant="light" mt="xs">
-                  {filteredSessions.filter((s) => !s.payed).length} unpaid
-                  sessions in selected period
-                </Badge>
-              )}
-              {selectedTimePreset === "custom" && (
-                <Badge color="blue" variant="light">
-                  {filteredSessions.filter((s) => !s.payed).length} unpaid
-                  sessions in last {timeFilterDays} days
-                </Badge>
-              )}
-            </Stack>
-          </>
-        )}
-
-        {isOverview && projects && projects.length > 0 && (
-          <>
-            <Divider my="xs" />
-            <Group gap="md" align="flex-end">
-              <Select
-                label="Select by Folder"
-                placeholder="Choose a folder"
-                data={getCategories().map((cat) => ({
-                  value: cat.id,
-                  label: cat.title,
-                }))}
-                onChange={handleSelectByFolder}
-                clearable
-                style={{ flex: 1 }}
-              />
-              <Select
-                label="Select by Project"
-                placeholder="Choose a project"
-                data={getProjects()}
-                onChange={handleSelectByProject}
-                clearable
-                style={{ flex: 1 }}
-              />
-              <Select
-                label="Select by Category"
-                placeholder="Choose a category"
-                data={getCashFlowCategories()}
-                onChange={handleSelectByCashFlowCategory}
-                clearable
-                style={{ flex: 1 }}
-              />
-            </Group>
-          </>
-        )}
+            </>
+          )}
+        </Collapse>
       </Stack>
     </Stack>
   );
