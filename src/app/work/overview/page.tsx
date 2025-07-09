@@ -2,18 +2,40 @@
 
 import { useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
+import { useSessionFiltering } from "@/hooks/useSessionFiltering";
 
-import { Stack } from "@mantine/core";
+import { Box, Stack, Text } from "@mantine/core";
 import Header from "@/components/Header/Header";
-import SessionList from "@/components/Work/Session/SessionList/SessionList";
 import PayoutMenu from "@/components/Work/Project/PayoutMenu";
+import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
+import { groupSessions } from "@/utils/sessionHelpers";
+import BulkSelectionControls from "@/components/Work/Session/BulkSelectionControls";
 
 export default function WorkOverviewPage() {
-  const { projects: timerProjects, folders } = useWorkStore();
+  const { projects: timerProjects, folders, timerSessions } = useWorkStore();
   const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
 
-  const sessions = timerProjects.flatMap((project) => project.sessions);
+  // Use the custom hook for filtering logic
+  const {
+    timePresets,
+    selectedTimePreset,
+    timeFilterDays,
+    filteredSessions,
+    unpaidSessions,
+    handleTimePresetChange,
+    handleCustomDaysChange,
+    handleSetDaysForPreset,
+  } = useSessionFiltering(timerSessions, undefined, false);
+
   const projects = timerProjects.map((project) => project.project);
+
+  const handleSessionToggle = (sessionId: string) => {
+    setSelectedSessions(
+      selectedSessions.includes(sessionId)
+        ? selectedSessions.filter((id) => id !== sessionId)
+        : [...selectedSessions, sessionId]
+    );
+  };
 
   return (
     <Stack align="center" w="100%" px="xl">
@@ -21,7 +43,7 @@ export default function WorkOverviewPage() {
         headerTitle="Work Overview"
         leftButton={
           <PayoutMenu
-            sessions={sessions}
+            sessions={timerSessions}
             projects={projects}
             selectedSessions={selectedSessions}
             onSessionsChange={setSelectedSessions}
@@ -29,14 +51,43 @@ export default function WorkOverviewPage() {
           />
         }
       />
-      <SessionList
-        sessions={sessions}
-        projects={projects}
-        folders={folders}
-        selectedSessions={selectedSessions}
-        onSessionsChange={setSelectedSessions}
-        isOverview={true}
-      />
+      {timerSessions.length > 0 ? (
+        <Box w="100%">
+          <BulkSelectionControls
+            unpaidSessions={unpaidSessions}
+            selectedSessions={selectedSessions}
+            onSessionsChange={setSelectedSessions}
+            filteredSessions={filteredSessions}
+            isOverview={true}
+            folders={folders}
+            projects={projects}
+            timePresets={timePresets}
+            selectedTimePreset={selectedTimePreset}
+            timeFilterDays={timeFilterDays}
+            onTimePresetChange={handleTimePresetChange}
+            onCustomDaysChange={handleCustomDaysChange}
+            onSetDaysForPreset={handleSetDaysForPreset}
+          />
+          {/* Session Hierarchy */}
+          {filteredSessions.length > 0 ? (
+            <SessionHierarchy
+              groupedSessions={groupSessions(filteredSessions)}
+              selectedSessions={selectedSessions}
+              onSessionToggle={handleSessionToggle}
+              projects={projects}
+              isOverview={true}
+            />
+          ) : (
+            <Text size="lg" c="gray" ta="center">
+              No Sessions in the time period
+            </Text>
+          )}
+        </Box>
+      ) : (
+        <Text size="lg" c="gray" ta="center">
+          Add a Session to see it here
+        </Text>
+      )}
     </Stack>
   );
 }

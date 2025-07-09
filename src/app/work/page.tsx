@@ -2,15 +2,18 @@
 
 import { useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
+import { useSessionFiltering } from "@/hooks/useSessionFiltering";
 
-import { Loader, Stack } from "@mantine/core";
-import SessionList from "@/components/Work/Session/SessionList/SessionList";
+import { Box, Loader, Stack, Text } from "@mantine/core";
 import NewSessionButton from "@/components/Work/Session/NewSessionButton";
 import EditProjectButton from "@/components/Work/Project/EditProjectButton";
 import Header from "@/components/Header/Header";
 
 import { formatMoney, getCurrencySymbol } from "@/utils/workHelperFunctions";
 import PayoutMenu from "@/components/Work/Project/PayoutMenu";
+import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
+import BulkSelectionControls from "@/components/Work/Session/BulkSelectionControls";
+import { groupSessions } from "@/utils/sessionHelpers";
 
 export default function WorkPage() {
   const { activeProjectId, isFetching } = useWorkStore();
@@ -18,6 +21,20 @@ export default function WorkPage() {
     state.projects.find((p) => p.project.id === activeProjectId)
   );
   const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
+
+  // Use the custom hook for filtering logic
+  const {
+    timePresets,
+    selectedTimePreset,
+    timeFilterDays,
+    filteredSessions,
+    unpaidSessions,
+    handleTimePresetChange,
+    handleCustomDaysChange,
+    handleSetDaysForPreset,
+  } = useSessionFiltering(activeProject?.sessions ?? [], undefined, false);
+
+  const groupedSessions = groupSessions(activeProject?.sessions ?? []); // Use original sessions for display
 
   if (!activeProject || isFetching) {
     return (
@@ -48,6 +65,15 @@ export default function WorkPage() {
     getCurrencySymbol(activeProject.project.currency)
   );
 
+  const handleSessionToggle = (sessionId: string) => {
+    if (!activeProject.project.hourly_payment) return;
+    setSelectedSessions(
+      selectedSessions.includes(sessionId)
+        ? selectedSessions.filter((id) => id !== sessionId)
+        : [...selectedSessions, sessionId]
+    );
+  };
+
   return (
     <Stack align="center" w="100%" px="xl">
       <Header
@@ -67,19 +93,52 @@ export default function WorkPage() {
         rightButton={<EditProjectButton />}
         leftButton={
           <PayoutMenu
-            sessions={activeProject.sessions}
+            sessions={filteredSessions}
             project={activeProject.project}
             selectedSessions={selectedSessions}
             onSessionsChange={setSelectedSessions}
           />
         }
       />
-      <SessionList
-        sessions={activeProject.sessions}
-        selectedSessions={selectedSessions}
-        onSessionsChange={setSelectedSessions}
-        project={activeProject.project}
-      />
+      {activeProject?.sessions.length > 0 ? (
+        <Box w="100%">
+          {/* Bulk Selection Controls */}
+          {activeProject.project.hourly_payment && (
+            <BulkSelectionControls
+              unpaidSessions={unpaidSessions}
+              selectedSessions={selectedSessions}
+              onSessionsChange={setSelectedSessions}
+              filteredSessions={filteredSessions}
+              isOverview={false}
+              timePresets={timePresets}
+              selectedTimePreset={selectedTimePreset}
+              timeFilterDays={timeFilterDays}
+              onTimePresetChange={handleTimePresetChange}
+              onCustomDaysChange={handleCustomDaysChange}
+              onSetDaysForPreset={handleSetDaysForPreset}
+            />
+          )}
+
+          {/* Session Hierarchy */}
+          {filteredSessions.length > 0 ? (
+            <SessionHierarchy
+              groupedSessions={groupSessions(filteredSessions)}
+              selectedSessions={selectedSessions}
+              onSessionToggle={handleSessionToggle}
+              project={activeProject.project}
+              isOverview={false}
+            />
+          ) : (
+            <Text size="lg" c="gray" ta="center">
+              No Sessions in the time period
+            </Text>
+          )}
+        </Box>
+      ) : (
+        <Text size="lg" c="gray" ta="center">
+          Add as Session to see it here
+        </Text>
+      )}
     </Stack>
   );
 }
