@@ -17,6 +17,7 @@ import RecurringCashFlowForm from "@/components/Finances/Form/RecurringFinanceFo
 import EditActionIcon from "@/components/UI/Buttons/EditActionIcon";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
+import UpdateRecurringCashFlowsModal from "@/components/Finances/Recurring/UpdateRecurringCashFlowsModal";
 
 import { Tables } from "@/types/db.types";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
@@ -46,10 +47,16 @@ export default function EditCashFlowButton({
     deleteModalOpened,
     { open: openDeleteModal, close: closeDeleteModal },
   ] = useDisclosure(false);
+  const [
+    updateModalOpened,
+    { open: openUpdateModal, close: closeUpdateModal },
+  ] = useDisclosure(false);
+  const [pendingValues, setPendingValues] = useState<any>(null);
   const {
     financeCategories,
     updateSingleCashFlow,
     updateRecurringCashFlow,
+    updateMultipleSingleCashFlows,
     deleteSingleCashFlow,
     deleteRecurringCashFlow,
   } = useFinanceStore();
@@ -57,6 +64,7 @@ export default function EditCashFlowButton({
   async function handleSubmit(values: any) {
     setIsLoading(true);
     let success = false;
+
     if (isSingleCashFlow(cashFlow)) {
       success = await updateSingleCashFlow({
         id: cashFlow.id,
@@ -64,16 +72,39 @@ export default function EditCashFlowButton({
         category_id: categoryId,
         ...values,
       });
+      if (success) {
+        close();
+      }
     } else {
-      success = await updateRecurringCashFlow({
-        id: cashFlow.id,
-        type,
-        category_id: categoryId,
-        ...values,
-      });
-    }
-    if (success) {
-      close();
+      // For recurring cash flows, check if any fields that affect single cash flows have changed
+      const hasChanges =
+        values.title !== cashFlow.title ||
+        values.amount !== cashFlow.amount ||
+        values.currency !== cashFlow.currency ||
+        type !== cashFlow.type ||
+        categoryId !== cashFlow.category_id;
+
+      if (hasChanges) {
+        // Store the values and show the update modal
+        setPendingValues({
+          id: cashFlow.id,
+          type,
+          category_id: categoryId,
+          ...values,
+        });
+        openUpdateModal();
+      } else {
+        // No changes that affect single cash flows, just update the recurring cash flow
+        success = await updateRecurringCashFlow({
+          id: cashFlow.id,
+          type,
+          category_id: categoryId,
+          ...values,
+        });
+        if (success) {
+          close();
+        }
+      }
     }
     setIsLoading(false);
   }
@@ -89,6 +120,50 @@ export default function EditCashFlowButton({
       closeDeleteModal();
       close();
     }
+  }
+
+  async function handleUpdateAll() {
+    if (!pendingValues) return;
+
+    setIsLoading(true);
+
+    // First update the recurring cash flow
+    const recurringSuccess = await updateRecurringCashFlow(pendingValues);
+
+    if (recurringSuccess) {
+      // Then update all related single cash flows
+      const singleUpdates = {
+        title: pendingValues.title,
+        amount: pendingValues.amount,
+        currency: pendingValues.currency,
+        type: pendingValues.type,
+        category_id: pendingValues.category_id,
+      };
+
+      const singleSuccess = await updateMultipleSingleCashFlows(
+        cashFlow.id,
+        singleUpdates
+      );
+
+      if (singleSuccess) {
+        closeUpdateModal();
+        close();
+      }
+    }
+
+    setIsLoading(false);
+  }
+
+  async function handleUpdateRecurringOnly() {
+    if (!pendingValues) return;
+
+    setIsLoading(true);
+    const success = await updateRecurringCashFlow(pendingValues);
+    if (success) {
+      closeUpdateModal();
+      close();
+    }
+    setIsLoading(false);
   }
 
   return (
@@ -165,6 +240,14 @@ export default function EditCashFlowButton({
         onDelete={handleDelete}
         title="Delete Cash Flow"
         message="Are you sure you want to delete this cash flow? This action cannot be undone."
+      />
+
+      <UpdateRecurringCashFlowsModal
+        opened={updateModalOpened}
+        onClose={closeUpdateModal}
+        onConfirm={handleUpdateAll}
+        onCancel={handleUpdateRecurringOnly}
+        isLoading={isLoading}
       />
 
       <Tooltip label="Edit cash flow">

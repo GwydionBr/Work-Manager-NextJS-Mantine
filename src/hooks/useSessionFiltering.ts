@@ -108,7 +108,6 @@ export function useSessionFiltering(
     }
 
     return sessions.filter((session) => {
-      if (!session.start_time) return false;
       const sessionDate = new Date(session.start_time);
       return sessionDate >= startDate && sessionDate < endDate;
     });
@@ -250,7 +249,6 @@ export function useSessionFiltering(
       if (sessionProject.hourly_payment) {
         return !session.payed;
       }
-
       return false;
     }
 

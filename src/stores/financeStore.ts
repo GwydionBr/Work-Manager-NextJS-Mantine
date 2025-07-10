@@ -29,6 +29,10 @@ interface FinanceStoreActions {
   updateRecurringCashFlow: (
     recurringCashFlow: TablesUpdate<"recurring_cash_flow">
   ) => Promise<boolean>;
+  updateMultipleSingleCashFlows: (
+    recurringCashFlowId: string,
+    updates: Partial<TablesUpdate<"single_cash_flow">>
+  ) => Promise<boolean>;
   deleteSingleCashFlow: (id: string) => Promise<boolean>;
   deleteRecurringCashFlow: (id: string) => Promise<boolean>;
   addFinanceCategory: (
@@ -166,7 +170,7 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
       });
 
       console.log(updatedRecurringCashFlow);
-      
+
       if (!updatedRecurringCashFlow.success) return false;
 
       const updatedRecurringCashFlows = recurringCashFlows.map((c) =>
@@ -191,6 +195,30 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
       const updatedSingleCashFlows = singleCashFlows.map((c) =>
         c.id === singleCashFlow.id ? updatedSingleCashFlow.data : c
       );
+
+      set({
+        singleCashFlows: updatedSingleCashFlows,
+      });
+      return true;
+    },
+
+    async updateMultipleSingleCashFlows(recurringCashFlowId, updates) {
+      const { singleCashFlows } = get();
+
+      const result = await actions.updateMultipleSingleCashFlows({
+        recurringCashFlowId,
+        updates,
+      });
+
+      if (!result.success) return false;
+
+      // Update all single cash flows that belong to this recurring cash flow
+      const updatedSingleCashFlows = singleCashFlows.map((flow) => {
+        if (flow.recurring_cash_flow_id === recurringCashFlowId) {
+          return { ...flow, ...updates };
+        }
+        return flow;
+      });
 
       set({
         singleCashFlows: updatedSingleCashFlows,

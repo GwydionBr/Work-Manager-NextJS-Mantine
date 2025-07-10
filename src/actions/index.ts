@@ -44,6 +44,7 @@ export { createSingleCashFlow } from "./finance/createSingleCashFlow";
 export { updateSingleCashFlow } from "./finance/updateSingleCashFlow";
 export { deleteSingleCashFlow } from "./finance/deleteSingleCashFlow";
 export { createMultipleSingleCashFlows } from "./finance/createMultipleSingleCashFlows";
+export { updateMultipleSingleCashFlows } from "./finance/updateMultipleSingleCashFlows";
 
 export {
   getAllRecurringCashFlows,
