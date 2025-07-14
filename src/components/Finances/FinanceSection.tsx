@@ -33,8 +33,8 @@ export default function FinanceSection({
 
   const backgroundColor =
     title === "Income"
-      ? alpha("var(--mantine-color-green-5)", 0.15)
-      : alpha("var(--mantine-color-red-5)", 0.15);
+      ? alpha("var(--mantine-color-green-8)", 0.4)
+      : alpha("var(--mantine-color-red-8)", 0.4);
 
   return (
     <Container className={classes.financeSection} bg={backgroundColor}>
