@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Stack, Paper, Text, Box } from "@mantine/core";
 import { useSettingsStore } from "@/stores/settingsStore";
 import classes from "./FinanceOverview.module.css";
@@ -21,15 +21,15 @@ import { type FinanceInterval } from "@/types/settings.types";
  * Financial Overview Chart Component
  *
  * Displays financial data in various chart formats with:
- * - Flexible time period selection (day, week, month, quarter, half-year, year)
- * - Custom date range selection
+ * - Smart time period selection with navigation
+ * - Auto-adjusting intervals based on date range
  * - Multiple chart types (area, bar, line)
  * - Comprehensive statistics cards
  * - Complete time period coverage (including empty periods)
  */
 export default function FinanceOverview() {
   // Chart configuration state
-  const [interval, setInterval] = useState<FinanceInterval>("month");
+  const [interval, setInterval] = useState<FinanceInterval>("day");
   const [chartType, setChartType] = useState<ChartType>("area");
   const [showNet, setShowNet] = useState<boolean>(true);
 
@@ -42,6 +42,19 @@ export default function FinanceOverview() {
 
   // Get currency from settings
   const { defaultFinanceCurrency } = useSettingsStore();
+
+  // Initialize with current month
+  useEffect(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+
+    setDateRange({
+      from: new Date(year, month, 1).toISOString().split("T")[0],
+      to: new Date(year, month + 1, 0).toISOString().split("T")[0],
+    });
+    setUseCustomRange(true);
+  }, []);
 
   // Use custom hook for chart data and statistics
   const { chartData, stats } = useFinanceChartData(
@@ -73,7 +86,7 @@ export default function FinanceOverview() {
       <Paper w="100%" h="100%" p="xl" withBorder>
         {chartData.length === 0 ? (
           <Stack align="center" justify="center" h={300}>
-            <Text c="dimmed">No data for the selected time period</Text>
+            <Text c="dimmed">Keine Daten für den ausgewählten Zeitraum</Text>
           </Stack>
         ) : (
           <FinanceChart

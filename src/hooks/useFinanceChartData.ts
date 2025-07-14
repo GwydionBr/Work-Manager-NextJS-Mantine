@@ -42,8 +42,8 @@ export interface DateRange {
  * Custom hook for managing finance chart data and statistics
  *
  * Features:
- * - Flexible time period selection (day, week, month, quarter, half-year, year)
- * - Custom date range selection
+ * - Smart time period selection with navigation
+ * - Auto-adjusting intervals based on date range
  * - Complete time period coverage (including empty periods)
  * - Comprehensive statistics calculation
  * - Performance optimized with memoization
@@ -149,10 +149,11 @@ export function useFinanceChartData(
    * Generate chart data from cash flows
    *
    * Features:
-   * - Supports custom date ranges
+   * - Supports custom date ranges with navigation
    * - Generates complete time periods (including empty ones)
    * - Groups data by selected interval (day, week, month, etc.)
    * - Handles different time period formats
+   * - Auto-adjusts granularity based on date range
    */
   const getChartData = useCallback(
     async (interval: FinanceInterval) => {
@@ -165,10 +166,12 @@ export function useFinanceChartData(
         startDate = new Date(dateRange.from);
         endDate = new Date(dateRange.to);
       } else {
-        // Default to last 12 months if no custom range
-        endDate = new Date();
-        startDate = new Date();
-        startDate.setFullYear(endDate.getFullYear() - 1);
+        // Default to current month if no custom range
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        startDate = new Date(year, month, 1);
+        endDate = new Date(year, month + 1, 0);
       }
 
       const groupedData: {

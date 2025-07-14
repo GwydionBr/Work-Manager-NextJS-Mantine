@@ -61,7 +61,7 @@ export default function FinanceChart({
           <AreaChart
             {...commonProps}
             series={series}
-            curveType="linear"
+            curveType="monotone"
             fillOpacity={0.3}
           />
         );
@@ -69,7 +69,7 @@ export default function FinanceChart({
         return <BarChart {...commonProps} series={series} />;
       case "line":
         return (
-          <LineChart {...commonProps} series={series} curveType="linear" />
+          <LineChart {...commonProps} series={series} curveType="monotone" />
         );
       default:
         return null;
