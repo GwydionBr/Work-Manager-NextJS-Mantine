@@ -1,4 +1,4 @@
-import { Card, Text, Badge } from "@mantine/core";
+import { Card, Text, Badge, Group } from "@mantine/core";
 import {
   IconCash,
   IconReceipt,
@@ -96,15 +96,8 @@ export default function StatisticCard({
   const IconComponent = config.icon;
 
   return (
-    <Card withBorder p="md">
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          marginBottom: "8px",
-        }}
-      >
+    <Card withBorder p="md" h="100%">
+      <Group mb="xs">
         <IconComponent
           size={16}
           color={`var(--mantine-color-${displayColor}-6)`}
@@ -112,19 +105,21 @@ export default function StatisticCard({
         <Text size="xs" c="dimmed" tt="uppercase" fw={500}>
           {config.title}
         </Text>
-      </div>
-      <Text size="xl" fw={700} c={displayColor}>
-        {value}
-      </Text>
+      </Group>
+      <Group>
+        <Text size="xl" fw={700} c={displayColor}>
+          {value}
+        </Text>
+        {badge && (
+          <Badge color={badgeColor} variant="light" mt="xs">
+            {badge}
+          </Badge>
+        )}
+      </Group>
       {subtitle && (
         <Text size="xs" c="dimmed">
           {subtitle}
         </Text>
-      )}
-      {badge && (
-        <Badge color={badgeColor} variant="light" mt="xs">
-          {badge}
-        </Badge>
       )}
     </Card>
   );

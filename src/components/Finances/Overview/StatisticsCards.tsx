@@ -28,7 +28,7 @@ export default function StatisticsCards({
   return (
     <Grid gutter="md">
       {/* Total Income Card */}
-      <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+      <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
         <StatisticCard
           type="totalIncome"
           value={formatCurrency(stats.totalIncome)}
@@ -38,7 +38,7 @@ export default function StatisticsCards({
       </Grid.Col>
 
       {/* Total Expenses Card */}
-      <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+      <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
         <StatisticCard
           type="totalExpense"
           value={formatCurrency(stats.totalExpense)}
@@ -48,7 +48,7 @@ export default function StatisticsCards({
       </Grid.Col>
 
       {/* Net Amount Card */}
-      <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+      <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
         <StatisticCard
           type="net"
           value={formatCurrency(stats.netAmount)}
@@ -59,7 +59,7 @@ export default function StatisticsCards({
       </Grid.Col>
 
       {/* Profit Margin Card */}
-      <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+      <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
         <StatisticCard
           type="profitMargin"
           value={`${stats.profitMargin.toFixed(1)}%`}
@@ -69,7 +69,7 @@ export default function StatisticsCards({
       </Grid.Col>
 
       {/* Best Period Card */}
-      <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+      <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
         <StatisticCard
           type="bestPeriod"
           value={stats.bestMonth ? formatDate(stats.bestMonth) : "-"}
@@ -79,7 +79,7 @@ export default function StatisticsCards({
       </Grid.Col>
 
       {/* Worst Period Card */}
-      <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+      <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
         <StatisticCard
           type="worstPeriod"
           value={stats.worstMonth ? formatDate(stats.worstMonth) : "-"}

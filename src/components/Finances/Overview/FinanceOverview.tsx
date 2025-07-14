@@ -44,7 +44,7 @@ export default function FinanceOverview() {
   const { defaultFinanceCurrency } = useSettingsStore();
 
   // Use custom hook for chart data and statistics
-  const { chartData, stats, isLoading } = useFinanceChartData(
+  const { chartData, stats } = useFinanceChartData(
     interval,
     useCustomRange,
     dateRange
@@ -57,8 +57,7 @@ export default function FinanceOverview() {
     formatDate(dateString, interval);
 
   return (
-    <Stack className={classes.financeOverviewContainer}>
-      {/* Chart Controls Section */}
+    <Stack className={classes.financeOverviewContainer} mb="xl">
       <ChartControls
         interval={interval}
         setInterval={setInterval}
@@ -71,22 +70,8 @@ export default function FinanceOverview() {
         useCustomRange={useCustomRange}
         setUseCustomRange={setUseCustomRange}
       />
-
-      {/* Statistics Cards Section */}
-      <StatisticsCards
-        stats={stats}
-        interval={interval}
-        formatCurrency={formatCurrencyWithSettings}
-        formatDate={formatDateWithInterval}
-      />
-
-      {/* Chart Display Section */}
       <Paper w="100%" h="100%" p="xl" withBorder>
-        {isLoading ? (
-          <Stack align="center" justify="center" h={300}>
-            <Text c="dimmed">Loading chart data...</Text>
-          </Stack>
-        ) : chartData.length === 0 ? (
+        {chartData.length === 0 ? (
           <Stack align="center" justify="center" h={300}>
             <Text c="dimmed">No data for the selected time period</Text>
           </Stack>
@@ -100,6 +85,12 @@ export default function FinanceOverview() {
           />
         )}
       </Paper>
+      <StatisticsCards
+        stats={stats}
+        interval={interval}
+        formatCurrency={formatCurrencyWithSettings}
+        formatDate={formatDateWithInterval}
+      />
     </Stack>
   );
 }
