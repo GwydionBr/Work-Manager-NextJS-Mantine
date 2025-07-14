@@ -2,7 +2,7 @@
 
 import { useFinanceStore } from "@/stores/financeStore";
 
-import { Grid, Stack, Text } from "@mantine/core";
+import { Divider, Grid, Group, Stack, Text } from "@mantine/core";
 import FinanceCategoryForm from "../Form/FinanceCategoryForm";
 
 export default function FinanceCategorySettings() {
@@ -19,9 +19,15 @@ export default function FinanceCategorySettings() {
             </Text>
           ))}
         </Stack>
-        </Grid.Col>
+      </Grid.Col>
       <Grid.Col span={6}>
-        <FinanceCategoryForm onClose={() => {}} />
+        <Group w="100%">
+          <Divider orientation="vertical" />
+          <Stack>
+            <Text>Add Category</Text>
+            <FinanceCategoryForm onClose={() => {}} />
+          </Stack>
+        </Group>
       </Grid.Col>
     </Grid>
   );

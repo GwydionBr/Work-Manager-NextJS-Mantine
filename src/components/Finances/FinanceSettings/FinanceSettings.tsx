@@ -8,6 +8,7 @@ import FinanceCategorySettings from "./FinanceCategorySettings";
 
 enum FinanceSettingType {
   CATEGORIES = "categories",
+  CONDITIONAL_CASH_FLOWS = "conditional_cash_flows",
   OTHER = "other",
 }
 
@@ -23,6 +24,11 @@ export default function FinanceSettings({ onClose }: { onClose: () => void }) {
           {
             title: "Categories",
             onClick: () => setActiveSetting(FinanceSettingType.CATEGORIES),
+          },
+          {
+            title: "Conditional",
+            onClick: () =>
+              setActiveSetting(FinanceSettingType.CONDITIONAL_CASH_FLOWS),
           },
           {
             title: "Other",

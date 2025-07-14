@@ -3,7 +3,6 @@
 import { create } from "zustand";
 import * as actions from "@/actions";
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
-import { FinanceInterval } from "@/types/settings.types";
 import { processRecurringCashFlows } from "@/utils/financeHelperFunction";
 
 interface FinanceStoreState {
@@ -42,11 +41,6 @@ interface FinanceStoreActions {
     category: TablesUpdate<"cash_flow_category">
   ) => Promise<boolean>;
   deleteFinanceCategory: (id: string) => Promise<boolean>;
-
-  // filter functions
-  getChartData: (
-    interval: FinanceInterval
-  ) => Promise<{ date: string; expense: number; income: number }[]>;
 }
 
 export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
@@ -258,68 +252,6 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
         singleCashFlows: updatedSingleCashFlows,
       });
       return true;
-    },
-
-    async getChartData(interval) {
-      const { singleCashFlows } = get();
-
-      // Group cash flows by interval
-      const groupedData: {
-        [key: string]: { expense: number; income: number };
-      } = {};
-
-      singleCashFlows.forEach((flow) => {
-        const date = new Date(flow.date);
-        let key: string;
-
-        switch (interval) {
-          case "day":
-            key = date.toISOString().split("T")[0];
-            break;
-          case "week":
-            const weekStart = new Date(date);
-            weekStart.setDate(date.getDate() - date.getDay());
-            key = weekStart.toISOString().split("T")[0];
-            break;
-          case "month":
-            key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-            break;
-          case "1/4 year":
-            const quarter = Math.floor(date.getMonth() / 3) + 1;
-            key = `${date.getFullYear()}-Q${quarter}`;
-            break;
-          case "1/2 year":
-            const half = Math.floor(date.getMonth() / 6) + 1;
-            key = `${date.getFullYear()}-H${half}`;
-            break;
-          case "year":
-            key = date.getFullYear().toString();
-            break;
-          default:
-            key = date.toISOString().split("T")[0];
-        }
-
-        if (!groupedData[key]) {
-          groupedData[key] = { expense: 0, income: 0 };
-        }
-
-        if (flow.type === "expense") {
-          groupedData[key].expense += flow.amount;
-        } else {
-          groupedData[key].income += flow.amount;
-        }
-      });
-
-      // Convert to array and sort by date
-      const chartData = Object.entries(groupedData)
-        .map(([date, values]) => ({
-          date,
-          expense: values.expense,
-          income: values.income,
-        }))
-        .sort((a, b) => a.date.localeCompare(b.date));
-
-      return chartData;
     },
 
     async addFinanceCategory(category) {
