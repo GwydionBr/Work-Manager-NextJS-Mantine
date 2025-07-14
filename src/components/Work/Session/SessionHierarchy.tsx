@@ -8,7 +8,7 @@ import {
   formatTime,
   formatEarnings,
   areEarningsBreakdownEmpty,
-} from "@/utils/sessionHelpers";
+} from "@/utils/sessionHelperFunctions";
 
 import type { Tables } from "@/types/db.types";
 import type { EarningsBreakdown, Year } from "@/types/timerSession.types";

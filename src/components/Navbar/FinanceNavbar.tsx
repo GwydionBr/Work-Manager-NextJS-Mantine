@@ -3,16 +3,7 @@
 import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 
-import {
-  Group,
-  ScrollArea,
-  Stack,
-  Text,
-  Divider,
-  Box,
-  ActionIcon,
-  Modal,
-} from "@mantine/core";
+import { Group, Text, Divider, Box, ActionIcon, Modal } from "@mantine/core";
 import { IconAdjustments } from "@tabler/icons-react";
 import FinanceAdjustments from "@/components/Finances/FinanceSettings/FinanceSettings";
 import FinanceSection from "@/components/Finances/FinanceSection";

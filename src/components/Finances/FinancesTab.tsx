@@ -25,13 +25,24 @@ export default function FinancesTab() {
   return (
     <Tabs defaultValue="Overview" w="100%">
       <Tabs.List grow my="xl">
-        <Tabs.Tab leftSection={<IconMenuDeep color="light-dark(blue, cyan)" />} value="Overview">
+        <Tabs.Tab
+          leftSection={<IconMenuDeep color="light-dark(blue, cyan)" />}
+          value="Overview"
+        >
           Overview
         </Tabs.Tab>
-        <Tabs.Tab leftSection={<IconCircleDashedNumber1 color="light-dark(blue, cyan)" />} value="Single">
+        <Tabs.Tab
+          leftSection={
+            <IconCircleDashedNumber1 color="light-dark(blue, cyan)" />
+          }
+          value="Single"
+        >
           Single
         </Tabs.Tab>
-        <Tabs.Tab leftSection={<IconReload color="light-dark(blue, cyan) " />} value="Recurring">
+        <Tabs.Tab
+          leftSection={<IconReload color="light-dark(blue, cyan) " />}
+          value="Recurring"
+        >
           Recurring
         </Tabs.Tab>
       </Tabs.List>

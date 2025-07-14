@@ -13,7 +13,7 @@ import { formatMoney, getCurrencySymbol } from "@/utils/workHelperFunctions";
 import PayoutMenu from "@/components/Work/Project/PayoutMenu";
 import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
 import BulkSelectionControls from "@/components/Work/Session/BulkSelectionControls";
-import { groupSessions } from "@/utils/sessionHelpers";
+import { groupSessions } from "@/utils/sessionHelperFunctions";
 
 export default function WorkPage() {
   const { activeProjectId, isFetching } = useWorkStore();
