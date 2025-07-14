@@ -1,4 +1,17 @@
-import { Group, Select, Switch, Button, Stack } from "@mantine/core";
+"use client";
+
+import { useDisclosure } from "@mantine/hooks";
+
+import {
+  Group,
+  Select,
+  Switch,
+  Button,
+  Stack,
+  Card,
+  Collapse,
+  Text,
+} from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import {
   IconChartArea,
@@ -10,6 +23,7 @@ import { financeIntervals } from "@/constants/settings";
 import { type DateRange } from "@/hooks/useFinanceChartData";
 import { type FinanceInterval } from "@/types/settings.types";
 import React from "react";
+import FilterActionIcon from "@/components/UI/Buttons/FilterActionIcon";
 
 /**
  * Available chart visualization types
@@ -53,6 +67,7 @@ export default function ChartControls({
   useCustomRange,
   setUseCustomRange,
 }: ChartControlsProps) {
+  const [filterOpen, { toggle }] = useDisclosure(false);
   // Chart type options for the dropdown
   const chartTypeOptions = [
     { value: "area", label: "Area", icon: IconChartArea },
@@ -61,106 +76,120 @@ export default function ChartControls({
   ];
 
   return (
-    <Stack gap="md">
-      {/* Primary Controls: Time Period and Chart Type */}
+    <Card withBorder p="md" radius="md">
       <Group justify="space-between" align="flex-end">
-        <Group>
-          <Select
-            label="Time Period"
-            value={interval}
-            onChange={(value) => setInterval(value as FinanceInterval)}
-            data={financeIntervals}
-            w={150}
-          />
-          <Select
-            label="Chart Type"
-            value={chartType}
-            onChange={(value) => setChartType(value as ChartType)}
-            data={chartTypeOptions}
-            w={150}
-            leftSection={
-              chartTypeOptions.find((option) => option.value === chartType)
-                ?.icon &&
-              React.createElement(
-                chartTypeOptions.find((option) => option.value === chartType)!
-                  .icon,
-                { size: 16 }
-              )
-            }
-          />
-        </Group>
-
-        <Group>
-          <Switch
-            label="Show Net"
-            checked={showNet}
-            onChange={(event) => setShowNet(event.currentTarget.checked)}
-          />
-        </Group>
+        <Text>Filters</Text>
+        <Text>
+          {dateRange.from} - {dateRange.to}
+        </Text>
+        <FilterActionIcon onClick={toggle} />
       </Group>
+      <Collapse in={filterOpen}>
+        <Stack gap="md">
+          {/* Primary Controls: Time Period and Chart Type */}
+          <Group justify="space-between" align="flex-end">
+            <Group>
+              <Select
+                label="Time Period"
+                value={interval}
+                onChange={(value) => setInterval(value as FinanceInterval)}
+                data={financeIntervals}
+                w={150}
+              />
+              <Select
+                label="Chart Type"
+                value={chartType}
+                onChange={(value) => setChartType(value as ChartType)}
+                data={chartTypeOptions}
+                w={150}
+                leftSection={
+                  chartTypeOptions.find((option) => option.value === chartType)
+                    ?.icon &&
+                  React.createElement(
+                    chartTypeOptions.find(
+                      (option) => option.value === chartType
+                    )!.icon,
+                    { size: 16 }
+                  )
+                }
+              />
+            </Group>
 
-      {/* Custom Date Range Controls */}
-      <Group>
-        <Switch
-          label="Custom Date Range"
-          checked={useCustomRange}
-          onChange={(event) => setUseCustomRange(event.currentTarget.checked)}
-        />
-
-        {useCustomRange && (
-          <Group>
-            <DatePickerInput
-              label="From Date"
-              placeholder="Pick start date"
-              value={dateRange.from}
-              onChange={(value: string | null) =>
-                setDateRange({ ...dateRange, from: value })
-              }
-              w={150}
-            />
-            <DatePickerInput
-              label="To Date"
-              placeholder="Pick end date"
-              value={dateRange.to}
-              onChange={(value: string | null) =>
-                setDateRange({ ...dateRange, to: value })
-              }
-              w={150}
-            />
-            {/* Quick preset buttons for common date ranges */}
-            <Button
-              variant="light"
-              onClick={() => {
-                const now = new Date();
-                const oneYearAgo = new Date();
-                oneYearAgo.setFullYear(now.getFullYear() - 1);
-                setDateRange({
-                  from: oneYearAgo.toISOString().split("T")[0],
-                  to: now.toISOString().split("T")[0],
-                });
-              }}
-              leftSection={<IconCalendar size={16} />}
-            >
-              Last Year
-            </Button>
-            <Button
-              variant="light"
-              onClick={() => {
-                const now = new Date();
-                const oneMonthAgo = new Date();
-                oneMonthAgo.setMonth(now.getMonth() - 1);
-                setDateRange({
-                  from: oneMonthAgo.toISOString().split("T")[0],
-                  to: now.toISOString().split("T")[0],
-                });
-              }}
-              leftSection={<IconCalendar size={16} />}
-            >
-              Last Month
-            </Button>
+            <Group>
+              <Switch
+                label="Show Net"
+                checked={showNet}
+                onChange={(event) => setShowNet(event.currentTarget.checked)}
+              />
+            </Group>
           </Group>
-        )}
-      </Group>
-    </Stack>
+
+          {/* Custom Date Range Controls */}
+          <Group>
+            <Switch
+              label="Custom Date Range"
+              checked={useCustomRange}
+              onChange={(event) =>
+                setUseCustomRange(event.currentTarget.checked)
+              }
+            />
+
+            {useCustomRange && (
+              <Group>
+                <DatePickerInput
+                  label="From Date"
+                  placeholder="Pick start date"
+                  value={dateRange.from}
+                  onChange={(value: string | null) =>
+                    setDateRange({ ...dateRange, from: value })
+                  }
+                  w={150}
+                />
+                <DatePickerInput
+                  label="To Date"
+                  placeholder="Pick end date"
+                  value={dateRange.to}
+                  onChange={(value: string | null) =>
+                    setDateRange({ ...dateRange, to: value })
+                  }
+                  w={150}
+                />
+                {/* Quick preset buttons for common date ranges */}
+                <Button
+                  variant="light"
+                  onClick={() => {
+                    const now = new Date();
+                    const oneYearAgo = new Date();
+                    oneYearAgo.setFullYear(now.getFullYear() - 1);
+                    setDateRange({
+                      from: oneYearAgo.toISOString().split("T")[0],
+                      to: now.toISOString().split("T")[0],
+                    });
+                  }}
+                  leftSection={<IconCalendar size={16} />}
+                >
+                  Last Year
+                </Button>
+                <Button
+                  variant="light"
+                  onClick={() => {
+                    const now = new Date();
+                    const oneMonthAgo = new Date();
+                    oneMonthAgo.setMonth(now.getMonth() - 1);
+                    setDateRange({
+                      from: oneMonthAgo.toISOString().split("T")[0],
+                      to: now.toISOString().split("T")[0],
+                    });
+                  }}
+                  leftSection={<IconCalendar size={16} />}
+                >
+                  Last Month
+                </Button>
+              </Group>
+            )}
+          </Group>
+        </Stack>
+      </Collapse>
+    </Card>
   );
 }

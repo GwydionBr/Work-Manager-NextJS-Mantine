@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Stack, Paper, Text } from "@mantine/core";
+import { Stack, Paper, Text, Box } from "@mantine/core";
 import { useSettingsStore } from "@/stores/settingsStore";
 import classes from "./FinanceOverview.module.css";
 import FinanceChart from "./FinanceChart";
@@ -85,12 +85,14 @@ export default function FinanceOverview() {
           />
         )}
       </Paper>
-      <StatisticsCards
-        stats={stats}
-        interval={interval}
-        formatCurrency={formatCurrencyWithSettings}
-        formatDate={formatDateWithInterval}
-      />
+      <Box w="100%" h="100%" mt="xl">
+        <StatisticsCards
+          stats={stats}
+          interval={interval}
+          formatCurrency={formatCurrencyWithSettings}
+          formatDate={formatDateWithInterval}
+        />
+      </Box>
     </Stack>
   );
 }
