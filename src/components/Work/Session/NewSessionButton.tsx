@@ -39,6 +39,7 @@ export default function NewSessionButton() {
       user_id: activeProject.project.user_id,
       start_time: new Date(values.start_time).toISOString(),
       end_time: endTime,
+      true_end_time: endTime,
       salary: activeProject.project.hourly_payment ? values.salary : 0,
       currency: activeProject.project.hourly_payment
         ? values.currency

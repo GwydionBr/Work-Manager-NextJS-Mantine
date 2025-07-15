@@ -62,7 +62,6 @@ interface TimeTrackerState {
   ) => void;
 }
 
-let animationFrameId: number | null = null;
 let intervalId: NodeJS.Timeout | null = null;
 
 export const useTimeTracker = create(
@@ -309,14 +308,28 @@ export const useTimeTracker = create(
           pausedSeconds,
           salary,
           currency,
+          roundingInterval,
+          roundingMode,
         } = get();
+
+        const roundedActiveSeconds = getRoundedSeconds(
+          activeSeconds,
+          roundingInterval,
+          roundingMode
+        );
+
         const newTimerSession: TablesInsert<"timerSession"> = {
           user_id: userId,
           project_id: projectId,
           start_time: new Date(startTime ?? 0).toISOString(),
-          end_time: new Date().toISOString(),
+          true_end_time: new Date().toISOString(),
+          end_time: startTime
+            ? new Date(
+                startTime + (roundedActiveSeconds + pausedSeconds) * 1000
+              ).toISOString()
+            : new Date().toISOString(),
           hourly_payment: hourlyPayment,
-          active_seconds: activeSeconds,
+          active_seconds: roundedActiveSeconds,
           paused_seconds: pausedSeconds,
           salary: salary,
           currency: currency,

@@ -4,6 +4,7 @@ import {
   Currency,
 } from "@/types/settings.types";
 import { shortCurrencies } from "@/constants/settings";
+import { Tables, TablesInsert } from "@/types/db.types";
 
 export function getRoundingInterval(
   roundingAmount: RoundingAmount,
@@ -118,4 +119,61 @@ export function secondsToTimerFormat(seconds: number) {
   const secondsStr = secondsLeft.toString().padStart(2, "0");
 
   return `${hoursStr}${minutesStr}:${secondsStr}`;
+}
+
+export function checkAndAdjustSessionOverlap(
+  newSession: TablesInsert<"timerSession">,
+  existingSessions: Tables<"timerSession">[],
+  roundingAmount?: RoundingAmount,
+  roundingMode?: RoundingDirection,
+  customRoundingAmount?: number
+): { adjustedSession: TablesInsert<"timerSession">; shouldCreate: boolean } {
+  // Filter sessions for the same project
+  const projectSessions = existingSessions.filter(
+    (session) => session.project_id === newSession.project_id
+  );
+
+  if (projectSessions.length === 0) {
+    return { adjustedSession: newSession, shouldCreate: true };
+  }
+
+  // Sort sessions by start_time to find overlapping sessions
+  const sortedSessions = projectSessions.sort(
+    (a, b) =>
+      new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+  );
+
+  const newStartTime = new Date(newSession.start_time).getTime();
+  const newEndTime = new Date(newSession.end_time).getTime();
+
+  // Check for any overlapping sessions
+  const overlappingSessions = sortedSessions.filter((session) => {
+    const sessionStart = new Date(session.start_time).getTime();
+    const sessionEnd = new Date(session.end_time).getTime();
+
+    // Check if sessions overlap
+    return (
+      (newStartTime >= sessionStart && newStartTime < sessionEnd) || // New session starts during existing session
+      (newEndTime > sessionStart && newEndTime <= sessionEnd) || // New session ends during existing session
+      (newEndTime > sessionStart && newStartTime < sessionEnd) // Sessions overlap
+    );
+  });
+
+  const adjustedSession = { ...newSession };
+
+  overlappingSessions.forEach((session) => {
+    const sessionStart = new Date(session.start_time).getTime();
+    const sessionEnd = new Date(session.end_time).getTime();
+    const adjustedSessionStart = new Date(adjustedSession.start_time).getTime();
+    const adjustedSessionEnd = new Date(adjustedSession.end_time).getTime();
+
+    if (
+      adjustedSessionEnd > sessionStart &&
+      adjustedSessionStart < sessionEnd
+    ) {
+      return { adjustedSession: adjustedSession, shouldCreate: false };
+    }
+  });
+
+  return { adjustedSession: adjustedSession, shouldCreate: true };
 }

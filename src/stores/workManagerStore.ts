@@ -9,7 +9,6 @@ import {
   renameNode,
   moveNode,
   addNode,
-  findNextProject,
 } from "@/utils/treeHelperFunctions";
 
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
@@ -193,6 +192,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
 
     async addProject(project) {
       const { updateStore, timerSessions } = get();
+
       const newProject = await actions.createProject({ project });
       if (!newProject.success) {
         return false;
@@ -218,8 +218,10 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
 
     async addTimerSession(session) {
       const { updateStore, projects, timerSessions } = get();
+
       const newSession = await actions.createSession({ session });
       if (!newSession.success) {
+        console.log("newSession", newSession);
         return false;
       }
 

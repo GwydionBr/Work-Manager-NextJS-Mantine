@@ -721,8 +721,10 @@ export type Database = {
           paused_seconds: number;
           payed: boolean;
           project_id: string;
+          real_start_time: string | null;
           salary: number;
           start_time: string;
+          true_end_time: string;
           user_id: string;
         };
         Insert: {
@@ -735,8 +737,10 @@ export type Database = {
           paused_seconds?: number;
           payed?: boolean;
           project_id?: string;
+          real_start_time?: string | null;
           salary: number;
           start_time: string;
+          true_end_time: string;
           user_id?: string;
         };
         Update: {
@@ -749,8 +753,10 @@ export type Database = {
           paused_seconds?: number;
           payed?: boolean;
           project_id?: string;
+          real_start_time?: string | null;
           salary?: number;
           start_time?: string;
+          true_end_time?: string;
           user_id?: string;
         };
         Relationships: [

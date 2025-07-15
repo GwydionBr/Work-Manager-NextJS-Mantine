@@ -9,11 +9,6 @@ import { Box, Transition } from "@mantine/core";
 import TimeTrackerComponentBig from "./TimeTrackerComponentBig";
 import TimeTrackerComponentSmall from "./TimeTrackerComponentSmall";
 
-import {
-  getRoundedSeconds,
-  getRoundingInterval,
-} from "@/utils/workHelperFunctions";
-
 interface TimeTrackerComponentProps {
   isBig: boolean;
   isTimeTrackerMinimized: boolean;
@@ -88,16 +83,7 @@ export default function TimeTrackerComponent({
     setIsSubmitting(true);
     setErrorMessage(null);
     const newSession = getCurrentSession();
-    const roundingInterval = getRoundingInterval(
-      roundingAmount,
-      customRoundingAmount
-    );
 
-    newSession.active_seconds = getRoundedSeconds(
-      newSession.active_seconds,
-      roundingInterval,
-      roundingMode
-    );
     pauseTimer();
     const result = await addTimerSession(newSession);
     if (result) {
