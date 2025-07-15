@@ -50,12 +50,10 @@ export interface DateRange {
  */
 export function useFinanceChartData(
   interval: FinanceInterval,
-  useCustomRange: boolean,
   dateRange: DateRange
 ) {
   // Data and loading state
   const [chartData, setChartData] = useState<FinanceChartData[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // Get data from stores
   const { singleCashFlows } = useFinanceStore();
@@ -136,14 +134,8 @@ export function useFinanceChartData(
    * Prevents unnecessary re-renders by memoizing the dependency array
    */
   const chartDataKey = useMemo(() => {
-    return `${interval}-${useCustomRange}-${dateRange.from}-${dateRange.to}-${singleCashFlows.length}`;
-  }, [
-    interval,
-    useCustomRange,
-    dateRange.from,
-    dateRange.to,
-    singleCashFlows.length,
-  ]);
+    return `${interval}-${dateRange.from}-${dateRange.to}-${singleCashFlows.length}`;
+  }, [interval, dateRange.from, dateRange.to, singleCashFlows.length]);
 
   /**
    * Generate chart data from cash flows
@@ -156,12 +148,12 @@ export function useFinanceChartData(
    * - Auto-adjusts granularity based on date range
    */
   const getChartData = useCallback(
-    async (interval: FinanceInterval) => {
+    (interval: FinanceInterval) => {
       // Determine date range based on user selection
       let startDate: Date;
       let endDate: Date;
 
-      if (useCustomRange && dateRange.from && dateRange.to) {
+      if (dateRange.from && dateRange.to) {
         // Use custom date range if specified
         startDate = new Date(dateRange.from);
         endDate = new Date(dateRange.to);
@@ -245,7 +237,7 @@ export function useFinanceChartData(
         const date = new Date(flow.date);
 
         // Skip flows outside custom date range if specified
-        if (useCustomRange && dateRange.from && dateRange.to) {
+        if (dateRange.from && dateRange.to) {
           const fromDate = new Date(dateRange.from);
           const toDate = new Date(dateRange.to);
           if (date < fromDate || date > toDate) {
@@ -304,7 +296,7 @@ export function useFinanceChartData(
 
       return chartData;
     },
-    [interval, useCustomRange, dateRange.from, dateRange.to, singleCashFlows]
+    [interval, dateRange.from, dateRange.to, singleCashFlows]
   );
 
   /**
@@ -312,30 +304,19 @@ export function useFinanceChartData(
    * Handles loading states and error handling
    */
   useEffect(() => {
-    const fetchChartData = async () => {
-      setIsLoading(true);
-      try {
-        const rawChartData = await getChartData(interval);
+    const rawChartData = getChartData(interval);
 
-        // Add net calculation to chart data
-        const enhancedChartData = rawChartData.map((item) => ({
-          ...item,
-          net: item.income - item.expense,
-        }));
+    // Add net calculation to chart data
+    const enhancedChartData = rawChartData.map((item) => ({
+      ...item,
+      net: item.income - item.expense,
+    }));
 
-        setChartData(enhancedChartData);
-      } catch (error) {
-        console.error("Error fetching chart data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchChartData();
+    setChartData(enhancedChartData);
   }, [chartDataKey, getChartData, interval]);
 
   return {
     chartData,
     stats,
-    isLoading,
   };
 }

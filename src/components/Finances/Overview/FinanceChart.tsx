@@ -34,8 +34,8 @@ export default function FinanceChart({
     const commonProps = {
       data: chartData,
       dataKey: "date",
-      h: 300,
-      px: 20,
+      h: 350,
+      px: 10,
       mt: 20,
       tickLine: "y" as const,
       gridAxis: "x" as const,

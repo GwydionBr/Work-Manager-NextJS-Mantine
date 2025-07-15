@@ -38,7 +38,6 @@ export default function FinanceOverview() {
     from: null,
     to: null,
   });
-  const [useCustomRange, setUseCustomRange] = useState<boolean>(false);
 
   // Get currency from settings
   const { defaultFinanceCurrency } = useSettingsStore();
@@ -53,15 +52,10 @@ export default function FinanceOverview() {
       from: new Date(year, month, 1).toISOString().split("T")[0],
       to: new Date(year, month + 1, 0).toISOString().split("T")[0],
     });
-    setUseCustomRange(true);
   }, []);
 
   // Use custom hook for chart data and statistics
-  const { chartData, stats } = useFinanceChartData(
-    interval,
-    useCustomRange,
-    dateRange
-  );
+  const { chartData, stats } = useFinanceChartData(interval, dateRange);
 
   // Create formatter functions with current settings
   const formatCurrencyWithSettings = (amount: number) =>
@@ -80,8 +74,6 @@ export default function FinanceOverview() {
         setShowNet={setShowNet}
         dateRange={dateRange}
         setDateRange={setDateRange}
-        useCustomRange={useCustomRange}
-        setUseCustomRange={setUseCustomRange}
       />
       <Paper w="100%" h="100%" p="xl" withBorder>
         {chartData.length === 0 ? (

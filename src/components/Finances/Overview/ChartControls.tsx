@@ -13,7 +13,6 @@ import {
   Collapse,
   Text,
   ActionIcon,
-  Tooltip,
   SegmentedControl,
 } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
@@ -54,8 +53,6 @@ interface ChartControlsProps {
   setShowNet: (showNet: boolean) => void;
   dateRange: DateRange;
   setDateRange: (dateRange: DateRange) => void;
-  useCustomRange: boolean;
-  setUseCustomRange: (useCustomRange: boolean) => void;
 }
 
 /**
@@ -76,8 +73,6 @@ export default function ChartControls({
   setShowNet,
   dateRange,
   setDateRange,
-  useCustomRange,
-  setUseCustomRange,
 }: ChartControlsProps) {
   const [filterOpen, { toggle }] = useDisclosure(false);
   const [navigationMode, setNavigationMode] = useState<NavigationMode>("month");
@@ -190,7 +185,6 @@ export default function ChartControls({
     }
 
     setDateRange({ from: fromDate, to: toDate });
-    setUseCustomRange(true);
   };
 
   /**
@@ -201,7 +195,6 @@ export default function ChartControls({
     setNavigationMode(navigationMode);
 
     if (navigationMode === "custom") {
-      setUseCustomRange(true);
     } else {
       // Set appropriate interval based on navigation mode
       switch (navigationMode) {
@@ -240,7 +233,7 @@ export default function ChartControls({
    * Update interval when date range changes
    */
   React.useEffect(() => {
-    if (dateRange.from && dateRange.to && !useCustomRange) {
+    if (dateRange.from && dateRange.to) {
       // Only auto-adjust interval for custom mode
       if (navigationMode === "custom") {
         const optimalInterval = getOptimalInterval(
@@ -250,7 +243,7 @@ export default function ChartControls({
         setInterval(optimalInterval);
       }
     }
-  }, [dateRange, useCustomRange, navigationMode]);
+  }, [dateRange, navigationMode]);
 
   return (
     <Card withBorder p="md" radius="md">
