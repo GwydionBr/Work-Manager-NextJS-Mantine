@@ -24,7 +24,7 @@ export default function TimerSessionDrawer({
   // Find the project for this session
   const project = projects.find(
     (p) => p.project.id === timerSession.project_id
-  )?.project;
+  )?.project; 
 
   async function handleSubmit(values: {
     start_time: string;
@@ -40,6 +40,8 @@ export default function TimerSessionDrawer({
 
     const newSession: Tables<"timerSession"> = {
       ...values,
+      real_start_time: timerSession.real_start_time,
+      true_end_time: timerSession.true_end_time,
       created_at: new Date().toISOString(),
       id: timerSession.id,
       project_id: timerSession.project_id,
