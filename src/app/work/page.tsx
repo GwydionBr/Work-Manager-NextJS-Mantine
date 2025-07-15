@@ -4,7 +4,15 @@ import { useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSessionFiltering } from "@/hooks/useSessionFiltering";
 
-import { Box, Loader, Stack, Text } from "@mantine/core";
+import {
+  ActionIcon,
+  Box,
+  Collapse,
+  Group,
+  Loader,
+  Stack,
+  Text,
+} from "@mantine/core";
 import NewSessionButton from "@/components/Work/Session/NewSessionButton";
 import EditProjectButton from "@/components/Work/Project/EditProjectButton";
 import Header from "@/components/Header/Header";
@@ -14,6 +22,8 @@ import PayoutMenu from "@/components/Work/Project/PayoutMenu";
 import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
 import BulkSelectionControls from "@/components/Work/Session/BulkSelectionControls";
 import { groupSessions } from "@/utils/sessionHelperFunctions";
+import { IconChartCovariate } from "@tabler/icons-react";
+import WorkAnalysis from "@/components/Work/WorkAnalysis";
 
 export default function WorkPage() {
   const { activeProjectId, isFetching } = useWorkStore();
@@ -21,6 +31,7 @@ export default function WorkPage() {
     state.projects.find((p) => p.project.id === activeProjectId)
   );
   const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
+  const [analysisOpened, setAnalysisOpened] = useState(false);
 
   // Use the custom hook for filtering logic
   const {
@@ -93,7 +104,17 @@ export default function WorkPage() {
         }
         description={activeProject.project.description ?? undefined}
         secondaryButton={<NewSessionButton />}
-        rightButton={<EditProjectButton />}
+        rightButton={
+          <Group>
+            <ActionIcon
+              onClick={() => setAnalysisOpened((state) => !state)}
+              variant="light"
+            >
+              <IconChartCovariate />
+            </ActionIcon>
+            <EditProjectButton />
+          </Group>
+        }
         leftButton={
           <PayoutMenu
             sessions={unpaidSessions}
@@ -105,6 +126,9 @@ export default function WorkPage() {
       />
       {activeProject?.sessions.length > 0 ? (
         <Box w="100%">
+          <Collapse in={analysisOpened}>
+            <WorkAnalysis project={activeProject} />
+          </Collapse>
           {/* Bulk Selection Controls */}
           {activeProject.project.hourly_payment && (
             <BulkSelectionControls

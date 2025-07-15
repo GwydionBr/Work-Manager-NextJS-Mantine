@@ -1,0 +1,447 @@
+"use client";
+
+import { useDisclosure } from "@mantine/hooks";
+import { useState, useMemo, useEffect } from "react";
+
+import {
+  Group,
+  Select,
+  Switch,
+  Button,
+  Stack,
+  Card,
+  Collapse,
+  Text,
+  ActionIcon,
+  SegmentedControl,
+  Grid,
+} from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
+import {
+  IconChartArea,
+  IconChartBar,
+  IconChartLine,
+  IconCalendar,
+  IconChevronLeft,
+  IconChevronRight,
+} from "@tabler/icons-react";
+import { financeIntervals } from "@/constants/settings";
+import { type DateRange } from "@/hooks/useWorkChartData";
+import { type FinanceInterval } from "@/types/settings.types";
+import {
+  getStartOfMonth,
+  getEndOfMonth,
+  getStartOfQuarter,
+  getEndOfQuarter,
+  getStartOfYear,
+  getEndOfYear,
+  addMonthsToDate,
+  addQuartersToDate,
+  addYearsToDate,
+  addWeeksToDate,
+} from "@/utils/financeChartHelperFunctions";
+import React from "react";
+import FilterActionIcon from "@/components/UI/Buttons/FilterActionIcon";
+
+/**
+ * Available chart visualization types
+ */
+export type ChartType = "area" | "bar" | "line";
+
+/**
+ * Navigation mode for date selection
+ */
+export type NavigationMode = "month" | "quarter" | "year" | "custom";
+
+/**
+ * Props for the WorkChartControls component
+ */
+interface WorkChartControlsProps {
+  interval: FinanceInterval;
+  setInterval: (interval: FinanceInterval) => void;
+  chartType: ChartType;
+  setChartType: (chartType: ChartType) => void;
+  showSalary: boolean;
+  setShowSalary: (showSalary: boolean) => void;
+  dateRange: DateRange;
+  setDateRange: (dateRange: DateRange) => void;
+}
+
+/**
+ * Work Chart Control Section Component
+ *
+ * Provides controls for:
+ * - Smart time period selection with navigation
+ * - Chart type selection (area, bar, line)
+ * - Salary display toggle
+ * - Custom date range selection with preset buttons
+ * - Timezone-safe date handling with date-fns
+ */
+export default function WorkChartControls({
+  interval,
+  setInterval,
+  chartType,
+  setChartType,
+  showSalary,
+  setShowSalary,
+  dateRange,
+  setDateRange,
+}: WorkChartControlsProps) {
+  const [filterOpen, { toggle }] = useDisclosure(false);
+  const [navigationMode, setNavigationMode] = useState<NavigationMode>("month");
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
+
+  // Chart type options for the dropdown
+  const chartTypeOptions = [
+    { value: "area", label: "Area", icon: IconChartArea },
+    { value: "bar", label: "Bar", icon: IconChartBar },
+    { value: "line", label: "Line", icon: IconChartLine },
+  ];
+
+  /**
+   * Get the display title for the current navigation mode and date
+   */
+  const getNavigationTitle = useMemo(() => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+
+    switch (navigationMode) {
+      case "month":
+        return new Date(year, month).toLocaleDateString("en-US", {
+          month: "long",
+          year: "numeric",
+        });
+      case "quarter":
+        const quarter = Math.floor(month / 3) + 1;
+        return `Q${quarter} ${year}`;
+      case "year":
+        return year.toString();
+      case "custom":
+        return "Custom";
+      default:
+        return "";
+    }
+  }, [navigationMode, currentDate]);
+
+  /**
+   * Navigate to previous period
+   */
+  const navigatePrevious = () => {
+    const newDate = new Date(currentDate);
+
+    switch (navigationMode) {
+      case "month":
+        newDate.setTime(addMonthsToDate(currentDate, -1).getTime());
+        break;
+      case "quarter":
+        newDate.setTime(addQuartersToDate(currentDate, -1).getTime());
+        break;
+      case "year":
+        newDate.setTime(addYearsToDate(currentDate, -1).getTime());
+        break;
+    }
+
+    setCurrentDate(newDate);
+    updateDateRange(newDate);
+  };
+
+  /**
+   * Navigate to next period
+   */
+  const navigateNext = () => {
+    const newDate = new Date(currentDate);
+
+    switch (navigationMode) {
+      case "month":
+        newDate.setTime(addMonthsToDate(currentDate, 1).getTime());
+        break;
+      case "quarter":
+        newDate.setTime(addQuartersToDate(currentDate, 1).getTime());
+        break;
+      case "year":
+        newDate.setTime(addYearsToDate(currentDate, 1).getTime());
+        break;
+    }
+
+    setCurrentDate(newDate);
+    updateDateRange(newDate);
+  };
+
+  /**
+   * Update date range based on navigation mode and current date
+   */
+  const updateDateRange = (date: Date, navMode?: NavigationMode) => {
+    let fromDate: Date;
+    let toDate: Date;
+
+    switch (navMode || navigationMode) {
+      case "month":
+        fromDate = getStartOfMonth(date);
+        toDate = getEndOfMonth(date);
+        break;
+      case "quarter":
+        fromDate = getStartOfQuarter(date);
+        toDate = getEndOfQuarter(date);
+        break;
+      case "year":
+        fromDate = getStartOfYear(date);
+        toDate = getEndOfYear(date);
+        break;
+      default:
+        return;
+    }
+
+    setDateRange({ from: fromDate, to: toDate });
+  };
+
+  /**
+   * Handle navigation mode change
+   */
+  const handleNavigationModeChange = (mode: string) => {
+    const navigationMode = mode as NavigationMode;
+    setNavigationMode(navigationMode);
+
+    if (navigationMode === "custom") {
+      setInterval("day");
+    } else {
+      // Set appropriate interval based on navigation mode
+      switch (navigationMode) {
+        case "month":
+          setInterval("day");
+          break;
+        case "quarter":
+          setInterval("week");
+          break;
+        case "year":
+          setInterval("month");
+          break;
+      }
+      updateDateRange(currentDate, navigationMode);
+    }
+  };
+
+  /**
+   * Auto-adjust interval based on date range
+   */
+  const getOptimalInterval = (from: Date, to: Date): FinanceInterval => {
+    const daysDiff = Math.ceil(
+      (to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    if (daysDiff <= 31) return "day";
+    if (daysDiff <= 90) return "week";
+    if (daysDiff <= 365) return "month";
+    if (daysDiff <= 730) return "1/4 year";
+    return "year";
+  };
+
+  /**
+   * Update interval when date range changes
+   */
+  useEffect(() => {
+    if (dateRange.from && dateRange.to) {
+      // Only auto-adjust interval for custom mode
+      if (navigationMode === "custom") {
+        const optimalInterval = getOptimalInterval(
+          dateRange.from,
+          dateRange.to
+        );
+        setInterval(optimalInterval);
+      }
+    }
+  }, [dateRange, navigationMode]);
+
+  return (
+    <Grid w="100%" columns={12}>
+      <Grid.Col span={1}></Grid.Col>
+      <Grid.Col span={10}>
+        <Group align="center" w="100%" justify="center">
+          {/* Navigation Controls */}
+          <Group justify="space-between" maw={500} w="100%">
+            <ActionIcon
+              variant="light"
+              onClick={navigatePrevious}
+              disabled={navigationMode === "custom"}
+            >
+              <IconChevronLeft size={16} />
+            </ActionIcon>
+
+            <Text
+              fw={600}
+              size="sm"
+              style={{ minWidth: 120, textAlign: "center" }}
+            >
+              {getNavigationTitle}
+            </Text>
+
+            <ActionIcon
+              variant="light"
+              onClick={navigateNext}
+              disabled={navigationMode === "custom"}
+            >
+              <IconChevronRight size={16} />
+            </ActionIcon>
+          </Group>
+        </Group>
+      </Grid.Col>
+      <Grid.Col span={1}>
+        <FilterActionIcon onClick={toggle} />
+      </Grid.Col>
+
+      <Grid.Col span={12}>
+        <Collapse in={filterOpen}>
+          <Card withBorder p="md" radius="md" maw={500} mx="auto">
+            <Stack gap="md" mt="md" align="center">
+              {/* Navigation Mode Selection */}
+              <Group>
+                <Text size="sm" fw={500}>
+                  Time Period:
+                </Text>
+                <SegmentedControl
+                  value={navigationMode}
+                  onChange={handleNavigationModeChange}
+                  data={[
+                    { value: "month", label: "Month" },
+                    { value: "quarter", label: "Quarter" },
+                    { value: "year", label: "Year" },
+                    { value: "custom", label: "Custom" },
+                  ]}
+                  size="xs"
+                />
+              </Group>
+
+              {/* Primary Controls: Time Period and Chart Type */}
+              <Group justify="space-between" align="flex-end">
+                <Group>
+                  <Select
+                    label="Time Interval"
+                    value={interval}
+                    onChange={(value) => setInterval(value as FinanceInterval)}
+                    data={financeIntervals}
+                    w={150}
+                    description={
+                      navigationMode === "month"
+                        ? "All days of the month"
+                        : navigationMode === "quarter"
+                          ? "All weeks of the quarter"
+                          : navigationMode === "year"
+                            ? "All months of the year"
+                            : "Automatically based on time period"
+                    }
+                  />
+                  <Select
+                    label="Chart Type"
+                    value={chartType}
+                    onChange={(value) => setChartType(value as ChartType)}
+                    data={chartTypeOptions}
+                    w={150}
+                    leftSection={
+                      chartTypeOptions.find(
+                        (option) => option.value === chartType
+                      )?.icon &&
+                      React.createElement(
+                        chartTypeOptions.find(
+                          (option) => option.value === chartType
+                        )!.icon,
+                        { size: 16 }
+                      )
+                    }
+                  />
+                </Group>
+
+                <Group>
+                  <Switch
+                    label="Show Salary"
+                    checked={showSalary}
+                    onChange={(event) =>
+                      setShowSalary(event.currentTarget.checked)
+                    }
+                  />
+                </Group>
+              </Group>
+
+              {/* Custom Date Range Controls */}
+              {navigationMode === "custom" && (
+                <Group>
+                  <DatePickerInput
+                    label="From Date"
+                    placeholder="Select start date"
+                    value={dateRange.from}
+                    onChange={(value: string | null) =>
+                      setDateRange({
+                        ...dateRange,
+                        from: value ? new Date(value) : null,
+                      })
+                    }
+                    w={150}
+                  />
+                  <DatePickerInput
+                    label="To Date"
+                    placeholder="Select end date"
+                    value={dateRange.to}
+                    onChange={(value: string | null) =>
+                      setDateRange({
+                        ...dateRange,
+                        to: value ? new Date(value) : null,
+                      })
+                    }
+                    w={150}
+                  />
+
+                  {/* Quick preset buttons for common date ranges */}
+                  <Group>
+                    <Button
+                      variant="light"
+                      size="xs"
+                      onClick={() => {
+                        const now = new Date();
+                        const oneYearAgo = addYearsToDate(now, -1);
+                        setDateRange({
+                          from: oneYearAgo,
+                          to: now,
+                        });
+                      }}
+                      leftSection={<IconCalendar size={14} />}
+                    >
+                      Last Year
+                    </Button>
+                    <Button
+                      variant="light"
+                      size="xs"
+                      onClick={() => {
+                        const now = new Date();
+                        const oneMonthAgo = addMonthsToDate(now, -1);
+                        setDateRange({
+                          from: oneMonthAgo,
+                          to: now,
+                        });
+                      }}
+                      leftSection={<IconCalendar size={14} />}
+                    >
+                      Last Month
+                    </Button>
+                    <Button
+                      variant="light"
+                      size="xs"
+                      onClick={() => {
+                        const now = new Date();
+                        const oneWeekAgo = addWeeksToDate(now, -1);
+                        setDateRange({
+                          from: oneWeekAgo,
+                          to: now,
+                        });
+                      }}
+                      leftSection={<IconCalendar size={14} />}
+                    >
+                      Last Week
+                    </Button>
+                  </Group>
+                </Group>
+              )}
+            </Stack>
+          </Card>
+        </Collapse>
+      </Grid.Col>
+    </Grid>
+  );
+}

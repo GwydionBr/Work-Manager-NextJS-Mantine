@@ -1,22 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Stack, Paper, Text, Box } from "@mantine/core";
-import { useSettingsStore } from "@/stores/settingsStore";
-import classes from "./FinanceOverview.module.css";
-import FinanceChart from "./FinanceChart";
-import StatisticsCards from "./StatisticsCards";
-import ChartControls, { type ChartType } from "./ChartControls";
 import {
   useFinanceChartData,
   type DateRange,
 } from "@/hooks/useFinanceChartData";
+import { useSettingsStore } from "@/stores/settingsStore";
+
+import { Stack, Paper, Text, Box } from "@mantine/core";
+import AnalysisChart from "../../Analysis/AnalysisChart";
+import StatisticsCards from "./StatisticsCards";
+import ChartControls, { type ChartType } from "./ChartControls";
+
 import {
   formatCurrency,
   formatDate,
   getStartOfMonth,
   getEndOfMonth,
 } from "@/utils/financeChartHelperFunctions";
+
+import classes from "./FinanceOverview.module.css";
+
 import { type FinanceInterval } from "@/types/settings.types";
 
 /**
@@ -45,6 +49,9 @@ export default function FinanceOverview() {
   // Get currency from settings
   const { defaultFinanceCurrency } = useSettingsStore();
 
+  // Use custom hook for chart data and statistics
+  const { chartData, stats } = useFinanceChartData(interval, dateRange);
+
   // Initialize with current month using timezone-safe date functions
   useEffect(() => {
     const now = new Date();
@@ -53,9 +60,6 @@ export default function FinanceOverview() {
       to: getEndOfMonth(now),
     });
   }, []);
-
-  // Use custom hook for chart data and statistics
-  const { chartData, stats } = useFinanceChartData(interval, dateRange);
 
   // Create formatter functions with current settings
   const formatCurrencyWithSettings = (amount: number) =>
@@ -81,12 +85,13 @@ export default function FinanceOverview() {
             <Text c="dimmed">Keine Daten für den ausgewählten Zeitraum</Text>
           </Stack>
         ) : (
-          <FinanceChart
+          <AnalysisChart
             chartData={chartData}
             formatCurrency={formatCurrencyWithSettings}
             formatDate={formatDateWithInterval}
             showNet={showNet}
             chartType={chartType}
+            chartMode="finance"
           />
         )}
       </Paper>
