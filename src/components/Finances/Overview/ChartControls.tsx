@@ -1,7 +1,7 @@
 "use client";
 
 import { useDisclosure } from "@mantine/hooks";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 import {
   Group,
@@ -28,6 +28,18 @@ import {
 import { financeIntervals } from "@/constants/settings";
 import { type DateRange } from "@/hooks/useFinanceChartData";
 import { type FinanceInterval } from "@/types/settings.types";
+import {
+  getStartOfMonth,
+  getEndOfMonth,
+  getStartOfQuarter,
+  getEndOfQuarter,
+  getStartOfYear,
+  getEndOfYear,
+  addMonthsToDate,
+  addQuartersToDate,
+  addYearsToDate,
+  addWeeksToDate,
+} from "@/utils/financeChartHelperFunctions";
 import React from "react";
 import FilterActionIcon from "@/components/UI/Buttons/FilterActionIcon";
 
@@ -63,6 +75,7 @@ interface ChartControlsProps {
  * - Chart type selection (area, bar, line)
  * - Net display toggle
  * - Custom date range selection with preset buttons
+ * - Timezone-safe date handling with date-fns
  */
 export default function ChartControls({
   interval,
@@ -118,13 +131,13 @@ export default function ChartControls({
 
     switch (navigationMode) {
       case "month":
-        newDate.setMonth(newDate.getMonth() - 1);
+        newDate.setTime(addMonthsToDate(currentDate, -1).getTime());
         break;
       case "quarter":
-        newDate.setMonth(newDate.getMonth() - 3);
+        newDate.setTime(addQuartersToDate(currentDate, -1).getTime());
         break;
       case "year":
-        newDate.setFullYear(newDate.getFullYear() - 1);
+        newDate.setTime(addYearsToDate(currentDate, -1).getTime());
         break;
     }
 
@@ -140,13 +153,13 @@ export default function ChartControls({
 
     switch (navigationMode) {
       case "month":
-        newDate.setMonth(newDate.getMonth() + 1);
+        newDate.setTime(addMonthsToDate(currentDate, 1).getTime());
         break;
       case "quarter":
-        newDate.setMonth(newDate.getMonth() + 3);
+        newDate.setTime(addQuartersToDate(currentDate, 1).getTime());
         break;
       case "year":
-        newDate.setFullYear(newDate.getFullYear() + 1);
+        newDate.setTime(addYearsToDate(currentDate, 1).getTime());
         break;
     }
 
@@ -157,28 +170,22 @@ export default function ChartControls({
   /**
    * Update date range based on navigation mode and current date
    */
-  const updateDateRange = (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
+  const updateDateRange = (date: Date, navMode?: NavigationMode) => {
+    let fromDate: Date;
+    let toDate: Date;
 
-    let fromDate: string;
-    let toDate: string;
-
-    switch (navigationMode) {
+    switch (navMode || navigationMode) {
       case "month":
-        fromDate = new Date(year, month, 1).toISOString().split("T")[0];
-        toDate = new Date(year, month + 1, 0).toISOString().split("T")[0];
+        fromDate = getStartOfMonth(date);
+        toDate = getEndOfMonth(date);
         break;
       case "quarter":
-        const quarterStart = Math.floor(month / 3) * 3;
-        fromDate = new Date(year, quarterStart, 1).toISOString().split("T")[0];
-        toDate = new Date(year, quarterStart + 3, 0)
-          .toISOString()
-          .split("T")[0];
+        fromDate = getStartOfQuarter(date);
+        toDate = getEndOfQuarter(date);
         break;
       case "year":
-        fromDate = new Date(year, 0, 1).toISOString().split("T")[0];
-        toDate = new Date(year, 11, 31).toISOString().split("T")[0];
+        fromDate = getStartOfYear(date);
+        toDate = getEndOfYear(date);
         break;
       default:
         return;
@@ -195,6 +202,7 @@ export default function ChartControls({
     setNavigationMode(navigationMode);
 
     if (navigationMode === "custom") {
+      setInterval("day");
     } else {
       // Set appropriate interval based on navigation mode
       switch (navigationMode) {
@@ -208,18 +216,16 @@ export default function ChartControls({
           setInterval("month");
           break;
       }
-      updateDateRange(currentDate);
+      updateDateRange(currentDate, navigationMode);
     }
   };
 
   /**
    * Auto-adjust interval based on date range
    */
-  const getOptimalInterval = (from: string, to: string): FinanceInterval => {
-    const fromDate = new Date(from);
-    const toDate = new Date(to);
+  const getOptimalInterval = (from: Date, to: Date): FinanceInterval => {
     const daysDiff = Math.ceil(
-      (toDate.getTime() - fromDate.getTime()) / (1000 * 60 * 60 * 24)
+      (to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24)
     );
 
     if (daysDiff <= 31) return "day";
@@ -232,7 +238,7 @@ export default function ChartControls({
   /**
    * Update interval when date range changes
    */
-  React.useEffect(() => {
+  useEffect(() => {
     if (dateRange.from && dateRange.to) {
       // Only auto-adjust interval for custom mode
       if (navigationMode === "custom") {
@@ -359,7 +365,10 @@ export default function ChartControls({
                 placeholder="Select start date"
                 value={dateRange.from}
                 onChange={(value: string | null) =>
-                  setDateRange({ ...dateRange, from: value })
+                  setDateRange({
+                    ...dateRange,
+                    from: value ? new Date(value) : null,
+                  })
                 }
                 w={150}
               />
@@ -368,7 +377,10 @@ export default function ChartControls({
                 placeholder="Select end date"
                 value={dateRange.to}
                 onChange={(value: string | null) =>
-                  setDateRange({ ...dateRange, to: value })
+                  setDateRange({
+                    ...dateRange,
+                    to: value ? new Date(value) : null,
+                  })
                 }
                 w={150}
               />
@@ -380,11 +392,10 @@ export default function ChartControls({
                   size="xs"
                   onClick={() => {
                     const now = new Date();
-                    const oneYearAgo = new Date();
-                    oneYearAgo.setFullYear(now.getFullYear() - 1);
+                    const oneYearAgo = addYearsToDate(now, -1);
                     setDateRange({
-                      from: oneYearAgo.toISOString().split("T")[0],
-                      to: now.toISOString().split("T")[0],
+                      from: oneYearAgo,
+                      to: now,
                     });
                   }}
                   leftSection={<IconCalendar size={14} />}
@@ -396,11 +407,10 @@ export default function ChartControls({
                   size="xs"
                   onClick={() => {
                     const now = new Date();
-                    const oneMonthAgo = new Date();
-                    oneMonthAgo.setMonth(now.getMonth() - 1);
+                    const oneMonthAgo = addMonthsToDate(now, -1);
                     setDateRange({
-                      from: oneMonthAgo.toISOString().split("T")[0],
-                      to: now.toISOString().split("T")[0],
+                      from: oneMonthAgo,
+                      to: now,
                     });
                   }}
                   leftSection={<IconCalendar size={14} />}
@@ -412,11 +422,10 @@ export default function ChartControls({
                   size="xs"
                   onClick={() => {
                     const now = new Date();
-                    const oneWeekAgo = new Date();
-                    oneWeekAgo.setDate(now.getDate() - 7);
+                    const oneWeekAgo = addWeeksToDate(now, -1);
                     setDateRange({
-                      from: oneWeekAgo.toISOString().split("T")[0],
-                      to: now.toISOString().split("T")[0],
+                      from: oneWeekAgo,
+                      to: now,
                     });
                   }}
                   leftSection={<IconCalendar size={14} />}

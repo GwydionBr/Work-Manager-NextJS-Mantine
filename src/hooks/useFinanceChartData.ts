@@ -1,13 +1,26 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useFinanceStore } from "@/stores/financeStore";
 import { FinanceInterval } from "@/types/settings.types";
+import {
+  dateToISOString,
+  stringToDate,
+  getStartOfMonth,
+  getEndOfMonth,
+  getStartOfWeek,
+  addDaysToDate,
+  addWeeksToDate,
+  addMonthsToDate,
+  addQuartersToDate,
+  addYearsToDate,
+  isDateInInterval,
+} from "@/utils/financeChartHelperFunctions";
 
 /**
  * Represents a single data point in the chart
  * Contains financial data for a specific time period
  */
 export interface FinanceChartData {
-  date: string; // Date string in ISO format (YYYY-MM-DD)
+  date: string; // Date string in ISO format (YYYY-MM-DD) for chart compatibility
   expense: number; // Total expenses for this period
   income: number; // Total income for this period
   net: number; // Net amount (income - expense)
@@ -31,11 +44,11 @@ export interface ChartStats {
 
 /**
  * Date range for custom time period selection
- * Uses string format for DatePickerInput compatibility
+ * Uses Date objects for better type safety and performance
  */
 export interface DateRange {
-  from: string | null; // Start date in YYYY-MM-DD format
-  to: string | null; // End date in YYYY-MM-DD format
+  from: Date | null; // Start date
+  to: Date | null; // End date
 }
 
 /**
@@ -47,6 +60,7 @@ export interface DateRange {
  * - Complete time period coverage (including empty periods)
  * - Comprehensive statistics calculation
  * - Performance optimized with memoization
+ * - Timezone-safe date handling with date-fns
  */
 export function useFinanceChartData(
   interval: FinanceInterval,
@@ -134,7 +148,9 @@ export function useFinanceChartData(
    * Prevents unnecessary re-renders by memoizing the dependency array
    */
   const chartDataKey = useMemo(() => {
-    return `${interval}-${dateRange.from}-${dateRange.to}-${singleCashFlows.length}`;
+    const fromStr = dateRange.from ? dateToISOString(dateRange.from) : "null";
+    const toStr = dateRange.to ? dateToISOString(dateRange.to) : "null";
+    return `${interval}-${fromStr}-${toStr}-${singleCashFlows.length}`;
   }, [interval, dateRange.from, dateRange.to, singleCashFlows.length]);
 
   /**
@@ -146,6 +162,7 @@ export function useFinanceChartData(
    * - Groups data by selected interval (day, week, month, etc.)
    * - Handles different time period formats
    * - Auto-adjusts granularity based on date range
+   * - Timezone-safe date handling with date-fns
    */
   const getChartData = useCallback(
     (interval: FinanceInterval) => {
@@ -160,10 +177,8 @@ export function useFinanceChartData(
       } else {
         // Default to current month if no custom range
         const now = new Date();
-        const year = now.getFullYear();
-        const month = now.getMonth();
-        startDate = new Date(year, month, 1);
-        endDate = new Date(year, month + 1, 0);
+        startDate = getStartOfMonth(now);
+        endDate = getEndOfMonth(now);
       }
 
       const groupedData: {
@@ -184,37 +199,36 @@ export function useFinanceChartData(
           // Create period keys based on selected interval
           switch (interval) {
             case "day":
-              key = current.toISOString().split("T")[0]; // YYYY-MM-DD
-              current.setDate(current.getDate() + 1);
+              key = dateToISOString(current); // YYYY-MM-DD
+              current.setTime(addDaysToDate(current, 1).getTime());
               break;
             case "week":
-              // Calculate week start (Monday)
-              const weekStart = new Date(current);
-              weekStart.setDate(current.getDate() - current.getDay());
-              key = weekStart.toISOString().split("T")[0];
-              current.setDate(current.getDate() + 7);
+              // Calculate week start (Monday) using date-fns
+              const weekStart = getStartOfWeek(current);
+              key = dateToISOString(weekStart);
+              current.setTime(addWeeksToDate(current, 1).getTime());
               break;
             case "month":
               key = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, "0")}`; // YYYY-MM
-              current.setMonth(current.getMonth() + 1);
+              current.setTime(addMonthsToDate(current, 1).getTime());
               break;
             case "1/4 year":
               const quarter = Math.floor(current.getMonth() / 3) + 1;
               key = `${current.getFullYear()}-Q${quarter}`; // YYYY-Q1
-              current.setMonth(current.getMonth() + 3);
+              current.setTime(addQuartersToDate(current, 1).getTime());
               break;
             case "1/2 year":
               const half = Math.floor(current.getMonth() / 6) + 1;
               key = `${current.getFullYear()}-H${half}`; // YYYY-H1
-              current.setMonth(current.getMonth() + 6);
+              current.setTime(addMonthsToDate(current, 6).getTime());
               break;
             case "year":
               key = current.getFullYear().toString(); // YYYY
-              current.setFullYear(current.getFullYear() + 1);
+              current.setTime(addYearsToDate(current, 1).getTime());
               break;
             default:
-              key = current.toISOString().split("T")[0];
-              current.setDate(current.getDate() + 1);
+              key = dateToISOString(current);
+              current.setTime(addDaysToDate(current, 1).getTime());
           }
 
           // Avoid duplicate periods
@@ -234,13 +248,11 @@ export function useFinanceChartData(
 
       // Add actual cash flow data to the grouped periods
       singleCashFlows.forEach((flow) => {
-        const date = new Date(flow.date);
+        const date = stringToDate(flow.date);
 
         // Skip flows outside custom date range if specified
         if (dateRange.from && dateRange.to) {
-          const fromDate = new Date(dateRange.from);
-          const toDate = new Date(dateRange.to);
-          if (date < fromDate || date > toDate) {
+          if (!isDateInInterval(date, dateRange.from, dateRange.to)) {
             return;
           }
         }
@@ -250,12 +262,11 @@ export function useFinanceChartData(
 
         switch (interval) {
           case "day":
-            key = date.toISOString().split("T")[0];
+            key = dateToISOString(date);
             break;
           case "week":
-            const weekStart = new Date(date);
-            weekStart.setDate(date.getDate() - date.getDay());
-            key = weekStart.toISOString().split("T")[0];
+            const weekStart = getStartOfWeek(date);
+            key = dateToISOString(weekStart);
             break;
           case "month":
             key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
@@ -272,7 +283,7 @@ export function useFinanceChartData(
             key = date.getFullYear().toString();
             break;
           default:
-            key = date.toISOString().split("T")[0];
+            key = dateToISOString(date);
         }
 
         // Add cash flow to the appropriate period

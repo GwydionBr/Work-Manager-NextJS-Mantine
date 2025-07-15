@@ -14,6 +14,8 @@ import {
 import {
   formatCurrency,
   formatDate,
+  getStartOfMonth,
+  getEndOfMonth,
 } from "@/utils/financeChartHelperFunctions";
 import { type FinanceInterval } from "@/types/settings.types";
 
@@ -26,6 +28,7 @@ import { type FinanceInterval } from "@/types/settings.types";
  * - Multiple chart types (area, bar, line)
  * - Comprehensive statistics cards
  * - Complete time period coverage (including empty periods)
+ * - Timezone-safe date handling with date-fns
  */
 export default function FinanceOverview() {
   // Chart configuration state
@@ -42,15 +45,12 @@ export default function FinanceOverview() {
   // Get currency from settings
   const { defaultFinanceCurrency } = useSettingsStore();
 
-  // Initialize with current month
+  // Initialize with current month using timezone-safe date functions
   useEffect(() => {
     const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-
     setDateRange({
-      from: new Date(year, month, 1).toISOString().split("T")[0],
-      to: new Date(year, month + 1, 0).toISOString().split("T")[0],
+      from: getStartOfMonth(now),
+      to: getEndOfMonth(now),
     });
   }, []);
 
