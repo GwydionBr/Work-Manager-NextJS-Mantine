@@ -5,12 +5,13 @@ import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { ActionIcon, Flex, Group, Modal, Tooltip } from "@mantine/core";
+import { ActionIcon, Flex, Group, Modal } from "@mantine/core";
 import { IconFilePlus } from "@tabler/icons-react";
 import ProjectForm from "@/components/Work/Project/ProjectForm";
 import AddActionIcon from "@/components/UI/ActionIcons/AddActionIcon";
 
 import { Currency } from "@/types/settings.types";
+import DelayedTooltip from "@/components/UI/DelayedTooltip";
 
 export default function NewProjectButton({
   plusIcon = true,
@@ -72,9 +73,14 @@ export default function NewProjectButton({
       </Modal>
 
       {plusIcon ? (
-        <AddActionIcon aria-label="Add project" onClick={open} size="md" />
+        <AddActionIcon
+          aria-label="Add project"
+          onClick={open}
+          size="md"
+          tooltipLabel="Add project"
+        />
       ) : (
-        <Tooltip label="Add project">
+        <DelayedTooltip label="Add project">
           <ActionIcon
             aria-label="Add project"
             onClick={open}
@@ -83,7 +89,7 @@ export default function NewProjectButton({
           >
             <IconFilePlus />
           </ActionIcon>
-        </Tooltip>
+        </DelayedTooltip>
       )}
     </Group>
   );

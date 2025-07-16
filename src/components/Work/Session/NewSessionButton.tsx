@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 
-import { Drawer, Flex } from "@mantine/core";
+import { Box, Drawer, Flex } from "@mantine/core";
 import SessionForm from "@/components/Work/Session/SessionForm";
 import AddActionIcon from "@/components/UI/ActionIcons/AddActionIcon";
 
@@ -57,7 +57,7 @@ export default function NewSessionButton() {
   }
 
   return (
-    <>
+    <Box>
       <Drawer
         opened={opened}
         onClose={close}
@@ -85,7 +85,12 @@ export default function NewSessionButton() {
         </Flex>
       </Drawer>
 
-      <AddActionIcon aria-label="Add session" onClick={open} size="md" />
-    </>
+      <AddActionIcon
+        aria-label="Add session"
+        onClick={open}
+        size="md"
+        tooltipLabel="Add session"
+      />
+    </Box>
   );
 }

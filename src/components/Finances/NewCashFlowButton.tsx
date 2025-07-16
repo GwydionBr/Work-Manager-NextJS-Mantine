@@ -35,7 +35,7 @@ export default function NewCashFlowButton({
         aria-label="Add cash flow"
         onClick={open}
         size="md"
-        tooltipLabel={tooltipLabel}
+        tooltipLabel={tooltipLabel || "Add cash flow"}
       />
     </Box>
   );

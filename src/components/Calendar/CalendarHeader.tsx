@@ -3,7 +3,7 @@ import PrevActionIcon from "../UI/ActionIcons/PrevActionIcon";
 import NextActionIcon from "../UI/ActionIcons/NextActionIcon";
 import dayjs from "dayjs";
 import classes from "./Calendar.module.css";
-import AddAppointmentButton from "./Appointment/AddAppointmentButton";
+import NewAppointmentButton from "./Appointment/NewAppointmentButton";
 
 interface CalendarHeaderProps {
   currentDate: Date;
@@ -20,7 +20,7 @@ export default function CalendarHeader({
     <Grid>
       <Grid.Col span={1}>
         <Group justify="center" px="sm">
-          <AddAppointmentButton />
+          <NewAppointmentButton />
         </Group>
       </Grid.Col>
       <Grid.Col span={10}>

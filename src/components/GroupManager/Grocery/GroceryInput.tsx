@@ -6,6 +6,7 @@ import { ActionIcon, Alert, Group, Stack, TextInput } from "@mantine/core";
 import { IconX, IconPlus } from "@tabler/icons-react";
 
 import classes from "./Grocery.module.css";
+import AddActionIcon from "@/components/UI/ActionIcons/AddActionIcon";
 
 interface GroceryInputProps {
   placeholder: string;
@@ -56,9 +57,13 @@ export default function GroceryInput({
             value={value}
             onChange={(e) => onValueChange(e.target.value)}
           />
-          <ActionIcon onClick={onSubmit} loading={isLoading}>
-            <IconPlus />
-          </ActionIcon>
+          <AddActionIcon
+            onClick={onSubmit}
+            loading={isLoading}
+            aria-label="Add grocery"
+            tooltipLabel="Add grocery"
+            variant="filled"
+          />
         </Group>
         {error && (
           <Alert withCloseButton color="red" onClose={onCloseError}>

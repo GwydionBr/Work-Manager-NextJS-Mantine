@@ -24,7 +24,11 @@ export default function NewGroupButton() {
         </Flex>
       </Modal>
 
-      <AddActionIcon onClick={open} aria-label="Add group" />
+      <AddActionIcon
+        onClick={open}
+        aria-label="Add group"
+        tooltipLabel="Add group"
+      />
     </Box>
   );
 }

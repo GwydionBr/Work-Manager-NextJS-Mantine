@@ -53,7 +53,12 @@ export default function EditGroupButton() {
         message="Are you sure you want to delete this group? This action cannot be undone."
       />
 
-      <PencilActionIcon aria-label="Edit group" onClick={open} size="md" />
+      <PencilActionIcon
+        aria-label="Edit group"
+        onClick={open}
+        size="md"
+        tooltipLabel="Edit group"
+      />
     </Box>
   );
 }

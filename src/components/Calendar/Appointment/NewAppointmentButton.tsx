@@ -7,7 +7,7 @@ import { Box, Modal } from "@mantine/core";
 import AddActionIcon from "../../UI/ActionIcons/AddActionIcon";
 import AppointmentForm from "./AppointmentForm";
 
-export default function AddAppointmentButton() {
+export default function NewAppointmentButton() {
   const [opened, { open, close }] = useDisclosure(false);
   const { activeGroupId } = useGroupStore();
 
@@ -15,7 +15,11 @@ export default function AddAppointmentButton() {
 
   return (
     <Box>
-      <AddActionIcon onClick={open} />
+      <AddActionIcon
+        onClick={open}
+        aria-label="Add appointment"
+        tooltipLabel="Add appointment"
+      />
       <Modal
         opened={opened}
         onClose={close}

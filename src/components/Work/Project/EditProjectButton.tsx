@@ -97,9 +97,12 @@ export default function EditProjectButton() {
         message="Are you sure you want to delete this project? This action cannot be undone."
       />
 
-      <Tooltip label="Edit project">
-        <EditActionIcon aria-label="Edit project" onClick={open} size="md" />
-      </Tooltip>
+      <EditActionIcon
+        aria-label="Edit project"
+        onClick={open}
+        size="md"
+        tooltipLabel="Edit project"
+      />
     </Box>
   );
 }
