@@ -4,16 +4,19 @@ import { useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSessionFiltering } from "@/hooks/useSessionFiltering";
 
-import { Box, Stack, Text } from "@mantine/core";
+import { Box, Collapse, Stack, Text } from "@mantine/core";
 import Header from "@/components/Header/Header";
 import PayoutMenu from "@/components/Work/Project/PayoutMenu";
 import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
 import { groupSessions } from "@/utils/sessionHelperFunctions";
 import BulkSelectionControls from "@/components/Work/Session/BulkSelectionControls";
+import WorkAnalysis from "@/components/Work/WorkAnalysis";
+import AnalysisActionIcon from "@/components/UI/Buttons/AnalysisActionIcon";
 
 export default function WorkOverviewPage() {
   const { projects: timerProjects, folders, timerSessions } = useWorkStore();
   const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
+  const [analysisOpened, setAnalysisOpened] = useState(false);
 
   const projects = timerProjects.map((project) => project.project);
 
@@ -56,9 +59,17 @@ export default function WorkOverviewPage() {
             isOverview={true}
           />
         }
+        rightButton={
+          <AnalysisActionIcon
+            onClick={() => setAnalysisOpened((state) => !state)}
+          />
+        }
       />
       {timerSessions.length > 0 ? (
         <Box w="100%">
+          <Collapse in={analysisOpened} transitionDuration={500}>
+            <WorkAnalysis sessions={filteredSessions} isOverview={true} />
+          </Collapse>
           <BulkSelectionControls
             unpaidSessions={unpaidSessions}
             selectedSessions={selectedSessions}

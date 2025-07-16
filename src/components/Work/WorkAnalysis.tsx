@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { DateRange, useWorkChartData } from "@/hooks/useWorkChartData";
 
 import { Stack, Paper, Text, Box, Card } from "@mantine/core";
 import WorkChartControls, { ChartType } from "./WorkChartControls";
@@ -11,14 +12,20 @@ import {
 } from "@/utils/financeChartHelperFunctions";
 import { formatCurrency } from "@/utils/financeChartHelperFunctions";
 import { FinanceInterval } from "@/types/settings.types";
-import { DateRange, useWorkChartData } from "@/hooks/useWorkChartData";
-import { TimerProject } from "@/stores/workManagerStore";
+
+import { Tables } from "@/types/db.types";
 
 interface WorkAnalysisProps {
-  project: TimerProject;
+  isOverview?: boolean;
+  sessions: Tables<"timerSession">[];
+  project?: Tables<"timerProject">;
 }
 
-export default function WorkAnalysis({ project }: WorkAnalysisProps) {
+export default function WorkAnalysis({
+  sessions,
+  project,
+  isOverview,
+}: WorkAnalysisProps) {
   // Chart configuration state
   const [interval, setInterval] = useState<FinanceInterval>("day");
   const [chartType, setChartType] = useState<ChartType>("area");
@@ -34,8 +41,8 @@ export default function WorkAnalysis({ project }: WorkAnalysisProps) {
   const { chartData, stats } = useWorkChartData(
     interval,
     dateRange,
-    project.sessions,
-    project.project.id
+    sessions,
+    project?.id
   );
 
   // Initialize with current month using timezone-safe date functions
@@ -49,7 +56,7 @@ export default function WorkAnalysis({ project }: WorkAnalysisProps) {
 
   // Create formatter functions with current settings
   const formatCurrencyWithSettings = (amount: number) =>
-    formatCurrency(amount, project.project.currency);
+    formatCurrency(amount, project?.currency ?? "USD");
   const formatDateWithInterval = (dateString: string) =>
     formatDate(new Date(dateString));
   const formatTimeWithSettings = (seconds: number) => formatTime(seconds);
@@ -78,7 +85,9 @@ export default function WorkAnalysis({ project }: WorkAnalysisProps) {
               formatCurrency={formatCurrencyWithSettings}
               formatDate={formatDateWithInterval}
               formatTime={formatTimeWithSettings}
-              showSalary={project.project.hourly_payment ? showSalary : false}
+              showSalary={
+                project?.hourly_payment || isOverview ? showSalary : false
+              }
               chartType={chartType}
               chartMode="work"
             />

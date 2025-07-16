@@ -4,15 +4,7 @@ import { useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSessionFiltering } from "@/hooks/useSessionFiltering";
 
-import {
-  ActionIcon,
-  Box,
-  Collapse,
-  Group,
-  Loader,
-  Stack,
-  Text,
-} from "@mantine/core";
+import { Box, Collapse, Group, Loader, Stack, Text } from "@mantine/core";
 import NewSessionButton from "@/components/Work/Session/NewSessionButton";
 import EditProjectButton from "@/components/Work/Project/EditProjectButton";
 import Header from "@/components/Header/Header";
@@ -22,8 +14,8 @@ import PayoutMenu from "@/components/Work/Project/PayoutMenu";
 import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
 import BulkSelectionControls from "@/components/Work/Session/BulkSelectionControls";
 import { groupSessions } from "@/utils/sessionHelperFunctions";
-import { IconChartCovariate } from "@tabler/icons-react";
 import WorkAnalysis from "@/components/Work/WorkAnalysis";
+import AnalysisActionIcon from "@/components/UI/Buttons/AnalysisActionIcon";
 
 export default function WorkPage() {
   const { activeProjectId, isFetching } = useWorkStore();
@@ -106,12 +98,9 @@ export default function WorkPage() {
         secondaryButton={<NewSessionButton />}
         rightButton={
           <Group>
-            <ActionIcon
+            <AnalysisActionIcon
               onClick={() => setAnalysisOpened((state) => !state)}
-              variant="light"
-            >
-              <IconChartCovariate />
-            </ActionIcon>
+            />
             <EditProjectButton />
           </Group>
         }
@@ -126,8 +115,12 @@ export default function WorkPage() {
       />
       {activeProject?.sessions.length > 0 ? (
         <Box w="100%">
-          <Collapse in={analysisOpened}>
-            <WorkAnalysis project={activeProject} />
+          <Collapse in={analysisOpened} transitionDuration={500}>
+            <WorkAnalysis
+              sessions={activeProject.sessions}
+              isOverview={false}
+              project={activeProject.project}
+            />
           </Collapse>
           {/* Bulk Selection Controls */}
           {activeProject.project.hourly_payment && (
