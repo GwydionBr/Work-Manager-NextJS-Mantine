@@ -219,7 +219,7 @@ export default function ProjectForm({
             onClick={form.onSubmit(onSubmit)}
             loading={submitting}
             variant="filled"
-            mb="md"
+            mt="md"
             title="Create Project"
           />
         ) : (
@@ -227,7 +227,7 @@ export default function ProjectForm({
             onClick={form.onSubmit(onSubmit)}
             loading={submitting}
             variant="filled"
-            mb="md"
+            mt="md"
             title="Save Project"
           />
         )}

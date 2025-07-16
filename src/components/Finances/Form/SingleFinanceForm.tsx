@@ -89,6 +89,7 @@ export default function SingleFinanceForm({
         <DatePickerInput
           label="Date"
           withAsterisk
+          mb="md"
           {...form.getInputProps("date")}
         />
         {cashFlow ? (

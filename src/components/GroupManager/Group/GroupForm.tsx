@@ -6,10 +6,12 @@ import { useGroupStore, Group } from "@/stores/groupStore";
 import { useUserStore } from "@/stores/userStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { TextInput, Stack, Button, Alert, MultiSelect } from "@mantine/core";
+import { TextInput, Stack, Alert, MultiSelect } from "@mantine/core";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
+import CreateButton from "@/components/UI/Buttons/CreateButton";
+import UpdateButton from "@/components/UI/Buttons/UpdateButton";
 
 const schema = z.object({
   title: z.string().min(2, "Name must be at least 2 characters"),
@@ -113,9 +115,21 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
             }))}
           {...form.getInputProps("memberIds")}
         />
-        <Button type="submit" loading={isLoading}>
-          {group ? "Update" : "Create"}
-        </Button>
+        {group ? (
+          <UpdateButton
+            onClick={form.onSubmit(handleFormSubmit)}
+            loading={isLoading}
+            variant="filled"
+            title="Update Group"
+          />
+        ) : (
+          <CreateButton
+            onClick={form.onSubmit(handleFormSubmit)}
+            loading={isLoading}
+            variant="filled"
+            title="Create Group"
+          />
+        )}
         <CancelButton onClick={onClose} />
         {error && (
           <Alert variant="light" color="red">

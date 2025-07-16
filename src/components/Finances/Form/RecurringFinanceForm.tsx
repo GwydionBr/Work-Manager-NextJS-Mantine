@@ -120,6 +120,7 @@ export default function RecurringFinanceForm({
           placeholder="Select interval"
           data={financeIntervals}
           {...form.getInputProps("interval")}
+          mb="md"
         />
         {cashFlow ? (
           <UpdateButton

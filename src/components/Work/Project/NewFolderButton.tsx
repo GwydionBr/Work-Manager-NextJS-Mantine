@@ -5,10 +5,8 @@ import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 
 import {
-  Box,
   Modal,
   TextInput,
-  Button,
   Group,
   Stack,
   ActionIcon,
@@ -18,6 +16,8 @@ import { useForm } from "@mantine/form";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { IconFolderPlus } from "@tabler/icons-react";
+import CreateButton from "@/components/UI/Buttons/CreateButton";
+import CancelButton from "@/components/UI/Buttons/CancelButton";
 
 const folderSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -70,12 +70,13 @@ export default function NewFolderButton() {
               {...form.getInputProps("description")}
             />
             <Group justify="flex-end">
-              <Button variant="outline" onClick={close}>
-                Cancel
-              </Button>
-              <Button type="submit" loading={submitting}>
-                Create
-              </Button>
+              <CancelButton onClick={close} />
+              <CreateButton
+                onClick={form.onSubmit(handleSubmit)}
+                loading={submitting}
+                variant="filled"
+                title="Create Folder"
+              />
             </Group>
           </Stack>
         </form>

@@ -1,9 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 
-import { Drawer, Flex, Tooltip } from "@mantine/core";
+import { Box, Drawer, Flex, Tooltip } from "@mantine/core";
 import ProjectForm from "@/components/Work/Project/ProjectForm";
 import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
@@ -21,6 +22,7 @@ export default function EditProjectButton() {
   const activeProject = useWorkStore((state) =>
     state.projects.find((p) => p.project.id === activeProjectId)
   );
+  const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(values: {
     title: string;
@@ -33,7 +35,7 @@ export default function EditProjectButton() {
     if (!activeProject) {
       return;
     }
-
+    setSubmitting(true);
     const success = await updateProject({
       id: activeProject.project.id,
       ...values,
@@ -41,6 +43,7 @@ export default function EditProjectButton() {
     if (success) {
       close();
     }
+    setSubmitting(false);
   }
 
   async function handleDelete() {
@@ -58,7 +61,7 @@ export default function EditProjectButton() {
   }
 
   return (
-    <>
+    <Box>
       <Drawer
         opened={opened}
         onClose={close}
@@ -80,6 +83,7 @@ export default function EditProjectButton() {
             onSubmit={handleSubmit}
             onCancel={close}
             newProject={false}
+            submitting={submitting}
           />
           <DeleteButton onClick={openDeleteModal} />
         </Flex>
@@ -96,6 +100,6 @@ export default function EditProjectButton() {
       <Tooltip label="Edit project">
         <EditActionIcon aria-label="Edit project" onClick={open} size="md" />
       </Tooltip>
-    </>
+    </Box>
   );
 }

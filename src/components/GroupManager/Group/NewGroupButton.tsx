@@ -2,8 +2,7 @@
 
 import { useDisclosure } from "@mantine/hooks";
 
-import { ActionIcon, Box, Flex, Modal } from "@mantine/core";
-import { IconPlus } from "@tabler/icons-react";
+import { Box, Flex, Modal } from "@mantine/core";
 import GroupForm from "@/components/GroupManager/Group/GroupForm";
 import AddActionIcon from "@/components/UI/ActionIcons/AddActionIcon";
 
