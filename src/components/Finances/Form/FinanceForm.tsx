@@ -33,12 +33,13 @@ import classes from "../../UI/Switch.module.css";
 
 interface FinanceFormProps {
   onClose: () => void;
+  isSingle: boolean;
 }
 
-export default function FinanceForm({ onClose }: FinanceFormProps) {
+export default function FinanceForm({ onClose, isSingle }: FinanceFormProps) {
   const [type, setType] = useState<CashFlowType>("income");
   const [categoryId, setCategoryId] = useState<string | null>(null);
-  const [isRecurring, setIsRecurring] = useState<boolean>(false);
+  const [isRecurring, setIsRecurring] = useState<boolean>(!isSingle);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { defaultFinanceCurrency: financeCurrency } = useSettingsStore();

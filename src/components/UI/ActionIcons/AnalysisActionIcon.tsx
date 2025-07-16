@@ -1,21 +1,26 @@
 import { ActionIcon, ActionIconProps } from "@mantine/core";
 import { IconChartCovariate } from "@tabler/icons-react";
+import DelayedTooltip from "../DelayedTooltip";
 
 interface AnalysisActionIconProps extends ActionIconProps {
   onClick: () => void;
   iconSize?: number;
   iconColor?: string;
+  tooltipLabel?: string;
 }
 
 export default function AnalysisActionIcon({
   onClick,
   iconSize,
   iconColor,
+  tooltipLabel,
   ...props
 }: AnalysisActionIconProps) {
   return (
-    <ActionIcon onClick={onClick} size="md" variant="light" {...props}>
-      <IconChartCovariate size={iconSize} color={iconColor} />
-    </ActionIcon>
+    <DelayedTooltip label={tooltipLabel}>
+      <ActionIcon onClick={onClick} size="md" variant="light" {...props}>
+        <IconChartCovariate size={iconSize} color={iconColor} />
+      </ActionIcon>
+    </DelayedTooltip>
   );
 }

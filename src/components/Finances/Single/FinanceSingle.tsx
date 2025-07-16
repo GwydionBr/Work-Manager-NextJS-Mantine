@@ -6,6 +6,7 @@ import { Box, Table, alpha } from "@mantine/core";
 
 import classes from "./FinanceSingle.module.css";
 import EditCashFlowButton from "../EditCashFlowButton";
+import NewCashFlowButton from "../NewCashFlowButton";
 
 export default function FinanceSingle() {
   const { singleCashFlows, financeCategories } = useFinanceStore();
@@ -14,13 +15,9 @@ export default function FinanceSingle() {
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
-  const totalAmount = sortedSingleCashFlows.reduce(
-    (acc, cashFlow) => acc + cashFlow.amount,
-    0
-  );
-
   return (
     <Box className={classes.financeSingleContainer}>
+      <NewCashFlowButton isSingle={true} tooltipLabel="Add Single Cash Flow" />
       <Table>
         <Table.Thead>
           <Table.Tr>

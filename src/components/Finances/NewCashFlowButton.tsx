@@ -5,7 +5,16 @@ import { useDisclosure } from "@mantine/hooks";
 import { Box, Flex, Modal } from "@mantine/core";
 import FinanceForm from "@/components/Finances/Form/FinanceForm";
 import AddActionIcon from "@/components/UI/ActionIcons/AddActionIcon";
-export default function NewCashFlowButton() {
+
+interface NewCashFlowButtonProps {
+  isSingle: boolean;
+  tooltipLabel?: string;
+}
+
+export default function NewCashFlowButton({
+  isSingle = true,
+  tooltipLabel,
+}: NewCashFlowButtonProps) {
   const [opened, { open, close }] = useDisclosure(false);
 
   return (
@@ -18,11 +27,16 @@ export default function NewCashFlowButton() {
         padding="md"
       >
         <Flex direction="column" gap="xl">
-          <FinanceForm onClose={close} />
+          <FinanceForm onClose={close} isSingle={isSingle} />
         </Flex>
       </Modal>
 
-      <AddActionIcon aria-label="Add cash flow" onClick={open} size="md" />
+      <AddActionIcon
+        aria-label="Add cash flow"
+        onClick={open}
+        size="md"
+        tooltipLabel={tooltipLabel}
+      />
     </Box>
   );
 }
