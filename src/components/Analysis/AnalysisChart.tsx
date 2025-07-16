@@ -49,9 +49,16 @@ export default function AnalysisChart<T extends ChartMode>({
    * Configures common props and series for all chart types
    */
   const renderChart = () => {
+    const newChartData =
+      showNet && chartMode === "finance"
+        ? chartData.map((item) => ({
+            ...item,
+            expense: -(item as FinanceChartData).expense,
+          }))
+        : chartData;
     // Common configuration for all chart types
     const commonProps = {
-      data: chartData,
+      data: newChartData,
       dataKey: "date",
       h: 350,
       px: 10,
