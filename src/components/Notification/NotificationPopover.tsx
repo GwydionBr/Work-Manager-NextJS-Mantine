@@ -8,14 +8,14 @@ import { Group, Indicator, Stack, Text } from "@mantine/core";
 import { IconUserPlus, IconUsersPlus } from "@tabler/icons-react";
 
 import classes from "./Notification.module.css";
-import CheckActionIcon from "../UI/Buttons/CheckActionIcon";
-import XActionIcon from "../UI/Buttons/XActionIcon";
+import CheckActionIcon from "../UI/ActionIcons/CheckActionIcon";
+import XActionIcon from "../UI/ActionIcons/XActionIcon";
 
 export default function NotificationPopover() {
   const { requestedFriends, acceptFriend, declineFriend } = useUserStore();
   const { groupRequests, answerGroupRequest } = useGroupStore();
   const { defaultGroupColor } = useSettingsStore();
-  
+
   return (
     <Stack gap="xs">
       {requestedFriends.length > 0 && (
@@ -72,14 +72,22 @@ export default function NotificationPopover() {
                     size="sm"
                     iconSize={20}
                     onClick={() =>
-                      answerGroupRequest(request.requestId, true, defaultGroupColor)
+                      answerGroupRequest(
+                        request.requestId,
+                        true,
+                        defaultGroupColor
+                      )
                     }
                   />
                   <XActionIcon
                     size="sm"
                     iconSize={20}
                     onClick={() =>
-                      answerGroupRequest(request.requestId, false, defaultGroupColor)
+                      answerGroupRequest(
+                        request.requestId,
+                        false,
+                        defaultGroupColor
+                      )
                     }
                   />
                 </Group>

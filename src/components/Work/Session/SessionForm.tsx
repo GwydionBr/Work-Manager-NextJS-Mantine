@@ -1,6 +1,6 @@
 import { useForm } from "@mantine/form";
 
-import { Button, NumberInput, Select, Stack } from "@mantine/core";
+import { NumberInput, Select, Stack } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { IconPlayerPlay, IconPlayerPause } from "@tabler/icons-react";
 import { z } from "zod";
@@ -10,6 +10,9 @@ import TimeInput from "@/components/Work/Session/SessionTimeInput";
 
 import { Currency } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
+import UpdateButton from "@/components/UI/Buttons/UpdateButton";
+import CreateButton from "@/components/UI/Buttons/CreateButton";
+import CancelButton from "@/components/UI/Buttons/CancelButton";
 
 interface NewSession {
   start_time: string;
@@ -26,6 +29,7 @@ interface SessionFormProps {
   onCancel: () => void;
   newSession: boolean;
   project?: Tables<"timerProject">;
+  submitting?: boolean;
 }
 
 export default function SessionForm({
@@ -34,6 +38,7 @@ export default function SessionForm({
   onCancel,
   newSession,
   project,
+  submitting,
 }: SessionFormProps) {
   // If project doesn't have hourly payment, set salary to 0 and currency to project currency
   const shouldShowPaymentFields = project?.hourly_payment ?? true;
@@ -107,12 +112,24 @@ export default function SessionForm({
           value={form.values.start_time}
           {...form.getInputProps("start_time")}
         />
-        <Button type="submit" mt="md">
-          {newSession ? "Create Session" : "Save Changes"}
-        </Button>
-        <Button onClick={onCancel} color="red" variant="outline">
-          Cancel
-        </Button>
+        {newSession ? (
+          <CreateButton
+            onClick={form.onSubmit(onSubmit)}
+            loading={submitting}
+            variant="filled"
+            mt="md"
+            title="Create Session"
+          />
+        ) : (
+          <UpdateButton
+            onClick={form.onSubmit(onSubmit)}
+            loading={submitting}
+            variant="filled"
+            mt="md"
+            title="Save Session"
+          />
+        )}
+        {onCancel && <CancelButton onClick={onCancel} />}
       </Stack>
     </form>
   );

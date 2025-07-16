@@ -17,8 +17,8 @@ import {
 import { IconUserPlus, IconUsersPlus } from "@tabler/icons-react";
 
 import classes from "./Notification.module.css";
-import CheckActionIcon from "../UI/Buttons/CheckActionIcon";
-import XActionIcon from "../UI/Buttons/XActionIcon";
+import CheckActionIcon from "../UI/ActionIcons/CheckActionIcon";
+import XActionIcon from "../UI/ActionIcons/XActionIcon";
 
 export default function NotificationAsideCard() {
   const { requestedFriends, acceptFriend, declineFriend } = useUserStore();
@@ -28,12 +28,7 @@ export default function NotificationAsideCard() {
   const [groupRequestsOpened, setGroupRequestsOpened] = useState(false);
 
   return (
-    <Paper
-      mah={300}
-      w={220}
-      p="md"
-      withBorder
-    >
+    <Paper mah={300} w={220} p="md" withBorder>
       <Stack gap="xs">
         {requestedFriends.length > 0 && (
           <Popover
@@ -115,14 +110,22 @@ export default function NotificationAsideCard() {
                         size="sm"
                         iconSize={20}
                         onClick={() =>
-                          answerGroupRequest(request.requestId, true, defaultGroupColor)
+                          answerGroupRequest(
+                            request.requestId,
+                            true,
+                            defaultGroupColor
+                          )
                         }
                       />
                       <XActionIcon
                         size="sm"
                         iconSize={20}
                         onClick={() =>
-                          answerGroupRequest(request.requestId, false, defaultGroupColor)
+                          answerGroupRequest(
+                            request.requestId,
+                            false,
+                            defaultGroupColor
+                          )
                         }
                       />
                     </Group>

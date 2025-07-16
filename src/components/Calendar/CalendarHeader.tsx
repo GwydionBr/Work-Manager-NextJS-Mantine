@@ -1,6 +1,6 @@
 import { Box, Grid, Group, Text } from "@mantine/core";
-import PrevActionIcon from "../UI/Buttons/PrevActionIcon";
-import NextActionIcon from "../UI/Buttons/NextActionIcon";
+import PrevActionIcon from "../UI/ActionIcons/PrevActionIcon";
+import NextActionIcon from "../UI/ActionIcons/NextActionIcon";
 import dayjs from "dayjs";
 import classes from "./Calendar.module.css";
 import AddAppointmentButton from "./Appointment/AddAppointmentButton";

@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { useFinanceStore } from "@/stores/financeStore";
 
 import {
-  Button,
   NumberInput,
   Stack,
   Textarea,
@@ -20,6 +19,8 @@ import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { currencies } from "@/constants/settings";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
+import UpdateButton from "@/components/UI/Buttons/UpdateButton";
+import CreateButton from "@/components/UI/Buttons/CreateButton";
 
 interface ProjectFormProps {
   initialValues: {
@@ -104,7 +105,7 @@ export default function ProjectForm({
     if (!isHobby) {
       setPreviousWorkValues((prev) => ({
         ...prev,
-        [field]: value, 
+        [field]: value,
       }));
     }
   };
@@ -213,14 +214,23 @@ export default function ProjectForm({
             {...form.getInputProps("folder_id")}
           />
         )}
-        <Button
-          type="submit"
-          loading={submitting}
-          disabled={submitting}
-          mt="md"
-        >
-          {newProject ? "Create Project" : "Save Changes"}
-        </Button>
+        {newProject ? (
+          <CreateButton
+            onClick={form.onSubmit(onSubmit)}
+            loading={submitting}
+            variant="filled"
+            mb="md"
+            title="Create Project"
+          />
+        ) : (
+          <UpdateButton
+            onClick={form.onSubmit(onSubmit)}
+            loading={submitting}
+            variant="filled"
+            mb="md"
+            title="Save Project"
+          />
+        )}
         {onCancel && <CancelButton onClick={onCancel} />}
       </Stack>
     </form>

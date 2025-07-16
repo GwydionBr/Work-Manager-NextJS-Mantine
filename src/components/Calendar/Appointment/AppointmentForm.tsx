@@ -5,12 +5,14 @@ import { useState } from "react";
 import { useGroupStore } from "@/stores/groupStore";
 import { useUserStore } from "@/stores/userStore";
 
-import { TextInput, Stack, Button, Alert, Select } from "@mantine/core";
+import { TextInput, Stack, Alert, Select } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 
 import { Tables } from "@/types/db.types";
+import UpdateButton from "@/components/UI/Buttons/UpdateButton";
+import CreateButton from "@/components/UI/Buttons/CreateButton";
 
 const schema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters"),
@@ -146,9 +148,11 @@ export default function AppointmentForm({
           data={groupMembers}
           {...form.getInputProps("userId")}
         />
-        <Button type="submit" loading={isLoading} mt="md">
-          {appointment ? "Update" : "Create"}
-        </Button>
+        {appointment ? (
+          <UpdateButton onClick={form.onSubmit(handleFormSubmit)} loading={isLoading} variant="filled" />
+        ) : (
+          <CreateButton onClick={form.onSubmit(handleFormSubmit)} loading={isLoading} variant="filled" />
+        )}
         {error && (
           <Alert variant="light" color="red">
             {error}

@@ -14,7 +14,7 @@ import {
 } from "@mantine/core";
 import SingleCashFlowForm from "@/components/Finances/Form/SingleFinanceForm";
 import RecurringCashFlowForm from "@/components/Finances/Form/RecurringFinanceForm";
-import EditActionIcon from "@/components/UI/Buttons/EditActionIcon";
+import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
 import UpdateRecurringCashFlowsModal from "@/components/Finances/Recurring/UpdateRecurringCashFlowsModal";

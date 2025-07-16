@@ -5,7 +5,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { ActionIcon, Box, Flex, Modal } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import GroupForm from "@/components/GroupManager/Group/GroupForm";
-import AddActionIcon from "@/components/UI/Buttons/AddActionIcon";
+import AddActionIcon from "@/components/UI/ActionIcons/AddActionIcon";
 
 export default function NewGroupButton() {
   const [opened, { open, close }] = useDisclosure(false);

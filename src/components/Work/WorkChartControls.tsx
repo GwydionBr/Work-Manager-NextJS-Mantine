@@ -41,7 +41,7 @@ import {
   addWeeksToDate,
 } from "@/utils/financeChartHelperFunctions";
 import React from "react";
-import FilterActionIcon from "@/components/UI/Buttons/FilterActionIcon";
+import FilterActionIcon from "@/components/UI/ActionIcons/FilterActionIcon";
 
 /**
  * Available chart visualization types

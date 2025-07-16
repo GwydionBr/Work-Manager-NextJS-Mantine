@@ -3,7 +3,7 @@
 import { useHover } from "@mantine/hooks";
 
 import { Group, Checkbox, CheckIcon, Text } from "@mantine/core";
-import DeleteActionIcon from "@/components/UI/Buttons/DeleteActionIcon";
+import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 
 import { Tables } from "@/types/db.types";
 
@@ -27,7 +27,7 @@ export default function GroceryRow({
       justify="space-between"
       w="100%"
       className={classes.groceryRow}
-      ref={ref} 
+      ref={ref}
     >
       <Group>
         <Checkbox

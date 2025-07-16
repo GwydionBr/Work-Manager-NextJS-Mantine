@@ -8,7 +8,7 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import { ActionIcon, Flex, Group, Modal, Tooltip } from "@mantine/core";
 import { IconFilePlus } from "@tabler/icons-react";
 import ProjectForm from "@/components/Work/Project/ProjectForm";
-import AddActionIcon from "@/components/UI/Buttons/AddActionIcon";
+import AddActionIcon from "@/components/UI/ActionIcons/AddActionIcon";
 
 import { Currency } from "@/types/settings.types";
 

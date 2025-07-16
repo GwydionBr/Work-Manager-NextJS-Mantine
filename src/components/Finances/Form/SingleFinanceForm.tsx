@@ -2,7 +2,7 @@
 
 import { useForm } from "@mantine/form";
 
-import { TextInput, NumberInput, Select, Stack, Button } from "@mantine/core";
+import { TextInput, NumberInput, Select, Stack } from "@mantine/core";
 
 import { z } from "zod";
 import { DatePickerInput } from "@mantine/dates";
@@ -11,6 +11,8 @@ import { currencies } from "@/constants/settings";
 
 import { Currency } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
+import UpdateButton from "@/components/UI/Buttons/UpdateButton";
+import CreateButton from "@/components/UI/Buttons/CreateButton";
 
 const schema = z.object({
   title: z.string().min(2, "Name must be at least 2 characters"),
@@ -89,9 +91,19 @@ export default function SingleFinanceForm({
           withAsterisk
           {...form.getInputProps("date")}
         />
-        <Button type="submit" loading={isLoading}>
-          Create
-        </Button>
+        {cashFlow ? (
+          <UpdateButton
+            onClick={form.onSubmit(handleFormSubmit)}
+            loading={isLoading}
+            variant="filled"
+          />
+        ) : (
+          <CreateButton
+            onClick={form.onSubmit(handleFormSubmit)}
+            loading={isLoading}
+            variant="filled"
+          />
+        )}
       </Stack>
     </form>
   );

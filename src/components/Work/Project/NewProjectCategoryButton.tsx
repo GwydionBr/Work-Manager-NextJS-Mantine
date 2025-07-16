@@ -7,7 +7,7 @@ import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Box, Flex, Modal } from "@mantine/core";
 import ProjectForm from "@/components/Work/Project/ProjectForm";
-import AddActionIcon from "@/components/UI/Buttons/AddActionIcon";
+import AddActionIcon from "@/components/UI/ActionIcons/AddActionIcon";
 
 import { Currency } from "@/types/settings.types";
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
 
 import { Drawer, Flex } from "@mantine/core";
@@ -20,11 +21,12 @@ export default function TimerSessionDrawer({
   close,
 }: TimerSessionModalProps) {
   const { updateTimerSession, projects } = useWorkStore();
+  const [submitting, setSubmitting] = useState(false);
 
   // Find the project for this session
   const project = projects.find(
     (p) => p.project.id === timerSession.project_id
-  )?.project; 
+  )?.project;
 
   async function handleSubmit(values: {
     start_time: string;
@@ -33,6 +35,7 @@ export default function TimerSessionDrawer({
     currency: Currency;
     salary: number;
   }) {
+    setSubmitting(true);
     const endTime = new Date(
       new Date(values.start_time).getTime() +
         (values.active_seconds + values.paused_seconds) * 1000
@@ -61,6 +64,7 @@ export default function TimerSessionDrawer({
     if (success) {
       close();
     }
+    setSubmitting(false);
   }
 
   return (
@@ -86,6 +90,7 @@ export default function TimerSessionDrawer({
           onCancel={close}
           newSession={false}
           project={project}
+          submitting={submitting}
         />
       </Flex>
     </Drawer>

@@ -15,7 +15,7 @@ import {
 } from "@mantine/core";
 import { IconCheck } from "@tabler/icons-react";
 import LogoutButton from "../Auth/LogoutButton";
-import PencilActionIcon from "../UI/Buttons/PencilActionIcon";
+import PencilActionIcon from "../UI/ActionIcons/PencilActionIcon";
 
 export default function Profile() {
   const {

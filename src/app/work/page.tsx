@@ -15,7 +15,7 @@ import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
 import BulkSelectionControls from "@/components/Work/Session/BulkSelectionControls";
 import { groupSessions } from "@/utils/sessionHelperFunctions";
 import WorkAnalysis from "@/components/Work/WorkAnalysis";
-import AnalysisActionIcon from "@/components/UI/Buttons/AnalysisActionIcon";
+import AnalysisActionIcon from "@/components/UI/ActionIcons/AnalysisActionIcon";
 
 export default function WorkPage() {
   const { activeProjectId, isFetching } = useWorkStore();

@@ -11,7 +11,7 @@ import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
 import { groupSessions } from "@/utils/sessionHelperFunctions";
 import BulkSelectionControls from "@/components/Work/Session/BulkSelectionControls";
 import WorkAnalysis from "@/components/Work/WorkAnalysis";
-import AnalysisActionIcon from "@/components/UI/Buttons/AnalysisActionIcon";
+import AnalysisActionIcon from "@/components/UI/ActionIcons/AnalysisActionIcon";
 
 export default function WorkOverviewPage() {
   const { projects: timerProjects, folders, timerSessions } = useWorkStore();

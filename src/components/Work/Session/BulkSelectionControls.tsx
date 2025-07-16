@@ -19,7 +19,7 @@ import {
   MultiSelect,
   Switch,
 } from "@mantine/core";
-import FilterActionIcon from "@/components/UI/Buttons/FilterActionIcon";
+import FilterActionIcon from "@/components/UI/ActionIcons/FilterActionIcon";
 
 import type { Tables } from "@/types/db.types";
 import type { TimePreset } from "@/types/timerSession.types";
@@ -333,11 +333,11 @@ export default function BulkSelectionControls({
                   <Stack align="center">
                     <Badge
                       mt="md"
-                    color={unpaidSessions.length > 0 ? "blue" : "red"}
-                    variant="light"
-                  >
-                    {unpaidSessions.length} unpaid sessions in last{" "}
-                    {timeFilterDays} days
+                      color={unpaidSessions.length > 0 ? "blue" : "red"}
+                      variant="light"
+                    >
+                      {unpaidSessions.length} unpaid sessions in last{" "}
+                      {timeFilterDays} days
                     </Badge>
                   </Stack>
                 </Collapse>

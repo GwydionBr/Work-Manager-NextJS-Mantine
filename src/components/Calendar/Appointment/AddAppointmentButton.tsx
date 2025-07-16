@@ -4,7 +4,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { useGroupStore } from "@/stores/groupStore";
 
 import { Box, Modal } from "@mantine/core";
-import AddActionIcon from "../../UI/Buttons/AddActionIcon";
+import AddActionIcon from "../../UI/ActionIcons/AddActionIcon";
 import AppointmentForm from "./AppointmentForm";
 
 export default function AddAppointmentButton() {

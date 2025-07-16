@@ -4,7 +4,7 @@ import { useDisclosure } from "@mantine/hooks";
 
 import { Box, Flex, Modal } from "@mantine/core";
 import FinanceForm from "@/components/Finances/Form/FinanceForm";
-import AddActionIcon from "@/components/UI/Buttons/AddActionIcon";
+import AddActionIcon from "@/components/UI/ActionIcons/AddActionIcon";
 export default function NewCashFlowButton() {
   const [opened, { open, close }] = useDisclosure(false);
 
@@ -22,11 +22,7 @@ export default function NewCashFlowButton() {
         </Flex>
       </Modal>
 
-      <AddActionIcon
-        aria-label="Add cash flow"
-        onClick={open}
-        size="md"
-      />
+      <AddActionIcon aria-label="Add cash flow" onClick={open} size="md" />
     </Box>
   );
 }

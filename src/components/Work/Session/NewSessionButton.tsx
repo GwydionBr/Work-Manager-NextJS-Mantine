@@ -1,11 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 
 import { Drawer, Flex } from "@mantine/core";
 import SessionForm from "@/components/Work/Session/SessionForm";
-import AddActionIcon from "@/components/UI/Buttons/AddActionIcon";
+import AddActionIcon from "@/components/UI/ActionIcons/AddActionIcon";
 
 import { TablesInsert } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
@@ -16,6 +17,7 @@ export default function NewSessionButton() {
   const activeProject = useWorkStore((state) =>
     state.projects.find((p) => p.project.id === activeProjectId)
   );
+  const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(values: {
     start_time: string;
@@ -27,7 +29,7 @@ export default function NewSessionButton() {
     if (!activeProject) {
       return;
     }
-
+    setSubmitting(true);
     const endTime = new Date(
       new Date(values.start_time).getTime() +
         (values.active_seconds + values.paused_seconds) * 1000
@@ -51,6 +53,7 @@ export default function NewSessionButton() {
     if (success) {
       close();
     }
+    setSubmitting(false);
   }
 
   return (
@@ -77,6 +80,7 @@ export default function NewSessionButton() {
             onCancel={close}
             newSession
             project={activeProject?.project}
+            submitting={submitting}
           />
         </Flex>
       </Drawer>

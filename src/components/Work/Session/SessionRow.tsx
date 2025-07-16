@@ -5,8 +5,8 @@ import { useDisclosure, useHover } from "@mantine/hooks";
 
 import { Card, Group, Stack, Text, Checkbox, Box } from "@mantine/core";
 import { IconClock } from "@tabler/icons-react";
-import DeleteActionIcon from "@/components/UI/Buttons/DeleteActionIcon";
-import PencilActionIcon from "@/components/UI/Buttons/PencilActionIcon";
+import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
+import PencilActionIcon from "@/components/UI/ActionIcons/PencilActionIcon";
 import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
 import TimerSessionDrawer from "@/components/Work/Session/TimerSessionDrawer";
 

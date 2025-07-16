@@ -1,13 +1,6 @@
 import { useForm } from "@mantine/form";
 
-import {
-  TextInput,
-  Select,
-  NumberInput,
-  Group,
-  Stack,
-  Button,
-} from "@mantine/core";
+import { TextInput, Select, NumberInput, Group, Stack } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 
 import { z } from "zod";
@@ -16,6 +9,8 @@ import { currencies, financeIntervals } from "@/constants/settings";
 
 import { Currency, FinanceInterval } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
+import UpdateButton from "@/components/UI/Buttons/UpdateButton";
+import CreateButton from "@/components/UI/Buttons/CreateButton";
 
 const schema = z.object({
   title: z.string().min(2, "Name must be at least 2 characters"),
@@ -126,9 +121,19 @@ export default function RecurringFinanceForm({
           data={financeIntervals}
           {...form.getInputProps("interval")}
         />
-        <Button type="submit" loading={isLoading}>
-          Create
-        </Button>
+        {cashFlow ? (
+          <UpdateButton
+            onClick={form.onSubmit(handleFormSubmit)}
+            loading={isLoading}
+            variant="filled"
+          />
+        ) : (
+          <CreateButton
+            onClick={form.onSubmit(handleFormSubmit)}
+            loading={isLoading}
+            variant="filled"
+          />
+        )}
       </Stack>
     </form>
   );
