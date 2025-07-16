@@ -329,17 +329,18 @@ export default function BulkSelectionControls({
                     </Text>
                   </Group>
                 </Collapse>
-
-                <Stack align="center">
-                  <Badge
-                    mt="md"
+                <Collapse in={hasActiveFilters || false}>
+                  <Stack align="center">
+                    <Badge
+                      mt="md"
                     color={unpaidSessions.length > 0 ? "blue" : "red"}
                     variant="light"
                   >
                     {unpaidSessions.length} unpaid sessions in last{" "}
                     {timeFilterDays} days
-                  </Badge>
-                </Stack>
+                    </Badge>
+                  </Stack>
+                </Collapse>
 
                 {/* Clear Filters Button */}
                 <Collapse in={hasActiveFilters || false}>
