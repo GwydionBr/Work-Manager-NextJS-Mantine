@@ -7,7 +7,7 @@ import FinanceForm from "@/components/Finances/Form/FinanceForm";
 import AddActionIcon from "@/components/UI/ActionIcons/AddActionIcon";
 
 interface NewCashFlowButtonProps {
-  isSingle: boolean;
+  isSingle?: boolean;
   tooltipLabel?: string;
 }
 
