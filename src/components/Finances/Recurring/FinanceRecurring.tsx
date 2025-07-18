@@ -2,7 +2,7 @@
 
 import { useFinanceStore } from "@/stores/financeStore";
 
-import { Box, Table, Title, Stack, Tooltip, Button } from "@mantine/core";
+import { Box, Table, Title, Stack, Group, Text, Card } from "@mantine/core";
 
 import classes from "./FinanceRecurring.module.css";
 import EditCashFlowButton from "../EditCashFlowButton";
@@ -19,6 +19,17 @@ export default function FinanceRecurring() {
     return endDate > today; // End date in the future = active
   });
 
+  const activeExpenseSum = activeCashFlows
+    .filter((cashFlow) => cashFlow.type === "expense")
+    .reduce((sum, cashFlow) => {
+      return sum + cashFlow.amount;
+    }, 0);
+  const activeIncomeSum = activeCashFlows
+    .filter((cashFlow) => cashFlow.type === "income")
+    .reduce((sum, cashFlow) => {
+      return sum + cashFlow.amount;
+    }, 0);
+
   const completedCashFlows = recurringCashFlows.filter((cashFlow) => {
     if (!cashFlow.end_date) return false; // No end date = not completed
     const endDate = new Date(cashFlow.end_date);
@@ -33,6 +44,8 @@ export default function FinanceRecurring() {
   const renderTable = (
     cashFlows: typeof recurringCashFlows,
     title: string,
+    expenseSum?: number,
+    incomeSum?: number,
     showEndDates: boolean = false,
     showStartDates: boolean = false
   ) => (
@@ -40,6 +53,25 @@ export default function FinanceRecurring() {
       <Title order={3} mb="md">
         {title}
       </Title>
+      {expenseSum && incomeSum && (
+        <Card withBorder radius="md" p="md">
+          <Group justify="space-between">
+            <Group gap="xs">
+              <Text>Expense Sum:</Text>
+              <Text c="red" fw={700}>
+                {expenseSum}
+              </Text>
+            </Group>
+            <Group gap="xs">
+              <Text>Income Sum:</Text>
+              <Text c="green" fw={700}>
+                {incomeSum}
+              </Text>
+            </Group>
+          </Group>
+        </Card>
+      )}
+
       <Table striped highlightOnHover>
         <Table.Thead>
           <Table.Tr>
@@ -89,11 +121,32 @@ export default function FinanceRecurring() {
         isSingle={false}
         tooltipLabel="Add Recurring Cash Flow"
       />
-      {renderTable(activeCashFlows, "Active", false, false)}
+      {renderTable(
+        activeCashFlows,
+        "Active",
+        activeExpenseSum,
+        activeIncomeSum,
+        false,
+        false
+      )}
       {futureCashFlows.length > 0 &&
-        renderTable(futureCashFlows, "Future", false, true)}
+        renderTable(
+          futureCashFlows,
+          "Future",
+          undefined,
+          undefined,
+          false,
+          true
+        )}
       {completedCashFlows.length > 0 &&
-        renderTable(completedCashFlows, "Completed", true, false)}
+        renderTable(
+          completedCashFlows,
+          "Completed",
+          undefined,
+          undefined,
+          true,
+          false
+        )}
     </Stack>
   );
 }
