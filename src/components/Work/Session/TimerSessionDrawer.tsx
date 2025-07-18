@@ -49,7 +49,7 @@ export default function TimerSessionDrawer({
       id: timerSession.id,
       project_id: timerSession.project_id,
       user_id: timerSession.user_id,
-      start_time: values.start_time,
+      start_time: new Date(values.start_time).toISOString(),
       hourly_payment: timerSession.hourly_payment,
       end_time: endTime,
       payed: false,
