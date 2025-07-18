@@ -30,16 +30,13 @@ export default function TimerSessionDrawer({
 
   async function handleSubmit(values: {
     start_time: string;
+    end_time: string;
     active_seconds: number;
     paused_seconds: number;
     currency: Currency;
     salary: number;
   }) {
     setSubmitting(true);
-    const endTime = new Date(
-      new Date(values.start_time).getTime() +
-        (values.active_seconds + values.paused_seconds) * 1000
-    ).toISOString();
 
     const newSession: Tables<"timerSession"> = {
       ...values,
@@ -51,7 +48,7 @@ export default function TimerSessionDrawer({
       user_id: timerSession.user_id,
       start_time: new Date(values.start_time).toISOString(),
       hourly_payment: timerSession.hourly_payment,
-      end_time: endTime,
+      end_time: new Date(values.end_time).toISOString(),
       payed: false,
       // If project doesn't have hourly payment, set salary to 0 and currency to project currency
       salary: project?.hourly_payment ? values.salary : 0,
@@ -79,6 +76,7 @@ export default function TimerSessionDrawer({
         <SessionForm
           initialValues={{
             start_time: timerSession.start_time,
+            end_time: timerSession.end_time,
             active_seconds: timerSession.active_seconds,
             paused_seconds: timerSession.paused_seconds,
             currency: project?.hourly_payment
