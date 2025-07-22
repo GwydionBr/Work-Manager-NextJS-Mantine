@@ -61,11 +61,9 @@ export default function FinanceRecurring() {
     showStartDates: boolean = false
   ) => (
     <Box className={classes.financeRecurringContainer}>
-      <Title order={3} mb="md">
-        {title}
-      </Title>
+      <Title order={3}>{title}</Title>
       {(expenseSum || incomeSum) && (
-        <Card withBorder radius="md" p="md">
+        <Card withBorder radius="md" p="md" my="md">
           <Stack>
             <Group justify="space-between">
               <Group gap="xs">
