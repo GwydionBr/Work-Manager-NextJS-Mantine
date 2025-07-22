@@ -53,21 +53,25 @@ export default function FinanceRecurring() {
       <Title order={3} mb="md">
         {title}
       </Title>
-      {expenseSum && incomeSum && (
+      {(expenseSum || incomeSum) && (
         <Card withBorder radius="md" p="md">
           <Group justify="space-between">
-            <Group gap="xs">
-              <Text>Expense Sum:</Text>
-              <Text c="red" fw={700}>
-                {expenseSum}
-              </Text>
-            </Group>
-            <Group gap="xs">
-              <Text>Income Sum:</Text>
-              <Text c="green" fw={700}>
-                {incomeSum}
-              </Text>
-            </Group>
+            {expenseSum && (
+              <Group gap="xs">
+                <Text>Expense Sum:</Text>
+                <Text c="red" fw={700}>
+                  {expenseSum}
+                </Text>
+              </Group>
+            )}
+            {incomeSum && (
+              <Group gap="xs">
+                <Text>Income Sum:</Text>
+                <Text c="green" fw={700}>
+                  {incomeSum}
+                </Text>
+              </Group>
+            )}
           </Group>
         </Card>
       )}
