@@ -16,7 +16,7 @@ export default function FinanceSingle() {
   );
 
   return (
-    <Box className={classes.financeSingleContainer}>
+    <Box className={classes.financeSingleContainer} mb="md">
       <NewCashFlowButton isSingle={true} tooltipLabel="Add Single Cash Flow" />
       <Table>
         <Table.Thead>

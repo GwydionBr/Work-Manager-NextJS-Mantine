@@ -2,7 +2,16 @@
 
 import { useFinanceStore } from "@/stores/financeStore";
 
-import { Box, Table, Title, Stack, Group, Text, Card } from "@mantine/core";
+import {
+  Box,
+  Table,
+  Title,
+  Stack,
+  Group,
+  Text,
+  Card,
+  Divider,
+} from "@mantine/core";
 
 import classes from "./FinanceRecurring.module.css";
 import EditCashFlowButton from "../EditCashFlowButton";
@@ -29,6 +38,7 @@ export default function FinanceRecurring() {
     .reduce((sum, cashFlow) => {
       return sum + cashFlow.amount;
     }, 0);
+  const activeTotalSum = activeIncomeSum - activeExpenseSum;
 
   const completedCashFlows = recurringCashFlows.filter((cashFlow) => {
     if (!cashFlow.end_date) return false; // No end date = not completed
@@ -46,6 +56,7 @@ export default function FinanceRecurring() {
     title: string,
     expenseSum?: number,
     incomeSum?: number,
+    totalSum?: number,
     showEndDates: boolean = false,
     showStartDates: boolean = false
   ) => (
@@ -55,24 +66,29 @@ export default function FinanceRecurring() {
       </Title>
       {(expenseSum || incomeSum) && (
         <Card withBorder radius="md" p="md">
-          <Group justify="space-between">
-            {expenseSum && (
+          <Stack>
+            <Group justify="space-between">
               <Group gap="xs">
                 <Text>Expense Sum:</Text>
                 <Text c="red" fw={700}>
-                  {expenseSum}
+                  {expenseSum ? expenseSum : 0}
                 </Text>
               </Group>
-            )}
-            {incomeSum && (
               <Group gap="xs">
                 <Text>Income Sum:</Text>
                 <Text c="green" fw={700}>
-                  {incomeSum}
+                  {incomeSum ? incomeSum : 0}
                 </Text>
               </Group>
-            )}
-          </Group>
+            </Group>
+            <Divider />
+            <Group justify="center">
+              <Text>Total:</Text>
+              <Text c={totalSum && totalSum > 0 ? "green" : "red"} fw={700}>
+                {totalSum ? totalSum : 0}
+              </Text>
+            </Group>
+          </Stack>
         </Card>
       )}
 
@@ -120,7 +136,7 @@ export default function FinanceRecurring() {
   );
 
   return (
-    <Stack gap="xl" align="center">
+    <Stack gap="xl" align="center" mb="xl">
       <NewCashFlowButton
         isSingle={false}
         tooltipLabel="Add Recurring Cash Flow"
@@ -130,6 +146,7 @@ export default function FinanceRecurring() {
         "Active",
         activeExpenseSum,
         activeIncomeSum,
+        activeTotalSum,
         false,
         false
       )}
@@ -139,6 +156,7 @@ export default function FinanceRecurring() {
           "Future",
           undefined,
           undefined,
+          undefined,
           false,
           true
         )}
@@ -146,6 +164,7 @@ export default function FinanceRecurring() {
         renderTable(
           completedCashFlows,
           "Completed",
+          undefined,
           undefined,
           undefined,
           true,
