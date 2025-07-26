@@ -114,7 +114,7 @@ export function secondsToTimerFormat(seconds: number) {
   const minutes = Math.floor((seconds % 3600) / 60);
   const secondsLeft = seconds % 60;
 
-  const hoursStr = hours > 0 ? `${hours.toString().padStart(2, "0")}:` : "";
+  const hoursStr = hours > 0 ? `${hours}:` : "";
   const minutesStr = minutes.toString().padStart(2, "0");
   const secondsStr = secondsLeft.toString().padStart(2, "0");
 
