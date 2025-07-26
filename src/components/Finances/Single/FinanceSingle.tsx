@@ -2,7 +2,7 @@
 
 import { useFinanceStore } from "@/stores/financeStore";
 
-import { Box, Table, alpha } from "@mantine/core";
+import { Box, Table, alpha, Group, Text } from "@mantine/core";
 
 import classes from "./FinanceSingle.module.css";
 import EditCashFlowButton from "../EditCashFlowButton";
@@ -35,8 +35,8 @@ export default function FinanceSingle() {
                 key={cashFlow.id}
                 bg={
                   cashFlow.type === "expense"
-                    ? alpha("var(--mantine-color-red-5)", 0.3)
-                    : alpha("var(--mantine-color-green-5)", 0.3)
+                    ? alpha("var(--mantine-color-red-5)", 0.4)
+                    : alpha("var(--mantine-color-green-5)", 0.4)
                 }
               >
                 <Table.Td>

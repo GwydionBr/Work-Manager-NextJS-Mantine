@@ -84,12 +84,14 @@ export default function TimeTrackerComponent({
     setErrorMessage(null);
     const newSession = getCurrentSession();
 
-    pauseTimer();
     const result = await addTimerSession(newSession);
     if (result) {
       stopTimer();
     } else {
       setErrorMessage("Error saving session");
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 3000);
     }
     setIsSubmitting(false);
   }
@@ -115,6 +117,7 @@ export default function TimeTrackerComponent({
               currency={currency}
               hourlyPayment={hourlyPayment}
               errorMessage={errorMessage}
+              isSubmitting={isSubmitting}
               startTimer={startTimer}
               pauseTimer={pauseTimer}
               resumeTimer={resumeTimer}
@@ -139,6 +142,7 @@ export default function TimeTrackerComponent({
               state={state}
               activeTime={activeTime}
               pausedTime={pausedTime}
+              isSubmitting={isSubmitting}
               startTimer={startTimer}
               pauseTimer={pauseTimer}
               resumeTimer={resumeTimer}

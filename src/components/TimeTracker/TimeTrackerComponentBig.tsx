@@ -27,10 +27,15 @@ import {
 import TimeTrackerRow from "./TimeTrackerRow";
 
 import classes from "./TimeTracker.module.css";
+import StopActionIcon from "./TimeTrackerActionIcons/StopActionIcon";
+import CancelActionIcon from "./TimeTrackerActionIcons/CancelActionIcon";
+import StartActionIcon from "./TimeTrackerActionIcons/StartActionIcons";
+import PauseActionIcon from "./TimeTrackerActionIcons/PauseActionIcon";
+import ResumeActionIcon from "./TimeTrackerActionIcons/ResumeActionIcon";
+import TimeTrackerActionIcon from "./TimeTrackerActionIcons/TimeTrackerActionIcon";
 
 interface TimeTrackerComponentBigProps {
   isTimeTrackerMinimized: boolean;
-  setIsTimeTrackerMinimized: (value: boolean) => void;
   state: TimerState;
   projectTitle: string;
   moneyEarned: string;
@@ -39,12 +44,14 @@ interface TimeTrackerComponentBigProps {
   currency: string;
   hourlyPayment: boolean;
   errorMessage: string | null;
+  isSubmitting: boolean;
   startTimer: () => void;
   pauseTimer: () => void;
   resumeTimer: () => void;
   submitTimer: () => void;
   cancelTimer: () => void;
   getStatusColor: () => string;
+  setIsTimeTrackerMinimized: (value: boolean) => void;
 }
 
 export default function TimeTrackerComponentBig({
@@ -58,6 +65,7 @@ export default function TimeTrackerComponentBig({
   currency,
   hourlyPayment,
   errorMessage,
+  isSubmitting,
   startTimer,
   pauseTimer,
   resumeTimer,
@@ -67,20 +75,12 @@ export default function TimeTrackerComponentBig({
 }: TimeTrackerComponentBigProps) {
   return (
     <Stack align="center" w="100%">
-      <Indicator
-        color="red"
-        size={10}
-        processing={state === "running"}
-        disabled={state === "stopped"}
-      >
-        <ActionIcon
-          onClick={() => setIsTimeTrackerMinimized(!isTimeTrackerMinimized)}
-          size="md"
-          color={getStatusColor()}
-        >
-          <IconStopwatch />
-        </ActionIcon>
-      </Indicator>
+      <TimeTrackerActionIcon
+        action={() => setIsTimeTrackerMinimized(!isTimeTrackerMinimized)}
+        label={isTimeTrackerMinimized ? "show Timer" : "hide Timer"}
+        state={state}
+        getStatusColor={getStatusColor}
+      />
       <Collapse in={isTimeTrackerMinimized} transitionDuration={400}>
         <Card shadow="sm" padding="xs" radius="md" withBorder w={270}>
           <Group align="center" justify="center" gap="xs">
@@ -104,32 +104,29 @@ export default function TimeTrackerComponentBig({
                 </Text>
               </Stack>
             </Card>
-            {state === "stopped" && (
-              <ActionIcon onClick={startTimer} size="md" color="lime">
-                <IconPlayerPlay />
-              </ActionIcon>
-            )}
+            {state === "stopped" && <StartActionIcon startTimer={startTimer} />}
             {state === "running" && (
-              <ActionIcon onClick={pauseTimer} size="md" color="yellow">
-                <IconPlayerPause />
-              </ActionIcon>
+              <PauseActionIcon pauseTimer={pauseTimer} loading={isSubmitting} />
             )}
             {state === "paused" && (
-              <ActionIcon onClick={resumeTimer} size="md" color="blue">
-                <IconPlayerPlay />
-              </ActionIcon>
+              <ResumeActionIcon
+                resumeTimer={resumeTimer}
+                loading={isSubmitting}
+              />
             )}
             <Collapse
               in={state === "running" || state === "paused"}
               transitionDuration={400}
             >
               <Group gap="xs" align="center" justify="center">
-                <ActionIcon onClick={submitTimer} size="md" color="red">
-                  <IconPlayerStop />
-                </ActionIcon>
-                <ActionIcon onClick={cancelTimer} size="md" color="gray">
-                  <IconX />
-                </ActionIcon>
+                <StopActionIcon
+                  stopTimer={submitTimer}
+                  loading={isSubmitting}
+                />
+                <CancelActionIcon
+                  cancelTimer={cancelTimer}
+                  loading={isSubmitting}
+                />
               </Group>
             </Collapse>
           </Group>
@@ -145,15 +142,18 @@ export default function TimeTrackerComponentBig({
           className={classes.timeTrackerContainer}
         >
           <Stack gap="md" align="center">
+            {/* State Badge */}
             <Badge size="lg" color={getStatusColor()}>
               {state}
             </Badge>
+            {/* Project Title */}
             <Group justify="space-between" align="center">
               <Text size="xl" fw={700}>
                 {projectTitle}
               </Text>
             </Group>
 
+            {/* Error Message */}
             {errorMessage && (
               <Paper p="xs" bg="red.1">
                 <Text c="red.9" size="sm">
@@ -162,6 +162,7 @@ export default function TimeTrackerComponentBig({
               </Paper>
             )}
 
+            {/* Time Tracker Rows */}
             <Stack gap="md">
               {hourlyPayment && (
                 <TimeTrackerRow
@@ -194,9 +195,11 @@ export default function TimeTrackerComponentBig({
               />
             </Stack>
 
-            <Stack gap="md">
+            {/* Buttons */}
+            <Stack gap="md" w="100%" align="center">
               {state === "stopped" && (
                 <Button
+                  w="60%"
                   onClick={startTimer}
                   color="lime"
                   leftSection={<IconPlayerPlay size={20} />}
@@ -207,44 +210,57 @@ export default function TimeTrackerComponentBig({
               )}
               {state === "running" && (
                 <Button
+                  w="60%"
                   onClick={pauseTimer}
                   color="yellow"
                   leftSection={<IconPlayerPause size={20} />}
                   size="md"
+                  loading={isSubmitting}
                 >
                   Pause
                 </Button>
               )}
               {state === "paused" && (
                 <Button
+                  w="60%"
                   onClick={resumeTimer}
                   color="blue"
                   leftSection={<IconPlayerPlay size={20} />}
                   size="md"
+                  loading={isSubmitting}
                 >
                   Resume
                 </Button>
               )}
-              {state !== "stopped" && (
-                <Stack gap="md">
+
+              <Collapse
+                in={state !== "stopped"}
+                transitionDuration={400}
+                w="60%"
+              >
+                <Stack gap="md" align="center">
                   <Button
+                    fullWidth
                     onClick={submitTimer}
                     color="red"
                     leftSection={<IconPlayerStop size={20} />}
                     size="md"
+                    loading={isSubmitting}
                   >
                     Stop
                   </Button>
                   <Button
+                    fullWidth
                     onClick={cancelTimer}
                     color="gray"
                     leftSection={<IconX size={20} />}
                     size="md"
+                    loading={isSubmitting}
                   >
                     Cancel
                   </Button>
                 </Stack>
-              )}
+              </Collapse>
             </Stack>
           </Stack>
         </Card>
