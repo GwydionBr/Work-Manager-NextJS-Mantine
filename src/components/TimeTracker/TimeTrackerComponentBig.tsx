@@ -10,9 +10,8 @@ import {
   Stack,
   Badge,
   Paper,
-  ActionIcon,
   Collapse,
-  Indicator,
+  LoadingOverlay,
 } from "@mantine/core";
 import {
   IconClock,
@@ -22,7 +21,6 @@ import {
   IconCurrencyDollar,
   IconCurrencyEuro,
   IconX,
-  IconStopwatch,
 } from "@tabler/icons-react";
 import TimeTrackerRow from "./TimeTrackerRow";
 
@@ -83,6 +81,7 @@ export default function TimeTrackerComponentBig({
       />
       <Collapse in={isTimeTrackerMinimized} transitionDuration={400}>
         <Card shadow="sm" padding="xs" radius="md" withBorder w={270}>
+          <LoadingOverlay visible={isSubmitting} overlayProps={{ blur: 2 }} />
           <Group align="center" justify="center" gap="xs">
             <Card shadow="sm" padding="xs" radius="md" withBorder>
               <Stack>
@@ -106,12 +105,15 @@ export default function TimeTrackerComponentBig({
             </Card>
             {state === "stopped" && <StartActionIcon startTimer={startTimer} />}
             {state === "running" && (
-              <PauseActionIcon pauseTimer={pauseTimer} loading={isSubmitting} />
+              <PauseActionIcon
+                pauseTimer={pauseTimer}
+                disabled={isSubmitting}
+              />
             )}
             {state === "paused" && (
               <ResumeActionIcon
                 resumeTimer={resumeTimer}
-                loading={isSubmitting}
+                disabled={isSubmitting}
               />
             )}
             <Collapse
@@ -121,11 +123,11 @@ export default function TimeTrackerComponentBig({
               <Group gap="xs" align="center" justify="center">
                 <StopActionIcon
                   stopTimer={submitTimer}
-                  loading={isSubmitting}
+                  disabled={isSubmitting}
                 />
                 <CancelActionIcon
                   cancelTimer={cancelTimer}
-                  loading={isSubmitting}
+                  disabled={isSubmitting}
                 />
               </Group>
             </Collapse>
@@ -141,6 +143,7 @@ export default function TimeTrackerComponentBig({
           w={270}
           className={classes.timeTrackerContainer}
         >
+          <LoadingOverlay visible={isSubmitting} overlayProps={{ blur: 2 }} />
           <Stack gap="md" align="center">
             {/* State Badge */}
             <Badge size="lg" color={getStatusColor()}>
@@ -215,7 +218,7 @@ export default function TimeTrackerComponentBig({
                   color="yellow"
                   leftSection={<IconPlayerPause size={20} />}
                   size="md"
-                  loading={isSubmitting}
+                  disabled={isSubmitting}
                 >
                   Pause
                 </Button>
@@ -227,7 +230,7 @@ export default function TimeTrackerComponentBig({
                   color="blue"
                   leftSection={<IconPlayerPlay size={20} />}
                   size="md"
-                  loading={isSubmitting}
+                  disabled={isSubmitting}
                 >
                   Resume
                 </Button>
@@ -245,7 +248,7 @@ export default function TimeTrackerComponentBig({
                     color="red"
                     leftSection={<IconPlayerStop size={20} />}
                     size="md"
-                    loading={isSubmitting}
+                    disabled={isSubmitting}
                   >
                     Stop
                   </Button>
@@ -255,7 +258,7 @@ export default function TimeTrackerComponentBig({
                     color="gray"
                     leftSection={<IconX size={20} />}
                     size="md"
-                    loading={isSubmitting}
+                    disabled={isSubmitting}
                   >
                     Cancel
                   </Button>

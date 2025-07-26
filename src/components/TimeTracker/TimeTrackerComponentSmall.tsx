@@ -2,7 +2,7 @@
 
 import { TimerState } from "@/stores/timeTrackerStore";
 
-import { Stack, Text, Collapse, Divider } from "@mantine/core";
+import { Stack, Text, Collapse, Divider, LoadingOverlay } from "@mantine/core";
 
 import StartActionIcon from "./TimeTrackerActionIcons/StartActionIcons";
 import PauseActionIcon from "./TimeTrackerActionIcons/PauseActionIcon";
@@ -49,7 +49,8 @@ export default function TimeTrackerComponentSmall({
         getStatusColor={getStatusColor}
       />
       <Collapse in={showSmall} transitionDuration={400}>
-        <Stack gap="xs" align="center" justify="center">
+        <Stack gap="xs" align="center" justify="center" pos="relative">
+          <LoadingOverlay visible={isSubmitting} overlayProps={{ blur: 2 }} />
           <Divider />
           <Text size="xs" c="dimmed">
             Active
@@ -65,12 +66,12 @@ export default function TimeTrackerComponentSmall({
           </Text>
           {state === "stopped" && <StartActionIcon startTimer={startTimer} />}
           {state === "running" && (
-            <PauseActionIcon pauseTimer={pauseTimer} loading={isSubmitting} />
+            <PauseActionIcon pauseTimer={pauseTimer} disabled={isSubmitting} />
           )}
           {state === "paused" && (
             <ResumeActionIcon
               resumeTimer={resumeTimer}
-              loading={isSubmitting}
+              disabled={isSubmitting}
             />
           )}
           <Collapse
@@ -78,10 +79,10 @@ export default function TimeTrackerComponentSmall({
             transitionDuration={400}
           >
             <Stack gap="xs" align="center" justify="center">
-              <StopActionIcon stopTimer={submitTimer} loading={isSubmitting} />
+              <StopActionIcon stopTimer={submitTimer} disabled={isSubmitting} />
               <CancelActionIcon
                 cancelTimer={cancelTimer}
-                loading={isSubmitting}
+                disabled={isSubmitting}
               />
             </Stack>
           </Collapse>
