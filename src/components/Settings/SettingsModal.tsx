@@ -1,30 +1,60 @@
-import { Modal, Stack } from "@mantine/core";
-import SchemeButtonGroup from "@/components/Settings/Default/SchemeSettings";
-import SettingsRow from "@/components/Settings/Default/SettingsRow";
-import SelectTimerRounding from "@/components/Settings/Default/RoundingSettings";
-import FinanceSettings from "@/components/Settings/Default/FinanceSettings";
-import WorkSettings from "@/components/Settings/Default/WorkSettings";
-import GroupSettings from "@/components/Settings/Default/GroupSettings";
+"use client";
+
+import { Modal, Tabs } from "@mantine/core";
+import DefaultSettings from "./Default/DefaultSettings";
+import FinancesSettings from "./Finances/FinancesSettings";
+import GroupSettings from "./Group/GroupSettings";
+import {
+  IconCurrencyDollar,
+  IconSettings,
+  IconUsers,
+} from "@tabler/icons-react";
+
+interface SettingsModalProps {
+  opened: boolean;
+  defaultTab: "general" | "finance" | "group";
+  close: () => void;
+}
 
 export default function SettingsModal({
   opened,
   close,
-}: {
-  opened: boolean;
-  close: () => void;
-}) {
+  defaultTab = "general",
+}: SettingsModalProps) {
   return (
-    <Modal opened={opened} onClose={close} title="Settings" size="80%" centered>
-      <Stack w="100%" p="md">
-        <SettingsRow title="Color Scheme" children={<SchemeButtonGroup />} />
-        <SettingsRow
-          title="Timer Rounding"
-          children={<SelectTimerRounding />}
-        />
-        <SettingsRow title="Work Settings" children={<WorkSettings />} />
-        <SettingsRow title="Finances" children={<FinanceSettings />} />
-        <SettingsRow title="Group" children={<GroupSettings />} />
-      </Stack>
+    <Modal
+      opened={opened}
+      onClose={close}
+      title="Settings"
+      size="80%"
+      centered
+      radius="lg"
+    >
+      <Tabs mih="80vh" defaultValue={defaultTab}>
+        <Tabs.List mb="md" grow>
+          <Tabs.Tab value="general" leftSection={<IconSettings size={16} />}>
+            General
+          </Tabs.Tab>
+          <Tabs.Tab
+            value="finance"
+            leftSection={<IconCurrencyDollar size={16} />}
+          >
+            Finance
+          </Tabs.Tab>
+          <Tabs.Tab value="group" leftSection={<IconUsers size={16} />}>
+            Group
+          </Tabs.Tab>
+        </Tabs.List>
+        <Tabs.Panel value="general">
+          <DefaultSettings />
+        </Tabs.Panel>
+        <Tabs.Panel value="finance">
+          <FinancesSettings />
+        </Tabs.Panel>
+        <Tabs.Panel value="group">
+          <GroupSettings />
+        </Tabs.Panel>
+      </Tabs>
     </Modal>
   );
 }

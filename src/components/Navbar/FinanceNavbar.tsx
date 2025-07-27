@@ -5,7 +5,6 @@ import { useFinanceStore } from "@/stores/financeStore";
 
 import { Group, Text, Divider, Box, ActionIcon, Modal } from "@mantine/core";
 import { IconAdjustments } from "@tabler/icons-react";
-import FinanceAdjustments from "@/components/Finances/FinanceSettings/FinanceSettings";
 import FinanceSection from "@/components/Finances/FinanceSection";
 import NewCashFlowButton from "@/components/Finances/NewCashFlowButton";
 
@@ -49,9 +48,6 @@ export default function FinanceNavbar() {
           isFetching={isFetching}
         />
       </Box>
-      <Modal opened={opened} onClose={close} title="Finance Manager" size="70%">
-        <FinanceAdjustments onClose={close} />
-      </Modal>
     </Box>
   );
 }
