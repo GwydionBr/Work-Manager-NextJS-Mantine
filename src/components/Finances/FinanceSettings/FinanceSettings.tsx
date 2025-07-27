@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
-import { Grid, Group, Text } from "@mantine/core";
+import { Grid } from "@mantine/core";
 import SettingsNavbar from "@/components/Navbar/SettingsNavbar";
 import FinanceCategorySettings from "./FinanceCategorySettings";
 import Conditional from "./Conditional";
@@ -10,7 +9,6 @@ import Conditional from "./Conditional";
 enum FinanceSettingType {
   CATEGORIES = "categories",
   CONDITIONAL_CASH_FLOWS = "conditional_cash_flows",
-  OTHER = "other",
 }
 
 export default function FinanceSettings({ onClose }: { onClose: () => void }) {
@@ -32,14 +30,10 @@ export default function FinanceSettings({ onClose }: { onClose: () => void }) {
               onClick: () =>
                 setActiveSetting(FinanceSettingType.CONDITIONAL_CASH_FLOWS),
             },
-            {
-              title: "Other",
-              onClick: () => setActiveSetting(FinanceSettingType.OTHER),
-            },
           ]}
         />
       </Grid.Col>
-      <Grid.Col span={{ base: 8, sm: 9, lg: 10 }}>
+      <Grid.Col span={{ base: 8, sm: 9, lg: 10 }} h="100%">
         {activeSetting === FinanceSettingType.CATEGORIES && (
           <FinanceCategorySettings />
         )}
