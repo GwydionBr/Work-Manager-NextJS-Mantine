@@ -11,7 +11,7 @@ export default function FinanceCategorySettings() {
   return (
     <Grid w="100%" h="100%">
       <Grid.Col span={6}>
-        <Stack>
+        <Stack align="center" w="100%">
           <Text>All Categories</Text>
           {financeCategories.map((category) => (
             <Text fz="sm" key={category.id} c="dimmed">
@@ -23,7 +23,7 @@ export default function FinanceCategorySettings() {
       <Grid.Col span={6}>
         <Group w="100%">
           <Divider orientation="vertical" />
-          <Stack>
+          <Stack align="center" w="90%">
             <Text>Add Category</Text>
             <FinanceCategoryForm onClose={() => {}} />
           </Stack>

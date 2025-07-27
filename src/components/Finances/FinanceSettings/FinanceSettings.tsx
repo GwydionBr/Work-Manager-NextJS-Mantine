@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 
-import { Group } from "@mantine/core";
+import { Grid, Group, Text } from "@mantine/core";
 import SettingsNavbar from "@/components/Navbar/SettingsNavbar";
 import FinanceCategorySettings from "./FinanceCategorySettings";
+import Conditional from "./Conditional";
 
 enum FinanceSettingType {
   CATEGORIES = "categories",
@@ -18,27 +19,34 @@ export default function FinanceSettings({ onClose }: { onClose: () => void }) {
   );
 
   return (
-    <Group align="flex-start" h="100%" wrap="nowrap" w="100%">
-      <SettingsNavbar
-        items={[
-          {
-            title: "Categories",
-            onClick: () => setActiveSetting(FinanceSettingType.CATEGORIES),
-          },
-          {
-            title: "Conditional",
-            onClick: () =>
-              setActiveSetting(FinanceSettingType.CONDITIONAL_CASH_FLOWS),
-          },
-          {
-            title: "Other",
-            onClick: () => setActiveSetting(FinanceSettingType.OTHER),
-          },
-        ]}
-      />
-      {activeSetting === FinanceSettingType.CATEGORIES && (
-        <FinanceCategorySettings />
-      )}
-    </Group>
+    <Grid align="flex-start" h="100%" w="100%">
+      <Grid.Col span={{ base: 4, sm: 3, lg: 2 }}>
+        <SettingsNavbar
+          items={[
+            {
+              title: "Categories",
+              onClick: () => setActiveSetting(FinanceSettingType.CATEGORIES),
+            },
+            {
+              title: "Conditional",
+              onClick: () =>
+                setActiveSetting(FinanceSettingType.CONDITIONAL_CASH_FLOWS),
+            },
+            {
+              title: "Other",
+              onClick: () => setActiveSetting(FinanceSettingType.OTHER),
+            },
+          ]}
+        />
+      </Grid.Col>
+      <Grid.Col span={{ base: 8, sm: 9, lg: 10 }}>
+        {activeSetting === FinanceSettingType.CATEGORIES && (
+          <FinanceCategorySettings />
+        )}
+        {activeSetting === FinanceSettingType.CONDITIONAL_CASH_FLOWS && (
+          <Conditional />
+        )}
+      </Grid.Col>
+    </Grid>
   );
 }
