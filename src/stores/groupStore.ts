@@ -41,7 +41,7 @@ interface GroupState {
 }
 
 interface GroupActions {
-  fetchGroupData: () => void;
+  fetchGroupData: () => Promise<void>;
   addGroup: (
     group: TablesInsert<"group">,
     color: null | string,

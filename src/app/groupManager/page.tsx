@@ -5,9 +5,8 @@ import { useGroupStore } from "@/stores/groupStore";
 import classes from "./GroupManager.module.css";
 
 import { Box, Loader, Tabs } from "@mantine/core";
-import { IconCalendar, IconList, IconChecklist } from "@tabler/icons-react";
+import { IconCalendar, IconChecklist } from "@tabler/icons-react";
 import Header from "@/components/Header/Header";
-import GroceryList from "@/components/GroupManager/Grocery/GroceryList";
 import EditGroupButton from "@/components/GroupManager/Group/EditGroupButton";
 import TaskList from "@/components/GroupManager/ToDo/TaskList";
 import Calendar from "@/components/Calendar/Calendar";
@@ -35,12 +34,6 @@ export default function GroupManagerPage() {
               Calendar
             </Tabs.Tab>
             <Tabs.Tab
-              leftSection={<IconList color="light-dark(blue, cyan)" />}
-              value="Grocery List"
-            >
-              Grocery List
-            </Tabs.Tab>
-            <Tabs.Tab
               leftSection={<IconChecklist color="light-dark(blue, cyan)" />}
               value="To Do"
             >
@@ -52,12 +45,6 @@ export default function GroupManagerPage() {
             <Box className={classes.mainCalendarContainer}>
               <Calendar />
             </Box>
-          </Tabs.Panel>
-          <Tabs.Panel
-            value="Grocery List"
-            className={classes.groceryListContainer}
-          >
-            <GroceryList />
           </Tabs.Panel>
           <Tabs.Panel value="To Do">
             <TaskList />

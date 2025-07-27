@@ -25,7 +25,7 @@ interface SettingsState {
 }
 
 interface SettingsActions {
-  fetchSettings: () => void;
+  fetchSettings: () => Promise<void>;
   setDefaultSalaryCurrency: (currency: Currency) => void;
   setDefaultSalaryAmount: (salaryAmount: number) => void;
   setDefaultFinanceCurrency: (financeCurrency: Currency) => void;

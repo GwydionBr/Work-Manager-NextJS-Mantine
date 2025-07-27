@@ -1,25 +1,21 @@
-import { Box, Stack } from "@mantine/core";
+import { Modal, Stack } from "@mantine/core";
 import SchemeButtonGroup from "@/components/Settings/Default/SchemeSettings";
-import Header from "@/components/Header/Header";
 import SettingsRow from "@/components/Settings/Default/SettingsRow";
 import SelectTimerRounding from "@/components/Settings/Default/RoundingSettings";
 import FinanceSettings from "@/components/Settings/Default/FinanceSettings";
 import WorkSettings from "@/components/Settings/Default/WorkSettings";
 import GroupSettings from "@/components/Settings/Default/GroupSettings";
 
-import classes from "./Settings.module.css";
-
-export default function SettingsPage() {
+export default function SettingsModal({
+  opened,
+  close,
+}: {
+  opened: boolean;
+  close: () => void;
+}) {
   return (
-    <Box
-      className={classes.settingsMainContainer}
-      px="xl"
-      w="100%"
-      maw={1200}
-      mx="auto"
-    >
-      <Header headerTitle="Settings Page" />
-      <Stack w="100%">
+    <Modal opened={opened} onClose={close} title="Settings" size="80%" centered>
+      <Stack w="100%" p="md">
         <SettingsRow title="Color Scheme" children={<SchemeButtonGroup />} />
         <SettingsRow
           title="Timer Rounding"
@@ -29,6 +25,6 @@ export default function SettingsPage() {
         <SettingsRow title="Finances" children={<FinanceSettings />} />
         <SettingsRow title="Group" children={<GroupSettings />} />
       </Stack>
-    </Box>
+    </Modal>
   );
 }

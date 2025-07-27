@@ -5,8 +5,8 @@ import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Box, DEFAULT_THEME, Group, Popover, Text } from "@mantine/core";
 
-import classes from "./Settings.module.css";
-import DefaultColorPicker from "../UI/DefaultColorPicker";
+import classes from "./DefaultSettings.module.css";
+import DefaultColorPicker from "@/components/UI/DefaultColorPicker";
 
 export default function GroupSettings() {
   const { defaultGroupColor: groupColor, setDefaultGroupColor: setGroupColor } =

@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import { useDisclosure } from "@mantine/hooks";
 
 import { Button, Flex, Stack, Tooltip, UnstyledButton } from "@mantine/core";
 import {
@@ -15,6 +16,7 @@ import SchemeToggle from "@/components/Scheme/SchemeToggleButton";
 import paths from "@/utils/paths";
 
 import classes from "./Navbar.module.css";
+import SettingsModal from "../Settings/SettingsModal";
 
 interface LinkData {
   icon: React.ElementType;
@@ -29,11 +31,6 @@ const mainLinksData = [
     label: "Finance",
     to: paths.finances.financesPage(),
   },
-  // {
-  //   icon: IconDeviceDesktopAnalytics,
-  //   label: "Analytics",
-  //   to: paths.analytics.analyticsPage(),
-  // },
   {
     icon: IconUsersGroup,
     label: "Group Manager",
@@ -43,12 +40,12 @@ const mainLinksData = [
 
 const profileLinksData = [
   { icon: IconUser, label: "Account", to: paths.account.accountPage() },
-  { icon: IconSettings, label: "Settings", to: paths.settings.settingsPage() },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
+  const [opened, { open, close }] = useDisclosure(false);
 
   function createLinks(linksData: LinkData[]) {
     const links = linksData.map((link) => (
@@ -108,9 +105,23 @@ export default function Navbar() {
         <Stack gap="xs">{mainLinks}</Stack>
         <Stack gap="xl" justify="space-between">
           <SchemeToggle />
-          <Stack gap="xs">{profileLinks}</Stack>
+          <Stack gap="xs">
+            {profileLinks}
+            <Tooltip
+              label="Settings"
+              position="right"
+              withArrow
+              transitionProps={{ duration: 0 }}
+              key="Settings"
+            >
+              <UnstyledButton onClick={open} className={classes.mainLink}>
+                <IconSettings size={22} stroke={1.5} />
+              </UnstyledButton>
+            </Tooltip>
+          </Stack>
         </Stack>
       </Flex>
+      <SettingsModal opened={opened} close={close} />
     </Flex>
   );
 }

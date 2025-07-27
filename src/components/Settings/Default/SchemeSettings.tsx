@@ -10,8 +10,8 @@ import {
   Text,
   useMantineColorScheme,
 } from "@mantine/core";
-import DarkSchemeButton from "../Scheme/DarkSchemeButton";
-import LightSchemeButton from "../Scheme/LightSchemeButton";
+import DarkSchemeButton from "@/components/Scheme/DarkSchemeButton";
+import LightSchemeButton from "@/components/Scheme/LightSchemeButton";
 
 export default function SchemeToggle() {
   const [mounted, setMounted] = useState(false);

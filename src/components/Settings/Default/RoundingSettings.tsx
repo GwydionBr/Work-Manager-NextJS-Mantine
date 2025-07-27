@@ -8,7 +8,7 @@ import { roundingAmounts, roundingModes } from "@/constants/settings";
 
 import { RoundingAmount, RoundingDirection } from "@/types/settings.types";
 
-import classes from "./Settings.module.css";
+import classes from "./DefaultSettings.module.css";
 
 export default function RoundingSettings() {
   const {
