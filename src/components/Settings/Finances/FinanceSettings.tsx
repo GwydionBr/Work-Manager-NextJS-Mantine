@@ -11,7 +11,7 @@ enum FinanceSettingType {
   CONDITIONAL_CASH_FLOWS = "conditional_cash_flows",
 }
 
-export default function FinanceSettings({ onClose }: { onClose: () => void }) {
+export default function FinanceSettings() {
   const [activeSetting, setActiveSetting] = useState<FinanceSettingType>(
     FinanceSettingType.CATEGORIES
   );

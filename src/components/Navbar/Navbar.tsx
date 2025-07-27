@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useDisclosure } from "@mantine/hooks";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Button, Flex, Stack, Tooltip, UnstyledButton } from "@mantine/core";
 import {
@@ -16,7 +16,7 @@ import SchemeToggle from "@/components/Scheme/SchemeToggleButton";
 import paths from "@/utils/paths";
 
 import classes from "./Navbar.module.css";
-import SettingsModal from "../Settings/SettingsModal";
+import SettingsModal, { SettingsTab } from "../Settings/SettingsModal";
 
 interface LinkData {
   icon: React.ElementType;
@@ -45,7 +45,7 @@ const profileLinksData = [
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [opened, { open, close }] = useDisclosure(false);
+  const { setSelectedTab, setIsModalOpen } = useSettingsStore();
 
   function createLinks(linksData: LinkData[]) {
     const links = linksData.map((link) => (
@@ -114,14 +114,20 @@ export default function Navbar() {
               transitionProps={{ duration: 0 }}
               key="Settings"
             >
-              <UnstyledButton onClick={open} className={classes.mainLink}>
+              <UnstyledButton
+                onClick={() => {
+                  setIsModalOpen(true);
+                  setSelectedTab(SettingsTab.GENERAL);
+                }}
+                className={classes.mainLink}
+              >
                 <IconSettings size={22} stroke={1.5} />
               </UnstyledButton>
             </Tooltip>
           </Stack>
         </Stack>
       </Flex>
-      <SettingsModal opened={opened} close={close} />
+      <SettingsModal />
     </Flex>
   );
 }

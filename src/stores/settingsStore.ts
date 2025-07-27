@@ -9,7 +9,11 @@ import {
 } from "@/types/settings.types";
 import * as actions from "@/actions";
 
+import { SettingsTab } from "@/components/Settings/SettingsModal";
+
 interface SettingsState {
+  isModalOpen: boolean;
+  selectedTab: SettingsTab;
   settingsId: string | null;
   defaultSalaryCurrency: Currency;
   defaultSalaryAmount: number;
@@ -26,6 +30,8 @@ interface SettingsState {
 
 interface SettingsActions {
   fetchSettings: () => Promise<void>;
+  setSelectedTab: (tab: SettingsTab) => void;
+  setIsModalOpen: (isModalOpen: boolean) => void;
   setDefaultSalaryCurrency: (currency: Currency) => void;
   setDefaultSalaryAmount: (salaryAmount: number) => void;
   setDefaultFinanceCurrency: (financeCurrency: Currency) => void;
@@ -40,6 +46,8 @@ interface SettingsActions {
 export const useSettingsStore = create<SettingsState & SettingsActions>()(
   persist(
     (set, get) => ({
+      isModalOpen: false,
+      selectedTab: SettingsTab.GENERAL,
       settingsId: null,
       defaultSalaryCurrency: "USD",
       defaultFinanceCurrency: "USD",
@@ -69,6 +77,12 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
           });
         }
         set({ isFetching: false, lastFetch: new Date() });
+      },
+      setSelectedTab: (tab: SettingsTab) => {
+        set({ selectedTab: tab });
+      },
+      setIsModalOpen: (isModalOpen: boolean) => {
+        set({ isModalOpen: isModalOpen });
       },
       setDefaultSalaryCurrency: async (currency: Currency) => {
         await actions.updateSettings({

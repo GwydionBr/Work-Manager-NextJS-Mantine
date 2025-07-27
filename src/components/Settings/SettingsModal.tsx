@@ -1,8 +1,10 @@
 "use client";
 
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import { Modal, Tabs } from "@mantine/core";
 import DefaultSettings from "./Default/DefaultSettings";
-import FinancesSettings from "./Finances/FinancesSettings";
+import FinanceSettings from "./Finances/FinanceSettings";
 import GroupSettings from "./Group/GroupSettings";
 import {
   IconCurrencyDollar,
@@ -10,48 +12,57 @@ import {
   IconUsers,
 } from "@tabler/icons-react";
 
-interface SettingsModalProps {
-  opened: boolean;
-  defaultTab: "general" | "finance" | "group";
-  close: () => void;
+export enum SettingsTab {
+  GENERAL = "general",
+  FINANCE = "finance",
+  GROUP = "group",
 }
 
-export default function SettingsModal({
-  opened,
-  close,
-  defaultTab = "general",
-}: SettingsModalProps) {
+export default function SettingsModal() {
+  const { selectedTab, setSelectedTab, isModalOpen, setIsModalOpen } =
+    useSettingsStore();
+
   return (
     <Modal
-      opened={opened}
-      onClose={close}
+      opened={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
       title="Settings"
       size="80%"
       centered
       radius="lg"
     >
-      <Tabs mih="80vh" defaultValue={defaultTab}>
+      <Tabs
+        mih="80vh"
+        value={selectedTab}
+        onChange={(value) => setSelectedTab(value as SettingsTab)}
+      >
         <Tabs.List mb="md" grow>
-          <Tabs.Tab value="general" leftSection={<IconSettings size={16} />}>
+          <Tabs.Tab
+            value={SettingsTab.GENERAL}
+            leftSection={<IconSettings size={16} />}
+          >
             General
           </Tabs.Tab>
           <Tabs.Tab
-            value="finance"
+            value={SettingsTab.FINANCE}
             leftSection={<IconCurrencyDollar size={16} />}
           >
             Finance
           </Tabs.Tab>
-          <Tabs.Tab value="group" leftSection={<IconUsers size={16} />}>
+          <Tabs.Tab
+            value={SettingsTab.GROUP}
+            leftSection={<IconUsers size={16} />}
+          >
             Group
           </Tabs.Tab>
         </Tabs.List>
-        <Tabs.Panel value="general">
+        <Tabs.Panel value={SettingsTab.GENERAL}>
           <DefaultSettings />
         </Tabs.Panel>
-        <Tabs.Panel value="finance">
-          <FinancesSettings />
+        <Tabs.Panel value={SettingsTab.FINANCE}>
+          <FinanceSettings />
         </Tabs.Panel>
-        <Tabs.Panel value="group">
+        <Tabs.Panel value={SettingsTab.GROUP}>
           <GroupSettings />
         </Tabs.Panel>
       </Tabs>

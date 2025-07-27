@@ -3,7 +3,7 @@
 import { useFinanceStore } from "@/stores/financeStore";
 
 import { Divider, Grid, Group, Stack, Text } from "@mantine/core";
-import FinanceCategoryForm from "../Form/FinanceCategoryForm";
+import FinanceCategoryForm from "@/components/Finances/Form/FinanceCategoryForm";
 import classes from "./FinanceSettings.module.css";
 
 export default function FinanceCategorySettings() {
