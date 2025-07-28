@@ -72,10 +72,12 @@ export function formatDateTime(date: Date) {
 }
 
 export function formatMoney(amount: number, currency: string): string {
+  const hasDecimals = amount % 1 !== 0;
+  const formattedAmount = hasDecimals ? amount.toFixed(2) : amount.toString();
   if (currency === "$") {
-    return `$${amount.toFixed(2)}`;
+    return `$${formattedAmount}`;
   }
-  return `${amount.toFixed(2)} ${currency}`;
+  return `${formattedAmount} ${currency}`;
 }
 
 export function formatEarningsAmount(amount: number, currency: string) {
