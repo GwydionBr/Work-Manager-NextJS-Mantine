@@ -1,18 +1,19 @@
 "use client";
 
-import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Group, Text, Divider, Box, ActionIcon, Modal } from "@mantine/core";
+import { Group, Text, Divider, Box, ActionIcon } from "@mantine/core";
 import { IconAdjustments } from "@tabler/icons-react";
 import FinanceSection from "@/components/Finances/FinanceSection";
 import NewCashFlowButton from "@/components/Finances/NewCashFlowButton";
 
 import classes from "./Navbar.module.css";
+import { SettingsTab } from "../Settings/SettingsModal";
 
 export default function FinanceNavbar() {
   const { singleCashFlows, isFetching } = useFinanceStore();
-  const [opened, { open, close }] = useDisclosure(false);
+  const { setSelectedTab, setIsModalOpen } = useSettingsStore();
 
   const incomeCashFlows = singleCashFlows.filter(
     (cashFlow) => cashFlow.type === "income"
@@ -28,7 +29,14 @@ export default function FinanceNavbar() {
         <Text>Finances</Text>
         {!isFetching && (
           <Group>
-            <ActionIcon variant="subtle" size="md" onClick={open}>
+            <ActionIcon
+              variant="subtle"
+              size="md"
+              onClick={() => {
+                setIsModalOpen(true);
+                setSelectedTab(SettingsTab.FINANCE);
+              }}
+            >
               <IconAdjustments size={20} />
             </ActionIcon>
             <NewCashFlowButton />
