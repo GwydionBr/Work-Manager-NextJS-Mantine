@@ -3,17 +3,20 @@
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Modal, Tabs } from "@mantine/core";
-import DefaultSettings from "./Default/DefaultSettings";
+import DefaultSettings from "./General/DefaultSettings";
 import FinanceSettings from "./Finances/FinanceSettings";
 import GroupSettings from "./Group/GroupSettings";
 import {
   IconCurrencyDollar,
+  IconBriefcase,
   IconSettings,
   IconUsers,
 } from "@tabler/icons-react";
+import WorkSettings from "./Work/WorkSettings";
 
 export enum SettingsTab {
   GENERAL = "general",
+  WORK = "work",
   FINANCE = "finance",
   GROUP = "group",
 }
@@ -44,6 +47,12 @@ export default function SettingsModal() {
             General
           </Tabs.Tab>
           <Tabs.Tab
+            value={SettingsTab.WORK}
+            leftSection={<IconBriefcase size={16} />}
+          >
+            Work
+          </Tabs.Tab>
+          <Tabs.Tab
             value={SettingsTab.FINANCE}
             leftSection={<IconCurrencyDollar size={16} />}
           >
@@ -58,6 +67,9 @@ export default function SettingsModal() {
         </Tabs.List>
         <Tabs.Panel value={SettingsTab.GENERAL}>
           <DefaultSettings />
+        </Tabs.Panel>
+        <Tabs.Panel value={SettingsTab.WORK}>
+          <WorkSettings />
         </Tabs.Panel>
         <Tabs.Panel value={SettingsTab.FINANCE}>
           <FinanceSettings />

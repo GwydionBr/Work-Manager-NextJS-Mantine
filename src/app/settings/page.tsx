@@ -1,11 +1,11 @@
 import { Box, Stack } from "@mantine/core";
-import SchemeButtonGroup from "@/components/Settings/Default/SchemeSettings";
+import SchemeButtonGroup from "@/components/Settings/General/SchemeSettings";
 import Header from "@/components/Header/Header";
-import SettingsRow from "@/components/Settings/Default/SettingsRow";
-import SelectTimerRounding from "@/components/Settings/Default/RoundingSettings";
-import FinanceSettings from "@/components/Settings/Default/FinanceSettings";
-import WorkSettings from "@/components/Settings/Default/WorkSettings";
-import GroupSettings from "@/components/Settings/Default/GroupSettings";
+import SettingsRow from "@/components/Settings/General/SettingsRow";
+import SelectTimerRounding from "@/components/Settings/General/RoundingSettings";
+import FinanceSettings from "@/components/Settings/General/FinanceSettings";
+import WorkSettings from "@/components/Settings/General/WorkSettings";
+import GroupSettings from "@/components/Settings/General/GroupSettings";
 
 import classes from "./Settings.module.css";
 
