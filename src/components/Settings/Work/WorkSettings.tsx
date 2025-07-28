@@ -1,10 +1,13 @@
 import { Stack } from "@mantine/core";
-import SettingsRow from "../General/SettingsRow";
+import SettingsRow from "../SettingsRow";
+import SelectTimerRounding from "./RoundingSettings";
+import WorkDefaultSettings from "./WorkDefaultSettings";
 
 export default function WorkSettings() {
   return (
     <Stack>
-      <SettingsRow title="Work Settings" children={<div>Work Settings</div>} />
+      <SettingsRow title="Timer Rounding" children={<SelectTimerRounding />} />
+      <SettingsRow title="Work Settings" children={<WorkDefaultSettings />} />
     </Stack>
   );
 }

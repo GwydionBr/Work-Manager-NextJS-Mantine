@@ -2,7 +2,7 @@
 
 import { Grid, Text } from "@mantine/core";
 
-import classes from "./DefaultSettings.module.css";
+import classes from "./Settings.module.css";
 
 interface SettingsRowProps {
   title?: string;

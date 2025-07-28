@@ -8,7 +8,7 @@ import { Button, Group, NumberInput, Select, Switch } from "@mantine/core";
 import { currencies } from "@/constants/settings";
 import { Currency } from "@/types/settings.types";
 
-export default function WorkSettings() {
+export default function WorkDefaultSettings() {
   const {
     defaultSalaryCurrency: salaryCurrency,
     defaultSalaryAmount,
@@ -66,7 +66,9 @@ export default function WorkSettings() {
         mt="lg"
         label="Hourly Payment"
         checked={defaultProjectHourlyPayment}
-        onChange={(event) => setDefaultProjectHourlyPayment(event.currentTarget.checked)}
+        onChange={(event) =>
+          setDefaultProjectHourlyPayment(event.currentTarget.checked)
+        }
       />
     </Group>
   );

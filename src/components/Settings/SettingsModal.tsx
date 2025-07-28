@@ -3,7 +3,7 @@
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Modal, Tabs } from "@mantine/core";
-import DefaultSettings from "./General/DefaultSettings";
+import DefaultSettings from "./General/GeneralSettings";
 import FinanceSettings from "./Finances/FinanceSettings";
 import GroupSettings from "./Group/GroupSettings";
 import {
