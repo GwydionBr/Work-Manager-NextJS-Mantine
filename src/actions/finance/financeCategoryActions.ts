@@ -9,11 +9,11 @@ import {
 } from "@/types/action.types";
 
 export async function getAllFinanceCategories(): Promise<
-  ApiResponseList<"cash_flow_category">
+  ApiResponseList<"finance_category">
 > {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("cash_flow_category")
+    .from("finance_category")
     .select("*")
     .order("title", { ascending: true });
 
@@ -27,8 +27,8 @@ export async function getAllFinanceCategories(): Promise<
 export async function createFinanceCategory({
   category,
 }: {
-  category: TablesInsert<"cash_flow_category">;
-}): Promise<ApiResponseSingle<"cash_flow_category">> {
+  category: TablesInsert<"finance_category">;
+}): Promise<ApiResponseSingle<"finance_category">> {
   const supabase = await createClient();
 
   const {
@@ -44,7 +44,7 @@ export async function createFinanceCategory({
   }
 
   const { data, error } = await supabase
-    .from("cash_flow_category")
+    .from("finance_category")
     .insert({ ...category, user_id: user.id })
     .select()
     .single();
@@ -59,11 +59,11 @@ export async function createFinanceCategory({
 export async function updateFinanceCategory({
   category,
 }: {
-  category: TablesUpdate<"cash_flow_category">;
-}): Promise<ApiResponseSingle<"cash_flow_category">> {
+  category: TablesUpdate<"finance_category">;
+}): Promise<ApiResponseSingle<"finance_category">> {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("cash_flow_category")
+    .from("finance_category")
     .update(category)
     .eq("id", category.id!)
     .select()
@@ -83,7 +83,7 @@ export async function deleteFinanceCategory({
 }): Promise<SimpleResponse> {
   const supabase = await createClient();
   const { error } = await supabase
-    .from("cash_flow_category")
+    .from("finance_category")
     .delete()
     .eq("id", categoryId);
 

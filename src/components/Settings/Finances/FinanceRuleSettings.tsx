@@ -1,9 +1,9 @@
 import { Text } from "@mantine/core";
 
-export default function Conditional() {
+export default function FinanceRuleSettings() {
   return (
     <Text size="sm" fw={700}>
-      Conditional
+      Rules
     </Text>
   );
 }

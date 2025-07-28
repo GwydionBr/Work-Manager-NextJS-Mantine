@@ -39,7 +39,7 @@ export type Database = {
   };
   public: {
     Tables: {
-      cash_flow_category: {
+      finance_category: {
         Row: {
           created_at: string;
           description: string | null;
@@ -63,47 +63,110 @@ export type Database = {
         };
         Relationships: [];
       };
-      conditional_cash_flow: {
+      finance_rule: {
         Row: {
-          cash_flow_category_id: string | null;
           created_at: string;
           description: string | null;
+          end_value: number | null;
           id: string;
           percentage: number;
-          timer_project_id: string | null;
+          start_value: number;
           title: string;
           user_id: string;
         };
         Insert: {
-          cash_flow_category_id?: string | null;
           created_at?: string;
           description?: string | null;
+          end_value?: number | null;
           id?: string;
           percentage?: number;
-          timer_project_id?: string | null;
+          start_value?: number;
           title: string;
           user_id?: string;
         };
         Update: {
-          cash_flow_category_id?: string | null;
           created_at?: string;
           description?: string | null;
+          end_value?: number | null;
           id?: string;
           percentage?: number;
-          timer_project_id?: string | null;
+          start_value?: number;
           title?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      finance_rule_category: {
+        Row: {
+          created_at: string;
+          finance_category_id: string;
+          finance_rule_id: string;
+          id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          finance_category_id?: string;
+          finance_rule_id?: string;
+          id?: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          finance_category_id?: string;
+          finance_rule_id?: string;
+          id?: string;
           user_id?: string;
         };
         Relationships: [
           {
-            foreignKeyName: "conditional_cash_flow_cash_flow_category_id_fkey";
-            columns: ["cash_flow_category_id"];
+            foreignKeyName: "finance_rule_category_finance_category_id_fkey";
+            columns: ["finance_category_id"];
             isOneToOne: false;
-            referencedRelation: "cash_flow_category";
+            referencedRelation: "finance_category";
             referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "conditional_cash_flow_timer_project_id_fkey";
+            foreignKeyName: "finance_rule_category_finance_rule_id_fkey";
+            columns: ["finance_rule_id"];
+            isOneToOne: false;
+            referencedRelation: "finance_rule";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      finance_rule_timer_project: {
+        Row: {
+          created_at: string;
+          finance_rule_id: string;
+          id: string;
+          timer_project_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          finance_rule_id: string;
+          id?: string;
+          timer_project_id: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          finance_rule_id?: string;
+          id?: string;
+          timer_project_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "finance_rule_timer_project_finance_rule_id_fkey";
+            columns: ["finance_rule_id"];
+            isOneToOne: false;
+            referencedRelation: "finance_rule";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "finance_rule_timer_project_timer_project_id_fkey";
             columns: ["timer_project_id"];
             isOneToOne: false;
             referencedRelation: "timerProject";
@@ -416,7 +479,7 @@ export type Database = {
             foreignKeyName: "recurring_cash_flow_category_id_fkey";
             columns: ["category_id"];
             isOneToOne: false;
-            referencedRelation: "cash_flow_category";
+            referencedRelation: "finance_category";
             referencedColumns: ["id"];
           },
         ];
@@ -558,7 +621,7 @@ export type Database = {
             foreignKeyName: "single_cash_flow_category_id_fkey";
             columns: ["category_id"];
             isOneToOne: false;
-            referencedRelation: "cash_flow_category";
+            referencedRelation: "finance_category";
             referencedColumns: ["id"];
           },
           {
@@ -597,7 +660,7 @@ export type Database = {
             foreignKeyName: "single_cash_flow_category_cash_flow_category_fkey";
             columns: ["cash_flow_category"];
             isOneToOne: false;
-            referencedRelation: "cash_flow_category";
+            referencedRelation: "finance_category";
             referencedColumns: ["id"];
           },
           {
@@ -698,7 +761,7 @@ export type Database = {
             foreignKeyName: "timerProject_cash_flow_category_id_fkey";
             columns: ["cash_flow_category_id"];
             isOneToOne: false;
-            referencedRelation: "cash_flow_category";
+            referencedRelation: "finance_category";
             referencedColumns: ["id"];
           },
           {

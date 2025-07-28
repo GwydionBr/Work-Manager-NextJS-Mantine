@@ -4,12 +4,14 @@ import { create } from "zustand";
 import * as actions from "@/actions";
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { processRecurringCashFlows } from "@/utils/financeHelperFunction";
+import { FinanceRule } from "@/types/finance.types";
 
 interface FinanceStoreState {
   singleCashFlows: Tables<"single_cash_flow">[];
   futureSingleCashFlows: Tables<"single_cash_flow">[];
   recurringCashFlows: Tables<"recurring_cash_flow">[];
-  financeCategories: Tables<"cash_flow_category">[];
+  financeCategories: Tables<"finance_category">[];
+  financeRules: FinanceRule[];
   isFetching: boolean;
   lastFetch: Date | null;
 }
@@ -35,10 +37,10 @@ interface FinanceStoreActions {
   deleteSingleCashFlow: (id: string) => Promise<boolean>;
   deleteRecurringCashFlow: (id: string) => Promise<boolean>;
   addFinanceCategory: (
-    category: TablesInsert<"cash_flow_category">
+    category: TablesInsert<"finance_category">
   ) => Promise<boolean>;
   updateFinanceCategory: (
-    category: TablesUpdate<"cash_flow_category">
+    category: TablesUpdate<"finance_category">
   ) => Promise<boolean>;
   deleteFinanceCategory: (id: string) => Promise<boolean>;
 }
@@ -49,6 +51,7 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
     futureSingleCashFlows: [],
     recurringCashFlows: [],
     financeCategories: [],
+    financeRules: [],
     isFetching: true,
     lastFetch: null,
 
