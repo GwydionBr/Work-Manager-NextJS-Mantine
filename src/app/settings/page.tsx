@@ -3,9 +3,9 @@ import SchemeButtonGroup from "@/components/Settings/General/SchemeSettings";
 import Header from "@/components/Header/Header";
 import SettingsRow from "@/components/Settings/SettingsRow";
 import SelectTimerRounding from "@/components/Settings/Work/RoundingSettings";
-import FinanceSettings from "@/components/Settings/General/FinanceSettings";
+import FinanceDefaultSettings from "@/components/Settings/Finances/FinanceDefaultSettings";
 import WorkDefaultSettings from "@/components/Settings/Work/WorkDefaultSettings";
-import GroupSettings from "@/components/Settings/General/GroupSettings";
+import GroupDefaultSettings from "@/components/Settings/Group/GroupDefaultSettings";
 
 import classes from "./Settings.module.css";
 
@@ -26,8 +26,8 @@ export default function SettingsPage() {
           children={<SelectTimerRounding />}
         />
         <SettingsRow title="Work Settings" children={<WorkDefaultSettings />} />
-        <SettingsRow title="Finances" children={<FinanceSettings />} />
-        <SettingsRow title="Group" children={<GroupSettings />} />
+        <SettingsRow title="Finances" children={<FinanceDefaultSettings />} />
+        <SettingsRow title="Group" children={<GroupDefaultSettings />} />
       </Stack>
     </Box>
   );

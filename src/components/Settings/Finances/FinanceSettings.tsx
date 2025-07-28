@@ -5,6 +5,8 @@ import { Grid } from "@mantine/core";
 import SettingsNavbar from "@/components/Navbar/SettingsNavbar";
 import FinanceCategorySettings from "./FinanceCategorySettings";
 import Conditional from "./Conditional";
+import SettingsRow from "../SettingsRow";
+import FinanceDefaultSettings from "./FinanceDefaultSettings";
 
 enum FinanceSettingType {
   CATEGORIES = "categories",
@@ -18,6 +20,10 @@ export default function FinanceSettings() {
 
   return (
     <Grid align="flex-start" h="100%" w="100%">
+      <SettingsRow
+        title="Finance Settings"
+        children={<FinanceDefaultSettings />}
+      />
       <Grid.Col span={{ base: 4, sm: 3, lg: 2 }}>
         <SettingsNavbar
           items={[

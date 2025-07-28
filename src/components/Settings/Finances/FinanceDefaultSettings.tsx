@@ -7,14 +7,14 @@ import { Group, Select } from "@mantine/core";
 import { currencies } from "@/constants/settings";
 import { Currency } from "@/types/settings.types";
 
-export default function FinanceSettings() {
+export default function FinanceDefaultSettings() {
   const {
     defaultFinanceCurrency: financeCurrency,
     setDefaultFinanceCurrency: setFinanceCurrency,
   } = useSettingsStore();
 
   return (
-    <Group>      
+    <Group>
       <Select
         data={currencies}
         label="Default Finance Currency"
