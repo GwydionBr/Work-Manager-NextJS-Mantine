@@ -4,23 +4,20 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useWorkStore } from "@/stores/workManagerStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
-import {
-  Box,
-  Group,
-  ScrollArea,
-  Skeleton,
-  Stack,
-  Text,
-} from "@mantine/core";
+import { Box, Group, ScrollArea, Skeleton, Stack, Text } from "@mantine/core";
 import NewProjectButton from "../Work/Project/NewProjectButton";
 import ProjectTree from "../Work/Project/ProjectTree";
 import NewFolderButton from "@/components/Work/Project/NewFolderButton";
+import AdjustmentActionIcon from "../UI/ActionIcons/AdjustmentActionIcon";
 
 import classes from "./Navbar.module.css";
+import { SettingsTab } from "../Settings/SettingsModal";
 
 export default function ProjectNavbar() {
   const { isFetching } = useWorkStore();
+  const { setSelectedTab, setIsModalOpen } = useSettingsStore();
 
   const router = useRouter();
   const pathname = usePathname();
@@ -31,10 +28,24 @@ export default function ProjectNavbar() {
   }, [pathname]);
 
   return (
-    <div className={classes.main}>
+    <Box className={classes.main}>
       <Group className={classes.title} align="center" justify="space-between">
         <Text>Projects</Text>
-        {!isFetching && <NewProjectButton />}
+        {!isFetching && (
+          <Group gap={8}>
+            <AdjustmentActionIcon
+              aria-label="Adjust project settings"
+              tooltipLabel="Adjust project settings"
+              size="md"
+              iconSize={20}
+              onClick={() => {
+                setIsModalOpen(true);
+                setSelectedTab(SettingsTab.WORK);
+              }}
+            />
+            <NewProjectButton />
+          </Group>
+        )}
       </Group>
 
       <Box
@@ -70,6 +81,6 @@ export default function ProjectNavbar() {
           <ProjectTree />
         )}
       </ScrollArea>
-    </div>
+    </Box>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useGroupStore } from "@/stores/groupStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
   Group,
@@ -14,20 +15,37 @@ import {
 } from "@mantine/core";
 import NewGroupButton from "../GroupManager/Group/NewGroupButton";
 
-import classes from "./Navbar.module.css";
 import MemberRow from "../GroupManager/MemberRow";
+import AdjustmentActionIcon from "../UI/ActionIcons/AdjustmentActionIcon";
+import classes from "./Navbar.module.css";
+import { SettingsTab } from "../Settings/SettingsModal";
 
 export default function FinanceNavbar() {
   const { groups, activeGroupId, isFetching, setActiveGroup } = useGroupStore();
   const activeGroup = useGroupStore((state) =>
     state.groups.find((g) => g.id === activeGroupId)
   );
+  const { setSelectedTab, setIsModalOpen } = useSettingsStore();
 
   return (
     <Box className={classes.main} w="250px">
       <Group className={classes.title} align="center" justify="space-between">
         <Text>Group Manager</Text>
-        {!isFetching && <NewGroupButton />}
+        {!isFetching && (
+          <Group gap={8}>
+            <AdjustmentActionIcon
+              aria-label="Adjust group settings"
+              tooltipLabel="Adjust group settings"
+              size="md"
+              iconSize={20}
+              onClick={() => {
+                setIsModalOpen(true);
+                setSelectedTab(SettingsTab.GROUP);
+              }}
+            />
+            <NewGroupButton />
+          </Group>
+        )}
       </Group>
       <Stack gap="sm" px="xs">
         <Text mt="sm" fz="sm" ta="center">

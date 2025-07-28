@@ -3,10 +3,10 @@
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Group, Text, Divider, Box, ActionIcon } from "@mantine/core";
-import { IconAdjustments } from "@tabler/icons-react";
+import { Group, Text, Divider, Box } from "@mantine/core";
 import FinanceSection from "@/components/Finances/FinanceSection";
 import NewCashFlowButton from "@/components/Finances/NewCashFlowButton";
+import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 
 import classes from "./Navbar.module.css";
 import { SettingsTab } from "../Settings/SettingsModal";
@@ -28,17 +28,17 @@ export default function FinanceNavbar() {
       <Group className={classes.title} align="center" justify="space-between">
         <Text>Finances</Text>
         {!isFetching && (
-          <Group>
-            <ActionIcon
-              variant="subtle"
+          <Group gap={8}>
+            <AdjustmentActionIcon
+              aria-label="Adjust finance settings"
+              tooltipLabel="Adjust finance settings"
               size="md"
+              iconSize={20}
               onClick={() => {
                 setIsModalOpen(true);
                 setSelectedTab(SettingsTab.FINANCE);
               }}
-            >
-              <IconAdjustments size={20} />
-            </ActionIcon>
+            />
             <NewCashFlowButton />
           </Group>
         )}
