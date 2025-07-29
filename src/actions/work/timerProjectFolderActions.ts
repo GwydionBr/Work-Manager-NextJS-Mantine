@@ -38,15 +38,15 @@ export async function getAllProjectFolders(): Promise<
 }
 
 export async function getProjectFolderById({
-  categoryId,
+  folderId,
 }: {
-  categoryId: string;
+  folderId: string;
 }): Promise<ApiResponseSingle<"timer_project_folder">> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("timer_project_folder")
     .select("*")
-    .eq("id", categoryId)
+    .eq("id", folderId)
     .single();
 
   if (error) {
@@ -57,15 +57,15 @@ export async function getProjectFolderById({
 }
 
 export async function createProjectFolder({
-  category,
+  folder,
 }: {
-  category: TablesInsert<"timer_project_folder">;
+  folder: TablesInsert<"timer_project_folder">;
 }): Promise<ApiResponseSingle<"timer_project_folder">> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("timer_project_folder")
-    .insert(category)
+    .insert(folder)
     .select()
     .single();
 
@@ -80,15 +80,15 @@ export async function createProjectFolder({
 }
 
 export async function updateProjectFolder({
-  category,
+  folder,
 }: {
-  category: TablesUpdate<"timer_project_folder">;
+  folder: TablesUpdate<"timer_project_folder">;
 }): Promise<ApiResponseSingle<"timer_project_folder">> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("timer_project_folder")
-    .update(category)
-    .eq("id", category.id!)
+    .update(folder)
+    .eq("id", folder.id!)
     .select()
     .single();
 
@@ -100,15 +100,15 @@ export async function updateProjectFolder({
 }
 
 export async function deleteProjectFolder({
-  categoryId,
+  folderId,
 }: {
-  categoryId: string;
+  folderId: string;
 }): Promise<SimpleResponse> {
   const supabase = await createClient();
   const { error } = await supabase
     .from("timer_project_folder")
     .delete()
-    .eq("id", categoryId);
+    .eq("id", folderId);
 
   if (error) {
     return { success: false, data: null, error: error.message };

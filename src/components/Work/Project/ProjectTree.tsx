@@ -1,6 +1,7 @@
 "use client";
 
-import { ProjectTreeItem, useWorkStore } from "@/stores/workManagerStore";
+import { useViewportSize } from "@mantine/hooks";
+import { useWorkStore } from "@/stores/workManagerStore";
 import { useRouter } from "next/navigation";
 
 import { NodeRendererProps, Tree } from "react-arborist";
@@ -12,9 +13,16 @@ import {
 } from "@tabler/icons-react";
 import { Group, Text } from "@mantine/core";
 
+import { ProjectTreeItem } from "@/types/work.types";
+
 export default function ProjectTree() {
-  const { projectTree, setActiveProjectId, moveProject, moveFolder } =
-    useWorkStore();
+  const { height } = useViewportSize();
+  const {
+    projectTree,
+    setActiveProjectId,
+    moveProject,
+    moveFolder,
+  } = useWorkStore();
 
   const router = useRouter();
 
@@ -23,6 +31,7 @@ export default function ProjectTree() {
     parentId: string | null,
     index: number
   ) => {
+    console.log(index, parentId, dragIds);
     for (const id of dragIds) {
       // Prüfe, ob es ein Projekt oder Ordner ist
       const node = findNodeById(projectTree, id);
@@ -53,13 +62,12 @@ export default function ProjectTree() {
     <Tree<ProjectTreeItem>
       data={projectTree}
       openByDefault={false}
-      width={600}
-      height={1000}
+      width={250}
+      height={height - 100}
       indent={24}
-      rowHeight={30}
+      rowHeight={27}
       paddingTop={10}
-      paddingBottom={10}
-      padding={25}
+      // selection={activeProjectId ?? undefined}
       onSelect={(nodes) => {
         if (nodes.length > 0) {
           const node = nodes[0];
@@ -104,6 +112,7 @@ function Node({ node, style, dragHandle }: NodeRendererProps<ProjectTreeItem>) {
         backgroundColor: isSelected
           ? "light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))"
           : "transparent",
+        borderRadius: "var(--mantine-radius-md)",
         cursor: "pointer",
         userSelect: "none",
         paddingTop: 5,
@@ -115,17 +124,29 @@ function Node({ node, style, dragHandle }: NodeRendererProps<ProjectTreeItem>) {
       <Group gap="xs" style={{ flex: 1 }}>
         {node.isLeaf ? (
           isSelected ? (
-            <IconFileFilled color="green" size={20} />
+            <IconFileFilled
+              color="light-dark(var(--mantine-color-green-8), var(--mantine-color-green-6))"
+              size={20}
+            />
           ) : (
-            <IconFile color="gray" size={20} />
+            <IconFile
+              color="light-dark(var(--mantine-color-gray-6), var(--mantine-color-gray-5))"
+              size={20}
+            />
           )
         ) : node.isOpen ? (
-          <IconFolderOpen color="orange" size={20} />
+          <IconFolderOpen
+            color="light-dark(var(--mantine-color-orange-7), var(--mantine-color-orange-5))"
+            size={20}
+          />
         ) : (
-          <IconFolderFilled color="orange" size={20} />
+          <IconFolderFilled
+            color="light-dark(var(--mantine-color-orange-6), var(--mantine-color-orange-5))"
+            size={20}
+          />
         )}
         <Text size="sm" style={{ flex: 1 }}>
-          {node.data.name}
+          {node.data.name} / {node.childIndex} / {node.data.index}
         </Text>
       </Group>
     </div>

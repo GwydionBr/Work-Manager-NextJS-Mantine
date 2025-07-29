@@ -677,7 +677,7 @@ export type Database = {
           created_at: string;
           description: string | null;
           id: string;
-          order_index: number | null;
+          order_index: number;
           parent_folder: string | null;
           title: string;
           user_id: string | null;
@@ -686,7 +686,7 @@ export type Database = {
           created_at?: string;
           description?: string | null;
           id?: string;
-          order_index?: number | null;
+          order_index?: number;
           parent_folder?: string | null;
           title: string;
           user_id?: string | null;
@@ -695,7 +695,7 @@ export type Database = {
           created_at?: string;
           description?: string | null;
           id?: string;
-          order_index?: number | null;
+          order_index?: number;
           parent_folder?: string | null;
           title?: string;
           user_id?: string | null;
@@ -720,7 +720,7 @@ export type Database = {
           hourly_payment: boolean;
           id: string;
           is_favorite: boolean;
-          order_index: number | null;
+          order_index: number;
           salary: number;
           title: string;
           total_payout: number;
@@ -735,7 +735,7 @@ export type Database = {
           hourly_payment?: boolean;
           id?: string;
           is_favorite?: boolean;
-          order_index?: number | null;
+          order_index?: number;
           salary: number;
           title: string;
           total_payout?: number;
@@ -750,7 +750,7 @@ export type Database = {
           hourly_payment?: boolean;
           id?: string;
           is_favorite?: boolean;
-          order_index?: number | null;
+          order_index?: number;
           salary?: number;
           title?: string;
           total_payout?: number;

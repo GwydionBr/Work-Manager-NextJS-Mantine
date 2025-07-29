@@ -312,7 +312,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
     },
 
     async addProjectFolder(folder) {
-      const newFolder = await actions.createProjectFolder({ category: folder });
+      const newFolder = await actions.createProjectFolder({ folder: folder });
       if (!newFolder.success) {
         return false;
       }
@@ -332,7 +332,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
 
     async updateProjectFolder(folder) {
       const updatedFolder = await actions.updateProjectFolder({
-        category: folder,
+        folder: folder,
       });
       if (!updatedFolder.success) {
         return false;
@@ -354,7 +354,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
     },
 
     async deleteProjectFolder(id) {
-      const deleted = await actions.deleteProjectFolder({ categoryId: id });
+      const deleted = await actions.deleteProjectFolder({ folderId: id });
       if (!deleted.success) {
         return false;
       }
@@ -402,7 +402,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
       set({ projectTree: newProjectTree });
 
       const updatedFolder = await actions.updateProjectFolder({
-        category: {
+        folder: {
           id: folderId,
           parent_folder: newParentFolderId,
         },
@@ -414,8 +414,27 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
     },
 
     createProjectTree(projects, folders) {
-      const tree = createTree(projects, folders);
-      set({ projectTree: tree });
+      const { sortedTree, changedNodes } = createTree(projects, folders);
+      set({ projectTree: sortedTree });
+      const updatedFolders: TablesUpdate<"timer_project_folder">[] =
+        changedNodes
+          .filter((node) => node.type === "folder")
+          .map((node) => ({
+            id: node.id,
+            order_index: node.index,
+          }));
+      const updatedProjects: TablesUpdate<"timerProject">[] = changedNodes
+        .filter((node) => node.type === "project")
+        .map((node) => ({
+          id: node.id,
+          order_index: node.index,
+        }));
+      for (const folder of updatedFolders) {
+        actions.updateProjectFolder({ folder });
+      }
+      for (const project of updatedProjects) {
+        actions.updateProject({ project });
+      }
     },
   })
 );

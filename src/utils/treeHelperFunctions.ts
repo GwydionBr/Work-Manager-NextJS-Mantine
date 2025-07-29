@@ -1,10 +1,15 @@
-import { ProjectTreeItem } from "@/stores/workManagerStore";
+import { ProjectTreeItem } from "@/types/work.types";
 import { Tables } from "@/types/db.types";
+
+interface SortResult {
+  sortedTree: ProjectTreeItem[];
+  changedNodes: ProjectTreeItem[];
+}
 
 export function createTree(
   projects: Tables<"timerProject">[],
   folders: Tables<"timer_project_folder">[]
-): ProjectTreeItem[] {
+): SortResult {
   const folderMap = new Map();
 
   // 1. Füge alle Ordner als leere Knoten ein
@@ -13,7 +18,7 @@ export function createTree(
       id: folder.id,
       name: folder.title,
       index: folder.order_index,
-      type: "folder" as const,
+      type: "folder",
       children: [],
     });
   });
@@ -34,7 +39,8 @@ export function createTree(
       folderMap.get(folderId).children.push({
         id: project.id,
         name: project.title,
-        type: "project" as const,
+        index: project.order_index,
+        type: "project",
       });
     }
   });
@@ -48,7 +54,7 @@ export function createTree(
         id: project.id,
         name: project.title,
         type: "project",
-        index: project.order_index || 0,
+        index: project.order_index,
       });
     }
   });
@@ -59,21 +65,47 @@ export function createTree(
     }
   });
 
-  return root;
+  const result = sortAndIndex(root);
+  return sortAndIndex(root);
 }
 
-export function findNode(
-  tree: ProjectTreeItem[],
-  id: string
-): ProjectTreeItem | null {
-  for (const node of tree) {
-    if (node.id === id) return node;
-    if (node.children) {
-      const result = findNode(node.children, id);
-      if (result) return result;
+function sortAndIndex(nodes: ProjectTreeItem[]): SortResult {
+  // Sort by index, then by name alphabetically
+  const sorted = [...nodes].sort((a, b) => {
+    if (a.index !== b.index) {
+      return a.index - b.index;
     }
-  }
-  return null;
+    // fallback: sort by name
+    return (a.name || "").localeCompare(b.name || "");
+  });
+
+  const changedNodes: ProjectTreeItem[] = [];
+
+  // Assign new index and recursively sort children
+  const sortedTree = sorted.map((node, idx) => {
+    const newNode: ProjectTreeItem = {
+      ...node,
+      index: idx,
+    };
+
+    // Check if index changed
+    if (node.index !== idx) {
+      changedNodes.push(newNode);
+    }
+
+    if (node.children && node.children.length > 0) {
+      const childResult = sortAndIndex(node.children);
+      newNode.children = childResult.sortedTree;
+      changedNodes.push(...childResult.changedNodes);
+    }
+
+    return newNode;
+  });
+
+  return {
+    sortedTree,
+    changedNodes,
+  };
 }
 
 export function deleteNode(
@@ -180,123 +212,4 @@ export function addNode(
 
     return node;
   });
-}
-
-function orderTree(tree: ProjectTreeItem[]): ProjectTreeItem[] {
-  // Sort the current level by index
-  const sortedTree = [...tree].sort((a, b) => {
-    // If both have valid indexes, sort by index
-    if (a.index !== undefined && b.index !== undefined) {
-      return a.index - b.index;
-    }
-    // If only one has an index, prioritize the one with index
-    if (a.index !== undefined) return -1;
-    if (b.index !== undefined) return 1;
-    // If neither has an index, maintain original order
-    return 0;
-  });
-
-  // Update indexes to ensure sequential ordering
-  const updatedTree = sortedTree.map((node, newIndex) => ({
-    ...node,
-    index: newIndex,
-    // Recursively order children if they exist
-    children: node.children ? orderTree(node.children) : undefined,
-  }));
-
-  return updatedTree;
-}
-
-export function findNextProject(
-  tree: ProjectTreeItem[],
-  deletedProjectId: string
-): string | null {
-  // First, find the deleted project to determine its location
-  const deletedProject = findNode(tree, deletedProjectId);
-  if (!deletedProject) return null;
-
-  // Find the parent folder of the deleted project
-  const parentFolder = findParentFolder(tree, deletedProjectId);
-
-  if (parentFolder) {
-    // Look for other projects in the same folder
-    const siblingProjects =
-      parentFolder.children?.filter(
-        (child) => child.type === "project" && child.id !== deletedProjectId
-      ) || [];
-
-    if (siblingProjects.length > 0) {
-      // Return the first sibling project
-      return siblingProjects[0].id;
-    }
-
-    // If no sibling projects, look in parent folders
-    return findNextProjectInParent(tree, parentFolder.id);
-  } else {
-    // Project is at root level, look for other root projects
-    const rootProjects = tree.filter(
-      (node) => node.type === "project" && node.id !== deletedProjectId
-    );
-
-    if (rootProjects.length > 0) {
-      return rootProjects[0].id;
-    }
-
-    // Look for any project in subfolders
-    return findFirstProjectInSubfolders(tree);
-  }
-}
-
-function findParentFolder(
-  tree: ProjectTreeItem[],
-  projectId: string
-): ProjectTreeItem | null {
-  for (const node of tree) {
-    if (node.type === "folder" && node.children) {
-      const hasProject = node.children.some((child) => child.id === projectId);
-      if (hasProject) return node;
-
-      const result = findParentFolder(node.children, projectId);
-      if (result) return result;
-    }
-  }
-  return null;
-}
-
-function findNextProjectInParent(
-  tree: ProjectTreeItem[],
-  parentFolderId: string
-): string | null {
-  const parentFolder = findNode(tree, parentFolderId);
-  if (!parentFolder) return null;
-
-  // Look for projects in this parent folder
-  const projectsInParent =
-    parentFolder.children?.filter((child) => child.type === "project") || [];
-
-  if (projectsInParent.length > 0) {
-    return projectsInParent[0].id;
-  }
-
-  // If no projects in this parent, look in its parent
-  const grandParent = findParentFolder(tree, parentFolderId);
-  if (grandParent) {
-    return findNextProjectInParent(tree, grandParent.id);
-  }
-
-  // If we're at the root level, look for any project
-  return findFirstProjectInSubfolders(tree);
-}
-
-function findFirstProjectInSubfolders(tree: ProjectTreeItem[]): string | null {
-  for (const node of tree) {
-    if (node.type === "project") {
-      return node.id;
-    }
-    if (node.type === "folder" && node.children) {
-      const result = findFirstProjectInSubfolders(node.children);
-      if (result) return result;
-    }
-  }
-  return null;
 }

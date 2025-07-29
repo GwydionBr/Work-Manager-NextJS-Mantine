@@ -20,7 +20,7 @@ export default function WorkLayout({
   return (
     <Box>
       <ProjectNavbar />
-      <Box ml="200px">{children}</Box>
+      <Box ml="250px">{children}</Box>
     </Box>
   );
 }
