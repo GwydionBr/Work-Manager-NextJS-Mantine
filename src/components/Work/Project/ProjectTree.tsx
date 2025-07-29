@@ -146,7 +146,7 @@ function Node({ node, style, dragHandle }: NodeRendererProps<ProjectTreeItem>) {
           />
         )}
         <Text size="sm" style={{ flex: 1 }}>
-          {node.data.name} / {node.childIndex} / {node.data.index}
+          {node.data.name}
         </Text>
       </Group>
     </div>

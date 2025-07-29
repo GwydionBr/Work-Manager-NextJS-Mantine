@@ -186,7 +186,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
     },
 
     async addProject(project) {
-      const { updateStore, timerSessions, handleChangedNodes } = get();
+      const { updateStore, timerSessions, handleChangedNodes, projectTree } = get();
 
       const newProject = await actions.createProject({ project });
       if (!newProject.success) {
@@ -198,7 +198,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
         { project: newProject.data, sessions: [] },
       ];
       updateStore(updatedProjects, timerSessions);
-      const { tree, changedNodes } = addNode(get().projectTree, null, {
+      const { tree, changedNodes } = addNode(projectTree, null, {
         id: newProject.data.id,
         name: newProject.data.title,
         type: "project",

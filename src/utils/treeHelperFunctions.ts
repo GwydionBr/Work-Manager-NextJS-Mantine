@@ -175,7 +175,9 @@ export function moveNode(
       );
   }
 
-  function insertNode(nodes: ProjectTreeItem[]): ProjectTreeItem[] {
+  function insertNodeAtSpecificIndex(
+    nodes: ProjectTreeItem[]
+  ): ProjectTreeItem[] {
     return nodes.map((node) => {
       if (node.id === targetFolderId && node.type === "folder") {
         // Setze den neuen Index für den verschobenen Knoten
@@ -187,13 +189,29 @@ export function moveNode(
         // Füge den verschobenen Knoten zur changedNodes Liste hinzu
         changedNodes.push(movedNode);
 
+        // Füge den Knoten an der spezifischen Position ein
+        const children = [...(node.children || [])];
+        children.splice(index, 0, movedNode);
+
+        // Aktualisiere die Indizes der nachfolgenden Kinder
+        const updatedChildren = children.map((child, idx) => {
+          if (idx >= index) {
+            const updatedChild = { ...child, index: idx };
+            if (child.id !== movedNode.id) {
+              changedNodes.push(updatedChild);
+            }
+            return updatedChild;
+          }
+          return child;
+        });
+
         return {
           ...node,
-          children: [...(node.children || []), movedNode],
+          children: updatedChildren,
         };
       }
       return node.children
-        ? { ...node, children: insertNode(node.children) }
+        ? { ...node, children: insertNodeAtSpecificIndex(node.children) }
         : node;
     });
   }
@@ -210,23 +228,32 @@ export function moveNode(
     // Füge den verschobenen Knoten zur changedNodes Liste hinzu
     changedNodes.push(movedNode);
 
-    treeWithoutNode.push(movedNode);
+    // Füge den Knoten an der spezifischen Position ein
+    treeWithoutNode.splice(index, 0, movedNode);
 
-    // Sortiere den Baum nach dem Verschieben und sammle weitere Änderungen
-    const sortResult = sortAndIndex(treeWithoutNode);
+    // Aktualisiere die Indizes der nachfolgenden Knoten
+    const updatedTree = treeWithoutNode.map((node, idx) => {
+      if (idx >= index) {
+        const updatedNode = { ...node, index: idx };
+        if (node.id !== movedNode.id) {
+          changedNodes.push(updatedNode);
+        }
+        return updatedNode;
+      }
+      return node;
+    });
+
     return {
-      tree: sortResult.sortedTree,
-      changedNodes: [...changedNodes, ...sortResult.changedNodes],
+      tree: updatedTree,
+      changedNodes: changedNodes,
     };
   }
 
-  const resultTree = insertNode(treeWithoutNode);
+  const resultTree = insertNodeAtSpecificIndex(treeWithoutNode);
 
-  // Sortiere den Baum nach dem Verschieben und sammle weitere Änderungen
-  const sortResult = sortAndIndex(resultTree);
   return {
-    tree: sortResult.sortedTree,
-    changedNodes: [...changedNodes, ...sortResult.changedNodes],
+    tree: resultTree,
+    changedNodes: changedNodes,
   };
 }
 
