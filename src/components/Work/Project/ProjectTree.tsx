@@ -17,12 +17,8 @@ import { ProjectTreeItem } from "@/types/work.types";
 
 export default function ProjectTree() {
   const { height } = useViewportSize();
-  const {
-    projectTree,
-    setActiveProjectId,
-    moveProject,
-    moveFolder,
-  } = useWorkStore();
+  const { projectTree, setActiveProjectId, moveProject, moveFolder } =
+    useWorkStore();
 
   const router = useRouter();
 
@@ -65,7 +61,7 @@ export default function ProjectTree() {
       width={250}
       height={height - 100}
       indent={24}
-      rowHeight={27}
+      rowHeight={30}
       paddingTop={10}
       // selection={activeProjectId ?? undefined}
       onSelect={(nodes) => {
@@ -126,28 +122,38 @@ function Node({ node, style, dragHandle }: NodeRendererProps<ProjectTreeItem>) {
           isSelected ? (
             <IconFileFilled
               color="light-dark(var(--mantine-color-green-8), var(--mantine-color-green-6))"
-              size={20}
+              size={22}
             />
           ) : (
             <IconFile
               color="light-dark(var(--mantine-color-gray-6), var(--mantine-color-gray-5))"
-              size={20}
+              size={22}
             />
           )
         ) : node.isOpen ? (
           <IconFolderOpen
             color="light-dark(var(--mantine-color-orange-7), var(--mantine-color-orange-5))"
-            size={20}
+            size={22}
           />
         ) : (
           <IconFolderFilled
             color="light-dark(var(--mantine-color-orange-6), var(--mantine-color-orange-5))"
-            size={20}
+            size={22}
           />
         )}
-        <Text size="sm" style={{ flex: 1 }}>
-          {node.data.name}
-        </Text>
+        <Group>
+          <Text size="md" style={{ flex: 1 }}>
+            {node.data.name}
+          </Text>
+          {!node.isOpen &&
+            !node.isLeaf &&
+            node.children &&
+            node.children.length > 0 && (
+              <Text size="sm" c="dimmed">
+                {node.children.length}
+              </Text>
+            )}
+        </Group>
       </Group>
     </div>
   );
