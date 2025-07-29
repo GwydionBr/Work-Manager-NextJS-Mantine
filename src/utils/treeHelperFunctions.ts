@@ -11,6 +11,71 @@ interface TreeOperationResult {
   changedNodes: ProjectTreeItem[];
 }
 
+// Shared helper function for inserting nodes at specific positions
+function insertNodeAtPosition(
+  nodes: ProjectTreeItem[],
+  nodeToInsert: ProjectTreeItem,
+  targetIndex: number
+): { updatedNodes: ProjectTreeItem[]; changedNodes: ProjectTreeItem[] } {
+  const changedNodes: ProjectTreeItem[] = [];
+
+  // Füge den Knoten an der spezifischen Position ein
+  const newNodes = [...nodes];
+  newNodes.splice(targetIndex, 0, nodeToInsert);
+
+  // Aktualisiere die Indizes der nachfolgenden Knoten
+  const updatedNodes = newNodes.map((node, idx) => {
+    if (idx >= targetIndex) {
+      const updatedNode = { ...node, index: idx };
+      if (node.id !== nodeToInsert.id) {
+        changedNodes.push(updatedNode);
+      }
+      return updatedNode;
+    }
+    return node;
+  });
+
+  return { updatedNodes, changedNodes };
+}
+
+// Shared helper function for inserting nodes into specific folders
+function insertNodeIntoFolder(
+  nodes: ProjectTreeItem[],
+  targetFolderId: string,
+  nodeToInsert: ProjectTreeItem,
+  targetIndex: number
+): { updatedNodes: ProjectTreeItem[]; changedNodes: ProjectTreeItem[] } {
+  const changedNodes: ProjectTreeItem[] = [];
+
+  const updatedNodes = nodes.map((node) => {
+    if (node.id === targetFolderId && node.type === "folder") {
+      // Füge den neuen Knoten an der spezifischen Position ein
+      const children = [...(node.children || [])];
+      const nodeToAdd = {
+        ...nodeToInsert,
+        index: targetIndex,
+      };
+
+      // Füge den neuen Knoten zur changedNodes Liste hinzu
+      changedNodes.push(nodeToAdd);
+
+      // Verwende die shared helper function
+      const { updatedNodes: updatedChildren, changedNodes: childChanges } =
+        insertNodeAtPosition(children, nodeToAdd, targetIndex);
+
+      changedNodes.push(...childChanges);
+
+      return {
+        ...node,
+        children: updatedChildren,
+      };
+    }
+    return node;
+  });
+
+  return { updatedNodes, changedNodes };
+}
+
 export function createTree(
   projects: Tables<"timerProject">[],
   folders: Tables<"timer_project_folder">[]
@@ -175,47 +240,6 @@ export function moveNode(
       );
   }
 
-  function insertNodeAtSpecificIndex(
-    nodes: ProjectTreeItem[]
-  ): ProjectTreeItem[] {
-    return nodes.map((node) => {
-      if (node.id === targetFolderId && node.type === "folder") {
-        // Setze den neuen Index für den verschobenen Knoten
-        const movedNode = {
-          ...nodeToMove!,
-          index: index,
-        };
-
-        // Füge den verschobenen Knoten zur changedNodes Liste hinzu
-        changedNodes.push(movedNode);
-
-        // Füge den Knoten an der spezifischen Position ein
-        const children = [...(node.children || [])];
-        children.splice(index, 0, movedNode);
-
-        // Aktualisiere die Indizes der nachfolgenden Kinder
-        const updatedChildren = children.map((child, idx) => {
-          if (idx >= index) {
-            const updatedChild = { ...child, index: idx };
-            if (child.id !== movedNode.id) {
-              changedNodes.push(updatedChild);
-            }
-            return updatedChild;
-          }
-          return child;
-        });
-
-        return {
-          ...node,
-          children: updatedChildren,
-        };
-      }
-      return node.children
-        ? { ...node, children: insertNodeAtSpecificIndex(node.children) }
-        : node;
-    });
-  }
-
   let treeWithoutNode = removeNode(tree);
 
   if (targetFolderId === null) {
@@ -225,34 +249,34 @@ export function moveNode(
       index: index,
     };
 
-    // Füge den verschobenen Knoten zur changedNodes Liste hinzu
+    // Verwende die shared helper function
+    const { updatedNodes, changedNodes: insertChanges } = insertNodeAtPosition(
+      treeWithoutNode,
+      movedNode,
+      index
+    );
+
     changedNodes.push(movedNode);
-
-    // Füge den Knoten an der spezifischen Position ein
-    treeWithoutNode.splice(index, 0, movedNode);
-
-    // Aktualisiere die Indizes der nachfolgenden Knoten
-    const updatedTree = treeWithoutNode.map((node, idx) => {
-      if (idx >= index) {
-        const updatedNode = { ...node, index: idx };
-        if (node.id !== movedNode.id) {
-          changedNodes.push(updatedNode);
-        }
-        return updatedNode;
-      }
-      return node;
-    });
+    changedNodes.push(...insertChanges);
 
     return {
-      tree: updatedTree,
+      tree: updatedNodes,
       changedNodes: changedNodes,
     };
   }
 
-  const resultTree = insertNodeAtSpecificIndex(treeWithoutNode);
+  // Wenn der Knoten in einen Ordner verschoben wird
+  const { updatedNodes, changedNodes: insertChanges } = insertNodeIntoFolder(
+    treeWithoutNode,
+    targetFolderId,
+    nodeToMove!,
+    index
+  );
+
+  changedNodes.push(...insertChanges);
 
   return {
-    tree: resultTree,
+    tree: updatedNodes,
     changedNodes: changedNodes,
   };
 }
@@ -260,41 +284,46 @@ export function moveNode(
 export function addNode(
   tree: ProjectTreeItem[],
   parentId: string | null, // null = auf Root-Ebene einfügen
-  newNode: ProjectTreeItem
+  newNode: ProjectTreeItem,
+  index: number // Neue Position für den Knoten
 ): TreeOperationResult {
-  let modifiedTree: ProjectTreeItem[];
+  const changedNodes: ProjectTreeItem[] = [];
 
   if (parentId === null) {
-    if (newNode.type === "project") {
-      modifiedTree = [...tree, { ...newNode }];
-    } else {
-      modifiedTree = [...tree, { ...newNode, children: [] }];
-    }
+    // Füge den neuen Knoten an der spezifischen Position ein
+    const nodeToAdd = {
+      ...newNode,
+      index: index,
+    };
+
+    // Verwende die shared helper function
+    const { updatedNodes, changedNodes: insertChanges } = insertNodeAtPosition(
+      tree,
+      nodeToAdd,
+      index
+    );
+
+    changedNodes.push(nodeToAdd);
+    changedNodes.push(...insertChanges);
+
+    return {
+      tree: updatedNodes,
+      changedNodes: changedNodes,
+    };
   } else {
-    modifiedTree = tree.map((node) => {
-      if (node.id === parentId && node.type === "folder") {
-        return {
-          ...node,
-          children: [...(node.children || []), newNode],
-        };
-      }
+    // Verwende die shared helper function für Ordner
+    const { updatedNodes, changedNodes: insertChanges } = insertNodeIntoFolder(
+      tree,
+      parentId,
+      newNode,
+      index
+    );
 
-      if (node.children) {
-        const childResult = addNode(node.children, parentId, newNode);
-        return {
-          ...node,
-          children: childResult.tree,
-        };
-      }
+    changedNodes.push(...insertChanges);
 
-      return node;
-    });
+    return {
+      tree: updatedNodes,
+      changedNodes: changedNodes,
+    };
   }
-
-  // Sort and collect changes after adding
-  const sortResult = sortAndIndex(modifiedTree);
-  return {
-    tree: sortResult.sortedTree,
-    changedNodes: sortResult.changedNodes,
-  };
 }

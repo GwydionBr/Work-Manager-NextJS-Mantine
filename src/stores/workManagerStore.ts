@@ -132,7 +132,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
     },
 
     async updateProject(project) {
-      const { updateStore, timerSessions } = get();
+      const { updateStore, timerSessions, projectTree } = get();
       const updatedProject = await actions.updateProject({ project });
       if (!updatedProject.success) {
         return false;
@@ -146,7 +146,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
       updateStore(updatedProjects, timerSessions);
       if (project.id && project.title) {
         const newProjectTree = renameNode(
-          get().projectTree,
+          projectTree,
           project.id,
           updatedProject.data.title
         );
@@ -203,7 +203,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
         name: newProject.data.title,
         type: "project",
         index: 0,
-      });
+      }, 0);
       set({
         projectTree: tree,
         activeProjectId: newProject.data.id,
@@ -320,18 +320,19 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
     },
 
     async addProjectFolder(folder) {
-      const { handleChangedNodes } = get();
+      const { handleChangedNodes, projectTree } = get();
       const newFolder = await actions.createProjectFolder({ folder: folder });
       if (!newFolder.success) {
         return false;
       }
 
-      const { tree, changedNodes } = addNode(get().projectTree, null, {
+      const { tree, changedNodes } = addNode(projectTree, null, {
         id: newFolder.data.id,
         name: newFolder.data.title,
         type: "folder",
         index: 0,
-      });
+        children: [],
+      }, 0);
       set({
         projectTree: tree,
         folders: [...get().folders, newFolder.data],
