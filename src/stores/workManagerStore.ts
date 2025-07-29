@@ -12,19 +12,7 @@ import {
 } from "@/utils/treeHelperFunctions";
 
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
-
-export interface TimerProject {
-  project: Tables<"timerProject">;
-  sessions: Tables<"timerSession">[];
-}
-
-export interface ProjectTreeItem {
-  id: string;
-  name: string;
-  index: number;
-  type: "project" | "folder";
-  children?: ProjectTreeItem[];
-}
+import { TimerProject, ProjectTreeItem } from "@/types/work.types";
 
 interface WorkStoreState {
   projectTree: ProjectTreeItem[];
