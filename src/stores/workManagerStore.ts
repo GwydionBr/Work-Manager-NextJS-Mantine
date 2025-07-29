@@ -62,6 +62,7 @@ interface WorkStoreActions {
     projects: Tables<"timerProject">[],
     folders: Tables<"timer_project_folder">[]
   ) => void;
+  handleChangedNodes: (changedNodes: ProjectTreeItem[]) => void;
 }
 
 export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
@@ -155,8 +156,13 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
     },
 
     async deleteProject(id) {
-      const { updateStore, timerSessions, activeProjectId, projectTree } =
-        get();
+      const {
+        updateStore,
+        timerSessions,
+        activeProjectId,
+        projectTree,
+        handleChangedNodes,
+      } = get();
       const deleted = await actions.deleteProject({ projectId: id });
       if (!deleted.success) {
         return false;
@@ -165,7 +171,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
       // const nextProjectId = findNextProject(projectTree, id);
       const updatedProjects = get().projects.filter((p) => p.project.id !== id);
       updateStore(updatedProjects, timerSessions);
-      const newProjectTree = deleteNode(projectTree, id);
+      const { tree, changedNodes } = deleteNode(projectTree, id);
       if (activeProjectId === id) {
         const newActiveProject = updatedProjects[0];
         if (newActiveProject) {
@@ -174,12 +180,13 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
           set({ activeProjectId: null });
         }
       }
-      set({ projectTree: newProjectTree });
+      set({ projectTree: tree });
+      handleChangedNodes(changedNodes);
       return true;
     },
 
     async addProject(project) {
-      const { updateStore, timerSessions } = get();
+      const { updateStore, timerSessions, handleChangedNodes } = get();
 
       const newProject = await actions.createProject({ project });
       if (!newProject.success) {
@@ -191,16 +198,17 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
         { project: newProject.data, sessions: [] },
       ];
       updateStore(updatedProjects, timerSessions);
-      const newProjectTree = addNode(get().projectTree, null, {
+      const { tree, changedNodes } = addNode(get().projectTree, null, {
         id: newProject.data.id,
         name: newProject.data.title,
         type: "project",
         index: 0,
       });
       set({
-        projectTree: newProjectTree,
+        projectTree: tree,
         activeProjectId: newProject.data.id,
       });
+      handleChangedNodes(changedNodes);
       return true;
     },
 
@@ -312,21 +320,23 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
     },
 
     async addProjectFolder(folder) {
+      const { handleChangedNodes } = get();
       const newFolder = await actions.createProjectFolder({ folder: folder });
       if (!newFolder.success) {
         return false;
       }
 
-      const newProjectTree = addNode(get().projectTree, null, {
+      const { tree, changedNodes } = addNode(get().projectTree, null, {
         id: newFolder.data.id,
         name: newFolder.data.title,
         type: "folder",
         index: 0,
       });
       set({
-        projectTree: newProjectTree,
+        projectTree: tree,
         folders: [...get().folders, newFolder.data],
       });
+      handleChangedNodes(changedNodes);
       return true;
     },
 
@@ -354,31 +364,35 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
     },
 
     async deleteProjectFolder(id) {
+      const { handleChangedNodes } = get();
       const deleted = await actions.deleteProjectFolder({ folderId: id });
       if (!deleted.success) {
         return false;
       }
 
-      const newProjectTree = deleteNode(get().projectTree, id);
+      const { tree, changedNodes } = deleteNode(get().projectTree, id);
       const updatedFolders = get().folders.filter((f) => f.id !== id);
       set({
-        projectTree: newProjectTree,
+        projectTree: tree,
         folders: updatedFolders,
       });
+      handleChangedNodes(changedNodes);
       return true;
     },
 
     async moveProject(projectId, newFolderId, index) {
+      const { handleChangedNodes } = get();
       const project = get().projects.find((p) => p.project.id === projectId);
       if (!project) return false;
 
-      const newProjectTree = moveNode(
+      const { tree, changedNodes } = moveNode(
         get().projectTree,
         projectId,
         newFolderId,
         index
       );
-      set({ projectTree: newProjectTree });
+      set({ projectTree: tree });
+      handleChangedNodes(changedNodes);
 
       const updatedProject = await actions.updateProject({
         project: {
@@ -393,13 +407,15 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
     },
 
     async moveFolder(folderId, newParentFolderId, index) {
-      const newProjectTree = moveNode(
+      const { handleChangedNodes } = get();
+      const { tree, changedNodes } = moveNode(
         get().projectTree,
         folderId,
         newParentFolderId,
         index
       );
-      set({ projectTree: newProjectTree });
+      set({ projectTree: tree });
+      handleChangedNodes(changedNodes);
 
       const updatedFolder = await actions.updateProjectFolder({
         folder: {
@@ -414,8 +430,13 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>(
     },
 
     createProjectTree(projects, folders) {
-      const { sortedTree, changedNodes } = createTree(projects, folders);
-      set({ projectTree: sortedTree });
+      const { handleChangedNodes } = get();
+      const { tree, changedNodes } = createTree(projects, folders);
+      set({ projectTree: tree });
+      handleChangedNodes(changedNodes);
+    },
+
+    handleChangedNodes(changedNodes) {
       const updatedFolders: TablesUpdate<"timer_project_folder">[] =
         changedNodes
           .filter((node) => node.type === "folder")

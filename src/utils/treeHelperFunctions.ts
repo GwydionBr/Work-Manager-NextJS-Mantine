@@ -6,10 +6,15 @@ interface SortResult {
   changedNodes: ProjectTreeItem[];
 }
 
+interface TreeOperationResult {
+  tree: ProjectTreeItem[];
+  changedNodes: ProjectTreeItem[];
+}
+
 export function createTree(
   projects: Tables<"timerProject">[],
   folders: Tables<"timer_project_folder">[]
-): SortResult {
+): TreeOperationResult {
   const folderMap = new Map();
 
   // 1. Füge alle Ordner als leere Knoten ein
@@ -66,7 +71,10 @@ export function createTree(
   });
 
   const result = sortAndIndex(root);
-  return sortAndIndex(root);
+  return {
+    tree: result.sortedTree,
+    changedNodes: result.changedNodes,
+  };
 }
 
 function sortAndIndex(nodes: ProjectTreeItem[]): SortResult {
@@ -111,14 +119,21 @@ function sortAndIndex(nodes: ProjectTreeItem[]): SortResult {
 export function deleteNode(
   tree: ProjectTreeItem[],
   id: string
-): ProjectTreeItem[] {
-  return tree
+): TreeOperationResult {
+  const filteredTree = tree
     .filter((node) => node.id !== id)
     .map((node) =>
       node.children
-        ? { ...node, children: deleteNode(node.children, id) }
+        ? { ...node, children: deleteNode(node.children, id).tree }
         : node
     );
+
+  // Sort and collect changes after deletion
+  const sortResult = sortAndIndex(filteredTree);
+  return {
+    tree: sortResult.sortedTree,
+    changedNodes: sortResult.changedNodes,
+  };
 }
 
 export function renameNode(
@@ -142,8 +157,9 @@ export function moveNode(
   nodeId: string,
   targetFolderId: string | null,
   index: number
-): ProjectTreeItem[] {
+): TreeOperationResult {
   let nodeToMove: ProjectTreeItem | null = null;
+  const changedNodes: ProjectTreeItem[] = [];
 
   function removeNode(nodes: ProjectTreeItem[]): ProjectTreeItem[] {
     return nodes
@@ -162,9 +178,18 @@ export function moveNode(
   function insertNode(nodes: ProjectTreeItem[]): ProjectTreeItem[] {
     return nodes.map((node) => {
       if (node.id === targetFolderId && node.type === "folder") {
+        // Setze den neuen Index für den verschobenen Knoten
+        const movedNode = {
+          ...nodeToMove!,
+          index: index,
+        };
+
+        // Füge den verschobenen Knoten zur changedNodes Liste hinzu
+        changedNodes.push(movedNode);
+
         return {
           ...node,
-          children: [...(node.children || []), nodeToMove!],
+          children: [...(node.children || []), movedNode],
         };
       }
       return node.children
@@ -174,42 +199,75 @@ export function moveNode(
   }
 
   let treeWithoutNode = removeNode(tree);
+
   if (targetFolderId === null) {
-    treeWithoutNode.push(nodeToMove!);
-    return treeWithoutNode;
+    // Wenn der Knoten auf Root-Ebene verschoben wird
+    const movedNode = {
+      ...nodeToMove!,
+      index: index,
+    };
+
+    // Füge den verschobenen Knoten zur changedNodes Liste hinzu
+    changedNodes.push(movedNode);
+
+    treeWithoutNode.push(movedNode);
+
+    // Sortiere den Baum nach dem Verschieben und sammle weitere Änderungen
+    const sortResult = sortAndIndex(treeWithoutNode);
+    return {
+      tree: sortResult.sortedTree,
+      changedNodes: [...changedNodes, ...sortResult.changedNodes],
+    };
   }
 
-  return insertNode(treeWithoutNode);
+  const resultTree = insertNode(treeWithoutNode);
+
+  // Sortiere den Baum nach dem Verschieben und sammle weitere Änderungen
+  const sortResult = sortAndIndex(resultTree);
+  return {
+    tree: sortResult.sortedTree,
+    changedNodes: [...changedNodes, ...sortResult.changedNodes],
+  };
 }
 
 export function addNode(
   tree: ProjectTreeItem[],
   parentId: string | null, // null = auf Root-Ebene einfügen
   newNode: ProjectTreeItem
-): ProjectTreeItem[] {
+): TreeOperationResult {
+  let modifiedTree: ProjectTreeItem[];
+
   if (parentId === null) {
     if (newNode.type === "project") {
-      return [...tree, { ...newNode }];
+      modifiedTree = [...tree, { ...newNode }];
     } else {
-      return [...tree, { ...newNode, children: [] }];
+      modifiedTree = [...tree, { ...newNode, children: [] }];
     }
+  } else {
+    modifiedTree = tree.map((node) => {
+      if (node.id === parentId && node.type === "folder") {
+        return {
+          ...node,
+          children: [...(node.children || []), newNode],
+        };
+      }
+
+      if (node.children) {
+        const childResult = addNode(node.children, parentId, newNode);
+        return {
+          ...node,
+          children: childResult.tree,
+        };
+      }
+
+      return node;
+    });
   }
 
-  return tree.map((node) => {
-    if (node.id === parentId && node.type === "folder") {
-      return {
-        ...node,
-        children: [...(node.children || []), newNode],
-      };
-    }
-
-    if (node.children) {
-      return {
-        ...node,
-        children: addNode(node.children, parentId, newNode),
-      };
-    }
-
-    return node;
-  });
+  // Sort and collect changes after adding
+  const sortResult = sortAndIndex(modifiedTree);
+  return {
+    tree: sortResult.sortedTree,
+    changedNodes: sortResult.changedNodes,
+  };
 }
