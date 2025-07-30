@@ -59,7 +59,7 @@ export default function ProjectTree() {
       data={projectTree}
       openByDefault={false}
       width={250}
-      height={height - 100}
+      height={height - 145}
       indent={24}
       rowHeight={30}
       paddingTop={10}
