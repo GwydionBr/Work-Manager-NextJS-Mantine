@@ -36,6 +36,7 @@ export default function TimeTrackerComponent({
     cancelTimer,
     configureProject,
     setRoundingAmount,
+    restoreTimer,
   } = useTimeTracker();
 
   const { roundingAmount, roundingMode, customRoundingAmount } =
@@ -60,6 +61,11 @@ export default function TimeTrackerComponent({
       );
     }
   }, [activeProject]);
+
+  useEffect(() => {
+    restoreTimer();
+    console.log("restoreTimer");
+  }, []);
 
   useEffect(() => {
     setRoundingAmount(roundingAmount, roundingMode, customRoundingAmount);

@@ -40,6 +40,7 @@ interface TimeTrackerState {
   roundingInterval: number;
   roundingMode: RoundingDirection;
 
+  restoreTimer: () => void;
   startTimer: () => void;
   pauseTimer: () => void;
   resumeTimer: () => void;
@@ -64,6 +65,52 @@ interface TimeTrackerState {
 
 let intervalId: NodeJS.Timeout | null = null;
 
+function startLoop(
+  get: () => TimeTrackerState,
+  set: (state: Partial<TimeTrackerState>) => void
+) {
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
+
+  const updateLoop = () => {
+    const state = get();
+    if (state.state === TimerState.Running) {
+      const newActiveSeconds =
+        Math.floor((Date.now() - (state.tempStartTime ?? 0)) / 1000) +
+        state.storedActiveSeconds;
+      const newActiveTime = secondsToTimerFormat(newActiveSeconds);
+      set({
+        activeSeconds: newActiveSeconds,
+        activeTime: newActiveTime,
+        moneyEarned: (
+          (getRoundedSeconds(
+            newActiveSeconds,
+            state.roundingInterval,
+            state.roundingMode
+          ) /
+            3600) *
+          state.salary
+        ).toFixed(2),
+      });
+      document.title = `${newActiveTime} - ${state.projectTitle} | Work Manager`;
+    } else if (state.state === TimerState.Paused) {
+      const newPausedSeconds =
+        Math.floor((Date.now() - (state.tempStartTime ?? 0)) / 1000) +
+        state.storedPausedSeconds;
+      const newPausedTime = secondsToTimerFormat(newPausedSeconds);
+      set({
+        pausedSeconds: newPausedSeconds,
+        pausedTime: newPausedTime,
+      });
+      document.title = `⏸️ ${state.activeTime} - ${state.projectTitle} | Work Manager`;
+    }
+  };
+
+  intervalId = setInterval(updateLoop, 1000);
+  updateLoop();
+}
+
 export const useTimeTracker = create(
   persist<TimeTrackerState>(
     (set, get) => ({
@@ -85,6 +132,10 @@ export const useTimeTracker = create(
       storedPausedSeconds: 0,
       roundingInterval: 60,
       roundingMode: "up",
+
+      restoreTimer: () => {
+        startLoop(get, set);
+      },
 
       configureProject: (
         projectId,
@@ -137,40 +188,7 @@ export const useTimeTracker = create(
           tempStartTime: Date.now(),
         });
 
-        // Running-Timer-Loop
-        const updateLoop = () => {
-          if (get().state !== TimerState.Running) {
-            return;
-          }
-
-          const newActiveSeconds =
-            Math.floor((Date.now() - (get().tempStartTime ?? 0)) / 1000) +
-            get().storedActiveSeconds;
-          const newActiveTime = secondsToTimerFormat(newActiveSeconds);
-          set({
-            activeSeconds: newActiveSeconds,
-            activeTime: newActiveTime,
-            moneyEarned: (
-              (getRoundedSeconds(
-                newActiveSeconds,
-                get().roundingInterval,
-                get().roundingMode
-              ) /
-                3600) *
-              get().salary
-            ).toFixed(2),
-          });
-          document.title = `${newActiveTime} - ${get().projectTitle} | Work Manager`;
-        };
-
-        // Clear any existing interval
-        if (intervalId) {
-          clearInterval(intervalId);
-        }
-
-        // Start new interval
-        intervalId = setInterval(updateLoop, 1000);
-        updateLoop(); // Run immediately
+        startLoop(get, set);
       },
 
       pauseTimer: () => {
@@ -184,31 +202,7 @@ export const useTimeTracker = create(
           tempStartTime: Date.now(),
         });
 
-        // Paused-Timer-Loop
-        const updateLoop = () => {
-          if (get().state !== TimerState.Paused) {
-            return;
-          }
-
-          const newPausedSeconds =
-            Math.floor((Date.now() - (get().tempStartTime ?? 0)) / 1000) +
-            get().storedPausedSeconds;
-          const newPausedTime = secondsToTimerFormat(newPausedSeconds);
-          set({
-            pausedSeconds: newPausedSeconds,
-            pausedTime: newPausedTime,
-          });
-          document.title = `⏸️ ${get().activeTime} - ${get().projectTitle} | Work Manager`;
-        };
-
-        // Clear any existing interval
-        if (intervalId) {
-          clearInterval(intervalId);
-        }
-
-        // Start new interval
-        intervalId = setInterval(updateLoop, 1000);
-        updateLoop(); // Run immediately
+        startLoop(get, set);
       },
 
       resumeTimer: () => {
@@ -222,32 +216,7 @@ export const useTimeTracker = create(
           tempStartTime: Date.now(),
         });
 
-        // Running-Timer-Loop
-        const updateLoop = () => {
-          if (get().state !== TimerState.Running) {
-            return;
-          }
-
-          const newActiveSeconds =
-            Math.floor((Date.now() - (get().tempStartTime ?? 0)) / 1000) +
-            get().storedActiveSeconds;
-          const newActiveTime = secondsToTimerFormat(newActiveSeconds);
-          set({
-            activeSeconds: newActiveSeconds,
-            activeTime: newActiveTime,
-            moneyEarned: ((newActiveSeconds / 3600) * get().salary).toFixed(2),
-          });
-          document.title = `${newActiveTime} - ${get().projectTitle} | Work Manager`;
-        };
-
-        // Clear any existing interval
-        if (intervalId) {
-          clearInterval(intervalId);
-        }
-
-        // Start new interval
-        intervalId = setInterval(updateLoop, 1000);
-        updateLoop(); // Run immediately
+        startLoop(get, set);
       },
 
       stopTimer: () => {
