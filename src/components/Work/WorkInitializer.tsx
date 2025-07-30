@@ -11,18 +11,23 @@ import {
   Title,
   Container,
   ThemeIcon,
-  Anchor,
   Box,
+  Anchor,
 } from "@mantine/core";
 import { IconBriefcase } from "@tabler/icons-react";
 import ProjectForm from "./Project/ProjectForm";
 import { Currency } from "@/types/settings.types";
-import Link from "next/link";
+import { SettingsTab } from "../Settings/SettingsModal";
 
 export default function WorkInitializer() {
   const [submitting, setSubmitting] = useState(false);
   const { addProject } = useWorkStore();
-  const { defaultSalaryCurrency, defaultSalaryAmount } = useSettingsStore();
+  const {
+    defaultSalaryCurrency,
+    defaultSalaryAmount,
+    setIsModalOpen,
+    setSelectedTab,
+  } = useSettingsStore();
 
   async function handleSubmit(values: {
     title: string;
@@ -73,13 +78,16 @@ export default function WorkInitializer() {
               Want to streamline your workflow? Configure default settings in
               the{" "}
               <Anchor
-                component={Link}
-                href="/settings"
+                component="button"
+                onClick={() => {
+                  setIsModalOpen(true);
+                  setSelectedTab(SettingsTab.WORK);
+                }}
                 c="blue"
                 fw={500}
                 inline
               >
-                settings menu
+                work settings
               </Anchor>{" "}
               for faster project creation.
             </Text>

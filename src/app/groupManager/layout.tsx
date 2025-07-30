@@ -4,7 +4,7 @@ import { useGroupStore } from "@/stores/groupStore";
 
 import { Box } from "@mantine/core";
 import GroupManagerNavbar from "@/components/Navbar/GroupManagerNavbar";
-import GroupInitializer from "@/components/GroupManager/Group/GroupInitializer";
+import GroupInitializer from "@/components/GroupManager/GroupInitializer";
 
 export default function GroupManagerLayout({
   children,

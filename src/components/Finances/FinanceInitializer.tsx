@@ -1,5 +1,7 @@
 "use client";
 
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import {
   Stack,
   Text,
@@ -7,14 +9,16 @@ import {
   Title,
   Container,
   ThemeIcon,
-  Anchor,
   Box,
+  Button,
+  Anchor,
 } from "@mantine/core";
 import { IconCash } from "@tabler/icons-react";
 import FinanceForm from "@/components/Finances/Form/FinanceForm";
-import Link from "next/link";
+import { SettingsTab } from "../Settings/SettingsModal";
 
 export default function FinanceInitializer() {
+  const { setIsModalOpen, setSelectedTab } = useSettingsStore();
   return (
     <Container size="md" py="xl">
       <Paper shadow="md" p="xl" radius="lg" withBorder>
@@ -45,13 +49,16 @@ export default function FinanceInitializer() {
             <Text size="sm" ta="center" c="dimmed">
               Want to customize your financial settings? Visit the{" "}
               <Anchor
-                component={Link}
-                href="/settings"
+                component="button"
+                onClick={() => {
+                  setIsModalOpen(true);
+                  setSelectedTab(SettingsTab.FINANCE);
+                }}
                 c="blue"
                 fw={500}
                 inline
               >
-                settings menu
+                finance settings
               </Anchor>{" "}
               to configure default currencies and other preferences.
             </Text>

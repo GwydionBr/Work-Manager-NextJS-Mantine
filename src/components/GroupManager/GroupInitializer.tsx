@@ -1,5 +1,7 @@
 "use client";
 
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import {
   Stack,
   Text,
@@ -11,10 +13,11 @@ import {
   Box,
 } from "@mantine/core";
 import { IconUsersGroup } from "@tabler/icons-react";
-import GroupForm from "./GroupForm";
-import Link from "next/link";
+import GroupForm from "./Group/GroupForm";
+import { SettingsTab } from "../Settings/SettingsModal";
 
 export default function WorkInitializer() {
+  const { setIsModalOpen, setSelectedTab } = useSettingsStore();
   return (
     <Container size="md" py="xl">
       <Paper shadow="md" p="xl" radius="lg" withBorder>
@@ -45,8 +48,17 @@ export default function WorkInitializer() {
             </Text>
             <Text size="sm" ta="center" c="dimmed">
               Need to manage your team members? Visit the{" "}
-              <Anchor component={Link} href="/account" c="blue" fw={500} inline>
-                account settings
+              <Anchor
+                component="button"
+                onClick={() => {
+                  setIsModalOpen(true);
+                  setSelectedTab(SettingsTab.GROUP);
+                }}
+                c="blue"
+                fw={500}
+                inline
+              >
+                group settings
               </Anchor>{" "}
               to add or remove team members.
             </Text>
