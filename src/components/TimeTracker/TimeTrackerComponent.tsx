@@ -15,6 +15,10 @@ interface TimeTrackerComponentProps {
   setIsTimeTrackerMinimized: (value: boolean) => void;
 }
 
+// BroadcastChannel for timer synchronization across tabs
+const timerChannel = new BroadcastChannel("timer-sync");
+const tabId = crypto.randomUUID(); // eindeutige ID für jeden Tab
+
 export default function TimeTrackerComponent({
   isBig,
   isTimeTrackerMinimized,
@@ -50,6 +54,24 @@ export default function TimeTrackerComponent({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      const { type, payload, sender } = event.data;
+      if (sender === tabId) return; // Ignore messages from the same tab
+
+      switch (type) {
+        case "timer-stopped":
+          cancelTimer();
+          break;
+      }
+    };
+
+    timerChannel.addEventListener("message", handleMessage);
+    return () => {
+      timerChannel.removeEventListener("message", handleMessage);
+    };
+  }, []);
+
+  useEffect(() => {
     if (activeProject) {
       configureProject(
         activeProject.project.id,
@@ -64,7 +86,6 @@ export default function TimeTrackerComponent({
 
   useEffect(() => {
     restoreTimer();
-    console.log("restoreTimer");
   }, []);
 
   useEffect(() => {
@@ -84,6 +105,11 @@ export default function TimeTrackerComponent({
     }
   };
 
+  function handleCancelTimer() {
+    cancelTimer();
+    timerChannel.postMessage({ type: "timer-stopped", sender: tabId });
+  }
+
   async function submitTimer() {
     if (isSubmitting) return;
     setIsSubmitting(true);
@@ -92,6 +118,7 @@ export default function TimeTrackerComponent({
 
     const result = await addTimerSession(newSession);
     if (result) {
+      timerChannel.postMessage({ type: "timer-stopped", sender: tabId });
       stopTimer();
     } else {
       setErrorMessage("Error saving session");
@@ -128,7 +155,7 @@ export default function TimeTrackerComponent({
               pauseTimer={pauseTimer}
               resumeTimer={resumeTimer}
               submitTimer={submitTimer}
-              cancelTimer={cancelTimer}
+              cancelTimer={handleCancelTimer}
               getStatusColor={getStatusColor}
             />
           </div>
@@ -153,7 +180,7 @@ export default function TimeTrackerComponent({
               pauseTimer={pauseTimer}
               resumeTimer={resumeTimer}
               submitTimer={submitTimer}
-              cancelTimer={cancelTimer}
+              cancelTimer={handleCancelTimer}
               getStatusColor={getStatusColor}
             />
           </div>

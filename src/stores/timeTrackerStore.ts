@@ -47,7 +47,6 @@ interface TimeTrackerState {
   stopTimer: () => void;
   cancelTimer: () => void;
   getCurrentSession: () => TablesInsert<"timerSession">;
-  resetTimer: () => void;
   configureProject: (
     projectId: string,
     projectTitle: string,
@@ -113,202 +112,185 @@ function startLoop(
 
 export const useTimeTracker = create(
   persist<TimeTrackerState>(
-    (set, get) => ({
-      moneyEarned: "0.00",
-      activeTime: "00:00",
-      pausedTime: "00:00",
-      state: TimerState.Stopped,
-      projectTitle: "",
-      currency: "USD",
-      salary: 0,
-      hourlyPayment: false,
-      projectId: "",
-      userId: "",
-      startTime: null,
-      tempStartTime: null,
-      activeSeconds: 0,
-      pausedSeconds: 0,
-      storedActiveSeconds: 0,
-      storedPausedSeconds: 0,
-      roundingInterval: 60,
-      roundingMode: "up",
-
-      restoreTimer: () => {
-        startLoop(get, set);
-      },
-
-      configureProject: (
-        projectId,
-        projectTitle,
-        currency,
-        salary,
-        hourlyPayment,
-        userId
-      ) => {
-        if (get().state !== TimerState.Stopped) {
-          return;
+    (set, get) => {
+      // Hilfsfunktion zum Stoppen des Intervalls und Rücksetzen des Timer-Zustands
+      const clearTimerState = () => {
+        if (intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
         }
 
         set({
+          state: TimerState.Stopped,
+          moneyEarned: "0.00",
+          activeTime: "00:00",
+          pausedTime: "00:00",
+          activeSeconds: 0,
+          pausedSeconds: 0,
+          startTime: null,
+          tempStartTime: null,
+          storedActiveSeconds: 0,
+          storedPausedSeconds: 0,
+        });
+        document.title = "Work Manager";
+      };
+      return {
+        moneyEarned: "0.00",
+        activeTime: "00:00",
+        pausedTime: "00:00",
+        state: TimerState.Stopped,
+        projectTitle: "",
+        currency: "USD",
+        salary: 0,
+        hourlyPayment: false,
+        projectId: "",
+        userId: "",
+        startTime: null,
+        tempStartTime: null,
+        activeSeconds: 0,
+        pausedSeconds: 0,
+        storedActiveSeconds: 0,
+        storedPausedSeconds: 0,
+        roundingInterval: 60,
+        roundingMode: "up",
+
+        restoreTimer: () => {
+          startLoop(get, set);
+        },
+
+        configureProject: (
           projectId,
           projectTitle,
           currency,
           salary,
           hourlyPayment,
-          userId,
-          moneyEarned: "0.00",
-          activeTime: "00:00",
-          pausedTime: "00:00",
-          state: TimerState.Stopped,
-        });
-      },
+          userId
+        ) => {
+          if (get().state !== TimerState.Stopped) {
+            return;
+          }
 
-      setRoundingAmount: (
-        roundingAmount: RoundingAmount,
-        roundingMode: RoundingDirection,
-        customRoundingAmount: number
-      ) => {
-        set({
-          roundingInterval: getRoundingInterval(
-            roundingAmount,
-            customRoundingAmount
-          ),
-          roundingMode,
-        });
-      },
+          set({
+            projectId,
+            projectTitle,
+            currency,
+            salary,
+            hourlyPayment,
+            userId,
+            moneyEarned: "0.00",
+            activeTime: "00:00",
+            pausedTime: "00:00",
+            state: TimerState.Stopped,
+          });
+        },
 
-      startTimer: () => {
-        if (get().state !== TimerState.Stopped || get().projectTitle === "") {
-          return;
-        }
+        setRoundingAmount: (
+          roundingAmount: RoundingAmount,
+          roundingMode: RoundingDirection,
+          customRoundingAmount: number
+        ) => {
+          set({
+            roundingInterval: getRoundingInterval(
+              roundingAmount,
+              customRoundingAmount
+            ),
+            roundingMode,
+          });
+        },
 
-        set({
-          state: TimerState.Running,
-          startTime: Date.now(),
-          tempStartTime: Date.now(),
-        });
+        startTimer: () => {
+          if (get().state !== TimerState.Stopped || get().projectTitle === "") {
+            return;
+          }
 
-        startLoop(get, set);
-      },
+          set({
+            state: TimerState.Running,
+            startTime: Date.now(),
+            tempStartTime: Date.now(),
+          });
 
-      pauseTimer: () => {
-        if (get().state !== TimerState.Running) {
-          return;
-        }
+          startLoop(get, set);
+        },
 
-        set({
-          state: TimerState.Paused,
-          storedActiveSeconds: get().activeSeconds,
-          tempStartTime: Date.now(),
-        });
+        pauseTimer: () => {
+          if (get().state !== TimerState.Running) {
+            return;
+          }
 
-        startLoop(get, set);
-      },
+          set({
+            state: TimerState.Paused,
+            storedActiveSeconds: get().activeSeconds,
+            tempStartTime: Date.now(),
+          });
 
-      resumeTimer: () => {
-        if (get().state !== TimerState.Paused) {
-          return;
-        }
+          startLoop(get, set);
+        },
 
-        set({
-          state: TimerState.Running,
-          storedPausedSeconds: get().pausedSeconds,
-          tempStartTime: Date.now(),
-        });
+        resumeTimer: () => {
+          if (get().state !== TimerState.Paused) {
+            return;
+          }
 
-        startLoop(get, set);
-      },
+          set({
+            state: TimerState.Running,
+            storedPausedSeconds: get().pausedSeconds,
+            tempStartTime: Date.now(),
+          });
 
-      stopTimer: () => {
-        if (get().state === TimerState.Stopped) {
-          return;
-        }
-        if (intervalId) {
-          clearInterval(intervalId);
-          intervalId = null;
-        }
+          startLoop(get, set);
+        },
 
-        set({
-          state: TimerState.Stopped,
-          moneyEarned: "0.00",
-          activeTime: "00:00",
-          pausedTime: "00:00",
-          activeSeconds: 0,
-          pausedSeconds: 0,
-          startTime: null,
-          tempStartTime: null,
-          storedActiveSeconds: 0,
-          storedPausedSeconds: 0,
-        });
-        document.title = "Work Manager";
-      },
+        stopTimer: () => {
+          if (get().state === TimerState.Stopped) return;
+          clearTimerState();
+        },
 
-      cancelTimer: () => {
-        if (get().state === TimerState.Stopped) {
-          return;
-        }
-        if (intervalId) {
-          clearInterval(intervalId);
-          intervalId = null;
-        }
+        cancelTimer: () => {
+          if (get().state === TimerState.Stopped) return;
+          clearTimerState();
+        },
 
-        set({
-          state: TimerState.Stopped,
-          moneyEarned: "0.00",
-          activeTime: "00:00",
-          pausedTime: "00:00",
-          activeSeconds: 0,
-          pausedSeconds: 0,
-          startTime: null,
-          tempStartTime: null,
-          storedActiveSeconds: 0,
-          storedPausedSeconds: 0,
-        });
-        document.title = "Work Manager";
-      },
+        getCurrentSession: () => {
+          const {
+            userId,
+            projectId,
+            startTime,
+            hourlyPayment,
+            activeSeconds,
+            pausedSeconds,
+            salary,
+            currency,
+            roundingInterval,
+            roundingMode,
+          } = get();
 
-      getCurrentSession: () => {
-        const {
-          userId,
-          projectId,
-          startTime,
-          hourlyPayment,
-          activeSeconds,
-          pausedSeconds,
-          salary,
-          currency,
-          roundingInterval,
-          roundingMode,
-        } = get();
+          const roundedActiveSeconds = getRoundedSeconds(
+            activeSeconds,
+            roundingInterval,
+            roundingMode
+          );
 
-        const roundedActiveSeconds = getRoundedSeconds(
-          activeSeconds,
-          roundingInterval,
-          roundingMode
-        );
+          const newTimerSession: TablesInsert<"timerSession"> = {
+            user_id: userId,
+            project_id: projectId,
+            start_time: new Date(startTime ?? 0).toISOString(),
+            true_end_time: new Date().toISOString(),
+            end_time: startTime
+              ? new Date(
+                  startTime + (roundedActiveSeconds + pausedSeconds) * 1000
+                ).toISOString()
+              : new Date().toISOString(),
+            hourly_payment: hourlyPayment,
+            active_seconds: roundedActiveSeconds,
+            paused_seconds: pausedSeconds,
+            salary: salary,
+            currency: currency,
+          };
 
-        const newTimerSession: TablesInsert<"timerSession"> = {
-          user_id: userId,
-          project_id: projectId,
-          start_time: new Date(startTime ?? 0).toISOString(),
-          true_end_time: new Date().toISOString(),
-          end_time: startTime
-            ? new Date(
-                startTime + (roundedActiveSeconds + pausedSeconds) * 1000
-              ).toISOString()
-            : new Date().toISOString(),
-          hourly_payment: hourlyPayment,
-          active_seconds: roundedActiveSeconds,
-          paused_seconds: pausedSeconds,
-          salary: salary,
-          currency: currency,
-        };
-
-        return newTimerSession;
-      },
-
-      resetTimer: () => {},
-    }),
+          return newTimerSession;
+        },
+      };
+    },
 
     { name: "time-tracker-storage" }
   )
