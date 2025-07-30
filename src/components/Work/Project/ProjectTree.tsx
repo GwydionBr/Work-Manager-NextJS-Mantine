@@ -18,8 +18,13 @@ import { ProjectTreeItem } from "@/types/work.types";
 
 export default function ProjectTree() {
   const { height } = useViewportSize();
-  const { projectTree, setActiveProjectId, moveProject, moveFolder } =
-    useWorkStore();
+  const {
+    projectTree,
+    setActiveProjectId,
+    moveProject,
+    moveFolder,
+    activeProjectId,
+  } = useWorkStore();
 
   const router = useRouter();
 
@@ -64,7 +69,7 @@ export default function ProjectTree() {
       indent={24}
       rowHeight={30}
       paddingTop={10}
-      // selection={activeProjectId ?? undefined}
+      selection={activeProjectId ?? undefined}
       onSelect={(nodes) => {
         if (nodes.length > 0) {
           const node = nodes[0];
@@ -140,18 +145,16 @@ function Node({ node, style, dragHandle }: NodeRendererProps<ProjectTreeItem>) {
             color="light-dark(var(--mantine-color-orange-7), var(--mantine-color-orange-5))"
             size={22}
           />
+        ) : node.children && node.children.length === 0 ? (
+          <IconFolder
+            color="light-dark(var(--mantine-color-orange-6), var(--mantine-color-orange-5))"
+            size={22}
+          />
         ) : (
-          node.children && node.children.length === 0 ? (
-            <IconFolder
-              color="light-dark(var(--mantine-color-orange-6), var(--mantine-color-orange-5))"
-              size={22}
-            />
-          ) : (
           <IconFolderFilled
             color="light-dark(var(--mantine-color-orange-6), var(--mantine-color-orange-5))"
             size={22}
           />
-          )
         )}
         <Group>
           <Text size="md" style={{ flex: 1 }}>
