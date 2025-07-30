@@ -52,12 +52,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
     const fetchData = async () => {
       // Prioritized fetching based on current route
-      if (pathname.startsWith("/settings") && shouldFetch(lastSettingsFetch)) {
+      if (shouldFetch(lastSettingsFetch)) {
         await fetchSettings();
-      } else if (
-        pathname.startsWith("/finances") &&
-        shouldFetch(lastFinanceFetch)
-      ) {
+      }
+      if (pathname.startsWith("/finances") && shouldFetch(lastFinanceFetch)) {
         await fetchFinanceData();
       } else if (pathname.startsWith("/work") && shouldFetch(lastWorkFetch)) {
         await fetchWorkData();
@@ -73,7 +71,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       // Background fetching for other data
       const backgroundFetch = () => {
         if (shouldFetch(lastUserFetch)) fetchUserData();
-        if (shouldFetch(lastSettingsFetch)) fetchSettings();
         if (shouldFetch(lastFinanceFetch)) fetchFinanceData();
         if (shouldFetch(lastWorkFetch)) fetchWorkData();
         if (shouldFetch(lastGroupFetch)) fetchGroupData();
