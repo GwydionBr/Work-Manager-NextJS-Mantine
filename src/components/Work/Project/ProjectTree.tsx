@@ -58,7 +58,7 @@ export default function ProjectTree() {
     <Tree<ProjectTreeItem>
       data={projectTree}
       openByDefault={false}
-      width={250}
+      width={400}
       height={height - 145}
       indent={24}
       rowHeight={30}
@@ -85,6 +85,7 @@ export default function ProjectTree() {
 function Node({ node, style, dragHandle }: NodeRendererProps<ProjectTreeItem>) {
   const { activeProjectId } = useWorkStore();
   const isSelected = activeProjectId === node.id;
+  const willReceiveDrop = node.willReceiveDrop;
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -105,12 +106,15 @@ function Node({ node, style, dragHandle }: NodeRendererProps<ProjectTreeItem>) {
         display: "flex",
         alignItems: "center",
         paddingLeft: `${node.level * 16}px`,
-        backgroundColor: isSelected
-          ? "light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))"
-          : "transparent",
+        backgroundColor:
+          isSelected || willReceiveDrop
+            ? "light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))"
+            : "transparent",
         borderRadius: "var(--mantine-radius-md)",
         cursor: "pointer",
         userSelect: "none",
+        marginLeft: 5,
+        marginRight: 5,
         paddingTop: 5,
         paddingBottom: 5,
       }}

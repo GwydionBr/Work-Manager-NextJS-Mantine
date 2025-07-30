@@ -98,9 +98,11 @@ export default function WorkPage() {
         secondaryButton={<NewSessionButton />}
         rightButton={
           <Group>
-            <AnalysisActionIcon
-              onClick={() => setAnalysisOpened((state) => !state)}
-            />
+            {activeProject.sessions.length > 0 && (
+              <AnalysisActionIcon
+                onClick={() => setAnalysisOpened((state) => !state)}
+              />
+            )}
             <EditProjectButton />
           </Group>
         }
