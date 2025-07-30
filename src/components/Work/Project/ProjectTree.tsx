@@ -10,6 +10,7 @@ import {
   IconFileFilled,
   IconFolderFilled,
   IconFolderOpen,
+  IconFolder,
 } from "@tabler/icons-react";
 import { Group, Text } from "@mantine/core";
 
@@ -140,10 +141,17 @@ function Node({ node, style, dragHandle }: NodeRendererProps<ProjectTreeItem>) {
             size={22}
           />
         ) : (
+          node.children && node.children.length === 0 ? (
+            <IconFolder
+              color="light-dark(var(--mantine-color-orange-6), var(--mantine-color-orange-5))"
+              size={22}
+            />
+          ) : (
           <IconFolderFilled
             color="light-dark(var(--mantine-color-orange-6), var(--mantine-color-orange-5))"
             size={22}
           />
+          )
         )}
         <Group>
           <Text size="md" style={{ flex: 1 }}>
