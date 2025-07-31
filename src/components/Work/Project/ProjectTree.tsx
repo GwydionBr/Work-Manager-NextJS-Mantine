@@ -34,7 +34,6 @@ export default function ProjectTree() {
     parentId: string | null,
     index: number
   ) => {
-    console.log(index, parentId, dragIds);
     for (const id of dragIds) {
       // Prüfe, ob es ein Projekt oder Ordner ist
       const node = findNodeById(projectTree, id);
