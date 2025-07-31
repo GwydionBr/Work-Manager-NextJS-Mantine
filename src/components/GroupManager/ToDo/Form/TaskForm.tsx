@@ -80,11 +80,13 @@ export default function TaskForm({ onClose }: TaskFormProps) {
         <RecurringTaskForm
           handleSubmit={handleRecurringTaskSubmit}
           isLoading={isLoading}
+          onClose={onClose}
         />
       ) : (
         <SingleTaskForm
           handleSubmit={handleSingleTaskSubmit}
           isLoading={isLoading}
+          onClose={onClose}
         />
       )}
       {error && (

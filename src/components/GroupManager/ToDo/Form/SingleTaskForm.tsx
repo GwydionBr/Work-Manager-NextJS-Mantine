@@ -6,9 +6,11 @@ import { useGroupStore } from "@/stores/groupStore";
 import { useUserStore } from "@/stores/userStore";
 
 import { TextInput, Select, Stack, Button } from "@mantine/core";
+import CreateButton from "@/components/UI/Buttons/CreateButton";
+import CancelButton from "@/components/UI/Buttons/CancelButton";
+import { DatePickerInput } from "@mantine/dates";
 
 import { z } from "zod";
-import { DatePickerInput } from "@mantine/dates";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { Tables } from "@/types/db.types";
 
@@ -31,12 +33,14 @@ interface SingleTaskFormProps {
   task?: Tables<"group_task">;
   isLoading: boolean;
   handleSubmit: (values: SingleTaskFormValues) => void;
+  onClose: () => void;
 }
 
 export default function SingleTaskForm({
   isLoading,
   handleSubmit,
   task,
+  onClose,
 }: SingleTaskFormProps) {
   const { activeGroupId } = useGroupStore();
   const activeGroup = useGroupStore((state) =>
@@ -91,9 +95,12 @@ export default function SingleTaskForm({
           withAsterisk
           {...form.getInputProps("date")}
         />
-        <Button type="submit" loading={isLoading}>
-          Create
-        </Button>
+        <CreateButton
+          onClick={form.onSubmit(handleFormSubmit)}
+          loading={isLoading}
+          title="Create Task"
+        />
+        <CancelButton onClick={onClose} />
       </Stack>
     </form>
   );

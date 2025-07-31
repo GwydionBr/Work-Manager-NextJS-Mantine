@@ -21,7 +21,7 @@ export default function GroupManagerPage() {
     <Box className={classes.groupManagerMainContainer} px="xl">
       <Header
         headerTitle={activeGroup?.title || "Group Manager"}
-        primaryButton={activeGroup ? <EditGroupButton /> : null}
+        rightButton={activeGroup ? <EditGroupButton /> : null}
       />
       {isFetching && <Loader />}
       {!isFetching && groups.length > 0 && (

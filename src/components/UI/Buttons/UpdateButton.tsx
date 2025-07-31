@@ -22,7 +22,7 @@ export default function UpdateButton({
     <DelayedTooltip label={tooltipLabel}>
       <Button
         leftSection={<IconRotate size={iconSize} color={iconColor} />}
-        variant="outline"
+        variant="filled"
         onClick={onClick}
         {...props}
       >

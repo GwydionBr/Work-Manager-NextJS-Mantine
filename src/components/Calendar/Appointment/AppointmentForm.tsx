@@ -18,7 +18,10 @@ const schema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters"),
   description: z.string().optional(),
   start_date: z.string().transform((str) => new Date(str)),
-  end_date: z.string().nullable().transform((str) => (str ? new Date(str) : null)),
+  end_date: z
+    .string()
+    .nullable()
+    .transform((str) => (str ? new Date(str) : null)),
   reminder: z
     .string()
     .nullable()
@@ -26,7 +29,7 @@ const schema = z.object({
   userId: z.string().min(1, "Please select a responsible person"),
 });
 
-interface AppointmentFormProps {  
+interface AppointmentFormProps {
   onClose: () => void;
   appointment?: Tables<"group_appointment"> | null;
   groupId: string;
@@ -135,7 +138,7 @@ export default function AppointmentForm({
           placeholder="Pick end date and time"
           {...form.getInputProps("end_date")}
         />
-        <DateTimePicker 
+        <DateTimePicker
           label="Reminder"
           placeholder="Set reminder (optional)"
           clearable
@@ -149,9 +152,17 @@ export default function AppointmentForm({
           {...form.getInputProps("userId")}
         />
         {appointment ? (
-          <UpdateButton onClick={form.onSubmit(handleFormSubmit)} loading={isLoading} variant="filled" />
+          <UpdateButton
+            onClick={form.onSubmit(handleFormSubmit)}
+            loading={isLoading}
+            title="Update Appointment"
+          />
         ) : (
-          <CreateButton onClick={form.onSubmit(handleFormSubmit)} loading={isLoading} variant="filled" />
+          <CreateButton
+            onClick={form.onSubmit(handleFormSubmit)}
+            loading={isLoading}
+            title="Create Appointment"
+          />
         )}
         {error && (
           <Alert variant="light" color="red">

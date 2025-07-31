@@ -6,6 +6,8 @@ import { useUserStore } from "@/stores/userStore";
 
 import { TextInput, Select, Group, Stack, Button } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
+import CreateButton from "@/components/UI/Buttons/CreateButton";
+import CancelButton from "@/components/UI/Buttons/CancelButton";
 
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
@@ -34,11 +36,13 @@ export interface RecurringTaskFormValues {
 interface RecurringTaskFormProps {
   handleSubmit: (values: RecurringTaskFormValues) => void;
   isLoading: boolean;
+  onClose: () => void;
 }
 
 export default function RecurringTaskForm({
   handleSubmit,
   isLoading,
+  onClose,
 }: RecurringTaskFormProps) {
   const { activeGroupId } = useGroupStore();
   const activeGroup = useGroupStore((state) =>
@@ -97,9 +101,12 @@ export default function RecurringTaskForm({
             {...form.getInputProps("endDate")}
           />
         </Group>
-        <Button type="submit" loading={isLoading}>
-          Create
-        </Button>
+        <CreateButton
+          onClick={form.onSubmit(handleFormSubmit)}
+          loading={isLoading}
+          title="Create Task"
+        />
+        <CancelButton onClick={onClose} />
       </Stack>
     </form>
   );

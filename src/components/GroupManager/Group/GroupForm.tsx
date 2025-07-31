@@ -119,14 +119,12 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
           <UpdateButton
             onClick={form.onSubmit(handleFormSubmit)}
             loading={isLoading}
-            variant="filled"
             title="Update Group"
           />
         ) : (
           <CreateButton
             onClick={form.onSubmit(handleFormSubmit)}
             loading={isLoading}
-            variant="filled"
             title="Create Group"
           />
         )}

@@ -22,7 +22,7 @@ export default function CreateButton({
     <DelayedTooltip label={tooltipLabel}>
       <Button
         leftSection={<IconCheck size={iconSize} color={iconColor} />}
-        variant="outline"
+        variant="filled"
         onClick={onClick}
         {...props}
       >
