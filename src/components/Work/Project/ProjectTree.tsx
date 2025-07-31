@@ -12,9 +12,10 @@ import {
   IconFolderOpen,
   IconFolder,
 } from "@tabler/icons-react";
-import { Group, Text } from "@mantine/core";
+import { Box, Group, Text } from "@mantine/core";
 
 import { ProjectTreeItem } from "@/types/work.types";
+import { findNodeById } from "@/utils/treeHelperFunctions";
 
 export default function ProjectTree() {
   const { height } = useViewportSize();
@@ -45,46 +46,36 @@ export default function ProjectTree() {
     }
   };
 
-  // Hilfsfunktion zum Finden eines Knotens in der Tree-Struktur
-  const findNodeById = (
-    tree: ProjectTreeItem[],
-    id: string
-  ): ProjectTreeItem | null => {
-    for (const item of tree) {
-      if (item.id === id) return item;
-      if (item.children) {
-        const found = findNodeById(item.children, id);
-        if (found) return found;
-      }
-    }
-    return null;
-  };
-
   return (
-    <Tree<ProjectTreeItem>
-      data={projectTree}
-      openByDefault={false}
-      width={400}
-      height={height - 145}
-      indent={24}
-      rowHeight={30}
-      paddingTop={10}
-      selection={activeProjectId ?? undefined}
-      onSelect={(nodes) => {
-        if (nodes.length > 0) {
-          const node = nodes[0];
-          if (node.data.type === "project") {
-            setActiveProjectId(node.id);
-            router.push("/work");
+    <Box w="100%" h="100%">
+      <Tree<ProjectTreeItem>
+        data={projectTree}
+        openByDefault={false}
+        width={400}
+        height={height - 145}
+        indent={24}
+        rowHeight={30}
+        paddingTop={10}
+        selection={activeProjectId ?? undefined}
+        onDelete={(nodes) => {
+          console.log(nodes.nodes.map((node) => node.data.name));
+        }}
+        onSelect={(nodes) => {
+          if (nodes.length > 0) {
+            const node = nodes[0];
+            if (node.data.type === "project") {
+              setActiveProjectId(node.id);
+              router.push("/work");
+            }
           }
-        }
-      }}
-      onMove={({ dragIds, parentId, index }) => {
-        handleMove(dragIds, parentId, index);
-      }}
-    >
-      {Node}
-    </Tree>
+        }}
+        onMove={({ dragIds, parentId, index }) => {
+          handleMove(dragIds, parentId, index);
+        }}
+      >
+        {Node}
+      </Tree>
+    </Box>
   );
 }
 

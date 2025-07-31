@@ -258,6 +258,20 @@ function isChildOf(
   return false;
 }
 
+export function findNodeById(
+  tree: ProjectTreeItem[],
+  id: string
+): ProjectTreeItem | null {
+  for (const item of tree) {
+    if (item.id === id) return item;
+    if (item.children) {
+      const found = findNodeById(item.children, id);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
 export function moveNode(
   tree: ProjectTreeItem[],
   nodeId: string,
@@ -267,21 +281,7 @@ export function moveNode(
   let nodeToMove: ProjectTreeItem | null = null;
   const changedNodes: ProjectTreeItem[] = [];
 
-  // Finde den zu verschiebenden Knoten
-  function findNode(nodes: ProjectTreeItem[]): ProjectTreeItem | null {
-    for (const node of nodes) {
-      if (node.id === nodeId) {
-        return node;
-      }
-      if (node.children) {
-        const found = findNode(node.children);
-        if (found) return found;
-      }
-    }
-    return null;
-  }
-
-  const nodeToMoveFound = findNode(tree);
+  const nodeToMoveFound = findNodeById(tree, nodeId);
 
   // Validierung: Prüfe, ob der Zielordner ein Kind des zu verschiebenden Ordners ist
   if (nodeToMoveFound?.type === "folder" && targetFolderId !== null) {
