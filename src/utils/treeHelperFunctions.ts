@@ -25,11 +25,10 @@ function insertNodeAtPosition(
 
   // Aktualisiere die Indizes der nachfolgenden Knoten
   const updatedNodes = newNodes.map((node, idx) => {
-    if (idx >= targetIndex) {
+    if (idx > targetIndex) {
       const updatedNode = { ...node, index: idx };
-      if (node.id !== nodeToInsert.id) {
-        changedNodes.push(updatedNode);
-      }
+
+      changedNodes.push(updatedNode);
       return updatedNode;
     }
     return node;
@@ -62,6 +61,21 @@ function insertNodeIntoFolder(
       // Verwende die shared helper function
       const { updatedNodes: updatedChildren, changedNodes: childChanges } =
         insertNodeAtPosition(children, nodeToAdd, targetIndex);
+
+      changedNodes.push(...childChanges);
+
+      return {
+        ...node,
+        children: updatedChildren,
+      };
+    } else if (node.children) {
+      const { updatedNodes: updatedChildren, changedNodes: childChanges } =
+        insertNodeIntoFolder(
+          node.children,
+          targetFolderId,
+          nodeToInsert,
+          targetIndex
+        );
 
       changedNodes.push(...childChanges);
 
@@ -217,6 +231,33 @@ export function renameNode(
   });
 }
 
+// Hilfsfunktion um zu prüfen, ob ein Ordner ein Kind des zu verschiebenden Ordners ist
+function isChildOf(
+  tree: ProjectTreeItem[],
+  parentId: string,
+  childId: string
+): boolean {
+  for (const node of tree) {
+    if (node.id === parentId && node.children) {
+      // Prüfe direkt die Kinder
+      for (const child of node.children) {
+        if (child.id === childId) {
+          return true;
+        }
+        // Rekursiv in den Unterordnern suchen
+        if (child.children && isChildOf(child.children, child.id, childId)) {
+          return true;
+        }
+      }
+    }
+    // Rekursiv in den Kindern suchen
+    if (node.children && isChildOf(node.children, parentId, childId)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export function moveNode(
   tree: ProjectTreeItem[],
   nodeId: string,
@@ -225,6 +266,33 @@ export function moveNode(
 ): TreeOperationResult {
   let nodeToMove: ProjectTreeItem | null = null;
   const changedNodes: ProjectTreeItem[] = [];
+
+  // Finde den zu verschiebenden Knoten
+  function findNode(nodes: ProjectTreeItem[]): ProjectTreeItem | null {
+    for (const node of nodes) {
+      if (node.id === nodeId) {
+        return node;
+      }
+      if (node.children) {
+        const found = findNode(node.children);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
+  const nodeToMoveFound = findNode(tree);
+
+  // Validierung: Prüfe, ob der Zielordner ein Kind des zu verschiebenden Ordners ist
+  if (nodeToMoveFound?.type === "folder" && targetFolderId !== null) {
+    if (isChildOf(tree, nodeId, targetFolderId)) {
+      // Wirf einen Fehler oder gib ein spezielles Ergebnis zurück
+      return {
+        tree: tree,
+        changedNodes: [],
+      };
+    }
+  }
 
   function removeNode(nodes: ProjectTreeItem[]): ProjectTreeItem[] {
     return nodes
