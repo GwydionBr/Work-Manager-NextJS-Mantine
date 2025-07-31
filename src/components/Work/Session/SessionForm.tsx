@@ -10,7 +10,7 @@ import TimeInput from "@/components/Work/Session/SessionTimeInput";
 
 import { Currency } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
-import UpdateButton from "@/components/UI/Buttons/UpdateButton";
+import UpdateButton from "@/components/UI/Buttons/UpdateButton";  
 import CreateButton from "@/components/UI/Buttons/CreateButton";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 
@@ -220,7 +220,7 @@ export default function SessionForm({
             loading={submitting}
             variant="filled"
             mt="md"
-            title="Save Session"
+            title="Update Session"
           />
         )}
         {onCancel && <CancelButton onClick={onCancel} />}

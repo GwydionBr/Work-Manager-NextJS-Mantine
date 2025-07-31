@@ -16,6 +16,7 @@ import {
 import { IconCheck } from "@tabler/icons-react";
 import LogoutButton from "../Auth/LogoutButton";
 import PencilActionIcon from "../UI/ActionIcons/PencilActionIcon";
+import CancelButton from "../UI/Buttons/CancelButton";
 
 export default function Profile() {
   const {
@@ -121,9 +122,7 @@ export default function Profile() {
                   }
                 />
                 <Group justify="flex-end" gap="sm">
-                  <Button variant="outline" color="gray" onClick={closeForm}>
-                    Cancel
-                  </Button>
+                  <CancelButton onClick={closeForm}/>
                   <Button
                     type="submit"
                     disabled={!isUsernameValid || isUpdating || isOldUsername}

@@ -228,7 +228,7 @@ export default function ProjectForm({
             loading={submitting}
             variant="filled"
             mt="md"
-            title="Save Project"
+            title="Update Project"
           />
         )}
         {onCancel && <CancelButton onClick={onCancel} />}
