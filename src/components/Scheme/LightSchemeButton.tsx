@@ -1,4 +1,4 @@
-import { IconSun } from "@tabler/icons-react";
+import { IconSunFilled } from "@tabler/icons-react";
 import { ActionIcon, HoverCard, Text } from "@mantine/core";
 
 import classes from "./Scheme.module.css";
@@ -28,10 +28,10 @@ export default function LightSchemeButton({
           variant="default"
           size="xl"
           aria-label="select system scheme"
-          bg="yellow.2"
+          bg="light-dark(var(--mantine-color-yellow-1), var(--mantine-color-yellow-1))"
           className={active ? classes.activeButton : ""}
         >
-          <IconSun className={classes.sunIcon} stroke={1.5} />
+          <IconSunFilled className={classes.sunIcon} stroke={1.5} />
         </ActionIcon>
       </HoverCard.Target>
       <HoverCard.Dropdown>

@@ -1,4 +1,4 @@
-import { IconMoon } from "@tabler/icons-react";
+import { IconMoonStars } from "@tabler/icons-react";
 import { ActionIcon, HoverCard, Text } from "@mantine/core";
 
 import classes from "./Scheme.module.css";
@@ -25,7 +25,7 @@ export default function DarkSchemeButton({
           bg="dark.6"
           className={active ? classes.activeButton : ""}
         >
-          <IconMoon className={classes.moonIcon} stroke={1.5} />
+          <IconMoonStars className={classes.moonIcon} stroke={1.5} />
         </ActionIcon>
       </HoverCard.Target>
       <HoverCard.Dropdown>
