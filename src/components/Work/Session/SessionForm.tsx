@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { useForm } from "@mantine/form";
 
 import { NumberInput, Select, Stack } from "@mantine/core";
@@ -41,6 +44,10 @@ export default function SessionForm({
   project,
   submitting,
 }: SessionFormProps) {
+  const [userChangedStartTime, setUserChangedStartTime] = useState(false);
+  const [userChangedEndTime, setUserChangedEndTime] = useState(false);
+  const [formInitialized, setFormInitialized] = useState(false);
+
   // If project doesn't have hourly payment, set salary to 0 and currency to project currency
   const shouldShowPaymentFields = project?.hourly_payment ?? true;
 
@@ -67,19 +74,60 @@ export default function SessionForm({
     validate: zodResolver(schema),
   });
 
+  // Initialize form - when form opens, adjust start_time based on active/paused time
+  useEffect(() => {
+    if (!formInitialized) {
+      const totalSeconds =
+        form.values.active_seconds + form.values.paused_seconds;
+      const endTime = new Date(form.values.end_time);
+      const startTime = new Date(endTime.getTime() - totalSeconds * 1000);
+      form.setFieldValue("start_time", startTime.toISOString());
+      setFormInitialized(true);
+    }
+  }, [formInitialized, form]);
+
   // Calculate end_time when active_seconds changes
   const handleActiveSecondsChange = (value: number) => {
     form.setFieldValue("active_seconds", value);
 
-    const startTime = new Date(form.values.start_time);
     const totalSeconds = value + form.values.paused_seconds;
-    const endTime = new Date(startTime.getTime() + totalSeconds * 1000);
-    form.setFieldValue("end_time", endTime.toISOString());
+
+    // If both start and end time have been manually changed by user, keep start_time fixed
+    if (userChangedStartTime) {
+      const startTime = new Date(form.values.start_time);
+      const endTime = new Date(startTime.getTime() + totalSeconds * 1000);
+      form.setFieldValue("end_time", endTime.toISOString());
+    } else {
+      // Otherwise, adjust start_time based on end_time (initial behavior)
+      const endTime = new Date(form.values.end_time);
+      const startTime = new Date(endTime.getTime() - totalSeconds * 1000);
+      form.setFieldValue("start_time", startTime.toISOString());
+    }
+  };
+
+  // Handle paused_seconds changes and update end_time accordingly
+  const handlePausedSecondsChange = (value: number) => {
+    form.setFieldValue("paused_seconds", value);
+
+    const totalSeconds = form.values.active_seconds + value;
+
+    // If both start and end time have been manually changed by user, keep start_time fixed
+    if (userChangedStartTime) {
+      const startTime = new Date(form.values.start_time);
+      const endTime = new Date(startTime.getTime() + totalSeconds * 1000);
+      form.setFieldValue("end_time", endTime.toISOString());
+    } else {
+      // Otherwise, adjust start_time based on end_time (initial behavior)
+      const endTime = new Date(form.values.end_time);
+      const startTime = new Date(endTime.getTime() - totalSeconds * 1000);
+      form.setFieldValue("start_time", startTime.toISOString());
+    }
   };
 
   // Calculate active_seconds when end_time changes (rounded to nearest minute)
   const handleEndTimeChange = (value: string | null) => {
     if (!value) return;
+    setUserChangedEndTime(true);
 
     form.setFieldValue("end_time", value);
 
@@ -108,22 +156,10 @@ export default function SessionForm({
     }
   };
 
-  // Handle paused_seconds changes and update end_time accordingly
-  const handlePausedSecondsChange = (value: number) => {
-    form.setFieldValue("paused_seconds", value);
-
-    // If we have active_seconds, update end_time
-    if (form.values.active_seconds > 0) {
-      const startTime = new Date(form.values.start_time);
-      const totalSeconds = form.values.active_seconds + value;
-      const endTime = new Date(startTime.getTime() + totalSeconds * 1000);
-      form.setFieldValue("end_time", endTime.toISOString());
-    }
-  };
-
   // Handle start_time changes and update end_time/active_seconds accordingly
   const handleStartTimeChange = (value: string | null) => {
     if (!value) return;
+    setUserChangedStartTime(true);
 
     form.setFieldValue("start_time", value);
 

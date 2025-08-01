@@ -92,7 +92,9 @@ export default function TimeInput({
               placeholder="0"
               label="Hours"
               size="sm"
-              value={timeComponents.hours}
+              value={
+                timeComponents.hours > 0 ? timeComponents.hours : undefined
+              }
               onChange={handleHoursChange}
             />
           </Stack>
@@ -112,7 +114,9 @@ export default function TimeInput({
               placeholder="0"
               label="Minutes"
               size="sm"
-              value={timeComponents.minutes}
+              value={
+                timeComponents.minutes > 0 ? timeComponents.minutes : undefined
+              }
               onChange={handleMinutesChange}
               data-autofocus={autoFocus}
             />
@@ -133,7 +137,9 @@ export default function TimeInput({
               placeholder="0"
               label="Seconds"
               size="sm"
-              value={timeComponents.seconds}
+              value={
+                timeComponents.seconds > 0 ? timeComponents.seconds : undefined
+              }
               onChange={handleSecondsChange}
             />
           </Stack>
