@@ -30,8 +30,11 @@ export default function TimeTrackerComponent({
     activeTime,
     pausedTime,
     currency,
+    salary,
     state,
     hourlyPayment,
+    roundingMode: timeTrackerRoundingMode,
+    roundingInterval: timeTrackerRoundingInterval,
     startTimer,
     pauseTimer,
     resumeTimer,
@@ -157,6 +160,9 @@ export default function TimeTrackerComponent({
               submitTimer={submitTimer}
               cancelTimer={handleCancelTimer}
               getStatusColor={getStatusColor}
+              salary={salary}
+              roundingMode={timeTrackerRoundingMode}
+              roundingInterval={timeTrackerRoundingInterval}
             />
           </div>
         )}

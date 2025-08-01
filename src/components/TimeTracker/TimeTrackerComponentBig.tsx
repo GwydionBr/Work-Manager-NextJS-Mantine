@@ -35,6 +35,7 @@ import TimeTrackerActionIcon from "./TimeTrackerActionIcons/TimeTrackerActionIco
 import MoreActionIcon from "../UI/ActionIcons/MoreActionIcon";
 import InfoActionIcon from "../UI/ActionIcons/InfoActionIcon";
 import TimeTrackerInfoCard from "./TimeTrackerInfoCard";
+import { RoundingDirection, Currency } from "@/types/settings.types";
 
 interface TimeTrackerComponentBigProps {
   isTimeTrackerMinimized: boolean;
@@ -43,10 +44,13 @@ interface TimeTrackerComponentBigProps {
   moneyEarned: string;
   activeTime: string;
   pausedTime: string;
-  currency: string;
+  currency: Currency;
   hourlyPayment: boolean;
   errorMessage: string | null;
   isSubmitting: boolean;
+  salary: number;
+  roundingMode: RoundingDirection;
+  roundingInterval: number;
   startTimer: () => void;
   pauseTimer: () => void;
   resumeTimer: () => void;
@@ -74,6 +78,9 @@ export default function TimeTrackerComponentBig({
   submitTimer,
   cancelTimer,
   getStatusColor,
+  salary,
+  roundingMode,
+  roundingInterval,
 }: TimeTrackerComponentBigProps) {
   return (
     <Stack align="center" w="100%">
@@ -156,10 +163,12 @@ export default function TimeTrackerComponentBig({
                 {state}
               </Badge>
               <HoverCard
+                width={290}
                 closeDelay={300}
                 openDelay={150}
-                position="top-start"
+                position="bottom"
                 radius="md"
+                shadow="xl"
               >
                 <HoverCard.Target>
                   <InfoActionIcon onClick={() => {}} />
@@ -167,10 +176,11 @@ export default function TimeTrackerComponentBig({
                 <HoverCard.Dropdown>
                   <TimeTrackerInfoCard
                     projectTitle={projectTitle}
-                    salary={moneyEarned}
+                    salary={salary}
                     hourlyPayment={hourlyPayment}
                     currency={currency}
-                    roundingMode={"Minutes"}
+                    roundingMode={roundingMode}
+                    roundingInterval={roundingInterval}
                   />
                 </HoverCard.Dropdown>
               </HoverCard>
