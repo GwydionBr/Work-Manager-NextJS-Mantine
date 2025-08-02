@@ -3,7 +3,7 @@ import { DateRange, useWorkChartData } from "@/hooks/useWorkChartData";
 
 import { Stack, Paper, Text, Box, Card } from "@mantine/core";
 import WorkChartControls, { ChartType } from "./WorkChartControls";
-import AnalysisChart from "../Analysis/AnalysisChart";
+import AnalysisChart from "../../Analysis/AnalysisChart";
 import WorkStatisticsCards from "./WorkStatisticsCards";
 import { formatDate, formatTime } from "@/utils/workHelperFunctions";
 import {

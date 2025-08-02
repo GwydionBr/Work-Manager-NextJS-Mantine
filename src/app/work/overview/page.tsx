@@ -10,7 +10,7 @@ import PayoutMenu from "@/components/Work/Project/PayoutMenu";
 import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
 import { groupSessions } from "@/utils/sessionHelperFunctions";
 import BulkSelectionControls from "@/components/Work/Session/BulkSelectionControls";
-import WorkAnalysis from "@/components/Work/WorkAnalysis";
+import WorkAnalysis from "@/components/Work/Analysis/WorkAnalysis";
 import AnalysisActionIcon from "@/components/UI/ActionIcons/AnalysisActionIcon";
 
 export default function WorkOverviewPage() {
