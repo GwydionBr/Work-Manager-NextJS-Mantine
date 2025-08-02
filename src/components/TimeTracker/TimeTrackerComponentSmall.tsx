@@ -10,6 +10,8 @@ import ResumeActionIcon from "./TimeTrackerActionIcons/ResumeActionIcon";
 import StopActionIcon from "./TimeTrackerActionIcons/StopActionIcon";
 import CancelActionIcon from "./TimeTrackerActionIcons/CancelActionIcon";
 import TimeTrackerActionIcon from "./TimeTrackerActionIcons/TimeTrackerActionIcon";
+import TimeTrackerInfoHoverCard from "./TimeTrackerInfoHoverCard";
+import { Currency, RoundingDirection } from "@/types/settings.types";
 
 interface TimeTrackerComponentSmallProps {
   showSmall: boolean;
@@ -24,6 +26,12 @@ interface TimeTrackerComponentSmallProps {
   submitTimer: () => void;
   cancelTimer: () => void;
   getStatusColor: () => string;
+  projectTitle: string;
+  salary: number;
+  hourlyPayment: boolean;
+  currency: Currency;
+  roundingMode: RoundingDirection;
+  roundingInterval: number;
 }
 
 export default function TimeTrackerComponentSmall({
@@ -39,6 +47,12 @@ export default function TimeTrackerComponentSmall({
   submitTimer,
   cancelTimer,
   getStatusColor,
+  projectTitle,
+  salary,
+  hourlyPayment,
+  currency,
+  roundingMode,
+  roundingInterval,
 }: TimeTrackerComponentSmallProps) {
   return (
     <Stack w={50} align="center" justify="center" gap="xs">
@@ -51,6 +65,14 @@ export default function TimeTrackerComponentSmall({
       <Collapse in={showSmall} transitionDuration={400}>
         <Stack gap="xs" align="center" justify="center" pos="relative">
           <LoadingOverlay visible={isSubmitting} overlayProps={{ blur: 2 }} />
+          <TimeTrackerInfoHoverCard
+            projectTitle={projectTitle}
+            salary={salary}
+            hourlyPayment={hourlyPayment}
+            currency={currency}
+            roundingMode={roundingMode}
+            roundingInterval={roundingInterval}
+          />
           <Divider />
           <Text size="xs" c="dimmed">
             Active

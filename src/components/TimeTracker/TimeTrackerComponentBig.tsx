@@ -34,8 +34,9 @@ import ResumeActionIcon from "./TimeTrackerActionIcons/ResumeActionIcon";
 import TimeTrackerActionIcon from "./TimeTrackerActionIcons/TimeTrackerActionIcon";
 import MoreActionIcon from "../UI/ActionIcons/MoreActionIcon";
 import InfoActionIcon from "../UI/ActionIcons/InfoActionIcon";
-import TimeTrackerInfoCard from "./TimeTrackerInfoCard";
+import TimeTrackerInfoCard from "./TimeTrackerInfoHoverCard";
 import { RoundingDirection, Currency } from "@/types/settings.types";
+import TimeTrackerInfoHoverCard from "./TimeTrackerInfoHoverCard";
 
 interface TimeTrackerComponentBigProps {
   isTimeTrackerMinimized: boolean;
@@ -162,28 +163,14 @@ export default function TimeTrackerComponentBig({
               <Badge size="lg" color={getStatusColor()}>
                 {state}
               </Badge>
-              <HoverCard
-                width={290}
-                closeDelay={300}
-                openDelay={150}
-                position="bottom"
-                radius="md"
-                shadow="xl"
-              >
-                <HoverCard.Target>
-                  <InfoActionIcon onClick={() => {}} />
-                </HoverCard.Target>
-                <HoverCard.Dropdown>
-                  <TimeTrackerInfoCard
-                    projectTitle={projectTitle}
-                    salary={salary}
-                    hourlyPayment={hourlyPayment}
-                    currency={currency}
-                    roundingMode={roundingMode}
-                    roundingInterval={roundingInterval}
-                  />
-                </HoverCard.Dropdown>
-              </HoverCard>
+              <TimeTrackerInfoHoverCard
+                projectTitle={projectTitle}
+                salary={salary}
+                hourlyPayment={hourlyPayment}
+                currency={currency}
+                roundingMode={roundingMode}
+                roundingInterval={roundingInterval}
+              />
             </Group>
             {/* Project Title */}
             <Group justify="space-between" align="center">

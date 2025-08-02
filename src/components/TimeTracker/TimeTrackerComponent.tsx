@@ -188,6 +188,12 @@ export default function TimeTrackerComponent({
               submitTimer={submitTimer}
               cancelTimer={handleCancelTimer}
               getStatusColor={getStatusColor}
+              projectTitle={projectTitle}
+              salary={salary}
+              hourlyPayment={hourlyPayment}
+              currency={currency}
+              roundingMode={timeTrackerRoundingMode}
+              roundingInterval={timeTrackerRoundingInterval}
             />
           </div>
         )}
