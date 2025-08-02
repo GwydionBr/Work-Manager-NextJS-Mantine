@@ -1,4 +1,4 @@
-import { ActionIcon, ActionIconProps, Tooltip } from "@mantine/core";
+import { ActionIcon, ActionIconProps } from "@mantine/core";
 import { IconCheck } from "@tabler/icons-react";
 import DelayedTooltip from "../DelayedTooltip";
 

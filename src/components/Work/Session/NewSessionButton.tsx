@@ -6,7 +6,7 @@ import { useWorkStore } from "@/stores/workManagerStore";
 
 import { Box, Drawer, Flex } from "@mantine/core";
 import SessionForm from "@/components/Work/Session/SessionForm";
-import AddActionIcon from "@/components/UI/ActionIcons/AddActionIcon";
+import AddActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 
 import { TablesInsert } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";

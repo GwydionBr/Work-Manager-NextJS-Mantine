@@ -6,7 +6,7 @@ import { ActionIcon, Alert, Group, Stack, TextInput } from "@mantine/core";
 import { IconX, IconPlus } from "@tabler/icons-react";
 
 import classes from "./Grocery.module.css";
-import AddActionIcon from "@/components/UI/ActionIcons/AddActionIcon";
+import AddActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 
 interface GroceryInputProps {
   placeholder: string;

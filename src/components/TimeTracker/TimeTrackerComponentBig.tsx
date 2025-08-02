@@ -12,7 +12,6 @@ import {
   Paper,
   Collapse,
   LoadingOverlay,
-  HoverCard,
 } from "@mantine/core";
 import {
   IconClock,
@@ -22,7 +21,7 @@ import {
   IconCurrencyDollar,
   IconCurrencyEuro,
   IconX,
-} from "@tabler/icons-react";
+} from "@tabler/icons-react"; 
 import TimeTrackerRow from "./TimeTrackerRow";
 
 import classes from "./TimeTracker.module.css";
@@ -32,11 +31,9 @@ import StartActionIcon from "./TimeTrackerActionIcons/StartActionIcons";
 import PauseActionIcon from "./TimeTrackerActionIcons/PauseActionIcon";
 import ResumeActionIcon from "./TimeTrackerActionIcons/ResumeActionIcon";
 import TimeTrackerActionIcon from "./TimeTrackerActionIcons/TimeTrackerActionIcon";
-import MoreActionIcon from "../UI/ActionIcons/MoreActionIcon";
-import InfoActionIcon from "../UI/ActionIcons/InfoActionIcon";
-import TimeTrackerInfoCard from "./TimeTrackerInfoHoverCard";
 import { RoundingDirection, Currency } from "@/types/settings.types";
 import TimeTrackerInfoHoverCard from "./TimeTrackerInfoHoverCard";
+import ModifyTimeTrackerModal from "./ModifyTimeTrackerModal";
 
 interface TimeTrackerComponentBigProps {
   isTimeTrackerMinimized: boolean;
@@ -159,18 +156,11 @@ export default function TimeTrackerComponentBig({
           <Stack gap="md" align="center">
             {/* State Badge */}
             <Group justify="space-between" align="center" w="100%">
-              <MoreActionIcon onClick={() => {}} />
+              <ModifyTimeTrackerModal />
               <Badge size="lg" color={getStatusColor()}>
                 {state}
               </Badge>
-              <TimeTrackerInfoHoverCard
-                projectTitle={projectTitle}
-                salary={salary}
-                hourlyPayment={hourlyPayment}
-                currency={currency}
-                roundingMode={roundingMode}
-                roundingInterval={roundingInterval}
-              />
+              <TimeTrackerInfoHoverCard />
             </Group>
             {/* Project Title */}
             <Group justify="space-between" align="center">

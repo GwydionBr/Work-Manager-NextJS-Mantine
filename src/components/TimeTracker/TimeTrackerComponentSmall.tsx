@@ -12,6 +12,7 @@ import CancelActionIcon from "./TimeTrackerActionIcons/CancelActionIcon";
 import TimeTrackerActionIcon from "./TimeTrackerActionIcons/TimeTrackerActionIcon";
 import TimeTrackerInfoHoverCard from "./TimeTrackerInfoHoverCard";
 import { Currency, RoundingDirection } from "@/types/settings.types";
+import ModifyTimeTrackerModal from "./ModifyTimeTrackerModal";
 
 interface TimeTrackerComponentSmallProps {
   showSmall: boolean;
@@ -65,14 +66,8 @@ export default function TimeTrackerComponentSmall({
       <Collapse in={showSmall} transitionDuration={400}>
         <Stack gap="xs" align="center" justify="center" pos="relative">
           <LoadingOverlay visible={isSubmitting} overlayProps={{ blur: 2 }} />
-          <TimeTrackerInfoHoverCard
-            projectTitle={projectTitle}
-            salary={salary}
-            hourlyPayment={hourlyPayment}
-            currency={currency}
-            roundingMode={roundingMode}
-            roundingInterval={roundingInterval}
-          />
+          <TimeTrackerInfoHoverCard />
+          <ModifyTimeTrackerModal />
           <Divider />
           <Text size="xs" c="dimmed">
             Active

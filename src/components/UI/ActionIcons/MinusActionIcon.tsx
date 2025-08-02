@@ -1,25 +1,25 @@
-import { ActionIcon, ActionIconProps, Tooltip } from "@mantine/core";
-import { IconPlus } from "@tabler/icons-react";
+import { ActionIcon, ActionIconProps } from "@mantine/core";
+import { IconMinus } from "@tabler/icons-react";
 import DelayedTooltip from "../DelayedTooltip";
 
-interface AddActionIconProps extends ActionIconProps {
+interface MinusActionIconProps extends ActionIconProps {
   onClick: () => void;
   tooltipLabel?: string;
   iconSize?: number;
   iconColor?: string;
 }
 
-export default function AddActionIcon({
+export default function MinusActionIcon({
   onClick,
   tooltipLabel,
   iconSize,
   iconColor,
   ...props
-}: AddActionIconProps) {
+}: MinusActionIconProps) {
   return (
     <DelayedTooltip label={tooltipLabel}>
       <ActionIcon onClick={onClick} size="md" variant="subtle" {...props}>
-        <IconPlus size={iconSize} color={iconColor} />
+        <IconMinus size={iconSize} color={iconColor} />
       </ActionIcon>
     </DelayedTooltip>
   );

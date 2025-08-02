@@ -1,4 +1,8 @@
-import { RoundingDirection, Currency } from "@/types/settings.types";
+"use client";
+
+import { useTimeTracker } from "@/stores/timeTrackerStore";
+
+import { RoundingDirection } from "@/types/settings.types";
 import { Text, Group, Badge, Stack, Divider, HoverCard } from "@mantine/core";
 import {
   IconCurrencyDollar,
@@ -12,23 +16,16 @@ import {
 import { formatMoney, getCurrencySymbol } from "@/utils/workHelperFunctions";
 import InfoActionIcon from "@/components/UI/ActionIcons/InfoActionIcon";
 
-interface TimeTrackerInfoHoverCardProps {
-  projectTitle: string;
-  salary: number;
-  hourlyPayment: boolean;
-  currency: Currency;
-  roundingMode: RoundingDirection;
-  roundingInterval: number;
-}
+export default function TimeTrackerInfoHoverCard() {
+  const {
+    currency,
+    roundingMode,
+    roundingInterval,
+    projectTitle,
+    salary,
+    hourlyPayment,
+  } = useTimeTracker();
 
-export default function TimeTrackerInfoHoverCard({
-  projectTitle,
-  salary,
-  hourlyPayment,
-  currency,
-  roundingMode,
-  roundingInterval,
-}: TimeTrackerInfoHoverCardProps) {
   const getCurrencyIcon = () => {
     return currency === "EUR" ? (
       <IconCurrencyEuro size={16} />

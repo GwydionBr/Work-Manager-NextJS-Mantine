@@ -4,7 +4,7 @@ import { useDisclosure } from "@mantine/hooks";
 
 import { Box, Flex, Modal } from "@mantine/core";
 import FinanceForm from "@/components/Finances/Form/FinanceForm";
-import AddActionIcon from "@/components/UI/ActionIcons/AddActionIcon";
+import AddActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 
 interface NewCashFlowButtonProps {
   isSingle?: boolean;

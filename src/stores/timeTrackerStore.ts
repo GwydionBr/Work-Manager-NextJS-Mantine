@@ -47,6 +47,10 @@ interface TimeTrackerState {
   stopTimer: () => void;
   cancelTimer: () => void;
   getCurrentSession: () => TablesInsert<"timerSession">;
+  modifyTimer: (
+    activeSecondsChange: number,
+    pausedSecondsChange: number
+  ) => void;
   configureProject: (
     projectId: string,
     projectTitle: string,
@@ -156,6 +160,31 @@ export const useTimeTracker = create(
 
         restoreTimer: () => {
           startLoop(get, set);
+        },
+
+        modifyTimer: (activeSecondsChange, pausedSecondsChange) => {
+          const {
+            storedActiveSeconds,
+            storedPausedSeconds,
+            activeSeconds,
+            pausedSeconds,
+          } = get();
+          const newStoredActiveSeconds =
+            storedActiveSeconds + activeSecondsChange;
+          const newStoredPausedSeconds =
+            storedPausedSeconds + pausedSecondsChange;
+          const newActiveTime = secondsToTimerFormat(
+            newStoredActiveSeconds + activeSeconds
+          );
+          const newPausedTime = secondsToTimerFormat(
+            newStoredPausedSeconds + pausedSeconds
+          );
+          set({
+            storedActiveSeconds: newStoredActiveSeconds,
+            storedPausedSeconds: newStoredPausedSeconds,
+            activeTime: newActiveTime,
+            pausedTime: newPausedTime,
+          });
         },
 
         configureProject: (
