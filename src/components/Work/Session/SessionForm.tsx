@@ -245,6 +245,7 @@ export default function SessionForm({
         {newSession ? (
           <CreateButton
             onClick={form.onSubmit(onSubmit)}
+            type="submit"
             loading={submitting}
             mt="md"
             title="Create Session"
@@ -252,6 +253,7 @@ export default function SessionForm({
         ) : (
           <UpdateButton
             onClick={form.onSubmit(onSubmit)}
+            type="submit"
             loading={submitting}
             mt="md"
             title="Update Session"

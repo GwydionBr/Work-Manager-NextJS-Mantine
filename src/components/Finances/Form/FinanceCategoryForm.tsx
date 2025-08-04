@@ -8,6 +8,8 @@ import { TextInput, Stack, Button, Alert, Textarea } from "@mantine/core";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
+import CreateButton from "@/components/UI/Buttons/CreateButton";
+import UpdateButton from "@/components/UI/Buttons/UpdateButton";
 
 const schema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters"),
@@ -84,9 +86,21 @@ export default function FinanceCategoryForm({
           placeholder="Enter category description"
           {...form.getInputProps("description")}
         />
-        <Button type="submit" loading={isLoading}>
-          {category ? "Update" : "Create"}
-        </Button>
+        {category ? (
+          <UpdateButton
+            type="submit"
+            onClick={form.onSubmit(handleFormSubmit)}
+            loading={isLoading}
+            title="Update"
+          />
+        ) : (
+          <CreateButton
+            type="submit"
+            onClick={form.onSubmit(handleFormSubmit)}
+            loading={isLoading}
+            title="Create"
+          />
+        )}
         <CancelButton onClick={onClose} />
         {error && (
           <Alert variant="light" color="red">

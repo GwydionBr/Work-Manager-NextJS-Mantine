@@ -94,12 +94,14 @@ export default function SingleFinanceForm({
         />
         {cashFlow ? (
           <UpdateButton
+            type="submit"
             onClick={form.onSubmit(handleFormSubmit)}
             loading={isLoading}
             variant="filled"
           />
         ) : (
           <CreateButton
+            type="submit"
             onClick={form.onSubmit(handleFormSubmit)}
             loading={isLoading}
             variant="filled"

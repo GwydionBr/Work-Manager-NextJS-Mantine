@@ -217,6 +217,7 @@ export default function ProjectForm({
         {newProject ? (
           <CreateButton
             onClick={form.onSubmit(onSubmit)}
+            type="submit"
             loading={submitting}
             mt="md"
             title="Create Project"
@@ -224,6 +225,7 @@ export default function ProjectForm({
         ) : (
           <UpdateButton
             onClick={form.onSubmit(onSubmit)}
+            type="submit"
             loading={submitting}
             mt="md"
             title="Update Project"

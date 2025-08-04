@@ -102,6 +102,7 @@ export default function RecurringTaskForm({
           />
         </Group>
         <CreateButton
+          type="submit"
           onClick={form.onSubmit(handleFormSubmit)}
           loading={isLoading}
           title="Create Task"

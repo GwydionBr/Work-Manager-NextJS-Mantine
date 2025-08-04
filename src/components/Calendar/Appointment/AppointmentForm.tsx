@@ -153,12 +153,14 @@ export default function AppointmentForm({
         />
         {appointment ? (
           <UpdateButton
+            type="submit"
             onClick={form.onSubmit(handleFormSubmit)}
             loading={isLoading}
             title="Update Appointment"
           />
         ) : (
           <CreateButton
+            type="submit"
             onClick={form.onSubmit(handleFormSubmit)}
             loading={isLoading}
             title="Create Appointment"

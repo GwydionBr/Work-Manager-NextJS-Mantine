@@ -4,6 +4,7 @@ import DelayedTooltip from "../DelayedTooltip";
 
 interface CreateButtonProps extends ButtonProps {
   onClick: () => void;
+  type?: "submit" | "button" | "reset";
   iconSize?: number;
   iconColor?: string;
   title?: string;
@@ -12,6 +13,7 @@ interface CreateButtonProps extends ButtonProps {
 
 export default function CreateButton({
   onClick,
+  type = "button",
   iconSize,
   iconColor,
   title,
@@ -22,6 +24,7 @@ export default function CreateButton({
     <DelayedTooltip label={tooltipLabel}>
       <Button
         leftSection={<IconCheck size={iconSize} color={iconColor} />}
+        type={type}
         variant="filled"
         onClick={onClick}
         {...props}

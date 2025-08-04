@@ -8,6 +8,7 @@ interface UpdateButtonProps extends ButtonProps {
   iconColor?: string;
   title?: string;
   tooltipLabel?: string;
+  type?: "submit" | "button" | "reset";
 }
 
 export default function UpdateButton({
@@ -16,6 +17,7 @@ export default function UpdateButton({
   iconColor,
   title,
   tooltipLabel,
+  type = "button",
   ...props
 }: UpdateButtonProps) {
   return (
@@ -24,6 +26,7 @@ export default function UpdateButton({
         leftSection={<IconRotate size={iconSize} color={iconColor} />}
         variant="filled"
         onClick={onClick}
+        type={type}
         {...props}
       >
         {title || "Update"}

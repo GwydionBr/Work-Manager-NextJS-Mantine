@@ -5,7 +5,7 @@ import { useFocusTrap } from "@mantine/hooks";
 import { useGroupStore } from "@/stores/groupStore";
 import { useUserStore } from "@/stores/userStore";
 
-import { TextInput, Select, Stack, Button } from "@mantine/core";
+import { TextInput, Select, Stack } from "@mantine/core";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 import { DatePickerInput } from "@mantine/dates";
@@ -96,6 +96,7 @@ export default function SingleTaskForm({
           {...form.getInputProps("date")}
         />
         <CreateButton
+          type="submit"
           onClick={form.onSubmit(handleFormSubmit)}
           loading={isLoading}
           title="Create Task"
