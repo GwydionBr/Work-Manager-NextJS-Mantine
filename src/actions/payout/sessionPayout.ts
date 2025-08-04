@@ -28,6 +28,7 @@ export async function payoutSessions({
   const { data: cashFlow, error: cashFlowError } = await supabase
     .from("single_cash_flow")
     .insert({
+      title: `Payout ${date.toLocaleDateString()}`,
       category_id: categoryId,
       type: "income",
       amount: endValue ?? startValue,

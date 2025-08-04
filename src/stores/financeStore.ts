@@ -21,12 +21,15 @@ interface FinanceStoreActions {
   addSingleCashFlow: (
     singleCashFlow: TablesInsert<"single_cash_flow">
   ) => Promise<boolean>;
+  addExistingSingleCashFlow: (
+    singleCashFlow: Tables<"single_cash_flow">
+  ) => boolean;
   addRecurringCashFlow: (
     recurringCashFlow: TablesInsert<"recurring_cash_flow">
   ) => Promise<boolean>;
   updateSingleCashFlow: (
     singleCashFlow: TablesUpdate<"single_cash_flow">
-  ) => Promise<boolean>;
+  ) => Promise<boolean>;  
   updateRecurringCashFlow: (
     recurringCashFlow: TablesUpdate<"recurring_cash_flow">
   ) => Promise<boolean>;
@@ -106,6 +109,15 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
         singleCashFlows: newSingleCashFlows,
       });
 
+      return true;
+    },
+
+    addExistingSingleCashFlow(singleCashFlow) {
+      const { singleCashFlows } = get();
+      const newSingleCashFlows = [...singleCashFlows, singleCashFlow];
+      set({
+        singleCashFlows: newSingleCashFlows,
+      });
       return true;
     },
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
+import { useFinanceStore } from "@/stores/financeStore";
 import { useForm, zodResolver } from "@mantine/form";
 
 import { z } from "zod";
@@ -15,6 +16,7 @@ import {
   Select,
   Stack,
   Text,
+  Alert,
 } from "@mantine/core";
 import { IconArrowDown } from "@tabler/icons-react";
 import { currencies } from "@/constants/settings";
@@ -28,11 +30,8 @@ interface SessionModalFormProps {
 }
 
 const schema = z.object({
-  endValue: z.number().min(0, { message: "Value must be positive" }).optional(),
-  endCurrency: z
-    .string()
-    .min(1, { message: "Currency is required" })
-    .optional(),
+  endValue: z.number().min(0, { message: "Value must be positive" }),
+  endCurrency: z.string().min(1, { message: "Currency is required" }),
 });
 
 export default function SessionModalForm({
@@ -42,6 +41,7 @@ export default function SessionModalForm({
   startCurrency,
 }: SessionModalFormProps) {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const form = useForm({
     initialValues: {
       endValue: startValue,
@@ -51,6 +51,7 @@ export default function SessionModalForm({
   });
 
   const { payoutSessions } = useWorkStore();
+  const { addExistingSingleCashFlow } = useFinanceStore();
 
   async function onSubmit(values: z.infer<typeof schema>) {
     setIsProcessing(true);
@@ -59,12 +60,20 @@ export default function SessionModalForm({
       startValue,
       startCurrency,
       null,
-      values.endValue ?? null,
-      values.endCurrency as Currency | null
+      values.endValue !== startValue ? values.endValue : null,
+      values.endCurrency !== startCurrency
+        ? (values.endCurrency as Currency)
+        : null
     );
+
     if (payoutResult.success) {
-      
+      addExistingSingleCashFlow(payoutResult.data.cashFlow);
       handleClose();
+    } else {
+      setError(payoutResult.error);
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
     }
     setIsProcessing(false);
   }
@@ -72,7 +81,7 @@ export default function SessionModalForm({
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
       <Stack>
-        <Text>Start Value: {formatMoney(startValue, startCurrency)}</Text>
+        {/* <Text>Start Value: {formatMoney(startValue, startCurrency)}</Text> */}
         <Divider />
         <Group justify="center">
           <IconArrowDown />
@@ -92,6 +101,9 @@ export default function SessionModalForm({
         <Button type="submit" loading={isProcessing}>
           Submit
         </Button>
+        <Alert title="Error" color="red" hidden={!error}>
+          {error}
+        </Alert>
       </Stack>
     </form>
   );
