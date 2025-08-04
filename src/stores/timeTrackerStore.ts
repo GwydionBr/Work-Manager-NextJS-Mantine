@@ -23,6 +23,7 @@ export enum TimerState {
 interface TimeTrackerState {
   moneyEarned: string;
   activeTime: string;
+  roundedActiveTime: string;
   pausedTime: string;
   state: TimerState;
   projectTitle: string;
@@ -81,9 +82,17 @@ function startLoop(
         Math.floor((Date.now() - (state.tempStartTime ?? 0)) / 1000) +
         state.storedActiveSeconds;
       const newActiveTime = secondsToTimerFormat(newActiveSeconds);
+      const newRoundedActiveTime = secondsToTimerFormat(
+        getRoundedSeconds(
+          newActiveSeconds,
+          state.roundingInterval,
+          state.roundingMode
+        )
+      );
       set({
         activeSeconds: newActiveSeconds,
         activeTime: newActiveTime,
+        roundedActiveTime: newRoundedActiveTime,
         moneyEarned: (
           (getRoundedSeconds(
             newActiveSeconds,
@@ -126,6 +135,7 @@ export const useTimeTracker = create(
           state: TimerState.Stopped,
           moneyEarned: "0.00",
           activeTime: "00:00",
+          roundedActiveTime: "00:00",
           pausedTime: "00:00",
           activeSeconds: 0,
           pausedSeconds: 0,
@@ -139,6 +149,7 @@ export const useTimeTracker = create(
       return {
         moneyEarned: "0.00",
         activeTime: "00:00",
+        roundedActiveTime: "00:00",
         pausedTime: "00:00",
         state: TimerState.Stopped,
         projectTitle: "",

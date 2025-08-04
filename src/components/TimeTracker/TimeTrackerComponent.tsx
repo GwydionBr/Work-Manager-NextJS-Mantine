@@ -28,6 +28,7 @@ export default function TimeTrackerComponent({
     projectTitle,
     moneyEarned,
     activeTime,
+    roundedActiveTime,
     pausedTime,
     currency,
     salary,
@@ -145,24 +146,10 @@ export default function TimeTrackerComponent({
             <TimeTrackerComponentBig
               isTimeTrackerMinimized={isTimeTrackerMinimized}
               setIsTimeTrackerMinimized={setIsTimeTrackerMinimized}
-              state={state}
-              projectTitle={projectTitle}
-              moneyEarned={moneyEarned}
-              activeTime={activeTime}
-              pausedTime={pausedTime}
-              currency={currency}
-              hourlyPayment={hourlyPayment}
               errorMessage={errorMessage}
               isSubmitting={isSubmitting}
-              startTimer={startTimer}
-              pauseTimer={pauseTimer}
-              resumeTimer={resumeTimer}
               submitTimer={submitTimer}
-              cancelTimer={handleCancelTimer}
               getStatusColor={getStatusColor}
-              salary={salary}
-              roundingMode={timeTrackerRoundingMode}
-              roundingInterval={timeTrackerRoundingInterval}
             />
           </div>
         )}
@@ -178,22 +165,9 @@ export default function TimeTrackerComponent({
             <TimeTrackerComponentSmall
               showSmall={showSmall}
               setShowSmall={setShowSmall}
-              state={state}
-              activeTime={activeTime}
-              pausedTime={pausedTime}
               isSubmitting={isSubmitting}
-              startTimer={startTimer}
-              pauseTimer={pauseTimer}
-              resumeTimer={resumeTimer}
               submitTimer={submitTimer}
-              cancelTimer={handleCancelTimer}
               getStatusColor={getStatusColor}
-              projectTitle={projectTitle}
-              salary={salary}
-              hourlyPayment={hourlyPayment}
-              currency={currency}
-              roundingMode={timeTrackerRoundingMode}
-              roundingInterval={timeTrackerRoundingInterval}
             />
           </div>
         )}

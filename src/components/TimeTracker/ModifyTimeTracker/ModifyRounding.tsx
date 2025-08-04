@@ -24,10 +24,7 @@ import {
 } from "@tabler/icons-react";
 import { roundingAmounts, roundingModes } from "@/constants/settings";
 import { RoundingAmount, RoundingDirection } from "@/types/settings.types";
-import {
-  getRoundingInterval,
-  getRoundedSeconds,
-} from "@/utils/workHelperFunctions";
+import { getRoundedSeconds } from "@/utils/workHelperFunctions";
 
 export default function ModifyRounding() {
   const { setRoundingAmount, activeSeconds, roundingMode, roundingInterval } =

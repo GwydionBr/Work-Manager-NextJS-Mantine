@@ -1,5 +1,6 @@
 "use client";
 
+import { useTimeTracker } from "@/stores/timeTrackerStore";
 import { TimerState } from "@/stores/timeTrackerStore";
 
 import {
@@ -30,29 +31,14 @@ import StartActionIcon from "./TimeTrackerActionIcons/StartActionIcons";
 import PauseActionIcon from "./TimeTrackerActionIcons/PauseActionIcon";
 import ResumeActionIcon from "./TimeTrackerActionIcons/ResumeActionIcon";
 import TimeTrackerActionIcon from "./TimeTrackerActionIcons/TimeTrackerActionIcon";
-import { RoundingDirection, Currency } from "@/types/settings.types";
 import TimeTrackerInfoHoverCard from "./TimeTrackerInfoHoverCard";
 import ModifyTimeTrackerModal from "./ModifyTimeTracker/ModifyTimeTrackerModal";
 
 interface TimeTrackerComponentBigProps {
   isTimeTrackerMinimized: boolean;
-  state: TimerState;
-  projectTitle: string;
-  moneyEarned: string;
-  activeTime: string;
-  pausedTime: string;
-  currency: Currency;
-  hourlyPayment: boolean;
   errorMessage: string | null;
   isSubmitting: boolean;
-  salary: number;
-  roundingMode: RoundingDirection;
-  roundingInterval: number;
-  startTimer: () => void;
-  pauseTimer: () => void;
-  resumeTimer: () => void;
   submitTimer: () => void;
-  cancelTimer: () => void;
   getStatusColor: () => string;
   setIsTimeTrackerMinimized: (value: boolean) => void;
 }
@@ -60,22 +46,25 @@ interface TimeTrackerComponentBigProps {
 export default function TimeTrackerComponentBig({
   isTimeTrackerMinimized,
   setIsTimeTrackerMinimized,
-  state,
-  projectTitle,
-  moneyEarned,
-  activeTime,
-  pausedTime,
-  currency,
-  hourlyPayment,
   errorMessage,
   isSubmitting,
-  startTimer,
-  pauseTimer,
-  resumeTimer,
-  submitTimer,
-  cancelTimer,
   getStatusColor,
+  submitTimer,
 }: TimeTrackerComponentBigProps) {
+  const {
+    projectTitle,
+    moneyEarned,
+    currency,
+    hourlyPayment,
+    roundedActiveTime,
+    state,
+    activeTime,
+    pausedTime,
+    startTimer,
+    pauseTimer,
+    resumeTimer,
+    cancelTimer,
+  } = useTimeTracker();
   return (
     <Stack align="center" w="100%">
       <TimeTrackerActionIcon
@@ -100,12 +89,15 @@ export default function TimeTrackerComponentBig({
                     : "",
               }}
             >
-              <Stack>
+              <Stack gap="xs">
                 <Text size="xs" c="dimmed">
                   Active
                 </Text>
                 <Text size="xs" fw={state === "running" ? 700 : 400}>
                   {activeTime}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  {roundedActiveTime}
                 </Text>
               </Stack>
             </Card>
@@ -227,6 +219,7 @@ export default function TimeTrackerComponentBig({
                   />
                 }
                 value={activeTime}
+                secondValue={roundedActiveTime}
                 state={state}
                 activationState={TimerState.Running}
                 color="var(--mantine-color-blue-6)"

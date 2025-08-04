@@ -1,5 +1,7 @@
 "use client";
 
+import { useTimeTracker } from "@/stores/timeTrackerStore";
+
 import { TimerState } from "@/stores/timeTrackerStore";
 
 import {
@@ -18,44 +20,34 @@ import StopActionIcon from "./TimeTrackerActionIcons/StopActionIcon";
 import CancelActionIcon from "./TimeTrackerActionIcons/CancelActionIcon";
 import TimeTrackerActionIcon from "./TimeTrackerActionIcons/TimeTrackerActionIcon";
 import TimeTrackerInfoHoverCard from "./TimeTrackerInfoHoverCard";
-import { Currency, RoundingDirection } from "@/types/settings.types";
 import ModifyTimeTrackerModal from "./ModifyTimeTracker/ModifyTimeTrackerModal";
 
 interface TimeTrackerComponentSmallProps {
   showSmall: boolean;
-  state: TimerState;
-  activeTime: string;
-  pausedTime: string;
   isSubmitting: boolean;
   setShowSmall: (showSmall: boolean) => void;
-  startTimer: () => void;
-  pauseTimer: () => void;
-  resumeTimer: () => void;
   submitTimer: () => void;
-  cancelTimer: () => void;
   getStatusColor: () => string;
-  projectTitle: string;
-  salary: number;
-  hourlyPayment: boolean;
-  currency: Currency;
-  roundingMode: RoundingDirection;
-  roundingInterval: number;
 }
 
 export default function TimeTrackerComponentSmall({
-  state,
   showSmall,
-  activeTime,
-  pausedTime,
   isSubmitting,
   setShowSmall,
-  startTimer,
-  pauseTimer,
-  resumeTimer,
-  submitTimer,
-  cancelTimer,
   getStatusColor,
+  submitTimer,
 }: TimeTrackerComponentSmallProps) {
+  const {
+    roundedActiveTime,
+    state,
+    activeTime,
+    pausedTime,
+    startTimer,
+    pauseTimer,
+    resumeTimer,
+    cancelTimer,
+  } = useTimeTracker();
+
   return (
     <Stack w={50} align="center" justify="center" gap="xs">
       <TimeTrackerActionIcon
@@ -90,6 +82,9 @@ export default function TimeTrackerComponentSmall({
             </Text>
             <Text fz={11} fw={state === "running" ? 700 : 400} ta="center">
               {activeTime}
+            </Text>
+            <Text fz={11} c="dimmed" ta="center">
+              {roundedActiveTime}
             </Text>
           </Card>
           <Card
