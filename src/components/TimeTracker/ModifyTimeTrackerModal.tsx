@@ -15,7 +15,6 @@ import {
   TextInput,
   Select,
   Card,
-  Badge,
   Title,
   Paper,
 } from "@mantine/core";
@@ -36,8 +35,9 @@ export default function ModifyTimeTrackerModal() {
   const {
     modifyActiveSeconds,
     modifyPausedSeconds,
-    activeSeconds,
-    pausedSeconds,
+    activeTime,
+    pausedTime,
+    state,
   } = useTimeTracker();
   const [activeTimeInput, setActiveTimeInput] = useState("");
   const [pausedTimeInput, setPausedTimeInput] = useState("");
@@ -109,26 +109,6 @@ export default function ModifyTimeTrackerModal() {
     }
   };
 
-  const formatTime = (seconds: number): string => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  const formatTimeDisplay = (seconds: number): string => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    } else if (minutes > 0) {
-      return `${minutes}m`;
-    } else {
-      return `${seconds}s`;
-    }
-  };
-
   return (
     <Box>
       <MoreActionIcon
@@ -157,7 +137,8 @@ export default function ModifyTimeTrackerModal() {
             fontWeight: 600,
           },
           header: {
-            borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-3))",
+            borderBottom:
+              "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-3))",
             paddingBottom: "1rem",
           },
         }}
@@ -174,8 +155,8 @@ export default function ModifyTimeTrackerModal() {
 
             <Group gap="xl" justify="center">
               <TimeTrackerRow
-                value={formatTime(activeSeconds)}
-                state={TimerState.Running}
+                value={activeTime}
+                state={state}
                 activationState={TimerState.Running}
                 color="var(--mantine-color-blue-6)"
                 icon={
@@ -187,8 +168,8 @@ export default function ModifyTimeTrackerModal() {
               />
 
               <TimeTrackerRow
-                value={formatTime(pausedSeconds)}
-                state={TimerState.Paused}
+                value={pausedTime}
+                state={state}
                 activationState={TimerState.Paused}
                 color="var(--mantine-color-orange-6)"
                 icon={

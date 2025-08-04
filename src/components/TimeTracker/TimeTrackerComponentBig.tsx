@@ -14,14 +14,13 @@ import {
   LoadingOverlay,
 } from "@mantine/core";
 import {
-  IconClock,
   IconPlayerPause,
   IconPlayerPlay,
   IconPlayerStop,
   IconCurrencyDollar,
   IconCurrencyEuro,
   IconX,
-} from "@tabler/icons-react"; 
+} from "@tabler/icons-react";
 import TimeTrackerRow from "./TimeTrackerRow";
 
 import classes from "./TimeTracker.module.css";
@@ -184,30 +183,40 @@ export default function TimeTrackerComponentBig({
                 <TimeTrackerRow
                   icon={
                     currency === "EUR" ? (
-                      <IconCurrencyEuro size={20} />
+                      <IconCurrencyEuro size={20} color="var(--mantine-color-grape-6)" />
                     ) : (
-                      <IconCurrencyDollar size={20} />
+                      <IconCurrencyDollar size={20} color="var(--mantine-color-grape-6)" />
                     )
                   }
                   value={moneyEarned}
                   state={state}
                   activationState={TimerState.Running}
-                  color="yellow"
+                  color="var(--mantine-color-grape-6)"
                 />
               )}
               <TimeTrackerRow
-                icon={<IconClock size={20} />}
+                icon={
+                  <IconPlayerPlay
+                    size={20}
+                    color="var(--mantine-color-blue-6)"
+                  />
+                }
                 value={activeTime}
                 state={state}
                 activationState={TimerState.Running}
-                color="red"
+                color="var(--mantine-color-blue-6)"
               />
               <TimeTrackerRow
-                icon={<IconPlayerPause size={20} />}
+                icon={
+                  <IconPlayerPause
+                    size={20}
+                    color="var(--mantine-color-orange-6)"
+                  />
+                }
                 value={pausedTime}
                 state={state}
                 activationState={TimerState.Paused}
-                color="blue"
+                color="var(--mantine-color-orange-6)"
               />
             </Stack>
 
