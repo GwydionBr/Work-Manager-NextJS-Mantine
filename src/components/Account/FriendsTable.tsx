@@ -1,4 +1,4 @@
-import { Avatar, Box, Group, Table } from "@mantine/core";
+import { Avatar, Box, Group, Table, Text } from "@mantine/core";
 
 import { Friend } from "@/stores/userStore";
 import CheckActionIcon from "../UI/ActionIcons/CheckActionIcon";
@@ -26,8 +26,16 @@ export default function FriendsTable({
       <Table.Td>
         <Avatar src={friend.profile.avatar_url} size={32} color="teal" />
       </Table.Td>
-      <Table.Td>{friend.profile.username}</Table.Td>
-      <Table.Td>{friend.profile.email}</Table.Td>
+      <Table.Td>
+        <Text size="sm" fw={500}>
+          {friend.profile.username}
+        </Text>
+      </Table.Td>
+      <Table.Td visibleFrom="sm">
+        <Text size="sm" c="dimmed">
+          {friend.profile.email}
+        </Text>
+      </Table.Td>
       {(checkIcon || xIcon) && (
         <Table.Td>
           <Group gap={5} wrap="nowrap">
@@ -52,7 +60,8 @@ export default function FriendsTable({
           <Table.Tr>
             <Table.Th></Table.Th>
             <Table.Th>Username</Table.Th>
-            <Table.Th>Email</Table.Th>
+            <Table.Th visibleFrom="sm">Email</Table.Th>
+            {(checkIcon || xIcon) && <Table.Th></Table.Th>}
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>{rows}</Table.Tbody>
