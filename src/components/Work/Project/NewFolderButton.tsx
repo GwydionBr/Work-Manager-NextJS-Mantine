@@ -35,17 +35,22 @@ export default function NewFolderButton() {
     setSubmitting(true);
     const success = await addProjectFolder({ ...values });
     if (success) {
-      close();
+      handleClose();
       form.reset();
     }
     setSubmitting(false);
+  }
+
+  function handleClose() {
+    close();
+    form.reset();
   }
 
   return (
     <Group align="center" justify="flex-end">
       <Modal
         opened={opened}
-        onClose={close}
+        onClose={handleClose}
         title="Add Folder"
         size="md"
         padding="md"
@@ -64,7 +69,7 @@ export default function NewFolderButton() {
               {...form.getInputProps("description")}
             />
             <Group justify="flex-end">
-              <CancelButton onClick={close} />
+              <CancelButton onClick={handleClose} />
               <CreateButton
                 onClick={form.onSubmit(handleSubmit)}
                 loading={submitting}

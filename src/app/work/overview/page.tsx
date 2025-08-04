@@ -6,7 +6,7 @@ import { useSessionFiltering } from "@/hooks/useSessionFiltering";
 
 import { Box, Collapse, Stack, Text } from "@mantine/core";
 import Header from "@/components/Header/Header";
-import PayoutMenu from "@/components/Work/Project/PayoutMenu";
+import PayoutMenu from "@/components/Payout/PayoutMenu";
 import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
 import { groupSessions } from "@/utils/sessionHelperFunctions";
 import BulkSelectionControls from "@/components/Work/Session/BulkSelectionControls";

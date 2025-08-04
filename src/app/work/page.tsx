@@ -10,7 +10,7 @@ import EditProjectButton from "@/components/Work/Project/EditProjectButton";
 import Header from "@/components/Header/Header";
 
 import { formatMoney, getCurrencySymbol } from "@/utils/workHelperFunctions";
-import PayoutMenu from "@/components/Work/Project/PayoutMenu";
+import PayoutMenu from "@/components/Payout/PayoutMenu";
 import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
 import BulkSelectionControls from "@/components/Work/Session/BulkSelectionControls";
 import { groupSessions } from "@/utils/sessionHelperFunctions";
