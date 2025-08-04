@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTimeTracker } from "@/stores/timeTrackerStore";
+import { TimerState, useTimeTracker } from "@/stores/timeTrackerStore";
 
 import {
   Stack,
@@ -14,11 +14,22 @@ import {
   Alert,
   TextInput,
   Select,
+  Card,
+  Badge,
+  Title,
+  Paper,
 } from "@mantine/core";
-import { IconAlertCircle } from "@tabler/icons-react";
+import {
+  IconAlertCircle,
+  IconClock,
+  IconPlayerPlay,
+  IconPlayerPause,
+  IconPlus,
+  IconMinus,
+  IconSettings,
+} from "@tabler/icons-react";
 import MoreActionIcon from "../UI/ActionIcons/MoreActionIcon";
-import PlusActionIcon from "../UI/ActionIcons/PlusActionIcon";
-import MinusActionIcon from "../UI/ActionIcons/MinusActionIcon";
+import TimeTrackerRow from "./TimeTrackerRow";
 
 export default function ModifyTimeTrackerModal() {
   const [opened, setOpened] = useState(false);
@@ -70,7 +81,7 @@ export default function ModifyTimeTrackerModal() {
       const newStoredActiveSeconds = storedActiveSeconds + seconds;
 
       if (newStoredActiveSeconds < 0) {
-        setErrorMessage("Die aktive Zeit kann nicht unter 0 fallen.");
+        setErrorMessage("Active time cannot fall below 0.");
         return;
       }
 
@@ -88,7 +99,7 @@ export default function ModifyTimeTrackerModal() {
       const newStoredPausedSeconds = storedPausedSeconds + seconds;
 
       if (newStoredPausedSeconds < 0) {
-        setErrorMessage("Die pausierte Zeit kann nicht unter 0 fallen.");
+        setErrorMessage("Paused time cannot fall below 0.");
         return;
       }
 
@@ -103,6 +114,19 @@ export default function ModifyTimeTrackerModal() {
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
     return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  const formatTimeDisplay = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    } else if (minutes > 0) {
+      return `${minutes}m`;
+    } else {
+      return `${seconds}s`;
+    }
   };
 
   return (
@@ -120,133 +144,307 @@ export default function ModifyTimeTrackerModal() {
           setPausedTimeInput("");
           setErrorMessage("");
         }}
-        title="Zeit anpassen"
-        size="md"
+        title={
+          <Group gap="xs">
+            <IconSettings size={20} />
+            <Text fw={600}>Modify Time Tracker</Text>
+          </Group>
+        }
+        size="lg"
+        styles={{
+          title: {
+            fontSize: "1.2rem",
+            fontWeight: 600,
+          },
+          header: {
+            borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-3))",
+            paddingBottom: "1rem",
+          },
+        }}
       >
-        <Stack gap="md">
+        <Stack gap="lg">
           {/* Aktuelle Zeiten anzeigen */}
-          <Box>
-            <Text size="sm" c="dimmed" mb="xs">
-              Aktuelle Zeiten:
-            </Text>
-            <Group gap="md">
-              <Box>
-                <Text size="xs" c="dimmed">
-                  Aktiv:
-                </Text>
-                <Text fw={500}>{formatTime(activeSeconds)}</Text>
-              </Box>
-              <Box>
-                <Text size="xs" c="dimmed">
-                  Pausiert:
-                </Text>
-                <Text fw={500}>{formatTime(pausedSeconds)}</Text>
-              </Box>
+          <Card withBorder shadow="sm" radius="md" p="lg">
+            <Group justify="space-between" mb="md">
+              <Title order={4} c="dimmed">
+                <IconClock size={18} style={{ marginRight: "8px" }} />
+                Current Times
+              </Title>
             </Group>
-          </Box>
 
-          <Divider />
+            <Group gap="xl" justify="center">
+              <TimeTrackerRow
+                value={formatTime(activeSeconds)}
+                state={TimerState.Running}
+                activationState={TimerState.Running}
+                color="var(--mantine-color-blue-6)"
+                icon={
+                  <IconPlayerPlay
+                    size={16}
+                    color="var(--mantine-color-blue-6)"
+                  />
+                }
+              />
+
+              <TimeTrackerRow
+                value={formatTime(pausedSeconds)}
+                state={TimerState.Paused}
+                activationState={TimerState.Paused}
+                color="var(--mantine-color-orange-6)"
+                icon={
+                  <IconPlayerPause
+                    size={16}
+                    color="var(--mantine-color-orange-6)"
+                  />
+                }
+              />
+            </Group>
+          </Card>
 
           {/* Schnelle Anpassungen */}
-          <Box>
-            <Text size="sm" fw={500} mb="xs">
-              Schnelle Anpassungen
-            </Text>
-            <Group gap="xs">
-              <MinusActionIcon onClick={() => handleActiveTimeChange(-300)} />
-              <Text size="xs">-5 Min</Text>
-              <MinusActionIcon onClick={() => handleActiveTimeChange(-60)} />
-              <Text size="xs">-1 Min</Text>
-              <Text size="sm">Aktive Zeit</Text>
-              <PlusActionIcon onClick={() => handleActiveTimeChange(60)} />
-              <Text size="xs">+1 Min</Text>
-              <PlusActionIcon onClick={() => handleActiveTimeChange(300)} />
-              <Text size="xs">+5 Min</Text>
-            </Group>
-            <Group gap="xs" mt="xs">
-              <MinusActionIcon onClick={() => handlePausedTimeChange(-300)} />
-              <Text size="xs">-5 Min</Text>
-              <MinusActionIcon onClick={() => handlePausedTimeChange(-60)} />
-              <Text size="xs">-1 Min</Text>
-              <Text size="sm">Pausierte Zeit</Text>
-              <PlusActionIcon onClick={() => handlePausedTimeChange(60)} />
-              <Text size="xs">+1 Min</Text>
-              <PlusActionIcon onClick={() => handlePausedTimeChange(300)} />
-              <Text size="xs">+5 Min</Text>
-            </Group>
-          </Box>
+          <Card withBorder shadow="sm" radius="md" p="lg">
+            <Title order={4} mb="md" c="dimmed">
+              <IconClock size={18} style={{ marginRight: "8px" }} />
+              Quick Adjustments
+            </Title>
 
-          <Divider />
+            <Stack gap="md">
+              {/* Aktive Zeit */}
+              <Box>
+                <Group mb="xs" gap="xs">
+                  <IconPlayerPlay
+                    size={16}
+                    color="var(--mantine-color-blue-6)"
+                  />
+                  <Text size="sm" fw={600} c="blue.7">
+                    Active Time
+                  </Text>
+                </Group>
+                <Group gap="xs" justify="center">
+                  <Button.Group>
+                    <Button
+                      variant="light"
+                      color="red"
+                      size="sm"
+                      leftSection={<IconMinus size={14} />}
+                      onClick={() => handleActiveTimeChange(-300)}
+                    >
+                      5 Min
+                    </Button>
+                    <Button
+                      variant="light"
+                      color="red"
+                      size="sm"
+                      leftSection={<IconMinus size={14} />}
+                      onClick={() => handleActiveTimeChange(-60)}
+                    >
+                      1 Min
+                    </Button>
+                    <Button
+                      variant="light"
+                      color="green"
+                      size="sm"
+                      leftSection={<IconPlus size={14} />}
+                      onClick={() => handleActiveTimeChange(60)}
+                    >
+                      1 Min
+                    </Button>
+                    <Button
+                      variant="light"
+                      color="green"
+                      size="sm"
+                      leftSection={<IconPlus size={14} />}
+                      onClick={() => handleActiveTimeChange(300)}
+                    >
+                      5 Min
+                    </Button>
+                  </Button.Group>
+                </Group>
+              </Box>
+
+              <Divider />
+
+              {/* Pausierte Zeit */}
+              <Box>
+                <Group mb="xs" gap="xs">
+                  <IconPlayerPause
+                    size={16}
+                    color="var(--mantine-color-orange-6)"
+                  />
+                  <Text size="sm" fw={600} c="orange.7">
+                    Paused Time
+                  </Text>
+                </Group>
+                <Group gap="xs" justify="center">
+                  <Button.Group>
+                    <Button
+                      variant="light"
+                      color="red"
+                      size="sm"
+                      leftSection={<IconMinus size={14} />}
+                      onClick={() => handlePausedTimeChange(-300)}
+                    >
+                      5 Min
+                    </Button>
+                    <Button
+                      variant="light"
+                      color="red"
+                      size="sm"
+                      leftSection={<IconMinus size={14} />}
+                      onClick={() => handlePausedTimeChange(-60)}
+                    >
+                      1 Min
+                    </Button>
+                    <Button
+                      variant="light"
+                      color="green"
+                      size="sm"
+                      leftSection={<IconPlus size={14} />}
+                      onClick={() => handlePausedTimeChange(60)}
+                    >
+                      1 Min
+                    </Button>
+                    <Button
+                      variant="light"
+                      color="green"
+                      size="sm"
+                      leftSection={<IconPlus size={14} />}
+                      onClick={() => handlePausedTimeChange(300)}
+                    >
+                      5 Min
+                    </Button>
+                  </Button.Group>
+                </Group>
+              </Box>
+            </Stack>
+          </Card>
 
           {/* Benutzerdefinierte Anpassungen */}
-          <Box>
-            <Text size="sm" fw={500} mb="xs">
-              Benutzerdefinierte Anpassungen
+          <Card withBorder shadow="sm" radius="md" p="lg">
+            <Title order={4} mb="md" c="dimmed">
+              <IconSettings size={18} style={{ marginRight: "8px" }} />
+              Custom Adjustments
+            </Title>
+
+            <Stack gap="md">
+              <Select
+                label="Time Unit"
+                value={timeUnit}
+                onChange={(value) =>
+                  setTimeUnit(value as "seconds" | "minutes" | "hours")
+                }
+                data={[
+                  { value: "seconds", label: "Seconds" },
+                  { value: "minutes", label: "Minutes" },
+                  { value: "hours", label: "Hours" },
+                ]}
+                styles={{
+                  label: {
+                    fontWeight: 600,
+                    marginBottom: "0.5rem",
+                  },
+                }}
+              />
+
+              <Box>
+                <Group gap="xs" align="end">
+                  <TextInput
+                    label="Change Active Time"
+                    placeholder={`Value in ${timeUnit === "seconds" ? "seconds" : timeUnit === "minutes" ? "minutes" : "hours"}`}
+                    value={activeTimeInput}
+                    onChange={(event) =>
+                      setActiveTimeInput(event.currentTarget.value)
+                    }
+                    style={{ flex: 1 }}
+                    leftSection={
+                      <IconPlayerPlay
+                        size={16}
+                        color="var(--mantine-color-blue-6)"
+                      />
+                    }
+                    styles={{
+                      label: {
+                        fontWeight: 600,
+                        marginBottom: "0.5rem",
+                      },
+                    }}
+                  />
+                  <Button
+                    variant="filled"
+                    color="blue"
+                    size="md"
+                    onClick={handleCustomActiveTimeChange}
+                    disabled={!activeTimeInput}
+                    leftSection={<IconPlus size={16} />}
+                  >
+                    Apply
+                  </Button>
+                </Group>
+              </Box>
+
+              <Box>
+                <Group gap="xs" align="end">
+                  <TextInput
+                    label="Change Paused Time"
+                    placeholder={`Value in ${timeUnit === "seconds" ? "seconds" : timeUnit === "minutes" ? "minutes" : "hours"}`}
+                    value={pausedTimeInput}
+                    onChange={(event) =>
+                      setPausedTimeInput(event.currentTarget.value)
+                    }
+                    style={{ flex: 1 }}
+                    leftSection={
+                      <IconPlayerPause
+                        size={16}
+                        color="var(--mantine-color-orange-6)"
+                      />
+                    }
+                    styles={{
+                      label: {
+                        fontWeight: 600,
+                        marginBottom: "0.5rem",
+                      },
+                    }}
+                  />
+                  <Button
+                    variant="filled"
+                    color="orange"
+                    size="md"
+                    onClick={handleCustomPausedTimeChange}
+                    disabled={!pausedTimeInput}
+                    leftSection={<IconPlus size={16} />}
+                  >
+                    Apply
+                  </Button>
+                </Group>
+              </Box>
+
+              {errorMessage && (
+                <Alert
+                  icon={<IconAlertCircle size="1rem" />}
+                  color="red"
+                  variant="light"
+                  radius="md"
+                >
+                  {errorMessage}
+                </Alert>
+              )}
+            </Stack>
+          </Card>
+
+          <Paper
+            p="md"
+            radius="md"
+            bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8))"
+            withBorder
+          >
+            <Text size="xs" c="dimmed" ta="center" style={{ lineHeight: 1.4 }}>
+              <IconAlertCircle
+                size={12}
+                style={{ marginRight: "4px", verticalAlign: "middle" }}
+              />
+              Note: Negative values reduce time. Time cannot fall below 0.
             </Text>
-
-            <Select
-              label="Zeiteinheit"
-              value={timeUnit}
-              onChange={(value) =>
-                setTimeUnit(value as "seconds" | "minutes" | "hours")
-              }
-              data={[
-                { value: "seconds", label: "Sekunden" },
-                { value: "minutes", label: "Minuten" },
-                { value: "hours", label: "Stunden" },
-              ]}
-              mb="xs"
-            />
-
-            <Group gap="xs" align="end">
-              <TextInput
-                label="Aktive Zeit ändern"
-                placeholder={`Wert in ${timeUnit === "seconds" ? "Sekunden" : timeUnit === "minutes" ? "Minuten" : "Stunden"}`}
-                value={activeTimeInput}
-                onChange={(event) =>
-                  setActiveTimeInput(event.currentTarget.value)
-                }
-                style={{ flex: 1 }}
-              />
-              <Button
-                size="sm"
-                onClick={handleCustomActiveTimeChange}
-                disabled={!activeTimeInput}
-              >
-                Anwenden
-              </Button>
-            </Group>
-
-            <Group gap="xs" align="end" mt="xs">
-              <TextInput
-                label="Pausierte Zeit ändern"
-                placeholder={`Wert in ${timeUnit === "seconds" ? "Sekunden" : timeUnit === "minutes" ? "Minuten" : "Stunden"}`}
-                value={pausedTimeInput}
-                onChange={(event) =>
-                  setPausedTimeInput(event.currentTarget.value)
-                }
-                style={{ flex: 1 }}
-              />
-              <Button
-                size="sm"
-                onClick={handleCustomPausedTimeChange}
-                disabled={!pausedTimeInput}
-              >
-                Anwenden
-              </Button>
-            </Group>
-
-            {errorMessage && (
-              <Alert icon={<IconAlertCircle size="1rem" />} color="red" mt="xs">
-                {errorMessage}
-              </Alert>
-            )}
-          </Box>
-
-          <Text size="xs" c="dimmed" ta="center">
-            Hinweis: Negative Werte reduzieren die Zeit. Die Zeit kann nicht
-            unter 0 fallen.
-          </Text>
+          </Paper>
         </Stack>
       </Modal>
     </Box>
