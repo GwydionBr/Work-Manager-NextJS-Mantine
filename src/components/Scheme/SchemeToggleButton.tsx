@@ -1,38 +1,90 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useDisclosure } from "@mantine/hooks";
 import { useHotkeys } from "@mantine/hooks";
 
 import {
-  Group,
-  HoverCard,
-  useComputedColorScheme,
   useMantineColorScheme,
+  Box,
+  Transition,
   Text,
+  Stack,
 } from "@mantine/core";
 import LightSchemeButton from "./LightSchemeButton";
 import DarkSchemeButton from "./DarkSchemeButton";
+import SystemSchemeButton from "./SystemSchemeButton";
 
 export default function SchemeToggle() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  const { toggleColorScheme } = useMantineColorScheme();
+  const [isOpen, { toggle }] = useDisclosure(false);
+  const { toggleColorScheme, setColorScheme, colorScheme } =
+    useMantineColorScheme();
   useHotkeys([["mod + J", () => toggleColorScheme()]]);
-  const computedColorScheme = useComputedColorScheme("light", {
-    getInitialValueInEffect: true,
-  });
-
-  if (!mounted) {
-    return null; // prevents server/client mismatch
-  }
 
   return (
-    <Group justify="center">
-      {computedColorScheme === "dark" ? (
-        <DarkSchemeButton onClick={toggleColorScheme} active={false} toggleMode={true} />
+    <Stack justify="center">
+      <Transition mounted={isOpen} transition="fade-up" duration={400}>
+        {(transitionStyles) => (
+          <Stack style={transitionStyles}>
+            {colorScheme !== "dark" && (
+              <DarkSchemeButton
+                onClick={() => {
+                  setColorScheme("dark");
+                  toggle();
+                }}
+                active={false}
+                navbarMode={true}
+              />
+            )}
+            {colorScheme !== "light" && (
+              <LightSchemeButton
+                onClick={() => {
+                  setColorScheme("light");
+                  toggle();
+                }}
+                active={false}
+                navbarMode={true}
+              />
+            )}
+            {colorScheme !== "auto" && (
+              <SystemSchemeButton
+                onClick={() => {
+                  setColorScheme("auto");
+                  toggle();
+                }}
+                active={false}
+                navbarMode={true}
+              />
+            )}
+          </Stack>
+        )}
+      </Transition>
+      {colorScheme === "dark" ? (
+        <DarkSchemeButton
+          onClick={() => {
+            toggle();
+          }}
+          active={false}
+          navbarMode={true}
+        />
+      ) : colorScheme === "light" ? (
+        <LightSchemeButton
+          onClick={() => {
+            toggle();
+          }}
+          active={false}
+          navbarMode={true}
+        />
+      ) : colorScheme === "auto" ? (
+        <SystemSchemeButton
+          onClick={() => {
+            toggle();
+          }}
+          active={false}
+          navbarMode={true}
+        />
       ) : (
-        <LightSchemeButton onClick={toggleColorScheme} active={false} toggleMode={true} />
+        <></>
       )}
-    </Group>
+    </Stack>
   );
 }
