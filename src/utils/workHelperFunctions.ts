@@ -71,21 +71,21 @@ export function formatDateTime(date: Date) {
   });
 }
 
-export function formatMoney(amount: number, currency: string): string {
+export function formatMoney(amount: number, currency: Currency): string {
   const hasDecimals = amount % 1 !== 0;
   const formattedAmount = hasDecimals ? amount.toFixed(2) : amount.toString();
-  if (currency === "$") {
+  if (currency === "USD") {
     return `$${formattedAmount}`;
   }
-  return `${formattedAmount} ${currency}`;
+  return `${formattedAmount} ${getCurrencySymbol(currency)}`;
 }
 
-export function formatEarningsAmount(amount: number, currency: string) {
-  if (currency === "$") {
-    return ` ${currency}${amount.toFixed(2)}`;
+export function formatEarningsAmount(amount: number, currency: Currency) {
+  if (currency === "USD") {
+    return ` $${amount.toFixed(2)}`;
   }
 
-  return `${amount.toFixed(2)}${currency}`;
+  return `${amount.toFixed(2)}${getCurrencySymbol(currency)}`;
 }
 
 export function formatDate(date: Date) {

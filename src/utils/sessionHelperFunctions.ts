@@ -154,8 +154,7 @@ export function addEarnings(
 export function formatEarnings(earnings: Earnings[]): string {
   return earnings
     .map((e) => {
-      const shortCurrency = helper.getCurrencySymbol(e.currency);
-      return helper.formatEarningsAmount(e.amount, shortCurrency);
+      return helper.formatMoney(e.amount, e.currency);
     })
     .join(", ");
 }

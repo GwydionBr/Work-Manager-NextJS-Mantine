@@ -18,6 +18,7 @@ import { IconBrandCashapp, IconAlertCircle } from "@tabler/icons-react";
 import * as helper from "@/utils/workHelperFunctions";
 
 import type { Tables } from "@/types/db.types";
+import { Currency } from "@/types/settings.types";
 
 interface HourlyPayoutMenuProps {
   opened: boolean;
@@ -127,10 +128,7 @@ export default function HourlyPayoutMenu({
                       </Stack>
                       <Text size="sm" c="dimmed">
                         {session.hourly_payment
-                          ? helper.formatMoney(
-                              earnings,
-                              helper.getCurrencySymbol(session.currency)
-                            )
+                          ? helper.formatMoney(earnings, session.currency)
                           : "No payment"}
                       </Text>
                     </Group>
@@ -151,20 +149,14 @@ export default function HourlyPayoutMenu({
                 </Text>
                 {Object.entries(sessionPayouts).map(([currency, amount]) => (
                   <Text key={currency} size="sm">
-                    {helper.formatMoney(
-                      amount,
-                      helper.getCurrencySymbol(currency as any)
-                    )}
+                    {helper.formatMoney(amount, currency as Currency)}
                   </Text>
                 ))}
                 <Text size="sm" fw={500} c="teal">
                   Total:{" "}
                   {Object.entries(sessionPayouts)
                     .map(([currency, amount]) =>
-                      helper.formatMoney(
-                        amount,
-                        helper.getCurrencySymbol(currency as any)
-                      )
+                      helper.formatMoney(amount, currency as Currency)
                     )
                     .join(", ")}
                 </Text>

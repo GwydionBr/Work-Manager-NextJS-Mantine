@@ -90,7 +90,7 @@ export default function TimeTrackerInfoHoverCard() {
               </Text>
             </Group>
             <Text size="sm" fw={600}>
-              {formatMoney(salary, getCurrencySymbol(currency))}
+              {formatMoney(salary, currency)}
             </Text>
           </Group>
 

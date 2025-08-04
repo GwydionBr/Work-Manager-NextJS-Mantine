@@ -147,10 +147,7 @@ export default function SessionRow({
               }}
             >
               {session.hourly_payment
-                ? helper.formatMoney(
-                    earnings,
-                    helper.getCurrencySymbol(session.currency)
-                  )
+                ? helper.formatMoney(earnings, session.currency)
                 : ""}
             </Text>
           </Group>

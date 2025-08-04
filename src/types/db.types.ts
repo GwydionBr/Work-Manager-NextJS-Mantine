@@ -398,6 +398,60 @@ export type Database = {
           },
         ];
       };
+      payout: {
+        Row: {
+          cashflow_id: string;
+          created_at: string;
+          end_currency: Database["public"]["Enums"]["currency"] | null;
+          end_value: number | null;
+          id: string;
+          start_currency: Database["public"]["Enums"]["currency"];
+          start_value: number;
+          timer_project_id: string | null;
+          title: string;
+          user_id: string;
+        };
+        Insert: {
+          cashflow_id?: string;
+          created_at?: string;
+          end_currency?: Database["public"]["Enums"]["currency"] | null;
+          end_value?: number | null;
+          id?: string;
+          start_currency: Database["public"]["Enums"]["currency"];
+          start_value: number;
+          timer_project_id?: string | null;
+          title: string;
+          user_id?: string;
+        };
+        Update: {
+          cashflow_id?: string;
+          created_at?: string;
+          end_currency?: Database["public"]["Enums"]["currency"] | null;
+          end_value?: number | null;
+          id?: string;
+          start_currency?: Database["public"]["Enums"]["currency"];
+          start_value?: number;
+          timer_project_id?: string | null;
+          title?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "payout_cashflow_id_fkey";
+            columns: ["cashflow_id"];
+            isOneToOne: false;
+            referencedRelation: "single_cash_flow";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "payout_timer_project_id_fkey";
+            columns: ["timer_project_id"];
+            isOneToOne: false;
+            referencedRelation: "timerProject";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       profiles: {
         Row: {
           avatar_url: string | null;
@@ -783,6 +837,7 @@ export type Database = {
           id: string;
           paused_seconds: number;
           payed: boolean;
+          payout_id: string | null;
           project_id: string;
           real_start_time: string | null;
           salary: number;
@@ -799,6 +854,7 @@ export type Database = {
           id?: string;
           paused_seconds?: number;
           payed?: boolean;
+          payout_id?: string | null;
           project_id?: string;
           real_start_time?: string | null;
           salary: number;
@@ -815,6 +871,7 @@ export type Database = {
           id?: string;
           paused_seconds?: number;
           payed?: boolean;
+          payout_id?: string | null;
           project_id?: string;
           real_start_time?: string | null;
           salary?: number;
@@ -823,6 +880,13 @@ export type Database = {
           user_id?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: "timerSession_payout_id_fkey";
+            columns: ["payout_id"];
+            isOneToOne: false;
+            referencedRelation: "payout";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "timerSession_project_id_fkey";
             columns: ["project_id"];

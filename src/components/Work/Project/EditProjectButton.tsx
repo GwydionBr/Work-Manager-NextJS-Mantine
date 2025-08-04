@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 
-import { Box, Drawer, Flex, Tooltip } from "@mantine/core";
+import { Box, Drawer, Flex } from "@mantine/core";
 import ProjectForm from "@/components/Work/Project/ProjectForm";
 import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";

@@ -9,7 +9,7 @@ import NewSessionButton from "@/components/Work/Session/NewSessionButton";
 import EditProjectButton from "@/components/Work/Project/EditProjectButton";
 import Header from "@/components/Header/Header";
 
-import { formatMoney, getCurrencySymbol } from "@/utils/workHelperFunctions";
+import { formatMoney } from "@/utils/workHelperFunctions";
 import PayoutMenu from "@/components/Payout/PayoutMenu";
 import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
 import BulkSelectionControls from "@/components/Work/Session/BulkSelectionControls";
@@ -53,7 +53,7 @@ export default function WorkPage() {
 
   const salary = formatMoney(
     activeProject.project.salary,
-    getCurrencySymbol(activeProject.project.currency)
+    activeProject.project.currency
   );
 
   // Calculate total active seconds from all sessions
@@ -68,7 +68,7 @@ export default function WorkPage() {
       : totalActiveSeconds > 0
         ? (activeProject.project.salary / totalActiveSeconds) * 3600
         : 0,
-    getCurrencySymbol(activeProject.project.currency)
+    activeProject.project.currency
   );
 
   const handleSessionToggle = (sessionId: string) => {

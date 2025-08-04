@@ -13,6 +13,7 @@ export type Currency =
   | "BRL"
   | "VEF";
 
+
 export type CashFlowType = "income" | "expense";
 export type FinanceInterval =
   | "day"

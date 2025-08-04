@@ -45,6 +45,7 @@ interface WorkStoreActions {
     sessionIds: string[],
     startValue: number,
     startCurrency: Currency,
+    categoryId: string | null,
     endValue: number | null,
     endCurrency: Currency | null
   ) => Promise<boolean>;
@@ -289,14 +290,17 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         sessionIds,
         startValue,
         startCurrency,
+        categoryId,
         endValue,
         endCurrency
       ) {
         const { updateStore, projects, timerSessions } = get();
         const payoutResult = await actions.payoutSessions({
+          date: new Date(),
           sessionIds,
           startValue,
           startCurrency,
+          categoryId,
           endValue,
           endCurrency,
         });

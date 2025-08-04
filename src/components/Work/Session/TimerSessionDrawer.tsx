@@ -55,6 +55,7 @@ export default function TimerSessionDrawer({
       currency: project?.hourly_payment
         ? values.currency
         : project?.currency || timerSession.currency,
+      payout_id: null,
     };
 
     const success = await updateTimerSession(newSession);

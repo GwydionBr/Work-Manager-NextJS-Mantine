@@ -69,25 +69,14 @@ export default function ProjectPayoutMenu({
 
       <Stack gap="xs">
         <Text size="sm" c="dimmed">
-          Total Salary:{" "}
-          {helper.formatMoney(
-            project.salary,
-            helper.getCurrencySymbol(project.currency)
-          )}
+          Total Salary: {helper.formatMoney(project.salary, project.currency)}
         </Text>
         <Text size="sm" c="dimmed">
           Already Paid:{" "}
-          {helper.formatMoney(
-            project.total_payout || 0,
-            helper.getCurrencySymbol(project.currency)
-          )}
+          {helper.formatMoney(project.total_payout || 0, project.currency)}
         </Text>
         <Text size="sm" fw={500} c="teal">
-          Available:{" "}
-          {helper.formatMoney(
-            availablePayout,
-            helper.getCurrencySymbol(project.currency)
-          )}
+          Available: {helper.formatMoney(availablePayout, project.currency)}
         </Text>
       </Stack>
 
@@ -123,10 +112,7 @@ export default function ProjectPayoutMenu({
           ) : (
             <Text size="sm" c="dimmed">
               Will payout full available amount:{" "}
-              {helper.formatMoney(
-                availablePayout,
-                helper.getCurrencySymbol(project.currency)
-              )}
+              {helper.formatMoney(availablePayout, project.currency)}
             </Text>
           )}
 
@@ -144,7 +130,7 @@ export default function ProjectPayoutMenu({
           >
             {isProcessing
               ? "Processing..."
-              : `Payout ${useCustomAmount ? helper.formatMoney(payoutAmount, helper.getCurrencySymbol(project.currency)) : helper.formatMoney(availablePayout, helper.getCurrencySymbol(project.currency))}`}
+              : `Payout ${useCustomAmount ? helper.formatMoney(payoutAmount, project.currency) : helper.formatMoney(availablePayout, project.currency)}`}
           </Button>
         </>
       ) : (

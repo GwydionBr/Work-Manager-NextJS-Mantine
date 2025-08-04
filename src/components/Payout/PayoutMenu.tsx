@@ -6,10 +6,11 @@ import { useDisclosure } from "@mantine/hooks";
 import { Box, Menu, Button } from "@mantine/core";
 import ProjectPayoutMenu from "./ProjectPayoutMenu";
 import HourlyPayoutMenu from "./HourlyPayoutMenu";
-import PayoutModal from "./PayoutModal";
+import PayoutModal from "./Modal/PayoutModal";
 import { IconBrandCashapp } from "@tabler/icons-react";
 
 import type { Tables } from "@/types/db.types";
+import { Currency } from "@/types/settings.types";
 
 interface PayoutMenuProps {
   sessions: Tables<"timerSession">[];
@@ -107,7 +108,7 @@ export default function PayoutMenu({
         acc[currency] += earnings;
         return acc;
       },
-      {} as Record<string, number>
+      {} as Record<Currency, number>
     );
 
     return payoutsByCurrency;
@@ -174,8 +175,7 @@ export default function PayoutMenu({
         opened={openedModal}
         handleClose={closeModal}
         sessionIds={selectedUnpaidSessions}
-        value={0}
-        currency={"USD"}
+        sessionPayouts={sessionPayouts}
       />
     </Box>
   );
