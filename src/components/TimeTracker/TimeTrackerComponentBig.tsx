@@ -32,7 +32,7 @@ import ResumeActionIcon from "./TimeTrackerActionIcons/ResumeActionIcon";
 import TimeTrackerActionIcon from "./TimeTrackerActionIcons/TimeTrackerActionIcon";
 import { RoundingDirection, Currency } from "@/types/settings.types";
 import TimeTrackerInfoHoverCard from "./TimeTrackerInfoHoverCard";
-import ModifyTimeTrackerModal from "./ModifyTimeTrackerModal";
+import ModifyTimeTrackerModal from "./ModifyTimeTracker/ModifyTimeTrackerModal";
 
 interface TimeTrackerComponentBigProps {
   isTimeTrackerMinimized: boolean;

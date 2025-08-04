@@ -19,7 +19,7 @@ import CancelActionIcon from "./TimeTrackerActionIcons/CancelActionIcon";
 import TimeTrackerActionIcon from "./TimeTrackerActionIcons/TimeTrackerActionIcon";
 import TimeTrackerInfoHoverCard from "./TimeTrackerInfoHoverCard";
 import { Currency, RoundingDirection } from "@/types/settings.types";
-import ModifyTimeTrackerModal from "./ModifyTimeTrackerModal";
+import ModifyTimeTrackerModal from "./ModifyTimeTracker/ModifyTimeTrackerModal";
 
 interface TimeTrackerComponentSmallProps {
   showSmall: boolean;
@@ -110,11 +110,7 @@ export default function TimeTrackerComponentSmall({
             <Text fz={11} c="dimmed" ta="center">
               Paused
             </Text>
-            <Text
-              fz={11}
-              fw={state === "paused" ? 700 : 400}
-              ta="center"
-            >
+            <Text fz={11} fw={state === "paused" ? 700 : 400} ta="center">
               {pausedTime}
             </Text>
           </Card>
