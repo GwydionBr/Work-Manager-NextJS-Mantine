@@ -19,7 +19,7 @@ export {
 // Payout Actions
 
 export { payoutSessions } from "./payout/sessionPayout";
-export { payoutProjectSalary } from "./payout/projectPayout";
+export { createPayout } from "./payout/createPayout";
 
 // Session Actions
 

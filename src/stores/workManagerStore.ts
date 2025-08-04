@@ -50,7 +50,14 @@ interface WorkStoreActions {
     endValue: number | null,
     endCurrency: Currency | null
   ) => Promise<SuccessPayoutResponse | ErrorResponse>;
-  payoutProjectSalary: (projectId: string, amount: number) => Promise<boolean>;
+  payoutProjectSalary: (
+    projectId: string,
+    startValue: number,
+    startCurrency: Currency,
+    categoryId: string | null,
+    endValue: number | null,
+    endCurrency: Currency | null
+  ) => Promise<SuccessPayoutResponse | ErrorResponse>;
   addProjectFolder: (
     folder: TablesInsert<"timer_project_folder">
   ) => Promise<boolean>;
@@ -325,35 +332,25 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         return payoutResult;
       },
 
-      async payoutProjectSalary(projectId, amount) {
-        const { updateStore, projects, timerSessions } = get();
-        const payoutResult = await actions.payoutProjectSalary({
+      async payoutProjectSalary(
+        projectId,
+        startValue,
+        startCurrency,
+        categoryId,
+        endValue,
+        endCurrency
+      ) {
+        const payoutResult = await actions.createPayout({
           projectId,
-          amount,
-        });
-        if (!payoutResult.success) {
-          return false;
-        }
-
-        // Update project total_payout in the store
-        const updatedProjects = projects.map((p) => {
-          if (p.project.id === projectId) {
-            const newTotalPayout = (p.project.total_payout || 0) + amount;
-            return {
-              project: { ...p.project, total_payout: newTotalPayout },
-              sessions: p.sessions.map((s) => ({ ...s, payed: true })),
-            };
-          }
-          return p;
+          date: new Date(),
+          startValue,
+          startCurrency,
+          categoryId,
+          endValue,
+          endCurrency,
         });
 
-        // Update all sessions for this project to mark them as paid
-        const updatedSessions = timerSessions.map((s) =>
-          s.project_id === projectId ? { ...s, payed: true } : s
-        );
-
-        updateStore(updatedProjects, updatedSessions);
-        return true;
+        return payoutResult;
       },
 
       async addProjectFolder(folder) {

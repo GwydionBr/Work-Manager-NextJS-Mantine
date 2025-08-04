@@ -19,7 +19,6 @@ import type { Tables } from "@/types/db.types";
 
 interface ProjectPayoutMenuProps {
   project: Tables<"timerProject">;
-  opened: boolean;
   availablePayout: number;
   useCustomAmount: boolean;
   payoutAmount: number;
@@ -31,7 +30,6 @@ interface ProjectPayoutMenuProps {
 
 export default function ProjectPayoutMenu({
   project,
-  opened,
   availablePayout,
   useCustomAmount,
   payoutAmount,
@@ -94,6 +92,7 @@ export default function ProjectPayoutMenu({
 
           {useCustomAmount ? (
             <NumberInput
+              allowLeadingZeros={false}
               label="Payout Amount"
               placeholder="Enter amount"
               min={0}

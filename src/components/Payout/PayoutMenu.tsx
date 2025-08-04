@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDisclosure } from "@mantine/hooks";
 
 import { Box, Menu, Button } from "@mantine/core";
@@ -35,6 +35,15 @@ export default function PayoutMenu({
     useDisclosure(false);
   const [payoutAmount, setPayoutAmount] = useState<number>(0);
   const [useCustomAmount, setUseCustomAmount] = useState(false);
+  const [payoutCurrency, setPayoutCurrency] = useState<Currency>("USD");
+  const [payoutCategoryId, setPayoutCategoryId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (project) {
+      setPayoutCurrency(project.currency);
+      setPayoutCategoryId(project.cash_flow_category_id);
+    }
+  }, [project]);
 
   // Filter out already paid sessions
   const unpaidSessions = sessions.filter((session) => {
@@ -145,7 +154,6 @@ export default function PayoutMenu({
           {project && !project.hourly_payment ? (
             <ProjectPayoutMenu
               project={project}
-              opened={openedMenu}
               closeMenu={closeMenu}
               openModal={openModal}
               availablePayout={availablePayout}
@@ -176,6 +184,10 @@ export default function PayoutMenu({
         handleClose={closeModal}
         sessionIds={selectedUnpaidSessions}
         sessionPayouts={sessionPayouts}
+        payoutCategoryId={payoutCategoryId}
+        project={project}
+        payoutAmount={useCustomAmount ? payoutAmount : availablePayout}
+        payoutCurrency={payoutCurrency}
       />
     </Box>
   );

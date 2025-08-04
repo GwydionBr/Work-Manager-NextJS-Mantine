@@ -1,12 +1,12 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { ErrorResponse, SuccessPayoutResponse } from "@/types/action.types";
+import { SuccessPayoutResponse, ErrorResponse } from "@/types/action.types";
 import { Currency } from "@/types/settings.types";
 
-interface PayoutSessionsProps {
+interface CreatePayoutProps {
+  projectId: string | null;
   date: Date;
-  sessionIds: string[];
   startValue: number;
   startCurrency: Currency;
   categoryId: string | null;
@@ -14,21 +14,21 @@ interface PayoutSessionsProps {
   endCurrency: Currency | null;
 }
 
-export async function payoutSessions({
+export async function createPayout({
+  projectId,
   date,
-  sessionIds,
   startValue,
   startCurrency,
   categoryId,
   endValue,
   endCurrency,
-}: PayoutSessionsProps): Promise<SuccessPayoutResponse | ErrorResponse> {
+}: CreatePayoutProps): Promise<SuccessPayoutResponse | ErrorResponse> {
   const supabase = await createClient();
 
   const { data: cashFlow, error: cashFlowError } = await supabase
     .from("single_cash_flow")
     .insert({
-      title: `SessionPayout ${date.toLocaleDateString()}`,
+      title: `Project Payout ${date.toLocaleDateString()}`,
       category_id: categoryId,
       type: "income",
       amount: endValue ?? startValue,
@@ -50,8 +50,8 @@ export async function payoutSessions({
       start_currency: startCurrency,
       end_value: endValue,
       end_currency: endCurrency,
-      timer_project_id: null,
-      title: `Session Payout ${date.toLocaleDateString()}`,
+      timer_project_id: projectId,
+      title: `Project Payout ${date.toLocaleDateString()}`,
     })
     .select()
     .single();
@@ -60,18 +60,9 @@ export async function payoutSessions({
     return { success: false, data: null, error: payoutError.message };
   }
 
-  for (const sessionId of sessionIds) {
-    const { error: sessionError } = await supabase
-      .from("timerSession")
-      .update({
-        payed: true,
-        payout_id: payout.id,
-      })
-      .eq("id", sessionId);
-    if (sessionError) {
-      return { success: false, data: null, error: sessionError.message };
-    }
-  }
-
-  return { success: true, data: { cashFlow, payout }, error: null };
+  return {
+    success: true,
+    data: { cashFlow, payout },
+    error: null,
+  };
 }

@@ -27,6 +27,7 @@ interface SessionModalFormProps {
   handleClose: () => void;
   startValue: number;
   startCurrency: Currency;
+  categoryId: string | null;
 }
 
 const schema = z.object({
@@ -39,6 +40,7 @@ export default function SessionModalForm({
   handleClose,
   startValue,
   startCurrency,
+  categoryId,
 }: SessionModalFormProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,7 +61,7 @@ export default function SessionModalForm({
       sessionIds,
       startValue,
       startCurrency,
-      null,
+      categoryId,
       values.endValue !== startValue ? values.endValue : null,
       values.endCurrency !== startCurrency
         ? (values.endCurrency as Currency)
@@ -78,10 +80,12 @@ export default function SessionModalForm({
     setIsProcessing(false);
   }
 
+  const startValueString = formatMoney(startValue ?? 0, startCurrency);
+
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
       <Stack>
-        {/* <Text>Start Value: {formatMoney(startValue, startCurrency)}</Text> */}
+        <Text>Start Value: {startValueString}</Text>
         <Divider />
         <Group justify="center">
           <IconArrowDown />
