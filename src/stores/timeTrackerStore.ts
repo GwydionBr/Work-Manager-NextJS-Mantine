@@ -47,10 +47,8 @@ interface TimeTrackerState {
   stopTimer: () => void;
   cancelTimer: () => void;
   getCurrentSession: () => TablesInsert<"timerSession">;
-  modifyTimer: (
-    activeSecondsChange: number,
-    pausedSecondsChange: number
-  ) => void;
+  modifyActiveSeconds: (activeSecondsChange: number) => void;
+  modifyPausedSeconds: (pausedSecondsChange: number) => void;
   configureProject: (
     projectId: string,
     projectTitle: string,
@@ -162,29 +160,46 @@ export const useTimeTracker = create(
           startLoop(get, set);
         },
 
-        modifyTimer: (activeSecondsChange, pausedSecondsChange) => {
-          const {
-            storedActiveSeconds,
-            storedPausedSeconds,
-            activeSeconds,
-            pausedSeconds,
-          } = get();
-          const newStoredActiveSeconds =
-            storedActiveSeconds + activeSecondsChange;
-          const newStoredPausedSeconds =
-            storedPausedSeconds + pausedSecondsChange;
-          const newActiveTime = secondsToTimerFormat(
-            newStoredActiveSeconds + activeSeconds
-          );
-          const newPausedTime = secondsToTimerFormat(
-            newStoredPausedSeconds + pausedSeconds
-          );
-          set({
-            storedActiveSeconds: newStoredActiveSeconds,
-            storedPausedSeconds: newStoredPausedSeconds,
-            activeTime: newActiveTime,
-            pausedTime: newPausedTime,
-          });
+        modifyActiveSeconds: (delta) => {
+          const { state, activeSeconds } = get();
+
+          const newActiveSeconds = Math.max(0, activeSeconds + delta);
+
+          if (state !== TimerState.Running) {
+            set({
+              storedActiveSeconds: newActiveSeconds,
+              activeTime: secondsToTimerFormat(newActiveSeconds),
+              activeSeconds: newActiveSeconds,
+            });
+          } else {
+            set({
+              activeSeconds: newActiveSeconds,
+              activeTime: secondsToTimerFormat(newActiveSeconds),
+              storedActiveSeconds: newActiveSeconds,
+              tempStartTime: Date.now(),
+            });
+          }
+        },
+
+        modifyPausedSeconds: (delta) => {
+          const { state, pausedSeconds } = get();
+
+          const newPausedSeconds = Math.max(0, pausedSeconds + delta);
+
+          if (state !== TimerState.Paused) {
+            set({
+              storedPausedSeconds: newPausedSeconds,
+              pausedTime: secondsToTimerFormat(newPausedSeconds),
+              pausedSeconds: newPausedSeconds,
+            });
+          } else {
+            set({
+              pausedSeconds: newPausedSeconds,
+              pausedTime: secondsToTimerFormat(newPausedSeconds),
+              storedPausedSeconds: newPausedSeconds,
+              tempStartTime: Date.now(),
+            });
+          }
         },
 
         configureProject: (
