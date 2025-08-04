@@ -15,6 +15,7 @@ import {
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { TimerProject, ProjectTreeItem } from "@/types/work.types";
 import { Currency } from "@/types/settings.types";
+import { ErrorResponse, SuccessPayoutResponse } from "@/types/action.types";
 
 interface WorkStoreState {
   projectTree: ProjectTreeItem[];
@@ -48,7 +49,7 @@ interface WorkStoreActions {
     categoryId: string | null,
     endValue: number | null,
     endCurrency: Currency | null
-  ) => Promise<boolean>;
+  ) => Promise<SuccessPayoutResponse | ErrorResponse>;
   payoutProjectSalary: (projectId: string, amount: number) => Promise<boolean>;
   addProjectFolder: (
     folder: TablesInsert<"timer_project_folder">
@@ -305,12 +306,14 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           endCurrency,
         });
         if (!payoutResult.success) {
-          return false;
+          return payoutResult;
         }
 
         // Update sessions to mark them as paid
         const updatedSessions = timerSessions.map((s) =>
-          sessionIds.includes(s.id) ? { ...s, payed: true } : s
+          sessionIds.includes(s.id)
+            ? { ...s, payed: true, payout_id: payoutResult.data.payout.id }
+            : s
         );
         const updatedProjects = projects.map((p) => ({
           project: p.project,
@@ -319,7 +322,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           ),
         }));
         updateStore(updatedProjects, updatedSessions);
-        return true;
+        return payoutResult;
       },
 
       async payoutProjectSalary(projectId, amount) {

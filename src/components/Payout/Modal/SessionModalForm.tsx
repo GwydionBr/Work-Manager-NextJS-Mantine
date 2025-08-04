@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useForm, zodResolver } from "@mantine/form";
 
@@ -17,7 +18,7 @@ import {
 } from "@mantine/core";
 import { IconArrowDown } from "@tabler/icons-react";
 import { currencies } from "@/constants/settings";
-import { formatCurrency } from "@/utils/financeChartHelperFunctions";
+import { formatMoney } from "@/utils/workHelperFunctions";
 
 interface SessionModalFormProps {
   sessionIds: string[];
@@ -40,6 +41,7 @@ export default function SessionModalForm({
   startValue,
   startCurrency,
 }: SessionModalFormProps) {
+  const [isProcessing, setIsProcessing] = useState(false);
   const form = useForm({
     initialValues: {
       endValue: startValue,
@@ -50,8 +52,9 @@ export default function SessionModalForm({
 
   const { payoutSessions } = useWorkStore();
 
-  function onSubmit(values: z.infer<typeof schema>) {
-    payoutSessions(
+  async function onSubmit(values: z.infer<typeof schema>) {
+    setIsProcessing(true);
+    const payoutResult = await payoutSessions(
       sessionIds,
       startValue,
       startCurrency,
@@ -59,15 +62,17 @@ export default function SessionModalForm({
       values.endValue ?? null,
       values.endCurrency as Currency | null
     );
-    handleClose();
+    if (payoutResult.success) {
+      
+      handleClose();
+    }
+    setIsProcessing(false);
   }
 
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
       <Stack>
-        <Text>
-          Start Value: {formatCurrency(startValue, startCurrency)}
-        </Text>
+        <Text>Start Value: {formatMoney(startValue, startCurrency)}</Text>
         <Divider />
         <Group justify="center">
           <IconArrowDown />
@@ -84,7 +89,9 @@ export default function SessionModalForm({
           }
           error={form.errors.endCurrency}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit" loading={isProcessing}>
+          Submit
+        </Button>
       </Stack>
     </form>
   );

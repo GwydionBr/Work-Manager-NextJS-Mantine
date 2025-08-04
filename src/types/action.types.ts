@@ -53,3 +53,12 @@ export type ApiResponseSingle<T extends TableNames> =
 export type SimpleResponse =
   | { success: true; data: null; error: null }
   | ErrorResponse;
+
+export type SuccessPayoutResponse = {
+  success: true;
+  data: {
+    cashFlow: Tables<"single_cash_flow">;
+    payout: Tables<"payout">;
+  };
+  error: null;
+};
