@@ -75,9 +75,6 @@ export default function TimeTrackerComponentBig({
   submitTimer,
   cancelTimer,
   getStatusColor,
-  salary,
-  roundingMode,
-  roundingInterval,
 }: TimeTrackerComponentBigProps) {
   return (
     <Stack align="center" w="100%">
@@ -91,7 +88,18 @@ export default function TimeTrackerComponentBig({
         <Card shadow="sm" padding="xs" radius="md" withBorder w={270}>
           <LoadingOverlay visible={isSubmitting} overlayProps={{ blur: 2 }} />
           <Group align="center" justify="center" gap="xs">
-            <Card shadow="sm" padding="xs" radius="md" withBorder>
+            <Card
+              shadow="sm"
+              padding="xs"
+              radius="md"
+              withBorder
+              style={{
+                borderColor:
+                  state === TimerState.Running
+                    ? "var(--mantine-color-blue-6)"
+                    : "",
+              }}
+            >
               <Stack>
                 <Text size="xs" c="dimmed">
                   Active
@@ -101,7 +109,18 @@ export default function TimeTrackerComponentBig({
                 </Text>
               </Stack>
             </Card>
-            <Card shadow="sm" padding="xs" radius="md" withBorder>
+            <Card
+              shadow="sm"
+              padding="xs"
+              radius="md"
+              withBorder
+              style={{
+                borderColor:
+                  state === TimerState.Paused
+                    ? "var(--mantine-color-orange-6)"
+                    : "",
+              }}
+            >
               <Stack>
                 <Text size="xs" c="dimmed">
                   Paused
@@ -183,9 +202,15 @@ export default function TimeTrackerComponentBig({
                 <TimeTrackerRow
                   icon={
                     currency === "EUR" ? (
-                      <IconCurrencyEuro size={20} color="var(--mantine-color-grape-6)" />
+                      <IconCurrencyEuro
+                        size={20}
+                        color="var(--mantine-color-grape-6)"
+                      />
                     ) : (
-                      <IconCurrencyDollar size={20} color="var(--mantine-color-grape-6)" />
+                      <IconCurrencyDollar
+                        size={20}
+                        color="var(--mantine-color-grape-6)"
+                      />
                     )
                   }
                   value={moneyEarned}

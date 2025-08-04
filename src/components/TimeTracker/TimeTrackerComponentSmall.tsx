@@ -2,7 +2,14 @@
 
 import { TimerState } from "@/stores/timeTrackerStore";
 
-import { Stack, Text, Collapse, Divider, LoadingOverlay } from "@mantine/core";
+import {
+  Stack,
+  Text,
+  Collapse,
+  Divider,
+  LoadingOverlay,
+  Card,
+} from "@mantine/core";
 
 import StartActionIcon from "./TimeTrackerActionIcons/StartActionIcons";
 import PauseActionIcon from "./TimeTrackerActionIcons/PauseActionIcon";
@@ -48,12 +55,6 @@ export default function TimeTrackerComponentSmall({
   submitTimer,
   cancelTimer,
   getStatusColor,
-  projectTitle,
-  salary,
-  hourlyPayment,
-  currency,
-  roundingMode,
-  roundingInterval,
 }: TimeTrackerComponentSmallProps) {
   return (
     <Stack w={50} align="center" justify="center" gap="xs">
@@ -69,18 +70,54 @@ export default function TimeTrackerComponentSmall({
           <TimeTrackerInfoHoverCard />
           <ModifyTimeTrackerModal />
           <Divider />
-          <Text size="xs" c="dimmed">
-            Active
-          </Text>
-          <Text size="xs" fw={state === "running" ? 700 : 400}>
-            {activeTime}
-          </Text>
-          <Text size="xs" c="dimmed">
-            Paused
-          </Text>
-          <Text size="xs" fw={state === "paused" ? 700 : 400}>
-            {pausedTime}
-          </Text>
+          <Card
+            w={47}
+            shadow="sm"
+            padding={0}
+            py={8}
+            mr={1}
+            radius="md"
+            withBorder
+            style={{
+              borderColor:
+                state === TimerState.Running
+                  ? "var(--mantine-color-blue-6)"
+                  : "",
+            }}
+          >
+            <Text fz={11} c="dimmed" ta="center">
+              Active
+            </Text>
+            <Text fz={11} fw={state === "running" ? 700 : 400} ta="center">
+              {activeTime}
+            </Text>
+          </Card>
+          <Card
+            w={47}
+            shadow="sm"
+            padding={0}
+            py={8}
+            mr={1}
+            radius="md"
+            withBorder
+            style={{
+              borderColor:
+                state === TimerState.Paused
+                  ? "var(--mantine-color-orange-6)"
+                  : "",
+            }}
+          >
+            <Text fz={11} c="dimmed" ta="center">
+              Paused
+            </Text>
+            <Text
+              fz={11}
+              fw={state === "paused" ? 700 : 400}
+              ta="center"
+            >
+              {pausedTime}
+            </Text>
+          </Card>
           {state === "stopped" && <StartActionIcon startTimer={startTimer} />}
           {state === "running" && (
             <PauseActionIcon pauseTimer={pauseTimer} disabled={isSubmitting} />
