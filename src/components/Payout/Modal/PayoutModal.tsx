@@ -1,10 +1,12 @@
 "use client";
 
-import { Modal } from "@mantine/core";
+import { Group, Modal, Text } from "@mantine/core";
 import { Currency } from "@/types/settings.types";
 import SessionModalForm from "./SessionModalForm";
 import ProjectModalForm from "./ProjectModalForm";
 import { Tables } from "@/types/db.types";
+import { IconBrandCashapp } from "@tabler/icons-react";
+
 
 interface PayoutModalProps {
   opened: boolean;
@@ -31,7 +33,28 @@ export default function PayoutModal({
   const startCurrency = Object.keys(sessionPayouts ?? {})[0] as Currency;
 
   return (
-    <Modal opened={opened} onClose={handleClose} title="Payout">
+    <Modal
+      opened={opened}
+      onClose={handleClose}
+      title={
+        <Group gap="xs">
+          <IconBrandCashapp size={20} />
+          <Text fw={600}>Payout</Text>
+        </Group>
+      }
+      styles={{
+        title: {
+          fontSize: "1.2rem",
+          fontWeight: 600,
+        },
+        header: {
+          borderBottom:
+            "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-3))",
+          paddingBottom: "1rem",
+          marginBottom: "1rem",
+        },
+      }}
+    >
       {sessionIds && sessionIds.length > 0 ? (
         <SessionModalForm
           sessionIds={sessionIds ?? []}
