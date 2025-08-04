@@ -16,15 +16,18 @@ export {
   deleteProjectFolder,
 } from "./work/timerProjectFolderActions";
 
+// Payout Actions
+
+export { payoutSessions } from "./payout/sessionPayout";
+export { payoutProjectSalary } from "./payout/projectPayout";
+
 // Session Actions
 
 export { getAllSessions } from "./work/timerSessionActions";
 export { createSession } from "./work/timerSessionActions";
 export { updateSession } from "./work/timerSessionActions";
 export { deleteSession } from "./work/timerSessionActions";
-export { payoutSessions } from "./work/timerSessionActions";
 export { updateMultipleSessions } from "./work/timerSessionActions";
-export { payoutProjectSalary } from "./work/timerSessionActions";
 
 // Auth Actions
 

@@ -14,6 +14,7 @@ import {
 
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { TimerProject, ProjectTreeItem } from "@/types/work.types";
+import { Currency } from "@/types/settings.types";
 
 interface WorkStoreState {
   projectTree: ProjectTreeItem[];
@@ -40,7 +41,13 @@ interface WorkStoreActions {
   ) => Promise<boolean>;
   deleteProject: (id: string) => Promise<boolean>;
   deleteTimerSession: (id: string) => Promise<boolean>;
-  payoutSessions: (sessionIds: string[]) => Promise<boolean>;
+  payoutSessions: (
+    sessionIds: string[],
+    startValue: number,
+    startCurrency: Currency,
+    endValue: number | null,
+    endCurrency: Currency | null
+  ) => Promise<boolean>;
   payoutProjectSalary: (projectId: string, amount: number) => Promise<boolean>;
   addProjectFolder: (
     folder: TablesInsert<"timer_project_folder">
@@ -278,9 +285,21 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         return true;
       },
 
-      async payoutSessions(sessionIds) {
+      async payoutSessions(
+        sessionIds,
+        startValue,
+        startCurrency,
+        endValue,
+        endCurrency
+      ) {
         const { updateStore, projects, timerSessions } = get();
-        const payoutResult = await actions.payoutSessions({ sessionIds });
+        const payoutResult = await actions.payoutSessions({
+          sessionIds,
+          startValue,
+          startCurrency,
+          endValue,
+          endCurrency,
+        });
         if (!payoutResult.success) {
           return false;
         }
