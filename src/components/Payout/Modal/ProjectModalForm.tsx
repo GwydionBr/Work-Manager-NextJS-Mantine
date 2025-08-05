@@ -17,7 +17,7 @@ import {
   Text,
   Alert,
 } from "@mantine/core";
-import { IconArrowDown } from "@tabler/icons-react";
+import { IconArrowDown, IconBrandCashapp } from "@tabler/icons-react";
 import { currencies } from "@/constants/settings";
 import { formatMoney } from "@/utils/workHelperFunctions";
 import { Tables } from "@/types/db.types";
@@ -106,7 +106,7 @@ export default function ProjectModalForm({
           }
           error={form.errors.endCurrency}
         />
-        <Button type="submit" loading={isProcessing}>
+        <Button type="submit" loading={isProcessing} leftSection={<IconBrandCashapp />}>
           Submit
         </Button>
         <Alert title="Error" color="red" hidden={!error}>
