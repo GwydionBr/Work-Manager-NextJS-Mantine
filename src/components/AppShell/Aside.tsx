@@ -11,6 +11,7 @@ import CalendarAside from "../Calendar/CalendarAside/CalendarAside";
 
 import classes from "./AppShell.module.css";
 import TransitionDivider from "../UI/TransitionDivider";
+import TimerManager from "../TimeTracker/TimerManager";
 
 interface AsideProps {
   toggleAside: () => void;
@@ -63,11 +64,12 @@ export default function Aside({ toggleAside, isAsideOpen }: AsideProps) {
         duration={200}
         enterDelay={200}
       />
-      <TimeTrackerComponent
+      {/* <TimeTrackerComponent
         isBig={isAsideOpen}
         isTimeTrackerMinimized={isTimeTrackerMinimized}
         setIsTimeTrackerMinimized={setIsTimeTrackerMinimized}
-      />
+      /> */}
+      <TimerManager />
       <TransitionDivider
         mounted={isAsideOpen}
         transition="fade"
