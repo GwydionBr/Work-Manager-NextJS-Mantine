@@ -37,6 +37,8 @@ interface TimeTrackerComponentSmallProps {
   salary: number;
   currency: Currency;
   hourlyPayment: boolean;
+  storedActiveSeconds: number;
+  storedPausedSeconds: number;
   setShowSmall: (showSmall: boolean) => void;
   submitTimer: () => void;
   getStatusColor: () => string;
@@ -69,6 +71,8 @@ export default function TimeTrackerComponentSmall({
   hourlyPayment,
   setShowSmall,
   getStatusColor,
+  storedActiveSeconds,
+  storedPausedSeconds,
   submitTimer,
   startTimer,
   pauseTimer,
@@ -107,6 +111,8 @@ export default function TimeTrackerComponentSmall({
             activeSeconds={activeSeconds}
             roundingMode={roundingMode}
             roundingInterval={roundingInterval}
+            storedActiveSeconds={storedActiveSeconds}
+            storedPausedSeconds={storedPausedSeconds}
           />
           <Divider />
           <Card

@@ -55,31 +55,27 @@ export default function TimeTrackerComponent({
     cancelTimer,
     restoreTimer,
     setRoundingAmount,
-  } = useTimeTracker(
-    {
-      projectId: timer.projectId,
-      projectTitle: timer.projectTitle,
-      currency: timer.currency,
-      salary: timer.salary,
-      hourlyPayment: timer.hourlyPayment,
-      userId: timer.userId,
-      roundingInterval: timer.roundingInterval,
-      roundingMode: timer.roundingMode,
-    },
-    {
-      moneyEarned: timer.moneyEarned,
-      activeTime: timer.activeTime,
-      roundedActiveTime: timer.roundedActiveTime,
-      pausedTime: timer.pausedTime,
-      state: timer.state,
-      activeSeconds: timer.activeSeconds,
-      pausedSeconds: timer.pausedSeconds,
-      startTime: timer.startTime,
-      tempStartTime: timer.tempStartTime,
-      storedActiveSeconds: timer.storedActiveSeconds,
-      storedPausedSeconds: timer.storedPausedSeconds,
-    }
-  );
+  } = useTimeTracker({
+    projectId: timer.projectId,
+    projectTitle: timer.projectTitle,
+    currency: timer.currency,
+    salary: timer.salary,
+    hourlyPayment: timer.hourlyPayment,
+    userId: timer.userId,
+    roundingInterval: timer.roundingInterval,
+    roundingMode: timer.roundingMode,
+    moneyEarned: timer.moneyEarned,
+    activeTime: timer.activeTime,
+    roundedActiveTime: timer.roundedActiveTime,
+    pausedTime: timer.pausedTime,
+    state: timer.state,
+    activeSeconds: timer.activeSeconds,
+    pausedSeconds: timer.pausedSeconds,
+    startTime: timer.startTime,
+    tempStartTime: timer.tempStartTime,
+    storedActiveSeconds: timer.storedActiveSeconds,
+    storedPausedSeconds: timer.storedPausedSeconds,
+  });
 
   // Sync Hook state mit Store
   useEffect(() => {
@@ -175,6 +171,8 @@ export default function TimeTrackerComponent({
               roundingMode={roundingMode}
               roundingInterval={roundingInterval}
               salary={timer.salary}
+              storedActiveSeconds={storedActiveSeconds}
+              storedPausedSeconds={storedPausedSeconds}
               startTimer={startTimer}
               pauseTimer={pauseTimer}
               resumeTimer={resumeTimer}
@@ -212,6 +210,8 @@ export default function TimeTrackerComponent({
               salary={timer.salary}
               currency={timer.currency}
               hourlyPayment={timer.hourlyPayment}
+              storedActiveSeconds={storedActiveSeconds}
+              storedPausedSeconds={storedPausedSeconds}
               modifyActiveSeconds={modifyActiveSeconds}
               modifyPausedSeconds={modifyPausedSeconds}
               setRoundingAmount={setRoundingAmount}

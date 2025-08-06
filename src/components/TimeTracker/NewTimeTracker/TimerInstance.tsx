@@ -33,31 +33,27 @@ export default function TimerInstance({ timerId }: TimerInstanceProps) {
     stopTimer,
     cancelTimer,
     restoreTimer,
-  } = useTimeTracker(
-    {
-      projectId: timer.projectId,
-      projectTitle: timer.projectTitle,
-      currency: timer.currency,
-      salary: timer.salary,
-      hourlyPayment: timer.hourlyPayment,
-      userId: timer.userId,
-      roundingInterval: timer.roundingInterval,
-      roundingMode: timer.roundingMode,
-    },
-    {
-      moneyEarned: timer.moneyEarned,
-      activeTime: timer.activeTime,
-      roundedActiveTime: timer.roundedActiveTime,
-      pausedTime: timer.pausedTime,
-      state: timer.state,
-      activeSeconds: timer.activeSeconds,
-      pausedSeconds: timer.pausedSeconds,
-      startTime: timer.startTime,
-      tempStartTime: timer.tempStartTime,
-      storedActiveSeconds: timer.storedActiveSeconds,
-      storedPausedSeconds: timer.storedPausedSeconds,
-    }
-  );
+  } = useTimeTracker({
+    projectId: timer.projectId,
+    projectTitle: timer.projectTitle,
+    currency: timer.currency,
+    salary: timer.salary,
+    hourlyPayment: timer.hourlyPayment,
+    userId: timer.userId,
+    roundingInterval: timer.roundingInterval,
+    roundingMode: timer.roundingMode,
+    moneyEarned: timer.moneyEarned,
+    activeTime: timer.activeTime,
+    roundedActiveTime: timer.roundedActiveTime,
+    pausedTime: timer.pausedTime,
+    state: timer.state,
+    activeSeconds: timer.activeSeconds,
+    pausedSeconds: timer.pausedSeconds,
+    startTime: timer.startTime,
+    tempStartTime: timer.tempStartTime,
+    storedActiveSeconds: timer.storedActiveSeconds,
+    storedPausedSeconds: timer.storedPausedSeconds,
+  });
 
   useEffect(() => {
     setIsClient(true);

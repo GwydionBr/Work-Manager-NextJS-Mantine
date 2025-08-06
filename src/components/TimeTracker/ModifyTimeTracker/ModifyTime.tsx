@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { TimerState, useTimeTracker } from "@/stores/timeTrackerStore";
+import { TimerState } from "@/stores/timeTrackerStore";
 
 import {
   Stack,
@@ -34,6 +34,8 @@ interface ModifyTimeProps {
   activeTime: string;
   pausedTime: string;
   state: TimerState;
+  storedActiveSeconds: number;
+  storedPausedSeconds: number;
 }
 
 export default function ModifyTime({
@@ -42,6 +44,8 @@ export default function ModifyTime({
   activeTime,
   pausedTime,
   state,
+  storedActiveSeconds,
+  storedPausedSeconds,
 }: ModifyTimeProps) {
   const [activeTimeInput, setActiveTimeInput] = useState("");
   const [pausedTimeInput, setPausedTimeInput] = useState("");
@@ -81,7 +85,6 @@ export default function ModifyTime({
     const seconds = parseTimeInput(activeTimeInput, timeUnit);
     if (seconds !== 0) {
       // Berechne die neue aktive Zeit basierend auf den aktuellen storedActiveSeconds
-      const { storedActiveSeconds } = useTimeTracker.getState();
       const newStoredActiveSeconds = storedActiveSeconds + seconds;
 
       if (newStoredActiveSeconds < 0) {
@@ -99,7 +102,6 @@ export default function ModifyTime({
     const seconds = parseTimeInput(pausedTimeInput, timeUnit);
     if (seconds !== 0) {
       // Berechne die neue pausierte Zeit basierend auf den aktuellen storedPausedSeconds
-      const { storedPausedSeconds } = useTimeTracker.getState();
       const newStoredPausedSeconds = storedPausedSeconds + seconds;
 
       if (newStoredPausedSeconds < 0) {

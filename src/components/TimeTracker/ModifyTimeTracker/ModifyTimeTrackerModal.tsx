@@ -19,10 +19,12 @@ interface ModifyTimeTrackerModalProps {
     roundingMode: RoundingDirection,
     customRoundingAmount: number
   ) => void;
-  activeTime: string;
+  activeTime: string; 
   pausedTime: string;
   state: TimerState;
   activeSeconds: number;
+  storedActiveSeconds: number;
+  storedPausedSeconds: number;
   roundingMode: RoundingDirection;
   roundingInterval: number;
 }
@@ -35,6 +37,8 @@ export default function ModifyTimeTrackerModal({
   pausedTime,
   state,
   activeSeconds,
+  storedActiveSeconds,
+  storedPausedSeconds,
   roundingMode,
   roundingInterval,
 }: ModifyTimeTrackerModalProps) {
@@ -83,6 +87,8 @@ export default function ModifyTimeTrackerModal({
               activeTime={activeTime}
               pausedTime={pausedTime}
               state={state}
+              storedActiveSeconds={storedActiveSeconds}
+              storedPausedSeconds={storedPausedSeconds}
             />
           </Tabs.Panel>
           <Tabs.Panel value="rounding">

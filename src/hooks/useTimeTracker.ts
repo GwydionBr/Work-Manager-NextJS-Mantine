@@ -14,9 +14,8 @@ import {
   RoundingDirection,
 } from "@/types/settings.types";
 import { TablesInsert } from "@/types/db.types";
-import { set } from "zod";
 
-interface TimeTrackerConfig {
+interface TimeTrackerState {
   projectId: string;
   projectTitle: string;
   currency: Currency;
@@ -25,9 +24,6 @@ interface TimeTrackerConfig {
   userId: string;
   roundingInterval: number;
   roundingMode: RoundingDirection;
-}
-
-interface TimeTrackerState {
   moneyEarned: string;
   activeTime: string;
   roundedActiveTime: string;
@@ -41,10 +37,7 @@ interface TimeTrackerState {
   storedPausedSeconds: number;
 }
 
-export function useTimeTracker(
-  config: TimeTrackerConfig,
-  initialState: TimeTrackerState
-) {
+export function useTimeTracker(initialState: TimeTrackerState) {
   const [state, setState] = useState<TimeTrackerState>(initialState);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -66,8 +59,8 @@ export function useTimeTracker(
           const newRoundedActiveTime = secondsToTimerFormat(
             getRoundedSeconds(
               newActiveSeconds,
-              config.roundingInterval,
-              config.roundingMode
+              prevState.roundingInterval,
+              prevState.roundingMode
             )
           );
 
@@ -79,11 +72,11 @@ export function useTimeTracker(
             moneyEarned: (
               (getRoundedSeconds(
                 newActiveSeconds,
-                config.roundingInterval,
-                config.roundingMode
+                prevState.roundingInterval,
+                prevState.roundingMode
               ) /
                 3600) *
-              config.salary
+              prevState.salary
             ).toFixed(2),
           };
         } else if (prevState.state === TimerState.Paused) {
@@ -105,7 +98,14 @@ export function useTimeTracker(
 
     intervalRef.current = setInterval(updateLoop, 1000);
     updateLoop();
-  }, [config.roundingInterval, config.roundingMode, config.salary]);
+  }, [
+    state.roundingInterval,
+    state.roundingMode,
+    state.salary,
+    state.tempStartTime,
+    state.storedActiveSeconds,
+    state.storedPausedSeconds,
+  ]);
 
   // Timer-Aktionen
 
@@ -186,7 +186,7 @@ export function useTimeTracker(
   );
 
   const startTimer = useCallback(() => {
-    if (state.state !== TimerState.Stopped || !config.projectTitle) return;
+    if (state.state !== TimerState.Stopped || !state.projectTitle) return;
 
     setState((prev) => ({
       ...prev,
@@ -195,7 +195,7 @@ export function useTimeTracker(
       tempStartTime: Date.now(),
     }));
     startLoop();
-  }, [state.state, config.projectTitle, startLoop]);
+  }, [state.state, state.projectTitle, startLoop]);
 
   const pauseTimer = useCallback(() => {
     if (state.state !== TimerState.Running) return;
@@ -271,19 +271,19 @@ export function useTimeTracker(
         roundingMode,
       }));
     },
-    [config.roundingInterval, config.roundingMode, config.salary]
+    [state.roundingInterval, state.roundingMode, state.salary]
   );
 
   const getCurrentSession = useCallback(() => {
     const roundedActiveSeconds = getRoundedSeconds(
       state.activeSeconds,
-      config.roundingInterval,
-      config.roundingMode
+      state.roundingInterval,
+      state.roundingMode
     );
 
     const newTimerSession: TablesInsert<"timerSession"> = {
-      user_id: config.userId,
-      project_id: config.projectId,
+      user_id: state.userId,
+      project_id: state.projectId,
       start_time: new Date(state.startTime ?? 0).toISOString(),
       true_end_time: new Date().toISOString(),
       end_time: state.startTime
@@ -292,22 +292,22 @@ export function useTimeTracker(
               (roundedActiveSeconds + state.pausedSeconds) * 1000
           ).toISOString()
         : new Date().toISOString(),
-      hourly_payment: config.hourlyPayment,
+      hourly_payment: state.hourlyPayment,
       active_seconds: roundedActiveSeconds,
       paused_seconds: state.pausedSeconds,
-      salary: config.salary,
-      currency: config.currency,
+      salary: state.salary,
+      currency: state.currency,
     };
 
     return newTimerSession;
   }, [
-    config.roundingInterval,
-    config.roundingMode,
-    config.salary,
-    config.currency,
-    config.hourlyPayment,
-    config.userId,
-    config.projectId,
+    state.roundingInterval,
+    state.roundingMode,
+    state.salary,
+    state.currency,
+    state.hourlyPayment,
+    state.userId,
+    state.projectId,
     state.startTime,
     state.activeSeconds,
     state.pausedSeconds,
@@ -315,7 +315,6 @@ export function useTimeTracker(
 
   return {
     ...state,
-    ...config,
     configureProject,
     restoreTimer,
     startTimer,

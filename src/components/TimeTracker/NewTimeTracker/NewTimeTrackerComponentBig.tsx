@@ -49,6 +49,8 @@ interface TimeTrackerComponentBigProps {
   activeSeconds: number;
   roundingMode: RoundingDirection;
   roundingInterval: number;
+  storedActiveSeconds: number;
+  storedPausedSeconds: number;
   submitTimer: () => void;
   getStatusColor: () => string;
   setIsTimeTrackerMinimized: (value: boolean) => void;
@@ -73,6 +75,8 @@ export default function TimeTrackerComponentBig({
   activeTime,
   pausedTime,
   activeSeconds,
+  storedActiveSeconds,
+  storedPausedSeconds,
   roundingMode,
   roundingInterval,
   projectTitle,
@@ -196,6 +200,8 @@ export default function TimeTrackerComponentBig({
                 pausedTime={pausedTime}
                 state={state}
                 activeSeconds={activeSeconds}
+                storedActiveSeconds={storedActiveSeconds}
+                storedPausedSeconds={storedPausedSeconds}
                 roundingMode={roundingMode}
                 roundingInterval={roundingInterval}
                 setRoundingAmount={setRoundingAmount}
