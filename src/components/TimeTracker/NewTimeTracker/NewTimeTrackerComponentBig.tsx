@@ -31,6 +31,7 @@ import ResumeActionIcon from "../TimeTrackerActionIcons/ResumeActionIcon";
 import TimeTrackerActionIcon from "../TimeTrackerActionIcons/TimeTrackerActionIcon";
 import TimeTrackerInfoHoverCard from "../TimeTrackerInfoHoverCard";
 import ModifyTimeTrackerModal from "../ModifyTimeTracker/ModifyTimeTrackerModal";
+import { Currency, RoundingAmount, RoundingDirection } from "@/types/settings.types";
 
 interface TimeTrackerComponentBigProps {
   isTimeTrackerMinimized: boolean;
@@ -38,12 +39,16 @@ interface TimeTrackerComponentBigProps {
   isSubmitting: boolean;
   projectTitle: string;
   moneyEarned: string;
-  currency: string;
+  currency: Currency;
+  salary: number;
   hourlyPayment: boolean;
   roundedActiveTime: string;
   state: TimerState;
   activeTime: string;
   pausedTime: string;
+  activeSeconds: number;
+  roundingMode: RoundingDirection;
+  roundingInterval: number;
   submitTimer: () => void;
   getStatusColor: () => string;
   setIsTimeTrackerMinimized: (value: boolean) => void;
@@ -51,6 +56,13 @@ interface TimeTrackerComponentBigProps {
   pauseTimer: () => void;
   resumeTimer: () => void;
   cancelTimer: () => void;
+  modifyActiveSeconds: (delta: number) => void;
+  modifyPausedSeconds: (delta: number) => void;
+  setRoundingAmount: (
+    roundingAmount: RoundingAmount,
+    roundingMode: RoundingDirection,
+    customRoundingAmount: number
+  ) => void;
 }
 
 export default function TimeTrackerComponentBig({
@@ -60,7 +72,11 @@ export default function TimeTrackerComponentBig({
   state,
   activeTime,
   pausedTime,
+  activeSeconds,
+  roundingMode,
+  roundingInterval,
   projectTitle,
+  salary,
   moneyEarned,
   currency,
   hourlyPayment,
@@ -72,6 +88,9 @@ export default function TimeTrackerComponentBig({
   resumeTimer,
   cancelTimer,
   setIsTimeTrackerMinimized,
+  modifyActiveSeconds,
+  modifyPausedSeconds,
+  setRoundingAmount,
 }: TimeTrackerComponentBigProps) {
   return (
     <Stack align="center" w="100%">
@@ -170,11 +189,28 @@ export default function TimeTrackerComponentBig({
           <Stack gap="md" align="center">
             {/* State Badge */}
             <Group justify="space-between" align="center" w="100%">
-              <ModifyTimeTrackerModal />
+              <ModifyTimeTrackerModal
+                modifyActiveSeconds={modifyActiveSeconds}
+                modifyPausedSeconds={modifyPausedSeconds}
+                activeTime={activeTime}
+                pausedTime={pausedTime}
+                state={state}
+                activeSeconds={activeSeconds}
+                roundingMode={roundingMode}
+                roundingInterval={roundingInterval}
+                setRoundingAmount={setRoundingAmount}
+              />
               <Badge size="lg" color={getStatusColor()}>
                 {state}
               </Badge>
-              <TimeTrackerInfoHoverCard />
+              <TimeTrackerInfoHoverCard
+                currency={currency}
+                roundingMode={roundingMode}
+                roundingInterval={roundingInterval}
+                projectTitle={projectTitle}
+                salary={salary}
+                hourlyPayment={hourlyPayment}
+                />
             </Group>
             {/* Project Title */}
             <Group justify="space-between" align="center">

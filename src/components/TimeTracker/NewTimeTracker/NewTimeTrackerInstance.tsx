@@ -37,12 +37,24 @@ export default function TimeTrackerComponent({
     pausedTime,
     moneyEarned,
     roundedActiveTime,
+    activeSeconds,
+    pausedSeconds,
+    startTime,
+    tempStartTime,
+    storedActiveSeconds,
+    storedPausedSeconds,
+    roundingMode,
+    roundingInterval,
+    modifyActiveSeconds,
+    modifyPausedSeconds,
+    getCurrentSession,
     startTimer,
     pauseTimer,
     resumeTimer,
     stopTimer,
     cancelTimer,
     restoreTimer,
+    setRoundingAmount,
   } = useTimeTracker(
     {
       projectId: timer.projectId,
@@ -68,6 +80,35 @@ export default function TimeTrackerComponent({
       storedPausedSeconds: timer.storedPausedSeconds,
     }
   );
+
+  // Sync Hook state mit Store
+  useEffect(() => {
+    updateTimer(timerId, {
+      state,
+      activeTime,
+      pausedTime,
+      moneyEarned,
+      activeSeconds,
+      pausedSeconds,
+      startTime,
+      tempStartTime,
+      storedActiveSeconds,
+      storedPausedSeconds,
+    });
+  }, [
+    state,
+    activeTime,
+    pausedTime,
+    moneyEarned,
+    timerId,
+    updateTimer,
+    activeSeconds,
+    pausedSeconds,
+    startTime,
+    tempStartTime,
+    storedActiveSeconds,
+    storedPausedSeconds,
+  ]);
 
   useEffect(() => {
     restoreTimer();
@@ -104,6 +145,8 @@ export default function TimeTrackerComponent({
     //     setErrorMessage(null);
     //   }, 3000);
     // }
+    const newSession = getCurrentSession();
+    console.log(newSession);
     await new Promise((resolve) => setTimeout(resolve, 1000));
     stopTimer();
     setIsSubmitting(false);
@@ -128,6 +171,10 @@ export default function TimeTrackerComponent({
               state={state}
               activeTime={activeTime}
               pausedTime={pausedTime}
+              activeSeconds={activeSeconds}
+              roundingMode={roundingMode}
+              roundingInterval={roundingInterval}
+              salary={timer.salary}
               startTimer={startTimer}
               pauseTimer={pauseTimer}
               resumeTimer={resumeTimer}
@@ -138,6 +185,9 @@ export default function TimeTrackerComponent({
               isSubmitting={isSubmitting}
               submitTimer={submitTimer}
               getStatusColor={getStatusColor}
+              modifyActiveSeconds={modifyActiveSeconds}
+              modifyPausedSeconds={modifyPausedSeconds}
+              setRoundingAmount={setRoundingAmount}
             />
           </div>
         )}
@@ -155,6 +205,16 @@ export default function TimeTrackerComponent({
               state={state}
               activeTime={activeTime}
               pausedTime={pausedTime}
+              activeSeconds={activeSeconds}
+              roundingMode={roundingMode}
+              roundingInterval={roundingInterval}
+              projectTitle={timer.projectTitle}
+              salary={timer.salary}
+              currency={timer.currency}
+              hourlyPayment={timer.hourlyPayment}
+              modifyActiveSeconds={modifyActiveSeconds}
+              modifyPausedSeconds={modifyPausedSeconds}
+              setRoundingAmount={setRoundingAmount}
               showSmall={showSmall}
               setShowSmall={setShowSmall}
               isSubmitting={isSubmitting}

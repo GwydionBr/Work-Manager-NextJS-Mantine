@@ -26,9 +26,23 @@ import { roundingAmounts, roundingModes } from "@/constants/settings";
 import { RoundingAmount, RoundingDirection } from "@/types/settings.types";
 import { getRoundedSeconds } from "@/utils/workHelperFunctions";
 
-export default function ModifyRounding() {
-  const { setRoundingAmount, activeSeconds, roundingMode, roundingInterval } =
-    useTimeTracker();
+interface ModifyRoundingProps {
+  setRoundingAmount: (
+    roundingAmount: RoundingAmount,
+    roundingMode: RoundingDirection,
+    customRoundingAmount: number
+  ) => void;
+  activeSeconds: number;
+  roundingMode: RoundingDirection;
+  roundingInterval: number;
+}
+
+export default function ModifyRounding({
+  setRoundingAmount,
+  activeSeconds,
+  roundingMode,
+  roundingInterval,
+}: ModifyRoundingProps) {
 
   const [selectedRoundingAmount, setSelectedRoundingAmount] =
     useState<RoundingAmount>("min");

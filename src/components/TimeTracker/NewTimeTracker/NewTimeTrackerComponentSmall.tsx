@@ -21,6 +21,7 @@ import CancelActionIcon from "../TimeTrackerActionIcons/CancelActionIcon";
 import TimeTrackerActionIcon from "../TimeTrackerActionIcons/TimeTrackerActionIcon";
 import TimeTrackerInfoHoverCard from "../TimeTrackerInfoHoverCard";
 import ModifyTimeTrackerModal from "../ModifyTimeTracker/ModifyTimeTrackerModal";
+import { Currency, RoundingAmount, RoundingDirection } from "@/types/settings.types";
 
 interface TimeTrackerComponentSmallProps {
   showSmall: boolean;
@@ -29,6 +30,13 @@ interface TimeTrackerComponentSmallProps {
   state: TimerState;
   activeTime: string;
   pausedTime: string;
+  activeSeconds: number;
+  roundingMode: RoundingDirection;
+  roundingInterval: number;
+  projectTitle: string;
+  salary: number;
+  currency: Currency;
+  hourlyPayment: boolean;
   setShowSmall: (showSmall: boolean) => void;
   submitTimer: () => void;
   getStatusColor: () => string;
@@ -36,6 +44,13 @@ interface TimeTrackerComponentSmallProps {
   pauseTimer: () => void;
   resumeTimer: () => void;
   cancelTimer: () => void;
+  modifyActiveSeconds: (delta: number) => void;
+  modifyPausedSeconds: (delta: number) => void;
+  setRoundingAmount: (
+    roundingAmount: RoundingAmount,
+    roundingMode: RoundingDirection,
+    customRoundingAmount: number
+  ) => void;
 }
 
 export default function TimeTrackerComponentSmall({
@@ -45,6 +60,13 @@ export default function TimeTrackerComponentSmall({
   state,
   activeTime,
   pausedTime,
+  activeSeconds,
+  roundingMode,
+  roundingInterval,
+  projectTitle,
+  salary,
+  currency,
+  hourlyPayment,
   setShowSmall,
   getStatusColor,
   submitTimer,
@@ -52,6 +74,9 @@ export default function TimeTrackerComponentSmall({
   pauseTimer,
   resumeTimer,
   cancelTimer,
+  modifyActiveSeconds,
+  modifyPausedSeconds,
+  setRoundingAmount,
 }: TimeTrackerComponentSmallProps) {
   return (
     <Stack w={50} align="center" justify="center" gap="xs">
@@ -64,8 +89,25 @@ export default function TimeTrackerComponentSmall({
       <Collapse in={showSmall} transitionDuration={400}>
         <Stack gap="xs" align="center" justify="center" pos="relative">
           <LoadingOverlay visible={isSubmitting} overlayProps={{ blur: 2 }} />
-          <TimeTrackerInfoHoverCard />
-          <ModifyTimeTrackerModal />
+          <TimeTrackerInfoHoverCard
+            currency={currency}
+            roundingMode={roundingMode}
+            roundingInterval={roundingInterval}
+            projectTitle={projectTitle}
+            salary={salary}
+            hourlyPayment={hourlyPayment}
+          />
+          <ModifyTimeTrackerModal
+            modifyActiveSeconds={modifyActiveSeconds}
+            modifyPausedSeconds={modifyPausedSeconds}
+            setRoundingAmount={setRoundingAmount}
+            activeTime={activeTime}
+            pausedTime={pausedTime}
+            state={state}
+            activeSeconds={activeSeconds}
+            roundingMode={roundingMode}
+            roundingInterval={roundingInterval}
+          />
           <Divider />
           <Card
             w={47}

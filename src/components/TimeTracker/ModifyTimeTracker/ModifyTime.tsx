@@ -28,14 +28,21 @@ import {
 } from "@tabler/icons-react";
 import TimeTrackerRow from "../TimeTrackerRow";
 
-export default function ModifyTime() {
-  const {
-    modifyActiveSeconds,
-    modifyPausedSeconds,
-    activeTime,
-    pausedTime,
-    state,
-  } = useTimeTracker();
+interface ModifyTimeProps {
+  modifyActiveSeconds: (delta: number) => void;
+  modifyPausedSeconds: (delta: number) => void;
+  activeTime: string;
+  pausedTime: string;
+  state: TimerState;
+}
+
+export default function ModifyTime({
+  modifyActiveSeconds,
+  modifyPausedSeconds,
+  activeTime,
+  pausedTime,
+  state,
+}: ModifyTimeProps) {
   const [activeTimeInput, setActiveTimeInput] = useState("");
   const [pausedTimeInput, setPausedTimeInput] = useState("");
   const [timeUnit, setTimeUnit] = useState<"seconds" | "minutes" | "hours">(

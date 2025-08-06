@@ -8,7 +8,36 @@ import MoreActionIcon from "../../UI/ActionIcons/MoreActionIcon";
 import ModifyTime from "./ModifyTime";
 import ModifyRounding from "./ModifyRounding";
 
-export default function ModifyTimeTrackerModal() {
+import { TimerState } from "@/stores/timeTrackerStore";
+import { RoundingAmount, RoundingDirection } from "@/types/settings.types";
+
+interface ModifyTimeTrackerModalProps {
+  modifyActiveSeconds: (delta: number) => void;
+  modifyPausedSeconds: (delta: number) => void;
+  setRoundingAmount: (
+    roundingAmount: RoundingAmount,
+    roundingMode: RoundingDirection,
+    customRoundingAmount: number
+  ) => void;
+  activeTime: string;
+  pausedTime: string;
+  state: TimerState;
+  activeSeconds: number;
+  roundingMode: RoundingDirection;
+  roundingInterval: number;
+}
+
+export default function ModifyTimeTrackerModal({
+  modifyActiveSeconds,
+  modifyPausedSeconds,
+  setRoundingAmount,
+  activeTime,
+  pausedTime,
+  state,
+  activeSeconds,
+  roundingMode,
+  roundingInterval,
+}: ModifyTimeTrackerModalProps) {
   const [opened, setOpened] = useState(false);
 
   return (
@@ -44,18 +73,25 @@ export default function ModifyTimeTrackerModal() {
       >
         <Tabs defaultValue="time" variant="pills">
           <Tabs.List grow mb="md">
-            <Tabs.Tab value="time">
-              Time
-            </Tabs.Tab>
-            <Tabs.Tab value="rounding">
-              Rounding
-            </Tabs.Tab>
+            <Tabs.Tab value="time">Time</Tabs.Tab>
+            <Tabs.Tab value="rounding">Rounding</Tabs.Tab>
           </Tabs.List>
           <Tabs.Panel value="time">
-            <ModifyTime />
+            <ModifyTime
+              modifyActiveSeconds={modifyActiveSeconds}
+              modifyPausedSeconds={modifyPausedSeconds}
+              activeTime={activeTime}
+              pausedTime={pausedTime}
+              state={state}
+            />
           </Tabs.Panel>
           <Tabs.Panel value="rounding">
-            <ModifyRounding />
+            <ModifyRounding
+              setRoundingAmount={setRoundingAmount}
+              activeSeconds={activeSeconds}
+              roundingMode={roundingMode}
+              roundingInterval={roundingInterval}
+            />
           </Tabs.Panel>
         </Tabs>
       </Modal>
