@@ -106,6 +106,27 @@ export function useTimeTracker(
     startLoop();
   }, [startLoop]);
 
+  const configureProject = useCallback((
+    projectId: string,
+    projectTitle: string,
+    currency: Currency,
+    salary: number,
+    hourlyPayment: boolean,
+    userId: string
+  ) => {
+    if (state.state !== TimerState.Stopped) return;
+
+    setState((prev) => ({
+      ...prev,
+      projectId,
+      projectTitle,
+      currency,
+      salary,
+      hourlyPayment,
+      userId,
+    }));
+  }, [state.state]);
+
   const startTimer = useCallback(() => {
     if (state.state !== TimerState.Stopped || !config.projectTitle) return;
 
@@ -179,6 +200,7 @@ export function useTimeTracker(
 
   return {
     ...state,
+    configureProject,
     restoreTimer,
     startTimer,
     pauseTimer,

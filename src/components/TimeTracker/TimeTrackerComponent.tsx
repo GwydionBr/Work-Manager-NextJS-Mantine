@@ -26,7 +26,6 @@ export default function TimeTrackerComponent({
 }: TimeTrackerComponentProps) {
   const {
     state,
-    roundingInterval: timeTrackerRoundingInterval,
     getCurrentSession,
     stopTimer,
     cancelTimer,
