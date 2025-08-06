@@ -7,6 +7,8 @@ import {
   Stack,
   Badge,
   alpha,
+  Card,
+  Grid,
 } from "@mantine/core";
 import { formatDistanceToNow } from "date-fns";
 import { enUS } from "date-fns/locale";
@@ -14,6 +16,7 @@ import { enUS } from "date-fns/locale";
 import { Tables } from "@/types/db.types";
 
 import classes from "./Finances.module.css";
+import { formatMoney } from "@/utils/workHelperFunctions";
 
 interface FinanceSectionProps {
   title: string;
@@ -60,13 +63,27 @@ export default function FinanceSection({
                   locale: enUS,
                 })}
               </Badge>
-              <Box className={classes.cashFlowBox} my="xs">
-                <Text p="xs" fz={12}>
-                  {cashFlow.title}
-                </Text>
-                <Text p="xs" fz={12} c="dimmed"></Text>
-                <Text p="xs">{cashFlow.amount}</Text>
-              </Box>
+              <Card
+                my="xs"
+                withBorder
+                shadow="md"
+                bg={backgroundColor}
+                radius="md"
+                p="xs"
+              >
+                <Grid gutter="xs" align="center">
+                  <Grid.Col span={6}>
+                    <Text p="xs" fz={12}>
+                      {cashFlow.title}
+                    </Text>
+                  </Grid.Col>
+                  <Grid.Col span={6}>
+                    <Text p="xs" ta="right">
+                      {formatMoney(cashFlow.amount, cashFlow.currency)}
+                    </Text>
+                  </Grid.Col>
+                </Grid>
+              </Card>
             </Box>
           ))}
         </ScrollArea>
