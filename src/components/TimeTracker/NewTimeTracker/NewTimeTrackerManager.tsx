@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
 import { useWorkStore } from "@/stores/workManagerStore";
 
@@ -8,6 +9,8 @@ import { TimerState } from "@/stores/timeTrackerStore";
 import NewTimeTrackerInstance from "./NewTimeTrackerInstance";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import { Currency } from "@/types/settings.types";
+import TimeTrackerActionIcon from "../TimeTrackerActionIcons/TimeTrackerActionIcon";
+import { getStatusColor } from "@/utils/workHelperFunctions";
 
 interface TimerManagerProps {
   isBig: boolean;
@@ -20,6 +23,7 @@ export default function TimerManager({
   isTimeTrackerMinimized,
   setIsTimeTrackerMinimized,
 }: TimerManagerProps) {
+  const [activeTimerId, setActiveTimerId] = useState<string | null>(null);
   const { getAllTimers, addTimer } = useTimeTrackerManager();
   const { activeProjectId } = useWorkStore();
   const activeProject = useWorkStore((state) =>
@@ -58,6 +62,36 @@ export default function TimerManager({
     });
   };
 
+  useEffect(() => {
+    if (timers.length > 0) {
+      setActiveTimerId(timers[0].id);
+    } else {
+      if (!activeProject) return;
+      const newTimerId = addTimer({
+        projectId: activeProject.project.id,
+        projectTitle: activeProject.project.title,
+        currency: activeProject.project.currency,
+        salary: activeProject.project.salary,
+        hourlyPayment: activeProject.project.hourly_payment,
+        userId: activeProject.project.user_id,
+        roundingInterval: 60,
+        roundingMode: "up",
+        state: TimerState.Stopped,
+        activeSeconds: 0,
+        pausedSeconds: 0,
+        startTime: null,
+        tempStartTime: null,
+        storedActiveSeconds: 0,
+        storedPausedSeconds: 0,
+        moneyEarned: "0.00",
+        activeTime: "00:00",
+        roundedActiveTime: "00:00",
+        pausedTime: "00:00",
+      });
+      setActiveTimerId(newTimerId);
+    }
+  }, [timers, addTimer]);
+
   return (
     <Stack align="center" gap="md">
       <PlusActionIcon
@@ -73,6 +107,15 @@ export default function TimerManager({
           );
         }}
       />
+      <TimeTrackerActionIcon
+        action={() => setIsTimeTrackerMinimized(!isTimeTrackerMinimized)}
+        label={isTimeTrackerMinimized ? "show Timer" : "hide Timer"}
+        state={TimerState.Stopped}
+        getStatusColor={() => getStatusColor(TimerState.Stopped)}
+      />
+
+      
+
       {timers.map((timer) => (
         <NewTimeTrackerInstance
           key={timer.id}

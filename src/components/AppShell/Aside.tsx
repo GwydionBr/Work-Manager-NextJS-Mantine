@@ -6,12 +6,11 @@ import { useGroupStore } from "@/stores/groupStore";
 import { ActionIcon, Group, ScrollArea, Stack } from "@mantine/core";
 import { IconArrowBarLeft } from "@tabler/icons-react";
 import NotificationAside from "../Notification/NotificationAside";
-import TimeTrackerComponent from "../TimeTracker/TimeTrackerComponent";
+import TimeTrackerManager from "../TimeTracker/NewTimeTracker/NewTimeTrackerManager";
 import CalendarAside from "../Calendar/CalendarAside/CalendarAside";
 
 import classes from "./AppShell.module.css";
 import TransitionDivider from "../UI/TransitionDivider";
-import TimerManager from "../TimeTracker/NewTimeTracker/TimerManager";
 
 interface AsideProps {
   toggleAside: () => void;
@@ -58,19 +57,14 @@ export default function Aside({ toggleAside, isAsideOpen }: AsideProps) {
           />
         </Group>
       </Stack>
-      <ScrollArea h="100%">
+      <ScrollArea h="100%" type="never">
         <TransitionDivider
           mounted={isAsideOpen}
           transition="fade"
           duration={200}
           enterDelay={200}
         />
-        {/* <TimeTrackerComponent
-        isBig={isAsideOpen}
-        isTimeTrackerMinimized={isTimeTrackerMinimized}
-        setIsTimeTrackerMinimized={setIsTimeTrackerMinimized}
-      /> */}
-        <TimerManager
+        <TimeTrackerManager
           isBig={isAsideOpen}
           isTimeTrackerMinimized={isTimeTrackerMinimized}
           setIsTimeTrackerMinimized={setIsTimeTrackerMinimized}

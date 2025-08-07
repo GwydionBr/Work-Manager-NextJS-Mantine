@@ -5,6 +5,20 @@ import {
 } from "@/types/settings.types";
 import { shortCurrencies } from "@/constants/settings";
 import { Tables, TablesInsert } from "@/types/db.types";
+import { TimerState } from "@/stores/timeTrackerStore";
+
+export function getStatusColor(state: TimerState) {
+  switch (state) {
+    case TimerState.Running:
+      return "lime";
+    case TimerState.Paused:
+      return "yellow";
+    case TimerState.Stopped:
+      return "teal.6";
+    default:
+      return "blue";
+  }
+}
 
 export function getRoundingInterval(
   roundingAmount: RoundingAmount,

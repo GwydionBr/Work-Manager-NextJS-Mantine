@@ -1,7 +1,5 @@
 "use client";
 
-import { useTimeTracker } from "@/stores/timeTrackerStore";
-
 import { TimerState } from "@/stores/timeTrackerStore";
 
 import {
@@ -13,15 +11,18 @@ import {
   Card,
 } from "@mantine/core";
 
-import StartActionIcon from "../TimeTrackerActionIcons/StartActionIcons";
-import PauseActionIcon from "../TimeTrackerActionIcons/PauseActionIcon";
-import ResumeActionIcon from "../TimeTrackerActionIcons/ResumeActionIcon";
-import StopActionIcon from "../TimeTrackerActionIcons/StopActionIcon";
-import CancelActionIcon from "../TimeTrackerActionIcons/CancelActionIcon";
-import TimeTrackerActionIcon from "../TimeTrackerActionIcons/TimeTrackerActionIcon";
-import TimeTrackerInfoHoverCard from "../TimeTrackerInfoHoverCard";
-import ModifyTimeTrackerModal from "../ModifyTimeTracker/ModifyTimeTrackerModal";
-import { Currency, RoundingAmount, RoundingDirection } from "@/types/settings.types";
+import StartActionIcon from "../../TimeTrackerActionIcons/StartActionIcons";
+import PauseActionIcon from "../../TimeTrackerActionIcons/PauseActionIcon";
+import ResumeActionIcon from "../../TimeTrackerActionIcons/ResumeActionIcon";
+import StopActionIcon from "../../TimeTrackerActionIcons/StopActionIcon";
+import CancelActionIcon from "../../TimeTrackerActionIcons/CancelActionIcon";
+import TimeTrackerInfoHoverCard from "../../TimeTrackerInfoHoverCard";
+import ModifyTimeTrackerModal from "../../ModifyTimeTracker/ModifyTimeTrackerModal";
+import {
+  Currency,
+  RoundingAmount,
+  RoundingDirection,
+} from "@/types/settings.types";
 
 interface TimeTrackerComponentSmallProps {
   showSmall: boolean;
@@ -41,7 +42,6 @@ interface TimeTrackerComponentSmallProps {
   storedPausedSeconds: number;
   setShowSmall: (showSmall: boolean) => void;
   submitTimer: () => void;
-  getStatusColor: () => string;
   startTimer: () => void;
   pauseTimer: () => void;
   resumeTimer: () => void;
@@ -70,7 +70,6 @@ export default function TimeTrackerComponentSmall({
   currency,
   hourlyPayment,
   setShowSmall,
-  getStatusColor,
   storedActiveSeconds,
   storedPausedSeconds,
   submitTimer,
@@ -84,12 +83,6 @@ export default function TimeTrackerComponentSmall({
 }: TimeTrackerComponentSmallProps) {
   return (
     <Stack w={50} align="center" justify="center" gap="xs">
-      <TimeTrackerActionIcon
-        action={() => setShowSmall(!showSmall)}
-        label={showSmall ? "hide Timer" : "show Timer"}
-        state={state}
-        getStatusColor={getStatusColor}
-      />
       <Collapse in={showSmall} transitionDuration={400}>
         <Stack gap="xs" align="center" justify="center" pos="relative">
           <LoadingOverlay visible={isSubmitting} overlayProps={{ blur: 2 }} />

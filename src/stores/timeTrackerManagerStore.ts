@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware";
 import { TimerState } from "./timeTrackerStore";
 import { Currency, RoundingDirection } from "@/types/settings.types";
 
-interface TimerData {
+export interface TimerData {
   id: string;
   projectId: string;
   projectTitle: string;

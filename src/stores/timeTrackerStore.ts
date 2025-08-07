@@ -7,7 +7,7 @@ import {
   secondsToTimerFormat,
   getRoundingInterval,
   getRoundedSeconds,
-} from "@/utils/workHelperFunctions";
+} from "@/utils/workHelperFunctions"; 
 import {
   Currency,
   RoundingAmount,

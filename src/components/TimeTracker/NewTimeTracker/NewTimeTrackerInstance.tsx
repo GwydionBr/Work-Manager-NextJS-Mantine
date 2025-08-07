@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { useTimeTracker } from "@/hooks/useTimeTracker";
 
 import { Box, Transition } from "@mantine/core";
-import TimeTrackerComponentBig from "./NewTimeTrackerComponentBig";
-import TimeTrackerComponentSmall from "./NewTimeTrackerComponentSmall";
+import TimeTrackerComponentBig from "./Big/NewTimeTrackerComponentBig";
+import TimeTrackerComponentSmall from "./Small/NewTimeTrackerComponentSmall";
 import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
 
 interface TimeTrackerComponentProps {
@@ -15,7 +15,7 @@ interface TimeTrackerComponentProps {
   setIsTimeTrackerMinimized: (value: boolean) => void;
 }
 
-export default function TimeTrackerComponent({
+export default function TimeTrackerInstance({
   timerId,
   isBig,
   isTimeTrackerMinimized,
@@ -113,19 +113,6 @@ export default function TimeTrackerComponent({
 
   if (!isClient) return null;
 
-  const getStatusColor = () => {
-    switch (state) {
-      case "running":
-        return "lime";
-      case "paused":
-        return "yellow";
-      case "stopped":
-        return "teal.6";
-      default:
-        return "blue";
-    }
-  };
-
   async function submitTimer() {
     if (isSubmitting) return;
     setIsSubmitting(true);
@@ -182,7 +169,6 @@ export default function TimeTrackerComponent({
               errorMessage={errorMessage}
               isSubmitting={isSubmitting}
               submitTimer={submitTimer}
-              getStatusColor={getStatusColor}
               modifyActiveSeconds={modifyActiveSeconds}
               modifyPausedSeconds={modifyPausedSeconds}
               setRoundingAmount={setRoundingAmount}
@@ -219,7 +205,6 @@ export default function TimeTrackerComponent({
               setShowSmall={setShowSmall}
               isSubmitting={isSubmitting}
               submitTimer={submitTimer}
-              getStatusColor={getStatusColor}
               startTimer={startTimer}
               pauseTimer={pauseTimer}
               resumeTimer={resumeTimer}
