@@ -103,6 +103,24 @@ export default function TimerManager({
     }
   }, [timers, addTimer]);
 
+  const isOneTimerRunning = timers.some(
+    (timer) => timer.state === TimerState.Running
+  );
+  const isOneTimerPaused = timers.some(
+    (timer) => timer.state === TimerState.Paused
+  );
+
+  const mainTimerStatus = isOneTimerRunning
+    ? TimerState.Running
+    : isOneTimerPaused
+      ? TimerState.Paused
+      : TimerState.Stopped;
+
+  const activeTimerCount = timers.filter(
+    (timer) =>
+      timer.state === TimerState.Running || timer.state === TimerState.Paused
+  ).length;
+
   return (
     <Stack align="center" gap="md" mb="md">
       {errorMessage && (
@@ -133,8 +151,9 @@ export default function TimerManager({
       <TimeTrackerActionIcon
         action={() => setIsTimeTrackerMinimized(!isTimeTrackerMinimized)}
         label={isTimeTrackerMinimized ? "show Timer" : "hide Timer"}
-        state={TimerState.Stopped}
-        getStatusColor={() => getStatusColor(TimerState.Stopped)}
+        indicatorLabel={activeTimerCount.toString()}
+        state={mainTimerStatus}
+        getStatusColor={() => getStatusColor(mainTimerStatus)}
       />
 
       {timers.map((timer) => (

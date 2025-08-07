@@ -301,7 +301,7 @@ export default function ModifyRounding({
             style={{ marginRight: "4px", verticalAlign: "middle" }}
           />
           Note: Rounding settings affect how time is calculated and saved. The
-          rounding changes will stay until you restart the app.
+          rounding changes are kept for this time tracker only.
         </Text>
       </Paper>
     </Stack>

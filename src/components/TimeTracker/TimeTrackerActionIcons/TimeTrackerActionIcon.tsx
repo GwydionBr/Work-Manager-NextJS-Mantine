@@ -5,6 +5,7 @@ import DelayedTooltip from "@/components/UI/DelayedTooltip";
 
 interface TimeTrackerActionIconProps extends ActionIconProps {
   action: () => void;
+  indicatorLabel?: string;
   label: string;
   state: TimerState;
   getStatusColor: () => string;
@@ -12,6 +13,7 @@ interface TimeTrackerActionIconProps extends ActionIconProps {
 
 export default function TimeTrackerActionIcon({
   action,
+  indicatorLabel,
   label,
   state,
   getStatusColor,
@@ -20,8 +22,9 @@ export default function TimeTrackerActionIcon({
   return (
     <DelayedTooltip label={label}>
       <Indicator
+        label={indicatorLabel}
         color="red"
-        size={10}
+        size={16}
         processing={state === "running"}
         disabled={state === "stopped"}
       >

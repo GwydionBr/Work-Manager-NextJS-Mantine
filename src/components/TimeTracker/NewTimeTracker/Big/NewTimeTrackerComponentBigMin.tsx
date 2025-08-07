@@ -48,9 +48,12 @@ export default function NewTimeTrackerComponentBigMin({
   return (
     <Card shadow="sm" padding="xs" radius="md" withBorder w={270}>
       <LoadingOverlay visible={isSubmitting} overlayProps={{ blur: 2 }} />
-      <Text size="xs" c="dimmed" ta="center">
-        {projectTitle}
-      </Text>
+      <Group justify="center" align="center">
+        <Text size="xs" c="dimmed" ta="center">
+          {projectTitle}
+        </Text>
+        <XActionIcon onClick={removeTimer} size="xs" />
+      </Group>
       <Group align="center" justify="center" gap="xs">
         <Card
           shadow="sm"
@@ -113,7 +116,6 @@ export default function NewTimeTrackerComponentBigMin({
               disabled={isSubmitting}
             />
           </Group>
-          <XActionIcon onClick={removeTimer} />
         </Collapse>
       </Group>
     </Card>

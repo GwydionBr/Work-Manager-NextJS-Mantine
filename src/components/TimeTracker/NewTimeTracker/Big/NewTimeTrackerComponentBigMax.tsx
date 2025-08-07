@@ -96,30 +96,32 @@ export default function NewTimeTrackerComponentBigMax({
       <Stack gap="md" align="center">
         {/* State Badge */}
         <Group justify="space-between" align="center" w="100%">
-          <ModifyTimeTrackerModal
-            modifyActiveSeconds={modifyActiveSeconds}
-            modifyPausedSeconds={modifyPausedSeconds}
-            activeTime={activeTime}
-            pausedTime={pausedTime}
-            state={state}
-            activeSeconds={activeSeconds}
-            storedActiveSeconds={storedActiveSeconds}
-            storedPausedSeconds={storedPausedSeconds}
-            roundingMode={roundingMode}
-            roundingInterval={roundingInterval}
-            setRoundingAmount={setRoundingAmount}
-          />
+          <Stack gap={0}>
+            <ModifyTimeTrackerModal
+              modifyActiveSeconds={modifyActiveSeconds}
+              modifyPausedSeconds={modifyPausedSeconds}
+              activeTime={activeTime}
+              pausedTime={pausedTime}
+              state={state}
+              activeSeconds={activeSeconds}
+              storedActiveSeconds={storedActiveSeconds}
+              storedPausedSeconds={storedPausedSeconds}
+              roundingMode={roundingMode}
+              roundingInterval={roundingInterval}
+              setRoundingAmount={setRoundingAmount}
+            />
+            <TimeTrackerInfoHoverCard
+              currency={currency}
+              roundingMode={roundingMode}
+              roundingInterval={roundingInterval}
+              projectTitle={projectTitle}
+              salary={salary}
+              hourlyPayment={hourlyPayment}
+            />
+          </Stack>
           <Badge size="lg" color={getStatusColor(state)}>
             {state}
           </Badge>
-          <TimeTrackerInfoHoverCard
-            currency={currency}
-            roundingMode={roundingMode}
-            roundingInterval={roundingInterval}
-            projectTitle={projectTitle}
-            salary={salary}
-            hourlyPayment={hourlyPayment}
-          />
           <XActionIcon onClick={removeTimer} />
         </Group>
         {/* Project Title */}

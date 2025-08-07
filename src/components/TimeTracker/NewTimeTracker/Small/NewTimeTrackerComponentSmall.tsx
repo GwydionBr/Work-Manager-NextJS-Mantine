@@ -86,27 +86,29 @@ export default function TimeTrackerComponentSmall({
       <Collapse in={showSmall} transitionDuration={400}>
         <Stack gap="xs" align="center" justify="center" pos="relative">
           <LoadingOverlay visible={isSubmitting} overlayProps={{ blur: 2 }} />
-          <TimeTrackerInfoHoverCard
-            currency={currency}
-            roundingMode={roundingMode}
-            roundingInterval={roundingInterval}
-            projectTitle={projectTitle}
-            salary={salary}
-            hourlyPayment={hourlyPayment}
-          />
-          <ModifyTimeTrackerModal
-            modifyActiveSeconds={modifyActiveSeconds}
-            modifyPausedSeconds={modifyPausedSeconds}
-            setRoundingAmount={setRoundingAmount}
-            activeTime={activeTime}
-            pausedTime={pausedTime}
-            state={state}
-            activeSeconds={activeSeconds}
-            roundingMode={roundingMode}
-            roundingInterval={roundingInterval}
-            storedActiveSeconds={storedActiveSeconds}
-            storedPausedSeconds={storedPausedSeconds}
-          />
+          <Stack gap={0}>
+            <ModifyTimeTrackerModal
+              modifyActiveSeconds={modifyActiveSeconds}
+              modifyPausedSeconds={modifyPausedSeconds}
+              setRoundingAmount={setRoundingAmount}
+              activeTime={activeTime}
+              pausedTime={pausedTime}
+              state={state}
+              activeSeconds={activeSeconds}
+              roundingMode={roundingMode}
+              roundingInterval={roundingInterval}
+              storedActiveSeconds={storedActiveSeconds}
+              storedPausedSeconds={storedPausedSeconds}
+            />
+            <TimeTrackerInfoHoverCard
+              currency={currency}
+              roundingMode={roundingMode}
+              roundingInterval={roundingInterval}
+              projectTitle={projectTitle}
+              salary={salary}
+              hourlyPayment={hourlyPayment}
+            />
+          </Stack>
           <Divider />
           <Card
             w={47}
