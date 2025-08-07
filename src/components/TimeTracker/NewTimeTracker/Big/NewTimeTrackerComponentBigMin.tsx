@@ -14,6 +14,7 @@ import PauseActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/Pau
 import ResumeActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/ResumeActionIcon";
 import StopActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/StopActionIcon";
 import CancelActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/CancelActionIcon";
+import XActionIcon from "@/components/UI/ActionIcons/XActionIcon";
 
 interface NewTimeTrackerComponentBigMinProps {
   projectTitle: string;
@@ -27,6 +28,7 @@ interface NewTimeTrackerComponentBigMinProps {
   resumeTimer: () => void;
   submitTimer: () => void;
   cancelTimer: () => void;
+  removeTimer: () => void;
 }
 
 export default function NewTimeTrackerComponentBigMin({
@@ -41,6 +43,7 @@ export default function NewTimeTrackerComponentBigMin({
   resumeTimer,
   submitTimer,
   cancelTimer,
+  removeTimer,
 }: NewTimeTrackerComponentBigMinProps) {
   return (
     <Card shadow="sm" padding="xs" radius="md" withBorder w={270}>
@@ -110,6 +113,7 @@ export default function NewTimeTrackerComponentBigMin({
               disabled={isSubmitting}
             />
           </Group>
+          <XActionIcon onClick={removeTimer} />
         </Collapse>
       </Group>
     </Card>

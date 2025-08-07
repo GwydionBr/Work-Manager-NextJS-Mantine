@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTimeTracker } from "@/hooks/useTimeTracker";
+import { useWorkStore } from "@/stores/workManagerStore";
 
 import { Box, Transition } from "@mantine/core";
 import TimeTrackerComponentBig from "./Big/NewTimeTrackerComponentBig";
@@ -23,8 +24,8 @@ export default function TimeTrackerInstance({
 }: TimeTrackerComponentProps) {
   const [isClient, setIsClient] = useState(false);
   const timer = useTimeTrackerManager((state) => state.getTimer(timerId));
-  const updateTimer = useTimeTrackerManager((state) => state.updateTimer);
-
+  const { updateTimer, removeTimer } = useTimeTrackerManager();
+  const { addTimerSession } = useWorkStore();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showSmall, setShowSmall] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -116,22 +117,18 @@ export default function TimeTrackerInstance({
   async function submitTimer() {
     if (isSubmitting) return;
     setIsSubmitting(true);
-    // setErrorMessage(null);
-    // const newSession = getCurrentSession();
-
-    // const result = await addTimerSession(newSession);
-    // if (result) {
-    //   stopTimer();
-    // } else {
-    //   setErrorMessage("Error saving session");
-    //   setTimeout(() => {
-    //     setErrorMessage(null);
-    //   }, 3000);
-    // }
+    setErrorMessage(null);
     const newSession = getCurrentSession();
-    console.log(newSession);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    stopTimer();
+
+    const result = await addTimerSession(newSession);
+    if (result) {
+      stopTimer();
+    } else {
+      setErrorMessage("Error saving session");
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 3000);
+    }
     setIsSubmitting(false);
   }
 
@@ -147,6 +144,7 @@ export default function TimeTrackerInstance({
           <div style={styles}>
             <TimeTrackerComponentBig
               projectTitle={timer.projectTitle}
+              removeTimer={() => removeTimer(timerId)}
               moneyEarned={moneyEarned}
               currency={timer.currency}
               hourlyPayment={timer.hourlyPayment}

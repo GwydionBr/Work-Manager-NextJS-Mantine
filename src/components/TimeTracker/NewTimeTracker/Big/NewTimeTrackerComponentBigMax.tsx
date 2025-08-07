@@ -29,6 +29,7 @@ import {
 import { getStatusColor } from "@/utils/workHelperFunctions";
 import ModifyTimeTrackerModal from "../../ModifyTimeTracker/ModifyTimeTrackerModal";
 import TimeTrackerInfoHoverCard from "../../TimeTrackerInfoHoverCard";
+import XActionIcon from "@/components/UI/ActionIcons/XActionIcon";
 
 interface NewTimeTrackerComponentBigMaxProps {
   projectTitle: string;
@@ -52,6 +53,7 @@ interface NewTimeTrackerComponentBigMaxProps {
   resumeTimer: () => void;
   submitTimer: () => void;
   cancelTimer: () => void;
+  removeTimer: () => void;
   setRoundingAmount: (
     roundingAmount: RoundingAmount,
     roundingMode: RoundingDirection,
@@ -86,6 +88,7 @@ export default function NewTimeTrackerComponentBigMax({
   modifyActiveSeconds,
   modifyPausedSeconds,
   setRoundingAmount,
+  removeTimer,
 }: NewTimeTrackerComponentBigMaxProps) {
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder w={270}>
@@ -117,6 +120,7 @@ export default function NewTimeTrackerComponentBigMax({
             salary={salary}
             hourlyPayment={hourlyPayment}
           />
+          <XActionIcon onClick={removeTimer} />
         </Group>
         {/* Project Title */}
         <Group justify="space-between" align="center">

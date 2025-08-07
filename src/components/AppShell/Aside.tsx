@@ -57,13 +57,13 @@ export default function Aside({ toggleAside, isAsideOpen }: AsideProps) {
           />
         </Group>
       </Stack>
-      <ScrollArea h="100%" type="never">
-        <TransitionDivider
-          mounted={isAsideOpen}
-          transition="fade"
-          duration={200}
-          enterDelay={200}
-        />
+      <TransitionDivider
+        mounted={isAsideOpen}
+        transition="fade"
+        duration={200}
+        enterDelay={200}
+      />
+      <ScrollArea type="never">
         <TimeTrackerManager
           isBig={isAsideOpen}
           isTimeTrackerMinimized={isTimeTrackerMinimized}

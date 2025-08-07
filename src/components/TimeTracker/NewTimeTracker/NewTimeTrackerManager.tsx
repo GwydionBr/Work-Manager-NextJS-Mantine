@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
 import { useWorkStore } from "@/stores/workManagerStore";
 
-import { Stack } from "@mantine/core";
+import { Alert, Stack, Text } from "@mantine/core";
 import { TimerState } from "@/stores/timeTrackerStore";
 import NewTimeTrackerInstance from "./NewTimeTrackerInstance";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
@@ -23,7 +23,7 @@ export default function TimerManager({
   isTimeTrackerMinimized,
   setIsTimeTrackerMinimized,
 }: TimerManagerProps) {
-  const [activeTimerId, setActiveTimerId] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { getAllTimers, addTimer } = useTimeTrackerManager();
   const { activeProjectId } = useWorkStore();
   const activeProject = useWorkStore((state) =>
@@ -39,7 +39,7 @@ export default function TimerManager({
     hourlyPayment: boolean,
     userId: string
   ) => {
-    addTimer({
+    const result = addTimer({
       projectId: projectId,
       projectTitle: projectTitle,
       currency: currency,
@@ -60,14 +60,19 @@ export default function TimerManager({
       roundedActiveTime: "00:00",
       pausedTime: "00:00",
     });
+
+    if (!result.success) {
+      setErrorMessage(result.error || "Failed to add timer");
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
   };
 
   useEffect(() => {
-    if (timers.length > 0) {
-      setActiveTimerId(timers[0].id);
-    } else {
+    if (timers.length === 0) {
       if (!activeProject) return;
-      const newTimerId = addTimer({
+      const result = addTimer({
         projectId: activeProject.project.id,
         projectTitle: activeProject.project.title,
         currency: activeProject.project.currency,
@@ -88,12 +93,30 @@ export default function TimerManager({
         roundedActiveTime: "00:00",
         pausedTime: "00:00",
       });
-      setActiveTimerId(newTimerId);
+
+      if (!result.success) {
+        setErrorMessage(result.error || "Failed to add timer");
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
+      }
     }
   }, [timers, addTimer]);
 
   return (
-    <Stack align="center" gap="md">
+    <Stack align="center" gap="md" mb="md">
+      {errorMessage && (
+        <Alert
+          color="red"
+          variant="filled"
+          title="Error"
+          withCloseButton
+          onClose={() => setErrorMessage(null)}
+        >
+          <Text>{errorMessage}</Text>
+        </Alert>
+      )}
+
       <PlusActionIcon
         onClick={() => {
           if (!activeProject) return;
@@ -113,8 +136,6 @@ export default function TimerManager({
         state={TimerState.Stopped}
         getStatusColor={() => getStatusColor(TimerState.Stopped)}
       />
-
-      
 
       {timers.map((timer) => (
         <NewTimeTrackerInstance

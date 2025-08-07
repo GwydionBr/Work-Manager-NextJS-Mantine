@@ -49,7 +49,7 @@ export default function CalendarAside({ isBig }: CalendarAsideProps) {
   }, [activeGroup, selectedDate]);
 
   return (
-    <Box>
+    <Box mt="md">
       <Transition
         mounted={isBig}
         transition="fade"

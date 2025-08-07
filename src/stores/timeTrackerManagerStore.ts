@@ -31,7 +31,11 @@ interface TimeTrackerManagerState {
   timers: Record<string, TimerData>;
 
   // Timer Management
-  addTimer: (timerData: Omit<TimerData, "id">) => string;
+  addTimer: (timerData: Omit<TimerData, "id">) => {
+    success: boolean;
+    timerId?: string;
+    error?: string;
+  };
   removeTimer: (timerId: string) => void;
   updateTimer: (timerId: string, updates: Partial<TimerData>) => void;
   getTimer: (timerId: string) => TimerData | undefined;
@@ -44,6 +48,30 @@ export const useTimeTrackerManager = create(
       timers: {} as Record<string, TimerData>,
 
       addTimer: (timerData) => {
+        const currentTimers = get().timers;
+        const timerCount = Object.keys(currentTimers).length;
+
+        // Check if maximum 3 time trackers reached
+        if (timerCount >= 3) {
+          return {
+            success: false,
+            error:
+              "Maximum 3 time trackers allowed. Please stop or remove an existing timer first.",
+          };
+        }
+
+        // Check if project already has a time tracker
+        const existingTimerForProject = Object.values(currentTimers).find(
+          (timer) => timer.projectId === timerData.projectId
+        );
+
+        if (existingTimerForProject) {
+          return {
+            success: false,
+            error: `A time tracker for project "${timerData.projectTitle}" already exists.`,
+          };
+        }
+
         const id = crypto.randomUUID();
         const newTimer: TimerData = {
           id,
@@ -56,7 +84,10 @@ export const useTimeTrackerManager = create(
           };
         });
 
-        return id;
+        return {
+          success: true,
+          timerId: id,
+        };
       },
 
       removeTimer: (timerId) => {
