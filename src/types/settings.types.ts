@@ -1,5 +1,7 @@
 export type RoundingAmount = "s" | "min" | "1/4h" | "1/2h" | "h" | "custom";
 export type RoundingDirection = "up" | "down" | "nearest";
+export type RoundingInTimeSections = "5min" | "10min" | "15min" | "20min" | "30min" | "1h";
+
 export type Currency =
   | "USD"
   | "EUR"
@@ -22,3 +24,4 @@ export type FinanceInterval =
   | "1/4 year"
   | "1/2 year"
   | "year";
+

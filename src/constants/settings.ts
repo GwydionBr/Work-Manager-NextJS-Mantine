@@ -3,6 +3,7 @@ import {
   RoundingAmount,
   RoundingDirection,
   FinanceInterval,
+  RoundingInTimeSections,
 } from "@/types/settings.types";
 
 export const currencies: { value: Currency; label: string }[] = [
@@ -40,6 +41,14 @@ export const roundingAmounts: { value: RoundingAmount; label: string }[] = [
   { value: "1/2h", label: "Half Hour" },
   { value: "h", label: "Hour" },
   { value: "custom", label: "Custom" },
+];
+
+export const roundingInTimeSections: { value: RoundingInTimeSections; label: string }[] = [
+  { value: "5min", label: "5 Minutes" },
+  { value: "10min", label: "10 Minutes" },
+  { value: "15min", label: "15 Minutes" },
+  { value: "30min", label: "30 Minutes" },
+  { value: "1h", label: "1 Hour" },
 ];
 
 export const roundingModes: { value: RoundingDirection; label: string }[] = [

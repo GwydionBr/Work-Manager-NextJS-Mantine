@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
 import { useWorkStore } from "@/stores/workManagerStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Alert, Stack, Text } from "@mantine/core";
 import { TimerState } from "@/stores/timeTrackerStore";
@@ -10,7 +11,10 @@ import NewTimeTrackerInstance from "./NewTimeTrackerInstance";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import { Currency } from "@/types/settings.types";
 import TimeTrackerActionIcon from "../TimeTrackerActionIcons/TimeTrackerActionIcon";
-import { getStatusColor } from "@/utils/workHelperFunctions";
+import {
+  getRoundingInterval,
+  getStatusColor,
+} from "@/utils/workHelperFunctions";
 
 interface TimerManagerProps {
   isBig: boolean;
@@ -26,6 +30,8 @@ export default function TimerManager({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { getAllTimers, addTimer } = useTimeTrackerManager();
   const { activeProjectId } = useWorkStore();
+  const { roundingAmount, roundingMode, customRoundingAmount } =
+    useSettingsStore();
   const activeProject = useWorkStore((state) =>
     state.projects.find((p) => p.project.id === activeProjectId)
   );
@@ -46,8 +52,11 @@ export default function TimerManager({
       salary: salary,
       hourlyPayment: hourlyPayment,
       userId: userId,
-      roundingInterval: 60,
-      roundingMode: "up",
+      roundingInterval: getRoundingInterval(
+        roundingAmount,
+        customRoundingAmount
+      ),
+      roundingMode: roundingMode,
       state: TimerState.Stopped,
       activeSeconds: 0,
       pausedSeconds: 0,
@@ -79,8 +88,11 @@ export default function TimerManager({
         salary: activeProject.project.salary,
         hourlyPayment: activeProject.project.hourly_payment,
         userId: activeProject.project.user_id,
-        roundingInterval: 60,
-        roundingMode: "up",
+        roundingInterval: getRoundingInterval(
+          roundingAmount,
+          customRoundingAmount
+        ),
+        roundingMode: roundingMode,
         state: TimerState.Stopped,
         activeSeconds: 0,
         pausedSeconds: 0,

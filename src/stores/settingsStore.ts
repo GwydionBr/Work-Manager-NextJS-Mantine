@@ -6,6 +6,7 @@ import {
   Currency,
   RoundingAmount,
   RoundingDirection,
+  RoundingInTimeSections,
 } from "@/types/settings.types";
 import * as actions from "@/actions";
 
@@ -26,6 +27,8 @@ interface SettingsState {
   isAsideOpen: boolean;
   isFetching: boolean;
   lastFetch: Date | null;
+  roundInTimeSections: boolean;
+  timeSectionInterval: RoundingInTimeSections;
 }
 
 interface SettingsActions {
@@ -41,6 +44,8 @@ interface SettingsActions {
   setCustomRoundingAmount: (customRoundingAmount: number) => void;
   setDefaultGroupColor: (color: string | null) => void;
   setIsAsideOpen: (isAsideOpen: boolean) => void;
+  setRoundInTimeSections: (roundInTimeSections: boolean) => void;
+  setTimeSectionInterval: (timeSectionInterval: RoundingInTimeSections) => void;
 }
 
 export const useSettingsStore = create<SettingsState & SettingsActions>()(
@@ -60,6 +65,8 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       isAsideOpen: false,
       isFetching: true,
       lastFetch: null,
+      roundInTimeSections: false,
+      timeSectionInterval: "10min",
 
       fetchSettings: async () => {
         const { data } = await actions.getSettings();
@@ -74,6 +81,8 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
             roundingMode: data.rounding_direction,
             customRoundingAmount: data.rounding_custom_amount,
             defaultGroupColor: data.default_group_color,
+            roundInTimeSections: data.round_in_time_sections,
+            timeSectionInterval: data.time_section_interval,
           });
         }
         set({ isFetching: false, lastFetch: new Date() });
@@ -142,6 +151,20 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       },
       setIsAsideOpen: (isAsideOpen: boolean) => {
         set({ isAsideOpen: isAsideOpen });
+      },
+      setRoundInTimeSections: async (roundInTimeSections: boolean) => {
+        await actions.updateSettings({
+          id: get().settingsId ?? "",
+          round_in_time_sections: roundInTimeSections,
+        });
+        set({ roundInTimeSections: roundInTimeSections });
+      },
+      setTimeSectionInterval: async (timeSectionInterval: RoundingInTimeSections) => {
+        await actions.updateSettings({
+          id: get().settingsId ?? "",
+          time_section_interval: timeSectionInterval,
+        });
+        set({ timeSectionInterval: timeSectionInterval });
       },
     }),
     {

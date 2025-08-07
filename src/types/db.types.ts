@@ -591,9 +591,11 @@ export type Database = {
           default_project_hourly_payment: boolean;
           default_salary_amount: number;
           id: string;
+          round_in_time_sections: boolean;
           rounding_amount: Database["public"]["Enums"]["roundingAmount"];
           rounding_custom_amount: number;
           rounding_direction: Database["public"]["Enums"]["roundingDirection"];
+          time_section_interval: Database["public"]["Enums"]["timeSectionInterval"];
           updated_at: string;
           user_id: string;
         };
@@ -605,9 +607,11 @@ export type Database = {
           default_project_hourly_payment?: boolean;
           default_salary_amount?: number;
           id?: string;
+          round_in_time_sections?: boolean;
           rounding_amount?: Database["public"]["Enums"]["roundingAmount"];
           rounding_custom_amount?: number;
           rounding_direction?: Database["public"]["Enums"]["roundingDirection"];
+          time_section_interval?: Database["public"]["Enums"]["timeSectionInterval"];
           updated_at?: string;
           user_id?: string;
         };
@@ -619,9 +623,11 @@ export type Database = {
           default_project_hourly_payment?: boolean;
           default_salary_amount?: number;
           id?: string;
+          round_in_time_sections?: boolean;
           rounding_amount?: Database["public"]["Enums"]["roundingAmount"];
           rounding_custom_amount?: number;
           rounding_direction?: Database["public"]["Enums"]["roundingDirection"];
+          time_section_interval?: Database["public"]["Enums"]["timeSectionInterval"];
           updated_at?: string;
           user_id?: string;
         };
@@ -928,6 +934,13 @@ export type Database = {
       roundingAmount: "s" | "min" | "1/4h" | "1/2h" | "h" | "custom";
       roundingDirection: "up" | "down" | "nearest";
       status: "pending" | "accepted" | "declined";
+      timeSectionInterval:
+        | "5min"
+        | "10min"
+        | "15min"
+        | "20min"
+        | "30min"
+        | "1h";
       weekdays: "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
     };
     CompositeTypes: {
@@ -1088,6 +1101,7 @@ export const Constants = {
       roundingAmount: ["s", "min", "1/4h", "1/2h", "h", "custom"],
       roundingDirection: ["up", "down", "nearest"],
       status: ["pending", "accepted", "declined"],
+      timeSectionInterval: ["5min", "10min", "15min", "20min", "30min", "1h"],
       weekdays: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
     },
   },
