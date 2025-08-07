@@ -25,6 +25,7 @@ export interface TimerData {
   activeTime: string;
   roundedActiveTime: string;
   pausedTime: string;
+  forceEndTimer: boolean;
 }
 
 interface TimeTrackerManagerState {
@@ -40,6 +41,7 @@ interface TimeTrackerManagerState {
   updateTimer: (timerId: string, updates: Partial<TimerData>) => void;
   getTimer: (timerId: string) => TimerData | undefined;
   getAllTimers: () => TimerData[];
+  setForceEndTimer: (timerId: string, forceEndTimer: boolean) => void;
 }
 
 export const useTimeTrackerManager = create(
@@ -119,6 +121,19 @@ export const useTimeTrackerManager = create(
 
       getAllTimers: () => {
         return Object.values(get().timers);
+      },
+
+      setForceEndTimer: (timerId, forceEndTimer) => {
+        set((state) => {
+          const timer = state.timers[timerId];
+          if (!timer) return state;
+          return {
+            timers: {
+              ...state.timers,
+              [timerId]: { ...timer, forceEndTimer },
+            },
+          };
+        });
       },
     }),
     {

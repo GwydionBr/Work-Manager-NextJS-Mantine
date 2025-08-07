@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTimeTracker } from "@/hooks/useTimeTracker";
 import { useWorkStore } from "@/stores/workManagerStore";
+import { TimerState } from "@/stores/timeTrackerStore";
 
 import { Box, Transition } from "@mantine/core";
 import TimeTrackerComponentBig from "./Big/NewTimeTrackerComponentBig";
@@ -13,6 +14,7 @@ interface TimeTrackerComponentProps {
   timerId: string;
   isBig: boolean;
   isTimeTrackerMinimized: boolean;
+  forceEndTimer: boolean;
   setIsTimeTrackerMinimized: (value: boolean) => void;
 }
 
@@ -20,15 +22,30 @@ export default function TimeTrackerInstance({
   timerId,
   isBig,
   isTimeTrackerMinimized,
+  forceEndTimer,
   setIsTimeTrackerMinimized,
 }: TimeTrackerComponentProps) {
   const [isClient, setIsClient] = useState(false);
   const timer = useTimeTrackerManager((state) => state.getTimer(timerId));
-  const { updateTimer, removeTimer } = useTimeTrackerManager();
+  const { updateTimer, removeTimer, setForceEndTimer, getAllTimers } =
+    useTimeTrackerManager();
   const { addTimerSession } = useWorkStore();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showSmall, setShowSmall] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Funktion zum Beenden aller anderen laufenden Timer
+  const stopOtherRunningTimers = useCallback(() => {
+    const allTimers = getAllTimers();
+    allTimers.forEach((otherTimer) => {
+      if (
+        otherTimer.id !== timerId &&
+        otherTimer.state === TimerState.Running
+      ) {
+        setForceEndTimer(otherTimer.id, true);
+      }
+    });
+  }, [timerId, getAllTimers, setForceEndTimer]);
 
   if (!timer) return null;
 
@@ -107,10 +124,23 @@ export default function TimeTrackerInstance({
     storedPausedSeconds,
   ]);
 
+  // Erweiterte startTimer Funktion, die andere Timer beendet
+  const startTimerWithStopOthers = useCallback(() => {
+    stopOtherRunningTimers();
+    startTimer();
+  }, [stopOtherRunningTimers, startTimer]);
+
   useEffect(() => {
     restoreTimer();
     setIsClient(true);
   }, []);
+
+  useEffect(() => {
+    if (forceEndTimer) {
+      submitTimer();
+      setForceEndTimer(timerId, false);
+    }
+  }, [forceEndTimer]);
 
   if (!isClient) return null;
 
@@ -158,7 +188,7 @@ export default function TimeTrackerInstance({
               salary={timer.salary}
               storedActiveSeconds={storedActiveSeconds}
               storedPausedSeconds={storedPausedSeconds}
-              startTimer={startTimer}
+              startTimer={startTimerWithStopOthers}
               pauseTimer={pauseTimer}
               resumeTimer={resumeTimer}
               cancelTimer={cancelTimer}
@@ -203,7 +233,7 @@ export default function TimeTrackerInstance({
               setShowSmall={setShowSmall}
               isSubmitting={isSubmitting}
               submitTimer={submitTimer}
-              startTimer={startTimer}
+              startTimer={startTimerWithStopOthers}
               pauseTimer={pauseTimer}
               resumeTimer={resumeTimer}
               cancelTimer={cancelTimer}

@@ -28,6 +28,7 @@ export default function TimerManager({
   setIsTimeTrackerMinimized,
 }: TimerManagerProps) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
   const { getAllTimers, addTimer } = useTimeTrackerManager();
   const { activeProjectId } = useWorkStore();
   const { roundingAmount, roundingMode, customRoundingAmount } =
@@ -36,6 +37,11 @@ export default function TimerManager({
     state.projects.find((p) => p.project.id === activeProjectId)
   );
   const timers = getAllTimers();
+
+  // Client-side hydration
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleAddTimer = (
     projectId: string,
@@ -68,6 +74,7 @@ export default function TimerManager({
       activeTime: "00:00",
       roundedActiveTime: "00:00",
       pausedTime: "00:00",
+      forceEndTimer: false,
     });
 
     if (!result.success) {
@@ -104,6 +111,7 @@ export default function TimerManager({
         activeTime: "00:00",
         roundedActiveTime: "00:00",
         pausedTime: "00:00",
+        forceEndTimer: false,
       });
 
       if (!result.success) {
@@ -132,6 +140,22 @@ export default function TimerManager({
     (timer) =>
       timer.state === TimerState.Running || timer.state === TimerState.Paused
   ).length;
+
+  // Don't render until client-side hydration is complete
+  if (!isClient) {
+    return (
+      <Stack align="center" gap="md" mb="md">
+        <PlusActionIcon onClick={() => {}} />
+        <TimeTrackerActionIcon
+          action={() => {}}
+          label="hide Timer"
+          indicatorLabel="0"
+          state={TimerState.Stopped}
+          getStatusColor={() => getStatusColor(TimerState.Stopped)}
+        />
+      </Stack>
+    );
+  }
 
   return (
     <Stack align="center" gap="md" mb="md">
@@ -175,6 +199,7 @@ export default function TimerManager({
           isBig={isBig}
           isTimeTrackerMinimized={isTimeTrackerMinimized}
           setIsTimeTrackerMinimized={setIsTimeTrackerMinimized}
+          forceEndTimer={timer.forceEndTimer}
         />
       ))}
     </Stack>

@@ -1,12 +1,15 @@
 "use client";
 
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import {
+  Box,
   Card,
-  Collapse,
   Group,
   LoadingOverlay,
   Stack,
   Text,
+  Transition,
 } from "@mantine/core";
 import { TimerState } from "@/stores/timeTrackerStore";
 import StartActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/StartActionIcons";
@@ -22,6 +25,7 @@ import {
   RoundingAmount,
   RoundingDirection,
 } from "@/types/settings.types";
+import styles from "./NewTimeTrackerComponentBigMin.module.css";
 
 interface NewTimeTrackerComponentBigMinProps {
   projectTitle: string;
@@ -78,6 +82,8 @@ export default function NewTimeTrackerComponentBigMin({
   cancelTimer,
   removeTimer,
 }: NewTimeTrackerComponentBigMinProps) {
+  const { roundInTimeSections } = useSettingsStore();
+
   return (
     <Card shadow="sm" padding="xs" radius="md" withBorder w={270}>
       <LoadingOverlay visible={isSubmitting} overlayProps={{ blur: 2 }} />
@@ -119,58 +125,86 @@ export default function NewTimeTrackerComponentBigMin({
               state === TimerState.Running ? "var(--mantine-color-blue-6)" : "",
           }}
         >
-          <Stack gap="xs">
+          <Stack gap="xs" align="center">
             <Text size="xs" c="dimmed">
               Active
             </Text>
-            <Text size="xs" fw={state === "running" ? 700 : 400}>
-              {activeTime}
-            </Text>
-            <Text size="xs" c="dimmed">
-              {roundedActiveTime}
-            </Text>
+            {!roundInTimeSections ? (
+              <Stack>
+                <Text size="xs" fw={state === "running" ? 700 : 400}>
+                  {activeTime}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  {roundedActiveTime}
+                </Text>
+              </Stack>
+            ) : (
+              <Group>
+                <Text size="xs" fw={state === "running" ? 700 : 400}>
+                  {activeTime}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  {roundedActiveTime}
+                </Text>
+              </Group>
+            )}
           </Stack>
         </Card>
-        <Card
-          shadow="sm"
-          padding="xs"
-          radius="md"
-          withBorder
-          style={{
-            borderColor:
-              state === TimerState.Paused
-                ? "var(--mantine-color-orange-6)"
-                : "",
-          }}
+        {!roundInTimeSections && (
+          <Card
+            shadow="sm"
+            padding="xs"
+            radius="md"
+            withBorder
+            style={{
+              borderColor:
+                state === TimerState.Paused
+                  ? "var(--mantine-color-orange-6)"
+                  : "",
+            }}
+          >
+            <Stack>
+              <Text size="xs" c="dimmed">
+                Paused
+              </Text>
+              <Text size="xs" fw={state === "paused" ? 700 : 400}>
+                {pausedTime}
+              </Text>
+            </Stack>
+          </Card>
+        )}
+        <Transition
+          mounted={state === "stopped"}
+          transition="fade-left"
+          duration={400}
         >
-          <Stack>
-            <Text size="xs" c="dimmed">
-              Paused
-            </Text>
-            <Text size="xs" fw={state === "paused" ? 700 : 400}>
-              {pausedTime}
-            </Text>
-          </Stack>
-        </Card>
-        {state === "stopped" && <StartActionIcon startTimer={startTimer} />}
-        {state === "running" && (
+          {(styles) => (
+            <Box style={styles}>
+              <StartActionIcon startTimer={startTimer} />
+            </Box>
+          )}
+        </Transition>
+        {state === "running" && !roundInTimeSections && (
           <PauseActionIcon pauseTimer={pauseTimer} disabled={isSubmitting} />
         )}
         {state === "paused" && (
           <ResumeActionIcon resumeTimer={resumeTimer} disabled={isSubmitting} />
         )}
-        <Collapse
-          in={state === "running" || state === "paused"}
-          transitionDuration={400}
+        <Transition
+          mounted={state === "running" || state === "paused"}
+          transition="fade-left"
+          duration={400}
         >
-          <Group gap="xs" align="center" justify="center">
-            <StopActionIcon stopTimer={submitTimer} disabled={isSubmitting} />
-            <CancelActionIcon
-              cancelTimer={cancelTimer}
-              disabled={isSubmitting}
-            />
-          </Group>
-        </Collapse>
+          {(styles) => (
+            <Group gap="xs" align="center" justify="center" style={styles}>
+              <StopActionIcon stopTimer={submitTimer} disabled={isSubmitting} />
+              <CancelActionIcon
+                cancelTimer={cancelTimer}
+                disabled={isSubmitting}
+              />
+            </Group>
+          )}
+        </Transition>
       </Group>
     </Card>
   );

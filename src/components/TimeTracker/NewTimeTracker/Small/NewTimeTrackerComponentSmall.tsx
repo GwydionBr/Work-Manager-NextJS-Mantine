@@ -1,6 +1,6 @@
 "use client";
 
-import { TimerState } from "@/stores/timeTrackerStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
   Stack,
@@ -18,6 +18,8 @@ import StopActionIcon from "../../TimeTrackerActionIcons/StopActionIcon";
 import CancelActionIcon from "../../TimeTrackerActionIcons/CancelActionIcon";
 import TimeTrackerInfoHoverCard from "../../TimeTrackerInfoHoverCard";
 import ModifyTimeTrackerModal from "../../ModifyTimeTracker/ModifyTimeTrackerModal";
+
+import { TimerState } from "@/stores/timeTrackerStore";
 import {
   Currency,
   RoundingAmount,
@@ -81,6 +83,8 @@ export default function TimeTrackerComponentSmall({
   modifyPausedSeconds,
   setRoundingAmount,
 }: TimeTrackerComponentSmallProps) {
+  const { roundInTimeSections } = useSettingsStore();
+
   return (
     <Stack w={50} align="center" justify="center" gap="xs">
       <Collapse in={showSmall} transitionDuration={400}>
@@ -135,30 +139,32 @@ export default function TimeTrackerComponentSmall({
               {roundedActiveTime}
             </Text>
           </Card>
-          <Card
-            w={47}
-            shadow="sm"
-            padding={0}
-            py={8}
-            mr={1}
-            radius="md"
-            withBorder
-            style={{
-              borderColor:
-                state === TimerState.Paused
-                  ? "var(--mantine-color-orange-6)"
-                  : "",
-            }}
-          >
-            <Text fz={11} c="dimmed" ta="center">
-              Paused
-            </Text>
-            <Text fz={11} fw={state === "paused" ? 700 : 400} ta="center">
-              {pausedTime}
-            </Text>
-          </Card>
+          {!roundInTimeSections && (
+            <Card
+              w={47}
+              shadow="sm"
+              padding={0}
+              py={8}
+              mr={1}
+              radius="md"
+              withBorder
+              style={{
+                borderColor:
+                  state === TimerState.Paused
+                    ? "var(--mantine-color-orange-6)"
+                    : "",
+              }}
+            >
+              <Text fz={11} c="dimmed" ta="center">
+                Paused
+              </Text>
+              <Text fz={11} fw={state === "paused" ? 700 : 400} ta="center">
+                {pausedTime}
+              </Text>
+            </Card>
+          )}
           {state === "stopped" && <StartActionIcon startTimer={startTimer} />}
-          {state === "running" && (
+          {state === "running" && !roundInTimeSections && (
             <PauseActionIcon pauseTimer={pauseTimer} disabled={isSubmitting} />
           )}
           {state === "paused" && (

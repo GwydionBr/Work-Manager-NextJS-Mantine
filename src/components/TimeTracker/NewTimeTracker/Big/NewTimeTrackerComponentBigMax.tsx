@@ -1,5 +1,7 @@
 "use client";
 
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import {
   Badge,
   Card,
@@ -90,6 +92,8 @@ export default function NewTimeTrackerComponentBigMax({
   setRoundingAmount,
   removeTimer,
 }: NewTimeTrackerComponentBigMaxProps) {
+  const { roundInTimeSections } = useSettingsStore();
+
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder w={270}>
       <LoadingOverlay visible={isSubmitting} overlayProps={{ blur: 2 }} />
@@ -173,18 +177,20 @@ export default function NewTimeTrackerComponentBigMax({
             activationState={TimerState.Running}
             color="var(--mantine-color-blue-6)"
           />
-          <TimeTrackerRow
-            icon={
-              <IconPlayerPause
-                size={20}
-                color="var(--mantine-color-orange-6)"
-              />
-            }
-            value={pausedTime}
-            state={state}
-            activationState={TimerState.Paused}
-            color="var(--mantine-color-orange-6)"
-          />
+          {!roundInTimeSections && (
+            <TimeTrackerRow
+              icon={
+                <IconPlayerPause
+                  size={20}
+                  color="var(--mantine-color-orange-6)"
+                />
+              }
+              value={pausedTime}
+              state={state}
+              activationState={TimerState.Paused}
+              color="var(--mantine-color-orange-6)"
+            />
+          )}
         </Stack>
 
         {/* Buttons */}
@@ -200,7 +206,7 @@ export default function NewTimeTrackerComponentBigMax({
               Start
             </Button>
           )}
-          {state === "running" && (
+          {state === "running" && !roundInTimeSections && (
             <Button
               w="60%"
               onClick={pauseTimer}
