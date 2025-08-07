@@ -15,14 +15,36 @@ import ResumeActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/Re
 import StopActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/StopActionIcon";
 import CancelActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/CancelActionIcon";
 import XActionIcon from "@/components/UI/ActionIcons/XActionIcon";
+import ModifyTimeTrackerModal from "@/components/TimeTracker/ModifyTimeTracker/ModifyTimeTrackerModal";
+import TimeTrackerInfoHoverCard from "@/components/TimeTracker/TimeTrackerInfoHoverCard";
+import {
+  Currency,
+  RoundingAmount,
+  RoundingDirection,
+} from "@/types/settings.types";
 
 interface NewTimeTrackerComponentBigMinProps {
   projectTitle: string;
   state: TimerState;
+  activeSeconds: number;
   activeTime: string;
   pausedTime: string;
   roundedActiveTime: string;
   isSubmitting: boolean;
+  roundingMode: RoundingDirection;
+  roundingInterval: number;
+  currency: Currency;
+  salary: number;
+  hourlyPayment: boolean;
+  storedActiveSeconds: number;
+  storedPausedSeconds: number;
+  modifyActiveSeconds: (delta: number) => void;
+  modifyPausedSeconds: (delta: number) => void;
+  setRoundingAmount: (
+    roundingAmount: RoundingAmount,
+    roundingMode: RoundingDirection,
+    customRoundingAmount: number
+  ) => void;
   startTimer: () => void;
   pauseTimer: () => void;
   resumeTimer: () => void;
@@ -34,10 +56,21 @@ interface NewTimeTrackerComponentBigMinProps {
 export default function NewTimeTrackerComponentBigMin({
   projectTitle,
   state,
+  activeSeconds,
   activeTime,
   pausedTime,
   roundedActiveTime,
   isSubmitting,
+  storedActiveSeconds,
+  storedPausedSeconds,
+  roundingMode,
+  roundingInterval,
+  currency,
+  salary,
+  hourlyPayment,
+  modifyActiveSeconds,
+  modifyPausedSeconds,
+  setRoundingAmount,
   startTimer,
   pauseTimer,
   resumeTimer,
@@ -49,6 +82,27 @@ export default function NewTimeTrackerComponentBigMin({
     <Card shadow="sm" padding="xs" radius="md" withBorder w={270}>
       <LoadingOverlay visible={isSubmitting} overlayProps={{ blur: 2 }} />
       <Group justify="center" align="center">
+        <ModifyTimeTrackerModal
+          activeTime={activeTime}
+          pausedTime={pausedTime}
+          state={state}
+          roundingMode={roundingMode}
+          activeSeconds={activeSeconds}
+          storedActiveSeconds={storedActiveSeconds}
+          storedPausedSeconds={storedPausedSeconds}
+          roundingInterval={roundingInterval}
+          modifyActiveSeconds={modifyActiveSeconds}
+          modifyPausedSeconds={modifyPausedSeconds}
+          setRoundingAmount={setRoundingAmount}
+        />
+        <TimeTrackerInfoHoverCard
+          currency={currency}
+          roundingMode={roundingMode}
+          roundingInterval={roundingInterval}
+          projectTitle={projectTitle}
+          salary={salary}
+          hourlyPayment={hourlyPayment}
+        />
         <Text size="xs" c="dimmed" ta="center">
           {projectTitle}
         </Text>

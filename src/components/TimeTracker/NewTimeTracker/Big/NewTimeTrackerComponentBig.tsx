@@ -83,12 +83,23 @@ export default function TimeTrackerComponentBig({
           pausedTime={pausedTime}
           roundedActiveTime={roundedActiveTime}
           isSubmitting={isSubmitting}
+          activeSeconds={activeSeconds}
+          storedActiveSeconds={storedActiveSeconds}
+          storedPausedSeconds={storedPausedSeconds}
+          roundingMode={roundingMode}
+          roundingInterval={roundingInterval}
+          currency={currency}
+          salary={salary}
+          hourlyPayment={hourlyPayment}
           startTimer={startTimer}
           pauseTimer={pauseTimer}
           resumeTimer={resumeTimer}
           submitTimer={submitTimer}
           cancelTimer={cancelTimer}
           removeTimer={removeTimer}
+          modifyActiveSeconds={modifyActiveSeconds}
+          modifyPausedSeconds={modifyPausedSeconds}
+          setRoundingAmount={setRoundingAmount}
         />
       </Collapse>
       <Collapse in={!isTimeTrackerMinimized} transitionDuration={400}>

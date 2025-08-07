@@ -98,16 +98,16 @@ export default function NewTimeTrackerComponentBigMax({
         <Group justify="space-between" align="center" w="100%">
           <Stack gap={0}>
             <ModifyTimeTrackerModal
-              modifyActiveSeconds={modifyActiveSeconds}
-              modifyPausedSeconds={modifyPausedSeconds}
               activeTime={activeTime}
               pausedTime={pausedTime}
               state={state}
+              roundingMode={roundingMode}
               activeSeconds={activeSeconds}
               storedActiveSeconds={storedActiveSeconds}
               storedPausedSeconds={storedPausedSeconds}
-              roundingMode={roundingMode}
               roundingInterval={roundingInterval}
+              modifyActiveSeconds={modifyActiveSeconds}
+              modifyPausedSeconds={modifyPausedSeconds}
               setRoundingAmount={setRoundingAmount}
             />
             <TimeTrackerInfoHoverCard
