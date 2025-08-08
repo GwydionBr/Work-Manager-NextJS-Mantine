@@ -65,7 +65,7 @@ export function useTimeTracker(initialState: TimeTrackerState) {
               prevState.roundingMode
             )
           );
-
+          document.title = `${newActiveTime} - ${prevState.projectTitle} | Work Manager`;
           return {
             ...prevState,
             activeSeconds: newActiveSeconds,
@@ -228,6 +228,7 @@ export function useTimeTracker(initialState: TimeTrackerState) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
+    document.title = `Work Manager`;
 
     setState((prev) => ({
       ...prev,
