@@ -177,6 +177,36 @@ export function getTimeSectionSessions(
   blockEnd.setSeconds(0);
   blockEnd.setMilliseconds(0);
 
+  // Ensure we have at least one block even for very short sessions
+  if (blockStart.getTime() >= blockEnd.getTime()) {
+    // For sessions that are very short or start/end at the same time,
+    // create a single block based on the start time
+    const singleBlockStart = new Date(blockStart);
+    const singleBlockEnd = new Date(singleBlockStart);
+    singleBlockEnd.setMinutes(
+      singleBlockEnd.getMinutes() + timeSectionInterval
+    );
+
+    const session: TablesInsert<"timerSession"> = {
+      start_time: singleBlockStart.toISOString(),
+      real_start_time: start.toISOString(),
+      end_time: singleBlockEnd.toISOString(),
+      true_end_time: end.toISOString(),
+      active_seconds: timeSectionInterval * 60,
+      paused_seconds: 0,
+      salary: originalSession.salary,
+      project_id: originalSession.project_id,
+      currency: originalSession.currency,
+      hourly_payment: originalSession.hourly_payment,
+      payed: false,
+      payout_id: null,
+      user_id: originalSession.user_id,
+    };
+
+    sessions.push(session);
+    return sessions;
+  }
+
   let currentBlockStart = new Date(blockStart);
 
   while (currentBlockStart < blockEnd) {
