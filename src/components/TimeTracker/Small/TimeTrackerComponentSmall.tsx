@@ -11,13 +11,13 @@ import {
   Card,
 } from "@mantine/core";
 
-import StartActionIcon from "../../TimeTrackerActionIcons/StartActionIcons";
-import PauseActionIcon from "../../TimeTrackerActionIcons/PauseActionIcon";
-import ResumeActionIcon from "../../TimeTrackerActionIcons/ResumeActionIcon";
-import StopActionIcon from "../../TimeTrackerActionIcons/StopActionIcon";
-import CancelActionIcon from "../../TimeTrackerActionIcons/CancelActionIcon";
-import TimeTrackerInfoHoverCard from "../../TimeTrackerInfoHoverCard";
-import ModifyTimeTrackerModal from "../../ModifyTimeTracker/ModifyTimeTrackerModal";
+import StartActionIcon from "../TimeTrackerActionIcons/StartActionIcons";
+import PauseActionIcon from "../TimeTrackerActionIcons/PauseActionIcon";
+import ResumeActionIcon from "../TimeTrackerActionIcons/ResumeActionIcon";
+import StopActionIcon from "../TimeTrackerActionIcons/StopActionIcon";
+import CancelActionIcon from "../TimeTrackerActionIcons/CancelActionIcon";
+import TimeTrackerInfoHoverCard from "../TimeTrackerInfoHoverCard";
+import ModifyTimeTrackerModal from "../ModifyTimeTracker/ModifyTimeTrackerModal";
 
 import { TimerState } from "@/stores/timeTrackerStore";
 import {

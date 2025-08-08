@@ -14,7 +14,7 @@ import {
   Collapse,
 } from "@mantine/core";
 import { TimerState } from "@/stores/timeTrackerStore";
-import TimeTrackerRow from "../../TimeTrackerRow";
+import TimeTrackerRow from "../TimeTrackerRow";
 import {
   IconCurrencyEuro,
   IconCurrencyDollar,
@@ -29,11 +29,11 @@ import {
   RoundingDirection,
 } from "@/types/settings.types";
 import { getStatusColor } from "@/utils/workHelperFunctions";
-import ModifyTimeTrackerModal from "../../ModifyTimeTracker/ModifyTimeTrackerModal";
-import TimeTrackerInfoHoverCard from "../../TimeTrackerInfoHoverCard";
+import ModifyTimeTrackerModal from "../ModifyTimeTracker/ModifyTimeTrackerModal";
+import TimeTrackerInfoHoverCard from "../TimeTrackerInfoHoverCard";
 import XActionIcon from "@/components/UI/ActionIcons/XActionIcon";
 
-interface NewTimeTrackerComponentBigMaxProps {
+interface TimeTrackerComponentBigMaxProps {
   projectTitle: string;
   state: TimerState;
   activeSeconds: number;
@@ -65,7 +65,7 @@ interface NewTimeTrackerComponentBigMaxProps {
   modifyPausedSeconds: (delta: number) => void;
 }
 
-export default function NewTimeTrackerComponentBigMax({
+export default function TimeTrackerComponentBigMax({
   projectTitle,
   state,
   activeSeconds,
@@ -91,7 +91,7 @@ export default function NewTimeTrackerComponentBigMax({
   modifyPausedSeconds,
   setRoundingAmount,
   removeTimer,
-}: NewTimeTrackerComponentBigMaxProps) {
+}: TimeTrackerComponentBigMaxProps) {
   const { roundInTimeSections } = useSettingsStore();
 
   return (

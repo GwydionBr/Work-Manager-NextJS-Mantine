@@ -25,9 +25,8 @@ import {
   RoundingAmount,
   RoundingDirection,
 } from "@/types/settings.types";
-import styles from "./NewTimeTrackerComponentBigMin.module.css";
 
-interface NewTimeTrackerComponentBigMinProps {
+interface TimeTrackerComponentBigMinProps {
   projectTitle: string;
   state: TimerState;
   activeSeconds: number;
@@ -57,7 +56,7 @@ interface NewTimeTrackerComponentBigMinProps {
   removeTimer: () => void;
 }
 
-export default function NewTimeTrackerComponentBigMin({
+export default function TimeTrackerComponentBigMin({
   projectTitle,
   state,
   activeSeconds,
@@ -81,7 +80,7 @@ export default function NewTimeTrackerComponentBigMin({
   submitTimer,
   cancelTimer,
   removeTimer,
-}: NewTimeTrackerComponentBigMinProps) {
+}: TimeTrackerComponentBigMinProps) {
   const { roundInTimeSections } = useSettingsStore();
 
   return (

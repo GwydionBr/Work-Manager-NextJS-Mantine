@@ -6,7 +6,7 @@ import { useGroupStore } from "@/stores/groupStore";
 import { ActionIcon, Group, ScrollArea, Stack } from "@mantine/core";
 import { IconArrowBarLeft } from "@tabler/icons-react";
 import NotificationAside from "../Notification/NotificationAside";
-import TimeTrackerManager from "../TimeTracker/NewTimeTracker/NewTimeTrackerManager";
+import TimeTrackerManager from "../TimeTracker/TimeTrackerManager";
 import CalendarAside from "../Calendar/CalendarAside/CalendarAside";
 
 import classes from "./AppShell.module.css";

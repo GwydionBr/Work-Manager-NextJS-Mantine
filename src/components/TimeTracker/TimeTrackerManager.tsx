@@ -7,10 +7,10 @@ import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Alert, Stack, Text } from "@mantine/core";
 import { TimerState } from "@/stores/timeTrackerStore";
-import NewTimeTrackerInstance from "./NewTimeTrackerInstance";
+import TimeTrackerInstance from "./TimeTrackerInstance";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import { Currency } from "@/types/settings.types";
-import TimeTrackerActionIcon from "../TimeTrackerActionIcons/TimeTrackerActionIcon";
+import TimeTrackerActionIcon from "./TimeTrackerActionIcons/TimeTrackerActionIcon";
 import {
   getRoundingInterval,
   getStatusColor,
@@ -193,7 +193,7 @@ export default function TimerManager({
       />
 
       {timers.map((timer) => (
-        <NewTimeTrackerInstance
+        <TimeTrackerInstance
           key={timer.id}
           timerId={timer.id}
           isBig={isBig}

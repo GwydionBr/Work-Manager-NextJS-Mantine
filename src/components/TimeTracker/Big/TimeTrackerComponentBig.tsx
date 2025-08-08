@@ -8,8 +8,8 @@ import {
   RoundingAmount,
   RoundingDirection,
 } from "@/types/settings.types";
-import NewTimeTrackerComponentBigMin from "./NewTimeTrackerComponentBigMin";
-import NewTimeTrackerComponentBigMax from "./NewTimeTrackerComponentBigMax";
+import TimeTrackerComponentBigMin from "./TimeTrackerComponentBigMin";
+import TimeTrackerComponentBigMax from "./TimeTrackerComponentBigMax";
 
 interface TimeTrackerComponentBigProps {
   projectTitle: string;
@@ -76,7 +76,7 @@ export default function TimeTrackerComponentBig({
   return (
     <Stack align="center" w="100%">
       <Collapse in={isTimeTrackerMinimized} transitionDuration={400}>
-        <NewTimeTrackerComponentBigMin
+        <TimeTrackerComponentBigMin
           projectTitle={projectTitle}
           state={state}
           activeTime={activeTime}
@@ -103,7 +103,7 @@ export default function TimeTrackerComponentBig({
         />
       </Collapse>
       <Collapse in={!isTimeTrackerMinimized} transitionDuration={400}>
-        <NewTimeTrackerComponentBigMax
+        <TimeTrackerComponentBigMax
           projectTitle={projectTitle}
           state={state}
           activeSeconds={activeSeconds}

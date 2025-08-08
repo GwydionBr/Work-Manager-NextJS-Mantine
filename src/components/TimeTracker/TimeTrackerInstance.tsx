@@ -6,15 +6,15 @@ import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Box, Transition } from "@mantine/core";
-import TimeTrackerComponentBig from "./Big/NewTimeTrackerComponentBig";
-import TimeTrackerComponentSmall from "./Small/NewTimeTrackerComponentSmall";
+import TimeTrackerComponentBig from "./Big/TimeTrackerComponentBig";
+import TimeTrackerComponentSmall from "./Small/TimeTrackerComponentSmall";
 import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
 
 import { getTimeSectionSessions } from "@/utils/workHelperFunctions";
 
 import { TimerState } from "@/stores/timeTrackerStore";
 
-interface TimeTrackerComponentProps {
+interface TimeTrackerInstanceProps {
   timerId: string;
   isBig: boolean;
   isTimeTrackerMinimized: boolean;
@@ -28,7 +28,7 @@ export default function TimeTrackerInstance({
   isTimeTrackerMinimized,
   forceEndTimer,
   setIsTimeTrackerMinimized,
-}: TimeTrackerComponentProps) {
+}: TimeTrackerInstanceProps) {
   const [isClient, setIsClient] = useState(false);
   const timer = useTimeTrackerManager((state) => state.getTimer(timerId));
   const { updateTimer, removeTimer, setForceEndTimer, getAllTimers } =
