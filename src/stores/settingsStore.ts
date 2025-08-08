@@ -28,7 +28,7 @@ interface SettingsState {
   isFetching: boolean;
   lastFetch: Date | null;
   roundInTimeSections: boolean;
-  timeSectionInterval: RoundingInTimeSections;
+  timeSectionInterval: number;
 }
 
 interface SettingsActions {
@@ -39,13 +39,13 @@ interface SettingsActions {
   setDefaultSalaryAmount: (salaryAmount: number) => void;
   setDefaultFinanceCurrency: (financeCurrency: Currency) => void;
   setDefaultProjectHourlyPayment: (projectHourlyPayment: boolean) => void;
-  setRoundingAmount: (roundingAmount: RoundingAmount) => void;
-  setRoundingMode: (roundingMode: RoundingDirection) => void;
-  setCustomRoundingAmount: (customRoundingAmount: number) => void;
+  setRoundingAmount: (roundingAmount: RoundingAmount) => Promise<void>;
+  setRoundingMode: (roundingMode: RoundingDirection) => Promise<void>;
+  setCustomRoundingAmount: (customRoundingAmount: number) => Promise<void>;
   setDefaultGroupColor: (color: string | null) => void;
   setIsAsideOpen: (isAsideOpen: boolean) => void;
-  setRoundInTimeSections: (roundInTimeSections: boolean) => void;
-  setTimeSectionInterval: (timeSectionInterval: RoundingInTimeSections) => void;
+  setRoundInTimeSections: (roundInTimeSections: boolean) => Promise<void>;
+  setTimeSectionInterval: (timeSectionInterval: number) => Promise<void>;
 }
 
 export const useSettingsStore = create<SettingsState & SettingsActions>()(
@@ -66,7 +66,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       isFetching: true,
       lastFetch: null,
       roundInTimeSections: false,
-      timeSectionInterval: "10min",
+      timeSectionInterval: 10,
 
       fetchSettings: async () => {
         const { data } = await actions.getSettings();
@@ -159,7 +159,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
         });
         set({ roundInTimeSections: roundInTimeSections });
       },
-      setTimeSectionInterval: async (timeSectionInterval: RoundingInTimeSections) => {
+      setTimeSectionInterval: async (timeSectionInterval: number) => {
         await actions.updateSettings({
           id: get().settingsId ?? "",
           time_section_interval: timeSectionInterval,

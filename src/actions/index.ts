@@ -25,6 +25,7 @@ export { createPayout } from "./payout/createPayout";
 
 export { getAllSessions } from "./work/timerSessionActions";
 export { createSession } from "./work/timerSessionActions";
+export { createMultipleSessions } from "./work/timerSessionActions";
 export { updateSession } from "./work/timerSessionActions";
 export { deleteSession } from "./work/timerSessionActions";
 export { updateMultipleSessions } from "./work/timerSessionActions";

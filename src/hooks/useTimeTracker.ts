@@ -24,6 +24,8 @@ interface TimeTrackerState {
   userId: string;
   roundingInterval: number;
   roundingMode: RoundingDirection;
+  timeSectionInterval: number;
+  roundInTimeSections: boolean;
   moneyEarned: string;
   activeTime: string;
   roundedActiveTime: string;
@@ -275,11 +277,13 @@ export function useTimeTracker(initialState: TimeTrackerState) {
   );
 
   const getCurrentSession = useCallback(() => {
-    const roundedActiveSeconds = getRoundedSeconds(
-      state.activeSeconds,
-      state.roundingInterval,
-      state.roundingMode
-    );
+    const currentActiveSeconds = state.roundInTimeSections
+      ? state.activeSeconds
+      : getRoundedSeconds(
+          state.activeSeconds,
+          state.roundingInterval,
+          state.roundingMode
+        );
 
     const newTimerSession: TablesInsert<"timerSession"> = {
       user_id: state.userId,
@@ -289,11 +293,11 @@ export function useTimeTracker(initialState: TimeTrackerState) {
       end_time: state.startTime
         ? new Date(
             state.startTime +
-              (roundedActiveSeconds + state.pausedSeconds) * 1000
+              (currentActiveSeconds + state.pausedSeconds) * 1000
           ).toISOString()
         : new Date().toISOString(),
       hourly_payment: state.hourlyPayment,
-      active_seconds: roundedActiveSeconds,
+      active_seconds: currentActiveSeconds,
       paused_seconds: state.pausedSeconds,
       salary: state.salary,
       currency: state.currency,

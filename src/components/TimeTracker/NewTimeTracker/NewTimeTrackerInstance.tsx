@@ -3,12 +3,16 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTimeTracker } from "@/hooks/useTimeTracker";
 import { useWorkStore } from "@/stores/workManagerStore";
-import { TimerState } from "@/stores/timeTrackerStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Box, Transition } from "@mantine/core";
 import TimeTrackerComponentBig from "./Big/NewTimeTrackerComponentBig";
 import TimeTrackerComponentSmall from "./Small/NewTimeTrackerComponentSmall";
 import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
+
+import { getTimeSectionSessions } from "@/utils/workHelperFunctions";
+
+import { TimerState } from "@/stores/timeTrackerStore";
 
 interface TimeTrackerComponentProps {
   timerId: string;
@@ -29,7 +33,8 @@ export default function TimeTrackerInstance({
   const timer = useTimeTrackerManager((state) => state.getTimer(timerId));
   const { updateTimer, removeTimer, setForceEndTimer, getAllTimers } =
     useTimeTrackerManager();
-  const { addTimerSession } = useWorkStore();
+  const { addTimerSession, addMultipleTimerSessions } = useWorkStore();
+  const { timeSectionInterval, roundInTimeSections } = useSettingsStore();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showSmall, setShowSmall] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -93,6 +98,8 @@ export default function TimeTrackerInstance({
     tempStartTime: timer.tempStartTime,
     storedActiveSeconds: timer.storedActiveSeconds,
     storedPausedSeconds: timer.storedPausedSeconds,
+    timeSectionInterval: timeSectionInterval,
+    roundInTimeSections: roundInTimeSections,
   });
 
   // Sync Hook state mit Store
@@ -146,11 +153,24 @@ export default function TimeTrackerInstance({
 
   async function submitTimer() {
     if (isSubmitting) return;
+    let result = null;
     setIsSubmitting(true);
     setErrorMessage(null);
     const newSession = getCurrentSession();
-
-    const result = await addTimerSession(newSession);
+    if (roundInTimeSections) {
+      const newSessions = getTimeSectionSessions(
+        new Date(newSession.start_time),
+        new Date(newSession.end_time),
+        timeSectionInterval,
+        newSession
+      );
+      result = await addMultipleTimerSessions(
+        newSessions,
+        newSession.project_id as string
+      );
+    } else {
+      result = await addTimerSession(newSession);
+    }
     if (result) {
       stopTimer();
     } else {

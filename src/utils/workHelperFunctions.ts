@@ -137,6 +137,85 @@ export function secondsToTimerFormat(seconds: number) {
   return `${hoursStr}${minutesStr}:${secondsStr}`;
 }
 
+/**
+ * Splits a session into multiple time blocks based on the specified interval.
+ *
+ * Example: If a session runs from 17:17 to 17:36 and timeSectionInterval is "10min",
+ * it will create 3 sessions:
+ * - 17:10-17:20 (3 minutes active: 17:17-17:20)
+ * - 17:20-17:30 (10 minutes active: 17:20-17:30)
+ * - 17:30-17:40 (6 minutes active: 17:30-17:36)
+ *
+ * @param start - Start time of the original session
+ * @param end - End time of the original session
+ * @param timeSectionInterval - Time interval for splitting (5, 10, 15, 30, 60)
+ * @param originalSession - Optional original session data to copy properties from
+ * @returns Array of session objects split into time blocks
+ */
+export function getTimeSectionSessions(
+  start: Date,
+  end: Date,
+  timeSectionInterval: number,
+  originalSession: TablesInsert<"timerSession">
+) {
+  const sessions: TablesInsert<"timerSession">[] = [];
+
+  // Calculate the start of the first time block
+  const blockStart = new Date(start);
+  blockStart.setMinutes(
+    Math.floor(blockStart.getMinutes() / timeSectionInterval) *
+      timeSectionInterval
+  );
+  blockStart.setSeconds(0);
+  blockStart.setMilliseconds(0);
+  console.log("blockStart", blockStart);
+
+  // Calculate the end of the last time block
+  const blockEnd = new Date(end);
+  blockEnd.setMinutes(
+    Math.ceil(blockEnd.getMinutes() / timeSectionInterval) * timeSectionInterval
+  );
+  blockEnd.setSeconds(0);
+  blockEnd.setMilliseconds(0);
+  console.log("blockEnd", blockEnd);
+  let currentBlockStart = new Date(blockStart);
+
+  while (currentBlockStart < blockEnd) {
+    const currentBlockEnd = new Date(currentBlockStart);
+    currentBlockEnd.setMinutes(
+      currentBlockEnd.getMinutes() + timeSectionInterval
+    );
+
+    const session: TablesInsert<"timerSession"> = {
+      start_time: currentBlockStart.toISOString(),
+      real_start_time:
+        start > currentBlockStart
+          ? start.toISOString()
+          : currentBlockStart.toISOString(),
+      end_time: currentBlockEnd.toISOString(),
+      true_end_time:
+        end < currentBlockEnd
+          ? end.toISOString()
+          : currentBlockEnd.toISOString(),
+      active_seconds: timeSectionInterval * 60,
+      paused_seconds: 0,
+      salary: originalSession.salary,
+      project_id: originalSession.project_id,
+      currency: originalSession.currency,
+      hourly_payment: originalSession.hourly_payment,
+      payed: false,
+      payout_id: null,
+      user_id: originalSession.user_id,
+    };
+
+    sessions.push(session);
+
+    currentBlockStart = currentBlockEnd;
+  }
+
+  return sessions;
+}
+
 export function checkAndAdjustSessionOverlap(
   newSession: TablesInsert<"timerSession">,
   existingSessions: Tables<"timerSession">[],

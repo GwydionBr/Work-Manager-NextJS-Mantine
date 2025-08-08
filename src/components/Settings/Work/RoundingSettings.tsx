@@ -13,9 +13,17 @@ import {
   Switch,
   Collapse,
 } from "@mantine/core";
-import { roundingAmounts, roundingInTimeSections, roundingModes } from "@/constants/settings";
+import {
+  roundingAmounts,
+  roundingInTimeSections,
+  roundingModes,
+} from "@/constants/settings";
 
-import { RoundingAmount, RoundingDirection, RoundingInTimeSections } from "@/types/settings.types";
+import {
+  RoundingAmount,
+  RoundingDirection,
+  RoundingInTimeSections,
+} from "@/types/settings.types";
 
 import classes from "./WorkSettings.module.css";
 
@@ -97,14 +105,18 @@ export default function RoundingSettings() {
         }
       />
       <Collapse in={roundInTimeSections === true}>
-        <Select
-          w={150}
-          data={roundingInTimeSections}
-          label="Rounding in time sections"
-          placeholder="Select Default Rounding Amount"
-          value={timeSectionInterval}
-          onChange={(value) => setTimeSectionInterval(value as RoundingInTimeSections)}
-        />
+        <Group>
+          <Select
+            w={200}
+            data={roundingInTimeSections}
+            label="Rounding in time fragments"
+            placeholder="Select Default Rounding Amount"
+            value={timeSectionInterval.toString()}
+            onChange={(value) =>
+              setTimeSectionInterval(Number(value))
+            }
+          />
+        </Group>
       </Collapse>
     </Stack>
   );

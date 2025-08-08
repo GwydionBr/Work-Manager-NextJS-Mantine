@@ -36,6 +36,10 @@ interface WorkStoreActions {
   setActiveProjectId: (id: string) => void;
   addProject: (project: TablesInsert<"timerProject">) => Promise<boolean>;
   addTimerSession: (session: TablesInsert<"timerSession">) => Promise<boolean>;
+  addMultipleTimerSessions: (
+    sessions: TablesInsert<"timerSession">[],
+    projectId: string
+  ) => Promise<boolean>;
   updateProject: (project: TablesUpdate<"timerProject">) => Promise<boolean>;
   updateTimerSession: (
     session: TablesUpdate<"timerSession">
@@ -252,6 +256,27 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         const updatedProjects = projects.map((p) =>
           p.project.id === session.project_id
             ? { project: p.project, sessions: [...p.sessions, newSession.data] }
+            : p
+        );
+        updateStore(updatedProjects, updatedSessions);
+        return true;
+      },
+
+      async addMultipleTimerSessions(sessions, projectId) {
+        const { updateStore, projects, timerSessions } = get();
+
+        const newSessions = await actions.createMultipleSessions({ sessions });
+        if (!newSessions.success) {
+          return false;
+        }
+
+        const updatedSessions = [...timerSessions, ...newSessions.data];
+        const updatedProjects = projects.map((p) =>
+          p.project.id === projectId
+            ? {
+                project: p.project,
+                sessions: [...p.sessions, ...newSessions.data],
+              }
             : p
         );
         updateStore(updatedProjects, updatedSessions);
