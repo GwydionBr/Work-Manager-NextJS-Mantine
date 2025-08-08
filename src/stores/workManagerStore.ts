@@ -11,6 +11,8 @@ import {
   moveNode,
   addNode,
 } from "@/utils/treeHelperFunctions";
+import { filterOutExistingSessionFragments } from "@/utils/workHelperFunctions";
+
 
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { TimerProject, ProjectTreeItem } from "@/types/work.types";
@@ -39,7 +41,10 @@ interface WorkStoreActions {
   addMultipleTimerSessions: (
     sessions: TablesInsert<"timerSession">[],
     projectId: string
-  ) => Promise<boolean>;
+  ) => Promise<{
+    success: boolean;
+    alreadyExistingSessions: Tables<"timerSession">[];
+  }>;
   updateProject: (project: TablesUpdate<"timerProject">) => Promise<boolean>;
   updateTimerSession: (
     session: TablesUpdate<"timerSession">
@@ -265,9 +270,34 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
       async addMultipleTimerSessions(sessions, projectId) {
         const { updateStore, projects, timerSessions } = get();
 
-        const newSessions = await actions.createMultipleSessions({ sessions });
+        const project = projects.find((p) => p.project.id === projectId);
+        if (!project) {
+          return {
+            success: false,
+            alreadyExistingSessions: [],
+          };
+        }
+
+        const { newSessionsToAdd, alreadyExistingSessions } = filterOutExistingSessionFragments(
+          project.sessions,
+          sessions
+        );
+
+        if (newSessionsToAdd.length === 0) {
+          return {
+            success: true,
+            alreadyExistingSessions,
+          };
+        }
+
+        const newSessions = await actions.createMultipleSessions({
+          sessions: newSessionsToAdd,
+        });
         if (!newSessions.success) {
-          return false;
+          return {
+            success: false,
+            alreadyExistingSessions,
+          };
         }
 
         const updatedSessions = [...timerSessions, ...newSessions.data];
@@ -280,7 +310,10 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
             : p
         );
         updateStore(updatedProjects, updatedSessions);
-        return true;
+        return {
+          success: true,
+          alreadyExistingSessions,
+        };
       },
 
       async deleteTimerSession(id) {

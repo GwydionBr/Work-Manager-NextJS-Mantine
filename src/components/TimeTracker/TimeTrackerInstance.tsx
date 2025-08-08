@@ -10,7 +10,7 @@ import TimeTrackerComponentBig from "./Big/TimeTrackerComponentBig";
 import TimeTrackerComponentSmall from "./Small/TimeTrackerComponentSmall";
 import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
 
-import { getTimeSectionSessions } from "@/utils/workHelperFunctions";
+import { formatTimeSpan, getTimeSectionSessions } from "@/utils/workHelperFunctions";
 
 import { TimerState } from "@/stores/timeTrackerStore";
 
@@ -164,10 +164,27 @@ export default function TimeTrackerInstance({
         timeSectionInterval,
         newSession
       );
-      result = await addMultipleTimerSessions(
+      const { success, alreadyExistingSessions } = await addMultipleTimerSessions(
         newSessions,
         newSession.project_id as string
       );
+      result = success;
+      if (alreadyExistingSessions.length > 0) {
+        setErrorMessage(
+          `Session already exists:\n${alreadyExistingSessions
+            .map(
+              (session) =>
+                formatTimeSpan(
+                  new Date(session.start_time),
+                  new Date(session.end_time)
+                )
+            )
+            .join("\n")}`
+        );
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 3000);
+      }
     } else {
       result = await addTimerSession(newSession);
     }

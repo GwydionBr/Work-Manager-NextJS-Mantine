@@ -168,7 +168,6 @@ export function getTimeSectionSessions(
   );
   blockStart.setSeconds(0);
   blockStart.setMilliseconds(0);
-  console.log("blockStart", blockStart);
 
   // Calculate the end of the last time block
   const blockEnd = new Date(end);
@@ -177,7 +176,7 @@ export function getTimeSectionSessions(
   );
   blockEnd.setSeconds(0);
   blockEnd.setMilliseconds(0);
-  console.log("blockEnd", blockEnd);
+
   let currentBlockStart = new Date(blockStart);
 
   while (currentBlockStart < blockEnd) {
@@ -216,59 +215,34 @@ export function getTimeSectionSessions(
   return sessions;
 }
 
-export function checkAndAdjustSessionOverlap(
-  newSession: TablesInsert<"timerSession">,
+export function filterOutExistingSessionFragments(
   existingSessions: Tables<"timerSession">[],
-  roundingAmount?: RoundingAmount,
-  roundingMode?: RoundingDirection,
-  customRoundingAmount?: number
-): { adjustedSession: TablesInsert<"timerSession">; shouldCreate: boolean } {
-  // Filter sessions for the same project
-  const projectSessions = existingSessions.filter(
-    (session) => session.project_id === newSession.project_id
-  );
+  newSessions: TablesInsert<"timerSession">[]
+): {
+  newSessionsToAdd: TablesInsert<"timerSession">[];
+  alreadyExistingSessions: Tables<"timerSession">[];
+} {
+  const alreadyExistingSessions: Tables<"timerSession">[] = [];
+  const newSessionsToAdd: TablesInsert<"timerSession">[] = [];
+  newSessions.forEach((newSession) => {
+    const existingSession = existingSessions.find((existingSession) => {
+      return (
+        new Date(existingSession.start_time).getTime() ===
+          new Date(newSession.start_time).getTime() &&
+        new Date(existingSession.end_time).getTime() ===
+          new Date(newSession.end_time).getTime()
+      );
+    });
 
-  if (projectSessions.length === 0) {
-    return { adjustedSession: newSession, shouldCreate: true };
-  }
-
-  // Sort sessions by start_time to find overlapping sessions
-  const sortedSessions = projectSessions.sort(
-    (a, b) =>
-      new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
-  );
-
-  const newStartTime = new Date(newSession.start_time).getTime();
-  const newEndTime = new Date(newSession.end_time).getTime();
-
-  // Check for any overlapping sessions
-  const overlappingSessions = sortedSessions.filter((session) => {
-    const sessionStart = new Date(session.start_time).getTime();
-    const sessionEnd = new Date(session.end_time).getTime();
-
-    // Check if sessions overlap
-    return (
-      (newStartTime >= sessionStart && newStartTime < sessionEnd) || // New session starts during existing session
-      (newEndTime > sessionStart && newEndTime <= sessionEnd) || // New session ends during existing session
-      (newEndTime > sessionStart && newStartTime < sessionEnd) // Sessions overlap
-    );
-  });
-
-  const adjustedSession = { ...newSession };
-
-  overlappingSessions.forEach((session) => {
-    const sessionStart = new Date(session.start_time).getTime();
-    const sessionEnd = new Date(session.end_time).getTime();
-    const adjustedSessionStart = new Date(adjustedSession.start_time).getTime();
-    const adjustedSessionEnd = new Date(adjustedSession.end_time).getTime();
-
-    if (
-      adjustedSessionEnd > sessionStart &&
-      adjustedSessionStart < sessionEnd
-    ) {
-      return { adjustedSession: adjustedSession, shouldCreate: false };
+    if (!existingSession) {
+      newSessionsToAdd.push(newSession);
+    } else {
+      alreadyExistingSessions.push(existingSession);
     }
   });
 
-  return { adjustedSession: adjustedSession, shouldCreate: true };
+  return {
+    newSessionsToAdd,
+    alreadyExistingSessions,
+  };
 }
