@@ -112,6 +112,11 @@ export default function SessionRow({
                   </Text>
                 )}
               </Group>
+              {session.memo && (
+                <Text size="sm" c="dimmed">
+                  {session.memo}
+                </Text>
+              )}
               <Group>
                 <Text size="sm" c="teal">
                   Active: {helper.formatTime(session.active_seconds)}

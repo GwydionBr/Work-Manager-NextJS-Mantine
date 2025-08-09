@@ -10,7 +10,10 @@ import TimeTrackerComponentBig from "./Big/TimeTrackerComponentBig";
 import TimeTrackerComponentSmall from "./Small/TimeTrackerComponentSmall";
 import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
 
-import { formatTimeSpan, getTimeSectionSessions } from "@/utils/workHelperFunctions";
+import {
+  formatTimeSpan,
+  getTimeSectionSessions,
+} from "@/utils/workHelperFunctions";
 
 import { TimerState } from "@/stores/timeTrackerStore";
 
@@ -30,6 +33,7 @@ export default function TimeTrackerInstance({
   setIsTimeTrackerMinimized,
 }: TimeTrackerInstanceProps) {
   const [isClient, setIsClient] = useState(false);
+  const [memo, setMemo] = useState<string>("");
   const timer = useTimeTrackerManager((state) => state.getTimer(timerId));
   const { updateTimer, removeTimer, setForceEndTimer, getAllTimers } =
     useTimeTrackerManager();
@@ -157,6 +161,7 @@ export default function TimeTrackerInstance({
     setIsSubmitting(true);
     setErrorMessage(null);
     const newSession = getCurrentSession();
+    newSession.memo = memo === "" ? null : memo;
     if (roundInTimeSections) {
       const newSessions = getTimeSectionSessions(
         new Date(newSession.start_time),
@@ -164,20 +169,20 @@ export default function TimeTrackerInstance({
         timeSectionInterval,
         newSession
       );
-      const { success, alreadyExistingSessions } = await addMultipleTimerSessions(
-        newSessions,
-        newSession.project_id as string
-      );
+      const { success, alreadyExistingSessions } =
+        await addMultipleTimerSessions(
+          newSessions,
+          newSession.project_id as string
+        );
       result = success;
       if (alreadyExistingSessions.length > 0) {
         setErrorMessage(
           `Session already exists:\n${alreadyExistingSessions
-            .map(
-              (session) =>
-                formatTimeSpan(
-                  new Date(session.start_time),
-                  new Date(session.end_time)
-                )
+            .map((session) =>
+              formatTimeSpan(
+                new Date(session.start_time),
+                new Date(session.end_time)
+              )
             )
             .join("\n")}`
         );
@@ -189,6 +194,7 @@ export default function TimeTrackerInstance({
       result = await addTimerSession(newSession);
     }
     if (result) {
+      setMemo("");
       stopTimer();
     } else {
       setErrorMessage("Error saving session");
@@ -217,6 +223,7 @@ export default function TimeTrackerInstance({
               hourlyPayment={timer.hourlyPayment}
               roundedActiveTime={roundedActiveTime}
               state={state}
+              memo={memo}
               activeTime={activeTime}
               pausedTime={pausedTime}
               activeSeconds={activeSeconds}
@@ -233,6 +240,7 @@ export default function TimeTrackerInstance({
               setIsTimeTrackerMinimized={setIsTimeTrackerMinimized}
               errorMessage={errorMessage}
               isSubmitting={isSubmitting}
+              setMemo={setMemo}
               submitTimer={submitTimer}
               modifyActiveSeconds={modifyActiveSeconds}
               modifyPausedSeconds={modifyPausedSeconds}

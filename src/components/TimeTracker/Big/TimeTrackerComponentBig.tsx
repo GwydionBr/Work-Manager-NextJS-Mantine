@@ -29,6 +29,7 @@ interface TimeTrackerComponentBigProps {
   roundingInterval: number;
   storedActiveSeconds: number;
   storedPausedSeconds: number;
+  memo: string;
   removeTimer: () => void;
   submitTimer: () => void;
   setIsTimeTrackerMinimized: (value: boolean) => void;
@@ -43,6 +44,7 @@ interface TimeTrackerComponentBigProps {
     roundingMode: RoundingDirection,
     customRoundingAmount: number
   ) => void;
+  setMemo: (memo: string) => void;
 }
 
 export default function TimeTrackerComponentBig({
@@ -63,6 +65,7 @@ export default function TimeTrackerComponentBig({
   moneyEarned,
   currency,
   hourlyPayment,
+  memo,
   removeTimer,
   submitTimer,
   startTimer,
@@ -72,6 +75,7 @@ export default function TimeTrackerComponentBig({
   modifyActiveSeconds,
   modifyPausedSeconds,
   setRoundingAmount,
+  setMemo,
 }: TimeTrackerComponentBigProps) {
   return (
     <Stack align="center" w="100%">
@@ -106,6 +110,7 @@ export default function TimeTrackerComponentBig({
         <TimeTrackerComponentBigMax
           projectTitle={projectTitle}
           state={state}
+          memo={memo}
           activeSeconds={activeSeconds}
           activeTime={activeTime}
           pausedTime={pausedTime}
@@ -129,6 +134,7 @@ export default function TimeTrackerComponentBig({
           modifyPausedSeconds={modifyPausedSeconds}
           setRoundingAmount={setRoundingAmount}
           removeTimer={removeTimer}
+          setMemo={setMemo} 
         />
       </Collapse>
     </Stack>

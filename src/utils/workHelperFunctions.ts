@@ -201,6 +201,7 @@ export function getTimeSectionSessions(
       payed: false,
       payout_id: null,
       user_id: originalSession.user_id,
+      memo: originalSession.memo,
     };
 
     sessions.push(session);
@@ -235,6 +236,7 @@ export function getTimeSectionSessions(
       payed: false,
       payout_id: null,
       user_id: originalSession.user_id,
+      memo: originalSession.memo,
     };
 
     sessions.push(session);

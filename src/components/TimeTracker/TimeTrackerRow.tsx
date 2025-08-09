@@ -1,11 +1,21 @@
-import { Paper, Text, PaperProps, Grid, Group, Divider } from "@mantine/core";
+import {
+  Paper,
+  Text,
+  PaperProps,
+  Grid,
+  Group,
+  Divider,
+  TextInput,
+} from "@mantine/core";
 import { TimerState } from "@/stores/timeTrackerStore";
 
 import classes from "./TimeTracker.module.css";
 
 interface TimeTrackerRowProps extends PaperProps {
   icon: React.ReactNode;
-  value: string;
+  value: string | undefined;
+  setMemo?: (memo: string) => void;
+  isMemo?: boolean;
   secondValue?: string;
   state?: TimerState;
   activationState?: TimerState;
@@ -15,6 +25,8 @@ interface TimeTrackerRowProps extends PaperProps {
 export default function TimeTrackerRow({
   icon,
   value,
+  setMemo,
+  isMemo,
   secondValue,
   state,
   activationState,
@@ -29,7 +41,7 @@ export default function TimeTrackerRow({
       style={{ borderColor: state === activationState ? color : "" }}
       {...props}
     >
-      <Grid justify="center" align="center" >
+      <Grid justify="center" align="center">
         <Grid.Col span={2}>
           <div className={classes.icon}>{icon}</div>
         </Grid.Col>
@@ -37,11 +49,19 @@ export default function TimeTrackerRow({
           <Divider orientation="vertical" h={50} />
         </Grid.Col>
         <Grid.Col span={secondValue ? 4 : 7}>
-          <Group>
-            <Text size="lg" fw={500} ta="center">
-              {value}
-            </Text>
-          </Group>
+          {isMemo && setMemo ? (
+            <TextInput
+              w="100%"
+              value={value}
+              onChange={(event) => setMemo(event.target.value)}
+            />
+          ) : (
+            <Group>
+              <Text size="lg" fw={500} ta="center">
+                {value}
+              </Text>
+            </Group>
+          )}
         </Grid.Col>
         <Grid.Col span={secondValue ? 4 : 0}>
           {secondValue && (

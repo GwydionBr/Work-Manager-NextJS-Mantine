@@ -22,6 +22,7 @@ import {
   IconPlayerPause,
   IconPlayerStop,
   IconX,
+  IconNotes,
 } from "@tabler/icons-react";
 import {
   Currency,
@@ -50,6 +51,7 @@ interface TimeTrackerComponentBigMaxProps {
   salary: number;
   hourlyPayment: boolean;
   errorMessage: string | null;
+  memo: string;
   startTimer: () => void;
   pauseTimer: () => void;
   resumeTimer: () => void;
@@ -63,6 +65,7 @@ interface TimeTrackerComponentBigMaxProps {
   ) => void;
   modifyActiveSeconds: (delta: number) => void;
   modifyPausedSeconds: (delta: number) => void;
+  setMemo: (memo: string) => void;
 }
 
 export default function TimeTrackerComponentBigMax({
@@ -82,6 +85,7 @@ export default function TimeTrackerComponentBigMax({
   salary,
   hourlyPayment,
   errorMessage,
+  memo,
   startTimer,
   pauseTimer,
   resumeTimer,
@@ -91,6 +95,7 @@ export default function TimeTrackerComponentBigMax({
   modifyPausedSeconds,
   setRoundingAmount,
   removeTimer,
+  setMemo,
 }: TimeTrackerComponentBigMaxProps) {
   const { roundInTimeSections } = useSettingsStore();
 
@@ -146,6 +151,15 @@ export default function TimeTrackerComponentBigMax({
 
         {/* Time Tracker Rows */}
         <Stack gap="md">
+          <TimeTrackerRow
+            icon={<IconNotes size={20} color="var(--mantine-color-orange-6)" />}
+            value={memo}
+            state={state}
+            activationState={TimerState.Running}
+            color="var(--mantine-color-orange-6)"
+            isMemo={true}
+            setMemo={setMemo}
+          />
           {hourlyPayment && (
             <TimeTrackerRow
               icon={
