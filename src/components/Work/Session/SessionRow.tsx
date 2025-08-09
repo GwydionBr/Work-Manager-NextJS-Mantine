@@ -113,7 +113,7 @@ export default function SessionRow({
                 )}
               </Group>
               {session.memo && (
-                <Text size="sm" c="dimmed">
+                <Text size="sm" c="dimmed" maw={225}>
                   {session.memo}
                 </Text>
               )}
