@@ -38,7 +38,13 @@ export default function TimeTrackerRow({
       w={200}
       radius="xl"
       withBorder
-      style={{ borderColor: state === activationState ? color : "" }}
+      style={{
+        borderColor: isMemo
+          ? "light-dark(var(--mantine-color-gray-5), var(--mantine-color-gray-6))"
+          : state === activationState
+            ? color
+            : "",
+      }}
       {...props}
     >
       <Grid justify="center" align="center">
@@ -54,6 +60,26 @@ export default function TimeTrackerRow({
               w="100%"
               value={value}
               onChange={(event) => setMemo(event.target.value)}
+              styles={{
+                input: {
+                  border: "none",
+                  background: "transparent",
+                  padding: 0,
+                  fontSize: "var(--mantine-font-size-sm)",
+                  fontWeight: 400,
+                  textAlign: "center",
+                  color: "inherit",
+                  "&:focus": {
+                    border: "none",
+                    background: "transparent",
+                    outline: "none",
+                  },
+                  "&::placeholder": {
+                    color: "var(--mantine-color-dimmed)",
+                  },
+                },
+              }}
+              placeholder="Add memo..."
             />
           ) : (
             <Group>
