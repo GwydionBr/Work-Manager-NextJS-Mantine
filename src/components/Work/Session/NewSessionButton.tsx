@@ -33,7 +33,7 @@ export default function NewSessionButton() {
     }
     setSubmitting(true);
 
-    const newSession: TablesInsert<"timerSession"> = {
+    const newSession: TablesInsert<"timer_session"> = {
       ...values,
       project_id: activeProject.project.id,
       user_id: activeProject.project.user_id,

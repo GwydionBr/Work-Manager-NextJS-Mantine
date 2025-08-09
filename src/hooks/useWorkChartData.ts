@@ -63,7 +63,7 @@ export interface DateRange {
 export function useWorkChartData(
   interval: FinanceInterval,
   dateRange: DateRange,
-  sessions: Tables<"timerSession">[],
+  sessions: Tables<"timer_session">[],
   projectId?: string
 ) {
   // Data and loading state

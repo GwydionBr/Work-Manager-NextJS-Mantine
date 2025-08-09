@@ -62,7 +62,7 @@ export async function payoutSessions({
 
   for (const sessionId of sessionIds) {
     const { error: sessionError } = await supabase
-      .from("timerSession")
+      .from("timer_session")
       .update({
         payed: true,
         payout_id: payout.id,

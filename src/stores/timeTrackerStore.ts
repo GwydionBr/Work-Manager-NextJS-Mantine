@@ -47,7 +47,7 @@ interface TimeTrackerState {
   resumeTimer: () => void;
   stopTimer: () => void;
   cancelTimer: () => void;
-  getCurrentSession: () => TablesInsert<"timerSession">;
+  getCurrentSession: () => TablesInsert<"timer_session">;
   modifyActiveSeconds: (activeSecondsChange: number) => void;
   modifyPausedSeconds: (pausedSecondsChange: number) => void;
   configureProject: (
@@ -325,7 +325,7 @@ export const useTimeTracker = create(
             roundingMode
           );
 
-          const newTimerSession: TablesInsert<"timerSession"> = {
+          const newTimerSession: TablesInsert<"timer_session"> = {
             user_id: userId,
             project_id: projectId,
             start_time: new Date(startTime ?? 0).toISOString(),

@@ -286,7 +286,7 @@ export function useTimeTracker(initialState: TimeTrackerState) {
           state.roundingMode
         );
 
-    const newTimerSession: TablesInsert<"timerSession"> = {
+    const newTimerSession: TablesInsert<"timer_session"> = {
       user_id: state.userId,
       project_id: state.projectId,
       start_time: new Date(state.startTime ?? 0).toISOString(),

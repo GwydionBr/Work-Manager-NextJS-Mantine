@@ -15,8 +15,8 @@ import * as helper from "@/utils/workHelperFunctions";
 import type { Tables } from "@/types/db.types";
 
 interface SessionRowProps {
-  session: Tables<"timerSession">;
-  project?: Tables<"timerProject">;
+  session: Tables<"timer_session">;
+  project?: Tables<"timer_project">;
   isSelected?: boolean;
   onToggleSelection?: () => void;
   isOverview?: boolean;

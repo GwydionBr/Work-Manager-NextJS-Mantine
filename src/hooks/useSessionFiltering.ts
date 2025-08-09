@@ -26,8 +26,8 @@ export interface FilterState {
  * @param isOverview - Whether we're in overview mode (affects unpaid session filtering)
  */
 export function useSessionFiltering(
-  sessions: Tables<"timerSession">[],
-  projects?: Tables<"timerProject">[],
+  sessions: Tables<"timer_session">[],
+  projects?: Tables<"timer_project">[],
   folders?: Tables<"timer_project_folder">[],
   isOverview = false
 ) {

@@ -169,7 +169,7 @@ export type Database = {
             foreignKeyName: "finance_rule_timer_project_timer_project_id_fkey";
             columns: ["timer_project_id"];
             isOneToOne: false;
-            referencedRelation: "timerProject";
+            referencedRelation: "timer_project";
             referencedColumns: ["id"];
           },
         ];
@@ -447,7 +447,7 @@ export type Database = {
             foreignKeyName: "payout_timer_project_id_fkey";
             columns: ["timer_project_id"];
             isOneToOne: false;
-            referencedRelation: "timerProject";
+            referencedRelation: "timer_project";
             referencedColumns: ["id"];
           },
         ];
@@ -732,45 +732,7 @@ export type Database = {
           },
         ];
       };
-      timer_project_folder: {
-        Row: {
-          created_at: string;
-          description: string | null;
-          id: string;
-          order_index: number;
-          parent_folder: string | null;
-          title: string;
-          user_id: string | null;
-        };
-        Insert: {
-          created_at?: string;
-          description?: string | null;
-          id?: string;
-          order_index?: number;
-          parent_folder?: string | null;
-          title: string;
-          user_id?: string | null;
-        };
-        Update: {
-          created_at?: string;
-          description?: string | null;
-          id?: string;
-          order_index?: number;
-          parent_folder?: string | null;
-          title?: string;
-          user_id?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "timer_project_folder_parent_folder_fkey";
-            columns: ["parent_folder"];
-            isOneToOne: false;
-            referencedRelation: "timer_project_folder";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
-      timerProject: {
+      timer_project: {
         Row: {
           cash_flow_category_id: string | null;
           created_at: string | null;
@@ -833,7 +795,45 @@ export type Database = {
           },
         ];
       };
-      timerSession: {
+      timer_project_folder: {
+        Row: {
+          created_at: string;
+          description: string | null;
+          id: string;
+          order_index: number;
+          parent_folder: string | null;
+          title: string;
+          user_id: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          order_index?: number;
+          parent_folder?: string | null;
+          title: string;
+          user_id?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          order_index?: number;
+          parent_folder?: string | null;
+          title?: string;
+          user_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "timer_project_folder_parent_folder_fkey";
+            columns: ["parent_folder"];
+            isOneToOne: false;
+            referencedRelation: "timer_project_folder";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      timer_session: {
         Row: {
           active_seconds: number;
           created_at: string;
@@ -900,7 +900,7 @@ export type Database = {
             foreignKeyName: "timerSession_project_id_fkey";
             columns: ["project_id"];
             isOneToOne: false;
-            referencedRelation: "timerProject";
+            referencedRelation: "timer_project";
             referencedColumns: ["id"];
           },
         ];

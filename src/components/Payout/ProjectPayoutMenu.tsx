@@ -18,7 +18,7 @@ import * as helper from "@/utils/workHelperFunctions";
 import type { Tables } from "@/types/db.types";
 
 interface ProjectPayoutMenuProps {
-  project: Tables<"timerProject">;
+  project: Tables<"timer_project">;
   availablePayout: number;
   useCustomAmount: boolean;
   payoutAmount: number;

@@ -24,7 +24,7 @@ interface WorkStoreState {
   projects: TimerProject[];
   folders: Tables<"timer_project_folder">[];
   activeProjectId: string | null;
-  timerSessions: Tables<"timerSession">[];
+  timerSessions: Tables<"timer_session">[];
   isFetching: boolean;
   lastFetch: Date | null;
 }
@@ -33,21 +33,21 @@ interface WorkStoreActions {
   fetchWorkData: () => Promise<void>;
   updateStore: (
     updatedProjects: TimerProject[],
-    updatedSessions: Tables<"timerSession">[]
+    updatedSessions: Tables<"timer_session">[]
   ) => void;
   setActiveProjectId: (id: string) => void;
-  addProject: (project: TablesInsert<"timerProject">) => Promise<boolean>;
-  addTimerSession: (session: TablesInsert<"timerSession">) => Promise<boolean>;
+  addProject: (project: TablesInsert<"timer_project">) => Promise<boolean>;
+  addTimerSession: (session: TablesInsert<"timer_session">) => Promise<boolean>;
   addMultipleTimerSessions: (
-    sessions: TablesInsert<"timerSession">[],
+    sessions: TablesInsert<"timer_session">[],
     projectId: string
   ) => Promise<{
     success: boolean;
-    alreadyExistingSessions: Tables<"timerSession">[];
+    alreadyExistingSessions: Tables<"timer_session">[];
   }>;
-  updateProject: (project: TablesUpdate<"timerProject">) => Promise<boolean>;
+  updateProject: (project: TablesUpdate<"timer_project">) => Promise<boolean>;
   updateTimerSession: (
-    session: TablesUpdate<"timerSession">
+    session: TablesUpdate<"timer_session">
   ) => Promise<boolean>;
   deleteProject: (id: string) => Promise<boolean>;
   deleteTimerSession: (id: string) => Promise<boolean>;
@@ -85,7 +85,7 @@ interface WorkStoreActions {
     index: number
   ) => Promise<boolean>;
   createProjectTree: (
-    projects: Tables<"timerProject">[],
+    projects: Tables<"timer_project">[],
     folders: Tables<"timer_project_folder">[]
   ) => void;
   handleChangedNodes: (changedNodes: ProjectTreeItem[]) => void;
@@ -145,7 +145,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
 
       updateStore(
         updatedProjects: TimerProject[],
-        updatedSessions: Tables<"timerSession">[]
+          updatedSessions: Tables<"timer_session">[]
       ) {
         set({ projects: updatedProjects, timerSessions: updatedSessions });
         const { activeProjectId } = get();
@@ -542,7 +542,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
               id: node.id,
               order_index: node.index,
             }));
-        const updatedProjects: TablesUpdate<"timerProject">[] = changedNodes
+        const updatedProjects: TablesUpdate<"timer_project">[] = changedNodes
           .filter((node) => node.type === "project")
           .map((node) => ({
             id: node.id,

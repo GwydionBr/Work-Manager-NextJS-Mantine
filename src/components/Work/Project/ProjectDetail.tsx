@@ -3,7 +3,7 @@
 import type { Tables } from "@/types/db.types";
 
 type ProjectDetailProps = {
-  project: Tables<"timerProject"> | null;
+  project: Tables<"timer_project"> | null;
 };
 
 export default function ProjectDetail({ project }: ProjectDetailProps) {

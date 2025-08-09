@@ -10,7 +10,7 @@ import { Currency } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
 
 interface TimerSessionModalProps {
-  timerSession: Tables<"timerSession">;
+  timerSession: Tables<"timer_session">;
   opened: boolean;
   close: () => void;
 }
@@ -39,7 +39,7 @@ export default function TimerSessionDrawer({
   }) {
     setSubmitting(true);
 
-    const newSession: Tables<"timerSession"> = {
+    const newSession: Tables<"timer_session"> = {
       ...values,
       real_start_time: timerSession.real_start_time,
       true_end_time: timerSession.true_end_time,

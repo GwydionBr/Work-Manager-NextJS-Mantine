@@ -90,8 +90,8 @@ function insertNodeIntoFolder(
   return { updatedNodes, changedNodes };
 }
 
-export function createTree(
-  projects: Tables<"timerProject">[],
+export function createTree( 
+  projects: Tables<"timer_project">[],
   folders: Tables<"timer_project_folder">[]
 ): TreeOperationResult {
   const folderMap = new Map();

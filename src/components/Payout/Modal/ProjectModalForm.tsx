@@ -23,7 +23,7 @@ import { formatMoney } from "@/utils/workHelperFunctions";
 import { Tables } from "@/types/db.types";
 
 interface ProjectModalFormProps {
-  project: Tables<"timerProject">;
+  project: Tables<"timer_project">;
   handleClose: () => void;
   startValue: number;
   startCurrency: Currency;

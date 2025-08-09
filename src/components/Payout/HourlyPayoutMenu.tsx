@@ -23,10 +23,10 @@ import { Currency } from "@/types/settings.types";
 interface HourlyPayoutMenuProps {
   opened: boolean;
   isOverview?: boolean;
-  unpaidSessions: Tables<"timerSession">[];
+  unpaidSessions: Tables<"timer_session">[];
   selectedUnpaidSessions: string[];
   sessionPayouts: Record<string, number>;
-  projects: Tables<"timerProject">[];
+  projects: Tables<"timer_project">[];
   closeMenu: () => void;
   onSessionsChange: (sessions: string[]) => void;
   openModal: () => void;

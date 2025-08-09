@@ -9,7 +9,7 @@ import {
 } from "@/types/action.types";
 
 export async function getAllProjects(): Promise<
-  ApiResponseList<"timerProject">
+  ApiResponseList<"timer_project">
 > {
   const supabase = await createClient();
 
@@ -26,7 +26,7 @@ export async function getAllProjects(): Promise<
   }
 
   const { data, error } = await supabase
-    .from("timerProject")
+    .from("timer_project")
     .select("*")
     .eq("user_id", user.id);
 
@@ -41,10 +41,10 @@ export async function getProjectById({
   projectId,
 }: {
   projectId: string;
-}): Promise<ApiResponseSingle<"timerProject">> {
+}): Promise<ApiResponseSingle<"timer_project">> {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("timerProject")
+    .from("timer_project")
     .select("*")
     .eq("id", projectId)
     .single();
@@ -59,11 +59,11 @@ export async function getProjectById({
 export async function createProject({
   project,
 }: {
-  project: TablesInsert<"timerProject">;
-}): Promise<ApiResponseSingle<"timerProject">> {
+  project: TablesInsert<"timer_project">;
+}): Promise<ApiResponseSingle<"timer_project">> {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("timerProject")
+    .from("timer_project")
     .insert(project)
     .select()
     .single();
@@ -78,11 +78,11 @@ export async function createProject({
 export async function updateProject({
   project,
 }: {
-  project: TablesUpdate<"timerProject">;
-}): Promise<ApiResponseSingle<"timerProject">> {
+  project: TablesUpdate<"timer_project">;
+}): Promise<ApiResponseSingle<"timer_project">> {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("timerProject")
+    .from("timer_project")
     .update(project)
     .eq("id", project.id!)
     .select()
@@ -102,7 +102,7 @@ export async function deleteProject({
 }): Promise<SimpleResponse> {
   const supabase = await createClient();
   const { error } = await supabase
-    .from("timerProject")
+    .from("timer_project")
     .delete()
     .eq("id", projectId);
 

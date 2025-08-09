@@ -13,12 +13,12 @@ import type { Tables } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
 
 interface PayoutMenuProps {
-  sessions: Tables<"timerSession">[];
-  project?: Tables<"timerProject">;
+  sessions: Tables<"timer_session">[];
+  project?: Tables<"timer_project">;
   selectedSessions: string[];
   onSessionsChange: (sessions: string[]) => void;
   isOverview?: boolean;
-  projects?: Tables<"timerProject">[];
+  projects?: Tables<"timer_project">[];
 }
 
 export default function PayoutMenu({

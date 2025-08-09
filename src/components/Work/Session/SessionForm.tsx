@@ -33,7 +33,7 @@ interface SessionFormProps {
   onSubmit: (values: NewSession) => void;
   onCancel: () => void;
   newSession: boolean;
-  project?: Tables<"timerProject">;
+  project?: Tables<"timer_project">;
   submitting?: boolean;
 }
 

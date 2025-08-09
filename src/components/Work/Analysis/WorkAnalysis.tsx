@@ -17,8 +17,8 @@ import { Tables } from "@/types/db.types";
 
 interface WorkAnalysisProps {
   isOverview?: boolean;
-  sessions: Tables<"timerSession">[];
-  project?: Tables<"timerProject">;
+  sessions: Tables<"timer_session">[];
+  project?: Tables<"timer_project">;
 }
 
 export default function WorkAnalysis({

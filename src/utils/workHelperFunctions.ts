@@ -156,9 +156,9 @@ export function getTimeSectionSessions(
   start: Date,
   end: Date,
   timeSectionInterval: number,
-  originalSession: TablesInsert<"timerSession">
+  originalSession: TablesInsert<"timer_session">
 ) {
-  const sessions: TablesInsert<"timerSession">[] = [];
+  const sessions: TablesInsert<"timer_session">[] = [];
 
   // Calculate the start of the first time block
   const blockStart = new Date(start);
@@ -187,7 +187,7 @@ export function getTimeSectionSessions(
       singleBlockEnd.getMinutes() + timeSectionInterval
     );
 
-    const session: TablesInsert<"timerSession"> = {
+    const session: TablesInsert<"timer_session"> = {
       start_time: singleBlockStart.toISOString(),
       real_start_time: start.toISOString(),
       end_time: singleBlockEnd.toISOString(),
@@ -216,7 +216,7 @@ export function getTimeSectionSessions(
       currentBlockEnd.getMinutes() + timeSectionInterval
     );
 
-    const session: TablesInsert<"timerSession"> = {
+    const session: TablesInsert<"timer_session"> = {
       start_time: currentBlockStart.toISOString(),
       real_start_time:
         start > currentBlockStart
@@ -248,14 +248,14 @@ export function getTimeSectionSessions(
 }
 
 export function filterOutExistingSessionFragments(
-  existingSessions: Tables<"timerSession">[],
-  newSessions: TablesInsert<"timerSession">[]
+  existingSessions: Tables<"timer_session">[],
+  newSessions: TablesInsert<"timer_session">[]
 ): {
-  newSessionsToAdd: TablesInsert<"timerSession">[];
-  alreadyExistingSessions: Tables<"timerSession">[];
+  newSessionsToAdd: TablesInsert<"timer_session">[];
+  alreadyExistingSessions: Tables<"timer_session">[];
 } {
-  const alreadyExistingSessions: Tables<"timerSession">[] = [];
-  const newSessionsToAdd: TablesInsert<"timerSession">[] = [];
+  const alreadyExistingSessions: Tables<"timer_session">[] = [];
+  const newSessionsToAdd: TablesInsert<"timer_session">[] = [];
   newSessions.forEach((newSession) => {
     const existingSession = existingSessions.find((existingSession) => {
       return (

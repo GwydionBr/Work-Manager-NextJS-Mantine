@@ -2,12 +2,12 @@ import type { Tables } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
 
 export interface SessionListProps {
-  sessions: Tables<"timerSession">[];
-  projects?: Tables<"timerProject">[];
+  sessions: Tables<"timer_session">[];
+  projects?: Tables<"timer_project">[];
   folders?: Tables<"timer_project_folder">[];
   selectedSessions: string[];
   onSessionsChange: (sessions: string[]) => void;
-  project?: Tables<"timerProject">;
+  project?: Tables<"timer_project">;
   isOverview?: boolean;
 }
 
@@ -39,7 +39,7 @@ export type Year = {
             {
               totalEarnings: EarningsBreakdown;
               totalTime: number;
-              sessions: Tables<"timerSession">[];
+              sessions: Tables<"timer_session">[];
             }
           >;
         }

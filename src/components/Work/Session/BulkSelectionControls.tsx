@@ -28,10 +28,10 @@ import type { FilterLogic } from "@/hooks/useSessionFiltering";
 const Radius = 20;
 
 interface BulkSelectionControlsProps {
-  unpaidSessions: Tables<"timerSession">[];
+  unpaidSessions: Tables<"timer_session">[];
   selectedSessions: string[];
   onSessionsChange: (sessions: string[]) => void;
-  projects?: Tables<"timerProject">[];
+  projects?: Tables<"timer_project">[];
   folders?: Tables<"timer_project_folder">[];
   isOverview: boolean;
   timePresets: TimePreset[];

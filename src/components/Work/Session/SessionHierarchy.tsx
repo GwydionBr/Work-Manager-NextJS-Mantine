@@ -19,8 +19,8 @@ interface SessionHierarchyProps {
   groupedSessions: { year: number; data: Year }[];
   selectedSessions: string[];
   onSessionToggle: (sessionId: string) => void;
-  project?: Tables<"timerProject">;
-  projects?: Tables<"timerProject">[];
+  project?: Tables<"timer_project">;
+  projects?: Tables<"timer_project">[];
   isOverview: boolean;
 }
 

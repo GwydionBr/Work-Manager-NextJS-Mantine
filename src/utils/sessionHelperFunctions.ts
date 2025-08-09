@@ -7,7 +7,7 @@ import type {
 } from "@/types/timerSession.types";
 
 export function groupSessions(
-  sessions: Tables<"timerSession">[]
+  sessions: Tables<"timer_session">[]
 ): { year: number; data: Year }[] {
   const groupedSessions: Record<number, Year> = sessions.reduce(
     (acc, session) => {

@@ -1,8 +1,8 @@
 import { Tables } from "./db.types";
 
 export interface TimerProject {
-  project: Tables<"timerProject">;
-  sessions: Tables<"timerSession">[];
+  project: Tables<"timer_project">;
+  sessions: Tables<"timer_session">[];
 }
 
 export interface ProjectTreeItem {

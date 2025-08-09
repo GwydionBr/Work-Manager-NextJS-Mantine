@@ -12,9 +12,9 @@ interface PayoutModalProps {
   opened: boolean;
   handleClose: () => void;
   sessionIds?: string[];
-  project?: Tables<"timerProject">;
+  project?: Tables<"timer_project">;
   payoutAmount?: number;
-  payoutCurrency?: Currency;
+  payoutCurrency?: Currency;    
   payoutCategoryId: string | null;
   sessionPayouts?: Record<Currency, number>;
 }
