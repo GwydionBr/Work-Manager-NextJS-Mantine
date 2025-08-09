@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useForm } from "@mantine/form";
 
-import { NumberInput, Select, Stack } from "@mantine/core";
+import { NumberInput, Select, Stack, Textarea } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { IconPlayerPlay, IconPlayerPause } from "@tabler/icons-react";
 import { z } from "zod";
@@ -24,6 +24,7 @@ interface NewSession {
   paused_seconds: number;
   currency: Currency;
   salary: number;
+  memo?: string;
   [key: string]: unknown;
 }
 
@@ -61,6 +62,7 @@ export default function SessionForm({
     paused_seconds: z
       .number()
       .min(0, { message: "Paused time must be positive or 0" }),
+    memo: z.string().optional(),
     currency: shouldShowPaymentFields
       ? z.string().min(1, { message: "Currency is required" })
       : z.string().optional(),
@@ -167,7 +169,11 @@ export default function SessionForm({
     console.log(userChangedEndTime);
     const endTime = userChangedEndTime
       ? new Date(form.values.end_time)
-      : new Date(startTime.getTime() + form.values.active_seconds * 1000 + form.values.paused_seconds * 1000);
+      : new Date(
+          startTime.getTime() +
+            form.values.active_seconds * 1000 +
+            form.values.paused_seconds * 1000
+        );
     const totalSeconds = Math.floor(
       (endTime.getTime() - startTime.getTime()) / 1000
     );
@@ -202,14 +208,33 @@ export default function SessionForm({
           icon={<IconPlayerPlay size={18} />}
           color="green"
           autoFocus={true}
+          isOpen={true}
         />
         <TimeInput
           label="Paused Time"
+          isOpen={true}
           value={form.values.paused_seconds}
           onChange={handlePausedSecondsChange}
           error={form.errors.paused_seconds}
           icon={<IconPlayerPause size={18} />}
           color="orange"
+        />
+        <DateTimePicker
+          label="Start Time"
+          value={form.values.start_time}
+          onChange={handleStartTimeChange}
+          error={form.errors.start_time}
+        />
+        <DateTimePicker
+          label="End Time"
+          value={form.values.end_time}
+          onChange={handleEndTimeChange}
+          error={form.errors.end_time}
+        />
+        <Textarea
+          label="Memo"
+          placeholder="Memo"
+          {...form.getInputProps("memo")}
         />
         {shouldShowPaymentFields ? (
           <>
@@ -233,18 +258,6 @@ export default function SessionForm({
             <input type="hidden" {...form.getInputProps("currency")} />
           </>
         )}
-        <DateTimePicker
-          label="Start Time"
-          value={form.values.start_time}
-          onChange={handleStartTimeChange}
-          error={form.errors.start_time}
-        />
-        <DateTimePicker
-          label="End Time"
-          value={form.values.end_time}
-          onChange={handleEndTimeChange}
-          error={form.errors.end_time}
-        />
         {newSession ? (
           <CreateButton
             onClick={form.onSubmit(onSubmit)}

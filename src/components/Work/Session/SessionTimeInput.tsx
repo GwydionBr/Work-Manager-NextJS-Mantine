@@ -1,13 +1,25 @@
-import { Group, NumberInput, Paper, Stack, Text } from "@mantine/core";
+"use client";
+
+import { useState } from "react";
+
+import {
+  Collapse,
+  Group,
+  NumberInput,
+  Paper,
+  Stack,
+  Text,
+} from "@mantine/core";
 
 interface TimeInputProps {
   label: string;
   value: number;
-  onChange: (value: number) => void;
+  isOpen: boolean;
   error?: React.ReactNode;
   icon?: React.ReactNode;
   color?: string;
   autoFocus?: boolean;
+  onChange: (value: number) => void;
 }
 
 // Helper function to convert seconds to hours, minutes, seconds
@@ -35,6 +47,7 @@ export default function TimeInput({
   icon,
   color = "blue",
   autoFocus = false,
+  isOpen,
 }: TimeInputProps) {
   const timeComponents = secondsToTimeComponents(value);
 
@@ -80,70 +93,76 @@ export default function TimeInput({
           </Text>
         </Group>
 
-        <Group gap="lg" justify="center">
-          <Stack gap="xs" align="center">
-            <NumberInput
-              w={90}
-              allowNegative={false}
-              allowLeadingZeros={false}
-              allowDecimal={false}
-              min={0}
-              max={999}
-              placeholder="0"
-              label="Hours"
-              size="sm"
-              value={
-                timeComponents.hours > 0 ? timeComponents.hours : undefined
-              }
-              onChange={handleHoursChange}
-            />
-          </Stack>
+        <Collapse in={isOpen}>
+          <Group gap="lg" justify="center">
+            <Stack gap="xs" align="center">
+              <NumberInput
+                w={90}
+                allowNegative={false}
+                allowLeadingZeros={false}
+                allowDecimal={false}
+                min={0}
+                max={999}
+                placeholder="0"
+                label="Hours"
+                size="sm"
+                value={
+                  timeComponents.hours > 0 ? timeComponents.hours : undefined
+                }
+                onChange={handleHoursChange}
+              />
+            </Stack>
 
-          <Text size="xl" fw={700} c="dimmed" style={{ marginTop: "20px" }}>
-            :
-          </Text>
+            <Text size="xl" fw={700} c="dimmed" style={{ marginTop: "20px" }}>
+              :
+            </Text>
 
-          <Stack gap="xs" align="center">
-            <NumberInput
-              w={90}
-              allowNegative={false}
-              allowLeadingZeros={false}
-              allowDecimal={false}
-              min={0}
-              max={59}
-              placeholder="0"
-              label="Minutes"
-              size="sm"
-              value={
-                timeComponents.minutes > 0 ? timeComponents.minutes : undefined
-              }
-              onChange={handleMinutesChange}
-              data-autofocus={autoFocus}
-            />
-          </Stack>
+            <Stack gap="xs" align="center">
+              <NumberInput
+                w={90}
+                allowNegative={false}
+                allowLeadingZeros={false}
+                allowDecimal={false}
+                min={0}
+                max={59}
+                placeholder="0"
+                label="Minutes"
+                size="sm"
+                value={
+                  timeComponents.minutes > 0
+                    ? timeComponents.minutes
+                    : undefined
+                }
+                onChange={handleMinutesChange}
+                data-autofocus={autoFocus}
+              />
+            </Stack>
 
-          <Text size="xl" fw={700} c="dimmed" style={{ marginTop: "20px" }}>
-            :
-          </Text>
+            <Text size="xl" fw={700} c="dimmed" style={{ marginTop: "20px" }}>
+              :
+            </Text>
 
-          <Stack gap="xs" align="center">
-            <NumberInput
-              w={90}
-              allowNegative={false}
-              allowLeadingZeros={false}
-              allowDecimal={false}
-              min={0}
-              max={59}
-              placeholder="0"
-              label="Seconds"
-              size="sm"
-              value={
-                timeComponents.seconds > 0 ? timeComponents.seconds : undefined
-              }
-              onChange={handleSecondsChange}
-            />
-          </Stack>
-        </Group>
+            <Stack gap="xs" align="center">
+              <NumberInput
+                w={90}
+                allowNegative={false}
+                allowLeadingZeros={false}
+                allowDecimal={false}
+                min={0}
+                max={59}
+                placeholder="0"
+                label="Seconds"
+                size="sm"
+                value={
+                  timeComponents.seconds > 0
+                    ? timeComponents.seconds
+                    : undefined
+                }
+                onChange={handleSecondsChange}
+              />
+            </Stack>
+          </Group>
+        </Collapse>
 
         {error && (
           <Text size="xs" c="red" ta="center">

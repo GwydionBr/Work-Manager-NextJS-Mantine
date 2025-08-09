@@ -26,6 +26,7 @@ export default function NewSessionButton() {
     paused_seconds: number;
     currency: Currency;
     salary: number;
+    memo?: string;
   }) {
     if (!activeProject) {
       return;
@@ -39,6 +40,7 @@ export default function NewSessionButton() {
       start_time: new Date(values.start_time).toISOString(),
       end_time: new Date(values.end_time).toISOString(),
       true_end_time: new Date(values.end_time).toISOString(),
+      memo: values.memo || null,
       hourly_payment: activeProject.project.hourly_payment,
       salary: activeProject.project.hourly_payment ? values.salary : 0,
       currency: activeProject.project.hourly_payment

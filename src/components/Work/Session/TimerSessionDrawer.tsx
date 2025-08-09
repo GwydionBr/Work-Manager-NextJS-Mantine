@@ -35,6 +35,7 @@ export default function TimerSessionDrawer({
     paused_seconds: number;
     currency: Currency;
     salary: number;
+    memo?: string;
   }) {
     setSubmitting(true);
 
@@ -56,6 +57,7 @@ export default function TimerSessionDrawer({
         ? values.currency
         : project?.currency || timerSession.currency,
       payout_id: null,
+      memo: values.memo || null,
     };
 
     const success = await updateTimerSession(newSession);
@@ -84,6 +86,7 @@ export default function TimerSessionDrawer({
               ? timerSession.currency
               : project?.currency || timerSession.currency,
             salary: project?.hourly_payment ? timerSession.salary : 0,
+            memo: timerSession.memo || undefined,
           }}
           onSubmit={handleSubmit}
           onCancel={close}
