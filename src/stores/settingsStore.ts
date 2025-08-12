@@ -29,6 +29,7 @@ interface SettingsState {
   lastFetch: Date | null;
   roundInTimeSections: boolean;
   timeSectionInterval: number;
+  automaticlyStopOtherTimer: boolean;
 }
 
 interface SettingsActions {
@@ -46,6 +47,7 @@ interface SettingsActions {
   setIsAsideOpen: (isAsideOpen: boolean) => void;
   setRoundInTimeSections: (roundInTimeSections: boolean) => Promise<void>;
   setTimeSectionInterval: (timeSectionInterval: number) => Promise<void>;
+  setAutomaticlyStopOtherTimer: (automaticlyStopOtherTimer: boolean) => Promise<void>;
 }
 
 export const useSettingsStore = create<SettingsState & SettingsActions>()(
@@ -67,6 +69,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       lastFetch: null,
       roundInTimeSections: false,
       timeSectionInterval: 10,
+      automaticlyStopOtherTimer: false,
 
       fetchSettings: async () => {
         const { data } = await actions.getSettings();
@@ -83,6 +86,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
             defaultGroupColor: data.default_group_color,
             roundInTimeSections: data.round_in_time_sections,
             timeSectionInterval: data.time_section_interval,
+            automaticlyStopOtherTimer: data.automaticly_stop_other_timer,
           });
         }
         set({ isFetching: false, lastFetch: new Date() });
@@ -165,6 +169,14 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
           time_section_interval: timeSectionInterval,
         });
         set({ timeSectionInterval: timeSectionInterval });
+      },
+      setAutomaticlyStopOtherTimer: async (automaticlyStopOtherTimer: boolean) => {
+        await actions.updateSettings({
+          id: get().settingsId ?? "",
+          automaticly_stop_other_timer: automaticlyStopOtherTimer,
+        });
+        console.log(automaticlyStopOtherTimer);
+        set({ automaticlyStopOtherTimer: automaticlyStopOtherTimer });
       },
     }),
     {

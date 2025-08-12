@@ -38,7 +38,11 @@ export default function TimeTrackerInstance({
   const { updateTimer, removeTimer, setForceEndTimer, getAllTimers } =
     useTimeTrackerManager();
   const { addTimerSession, addMultipleTimerSessions } = useWorkStore();
-  const { timeSectionInterval, roundInTimeSections } = useSettingsStore();
+  const {
+    timeSectionInterval,
+    roundInTimeSections,
+    automaticlyStopOtherTimer,
+  } = useSettingsStore();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showSmall, setShowSmall] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -137,9 +141,11 @@ export default function TimeTrackerInstance({
 
   // Erweiterte startTimer Funktion, die andere Timer beendet
   const startTimerWithStopOthers = useCallback(() => {
-    stopOtherRunningTimers();
+    if (automaticlyStopOtherTimer) {
+      stopOtherRunningTimers();
+    }
     startTimer();
-  }, [stopOtherRunningTimers, startTimer]);
+  }, [stopOtherRunningTimers, startTimer, automaticlyStopOtherTimer]);
 
   useEffect(() => {
     restoreTimer();
