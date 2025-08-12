@@ -277,6 +277,17 @@ export function useTimeTracker(initialState: TimeTrackerState) {
     [state.roundingInterval, state.roundingMode, state.salary]
   );
 
+  const setRoundInTimeSections = useCallback(
+    (roundInTimeSections: boolean, timeSectionInterval: number) => {
+      setState((prev) => ({
+        ...prev,
+        roundInTimeSections,
+        timeSectionInterval,
+      }));
+    },
+    [state.roundInTimeSections, state.timeSectionInterval]
+  );
+
   const getCurrentSession = useCallback(() => {
     const currentActiveSeconds = state.roundInTimeSections
       ? state.activeSeconds
@@ -331,5 +342,6 @@ export function useTimeTracker(initialState: TimeTrackerState) {
     modifyActiveSeconds,
     modifyPausedSeconds,
     setRoundingAmount,
+    setRoundInTimeSections,
   };
 }

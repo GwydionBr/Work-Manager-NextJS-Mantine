@@ -86,6 +86,7 @@ export default function TimeTrackerInstance({
     cancelTimer,
     restoreTimer,
     setRoundingAmount,
+    setRoundInTimeSections,
   } = useTimeTracker({
     projectId: timer.projectId,
     projectTitle: timer.projectTitle,
@@ -158,6 +159,10 @@ export default function TimeTrackerInstance({
       setForceEndTimer(timerId, false);
     }
   }, [forceEndTimer]);
+
+  useEffect(() => {
+    setRoundInTimeSections(roundInTimeSections, timeSectionInterval);
+  }, [roundInTimeSections, timeSectionInterval, setRoundInTimeSections]);
 
   if (!isClient) return null;
 
