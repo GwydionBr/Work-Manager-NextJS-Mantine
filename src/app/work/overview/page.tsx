@@ -82,12 +82,8 @@ export default function WorkOverviewPage() {
         }
         rightButton={
           <Group>
-            <AnalysisActionIcon
-              onClick={handleAnalysisToggle}
-            />
-            <CalendarActionIcon
-              onClick={handleCalendarToggle}
-            />
+            <AnalysisActionIcon onClick={handleAnalysisToggle} />
+            <CalendarActionIcon onClick={handleCalendarToggle} />
           </Group>
         }
       />

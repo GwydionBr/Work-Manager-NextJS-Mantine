@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useViewportSize } from "@mantine/hooks";
-
 import {
   Box,
   Group,
@@ -12,15 +11,17 @@ import {
   SegmentedControl,
   Stack,
   Text,
-  Tooltip,
 } from "@mantine/core";
 import { Tables } from "@/types/db.types";
 import { formatDate } from "@/utils/workHelperFunctions";
+import { DayColumn } from "./DayColumn";
+import { TimeColumn } from "./TimeColumn";
 import {
-  areEarningsBreakdownEmpty,
-  formatEarnings,
-} from "@/utils/sessionHelperFunctions";
-import { EarningsBreakdown } from "@/types/timerSession.types";
+  addDays,
+  clamp,
+  getStartOfDay,
+  CalendarSession,
+} from "./calendarUtils";
 
 type ViewMode = "day" | "week";
 
@@ -28,51 +29,17 @@ interface WorkCalendarProps {
   sessions: Tables<"timer_session">[];
 }
 
-function getStartOfDay(date: Date) {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-function addDays(date: Date, days: number) {
-  const d = new Date(date);
-  d.setDate(d.getDate() + days);
-  return d;
-}
-
-function clamp(value: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, value));
-}
-
-function renderEarnings(earnings: EarningsBreakdown) {
-  return (
-    <Group gap="xs">
-      {!areEarningsBreakdownEmpty(earnings) && (
-        <Group gap="xs">
-          {earnings.unpaid.some((e) => e.amount > 0) && (
-            <Text size="sm" c="red">
-              {formatEarnings(earnings.unpaid)} unpaid
-            </Text>
-          )}
-          {earnings.paid.some((e) => e.amount > 0) && (
-            <Text size="sm" c="dimmed">
-              {formatEarnings(earnings.paid)} paid
-            </Text>
-          )}
-        </Group>
-      )}
-    </Group>
-  );
-} 
-
 export default function WorkCalendar({ sessions }: WorkCalendarProps) {
   const [viewMode, setViewMode] = useState<ViewMode>("week");
   const [referenceDate, setReferenceDate] = useState<Date>(new Date());
   const { projects: timerProjects } = useWorkStore();
   const projects = timerProjects.map((project) => project.project);
   const firstHeaderRef = useRef<HTMLDivElement | null>(null);
+  const viewport = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState<number>(0);
   const { height: viewportHeight } = useViewportSize();
+  const firstColumnContainerRef = useRef<HTMLDivElement | null>(null);
+  const [columnWidth, setColumnWidth] = useState<number>(0);
 
   function getEarnedSalary(
     sessions: Tables<"timer_session">[],
@@ -132,127 +99,125 @@ export default function WorkCalendar({ sessions }: WorkCalendarProps) {
     return clamp(y, 0, (timelineEndHour - timelineStartHour) * hourHeight);
   };
 
+  function mergeAdjacentSessionsForRender(
+    items: CalendarSession[]
+  ): CalendarSession[] {
+    if (items.length === 0) return items;
+    const sorted = [...items].sort(
+      (a, b) =>
+        new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+    );
+    const merged: CalendarSession[] = [];
+    for (const current of sorted) {
+      const prev = merged[merged.length - 1];
+      if (
+        prev &&
+        prev.project_id === current.project_id &&
+        (prev.memo || "") === (current.memo || "") &&
+        new Date(current.start_time).getTime() <=
+          new Date(prev.end_time).getTime()
+      ) {
+        // merge with previous
+        const durationPrev =
+          (new Date(prev.end_time).getTime() -
+            new Date(prev.start_time).getTime()) /
+          1000;
+        const durationCur =
+          (new Date(current.end_time).getTime() -
+            new Date(current.start_time).getTime()) /
+          1000;
+        merged[merged.length - 1] = {
+          ...prev,
+          id: `${prev.id}+${current.id}`,
+          end_time:
+            new Date(current.end_time).getTime() >
+            new Date(prev.end_time).getTime()
+              ? current.end_time
+              : prev.end_time,
+          active_seconds:
+            (prev.active_seconds || durationPrev) +
+            (current.active_seconds || durationCur),
+        };
+      } else {
+        merged.push({ ...current });
+      }
+    }
+    return merged;
+  }
+
   useEffect(() => {
     if (firstHeaderRef.current) {
       const rect = firstHeaderRef.current.getBoundingClientRect();
       setHeaderHeight(rect.height);
     }
-  }, [viewMode, referenceDate]);
+    if (firstColumnContainerRef.current) {
+      const rect = firstColumnContainerRef.current.getBoundingClientRect();
+      setColumnWidth(rect.width);
+    }
+  }, [viewMode, referenceDate, firstHeaderRef]);
 
-  const timeColumn = () => {
-    return (
-      <Box style={{ width: 56 }}>
-        <Stack gap="xs">
-          <Box style={{ height: headerHeight }} />
-          <Box
-            style={{
-              position: "relative",
-              height: hourHeight * (timelineEndHour - timelineStartHour),
-            }}
-          >
-            {Array.from(
-              { length: timelineEndHour - timelineStartHour + 1 },
-              (_, i) => (
-                <Text
-                  key={i}
-                  size="xs"
-                  c="dimmed"
-                  style={{
-                    position: "absolute",
-                    top: i * hourHeight - 5,
-                    left: 0,
-                    width: "100%",
-                    textAlign: "right",
-                    paddingRight: 8,
-                  }}
-                >
-                  {String(i + timelineStartHour).padStart(2, "0")}:00
-                </Text>
-              )
-            )}
-          </Box>
-        </Stack>
-      </Box>
-    );
-  };
+  useEffect(() => {
+    if (viewport.current) {
+      viewport.current.scrollTo({
+        top: (6 - timelineStartHour) * hourHeight,
+        behavior: "auto",
+      });
+    }
+  }, []);
+
+  const timeColumn = () => (
+    <TimeColumn
+      headerHeight={headerHeight}
+      hourHeight={hourHeight}
+      startHour={timelineStartHour}
+      endHour={timelineEndHour}
+    />
+  );
 
   const dayColumn = (day: Date, isFirst: boolean) => {
     const key = getStartOfDay(day).toISOString().slice(0, 10);
     const items = sessionsByDay.get(key) ?? [];
+    const dayStart = getStartOfDay(day);
+    const dayEnd = addDays(dayStart, 1);
+    const clippedItems: CalendarSession[] = items.map((s) => {
+      const sStart = new Date(s.start_time);
+      const sEnd = new Date(s.end_time);
+      const start = sStart < dayStart ? dayStart : sStart;
+      const end = sEnd > dayEnd ? dayEnd : sEnd;
+      return {
+        id: s.id,
+        start_time: start.toISOString(),
+        end_time: end.toISOString(),
+        project_id: s.project_id,
+        memo: s.memo,
+        payed: s.payed,
+        active_seconds: s.active_seconds,
+      };
+    });
+    const itemsForRender: CalendarSession[] =
+      mergeAdjacentSessionsForRender(clippedItems);
 
     return (
-      <Box key={key} style={{ flex: 1 }}>
-        <Stack gap="xs">
-          <Stack align="center" ref={isFirst ? firstHeaderRef : undefined}>
-            <Text fw={600}>{formatDate(day)}</Text>
-            {/* <Group>
-              <Text>{getEarnedSalary(items, true)}</Text>
-              <Text>{getEarnedSalary(items, false)}</Text>
-            </Group> */}
-          </Stack>
-          <Box
-            style={{
-              position: "relative",
-              height: hourHeight * (timelineEndHour - timelineStartHour),
-              border: "1px solid var(--mantine-color-gray-3)",
-              borderRadius: 0,
-              background: "var(--mantine-color-gray-0)",
-            }}
-          >
-            {Array.from(
-              { length: timelineEndHour - timelineStartHour + 1 },
-              (_, i) => (
-                <Box
-                  key={i}
-                  style={{
-                    position: "absolute",
-                    top: i * hourHeight,
-                    left: 0,
-                    right: 0,
-                    height: 1,
-                    background: "var(--mantine-color-gray-3)",
-                  }}
-                />
-              )
-            )}
-            {items.map((s) => {
-              const sStart = new Date(s.start_time);
-              const sEnd = new Date(s.end_time);
-              const dayStart = getStartOfDay(day);
-              const dayEnd = addDays(dayStart, 1);
-              const start = sStart < dayStart ? dayStart : sStart;
-              const end = sEnd > dayEnd ? dayEnd : sEnd;
-              const top = toY(start);
-              const bottom = toY(end);
-              const height = Math.max(bottom - top, 4);
-              return (
-                <Tooltip
-                  key={s.id}
-                  label={`${new Date(s.start_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - ${new Date(s.end_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`}
-                >
-                  <Box
-                    style={{
-                      position: "absolute",
-                      left: 8,
-                      right: 8,
-                      top,
-                      height,
-                      borderRadius: 6,
-                      background: "var(--mantine-color-blue-3)",
-                      boxShadow: "inset 0 0 0 1px var(--mantine-color-blue-6)",
-                    }}
-                  />
-                </Tooltip>
-              );
-            })}
-          </Box>
-        </Stack>
-      </Box>
+      <DayColumn
+        key={key}
+        day={day}
+        items={items}
+        isFirst={isFirst}
+        hourHeight={hourHeight}
+        startHour={timelineStartHour}
+        endHour={timelineEndHour}
+        headerRef={firstHeaderRef as React.RefObject<HTMLDivElement>}
+        columnRef={firstColumnContainerRef as React.RefObject<HTMLDivElement>}
+        columnWidth={columnWidth}
+        toY={toY}
+        getEarnedSalary={getEarnedSalary}
+        projects={projects.map((p) => ({ id: p.id, title: p.title }))}
+      />
     );
   };
 
   return (
-    <Paper withBorder radius="lg" p="md">
+    <Paper withBorder radius="lg" p="md" mb="sm">
       <Stack>
         <Group justify="space-between">
           <SegmentedControl
@@ -291,10 +256,18 @@ export default function WorkCalendar({ sessions }: WorkCalendarProps) {
         <ScrollArea
           h={viewportHeight - 225}
           offsetScrollbars
+          viewportRef={viewport}
         >
           <Group align="flex-start" wrap="nowrap" gap={0}>
             {timeColumn()}
-            {days.map((d, idx) => dayColumn(d, idx === 0))}
+            {days.map((d, idx) => (
+              <Box
+                key={`day-${getStartOfDay(d).toISOString().slice(0, 10)}`}
+                style={{ flex: 1, minWidth: 0 }}
+              >
+                {dayColumn(d, idx === 0)}
+              </Box>
+            ))}
           </Group>
         </ScrollArea>
       </Stack>
