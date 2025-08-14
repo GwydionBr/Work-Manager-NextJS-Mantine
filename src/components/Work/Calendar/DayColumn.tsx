@@ -107,17 +107,18 @@ export function DayColumn({
           }}
         >
           {/* Rail */}
-          <Box
+          {/* <Box
             style={{
               position: "absolute",
-              left: 16,
+              left: 0,
               top: 0,
               bottom: 0,
               width: 2,
               background: "var(--mantine-color-gray-4)",
             }}
-          />
-          {Array.from({ length: endHour - startHour + 1 }, (_, i) => (
+          /> */}
+          {/* Hourly dots */}
+          {/* {Array.from({ length: endHour - startHour + 1 }, (_, i) => (
             <Box
               key={`dot-${startHour + i}`}
               style={{
@@ -130,7 +131,8 @@ export function DayColumn({
                 background: "var(--mantine-color-gray-5)",
               }}
             />
-          ))}
+          ))} */}
+          {/* Grid lines */}
           {Array.from({ length: endHour - startHour + 1 }, (_, i) => (
             <Box
               key={`line-${startHour + i}`}
@@ -140,7 +142,9 @@ export function DayColumn({
                 left: 0,
                 right: 0,
                 height: 1,
-                background: "var(--mantine-color-gray-3)",
+                borderTop: "1px dashed var(--mantine-color-gray-3)",
+                background: "none",
+                pointerEvents: "none",
               }}
             />
           ))}
@@ -154,7 +158,7 @@ export function DayColumn({
             );
             const laneWidth = Math.min(160, availableWidth);
             const bubbleHeight = 26;
-            const railLeft = 16;
+            const railLeft = 3;
             const segmentWidth = 6;
             const containerHeight = hourHeight * (endHour - startHour);
             const chooseLane = (top: number) => {
@@ -189,6 +193,7 @@ export function DayColumn({
 
               return (
                 <Box key={s.id}>
+                  {/* Segment on the rail */}
                   <Box
                     style={{
                       position: "absolute",
