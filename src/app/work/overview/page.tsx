@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSessionFiltering } from "@/hooks/useSessionFiltering";
 
-import { Box, Collapse, Stack, Text } from "@mantine/core";
+import { Box, Collapse, Group, Stack, Text } from "@mantine/core";
 import Header from "@/components/Header/Header";
 import PayoutMenu from "@/components/Payout/PayoutMenu";
 import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
@@ -12,11 +12,14 @@ import { groupSessions } from "@/utils/sessionHelperFunctions";
 import BulkSelectionControls from "@/components/Work/Session/BulkSelectionControls";
 import WorkAnalysis from "@/components/Work/Analysis/WorkAnalysis";
 import AnalysisActionIcon from "@/components/UI/ActionIcons/AnalysisActionIcon";
+import CalendarActionIcon from "@/components/UI/ActionIcons/CalendarActionIcon";
+import WorkCalendar from "@/components/Work/Calendar/WorkCalendar";
 
 export default function WorkOverviewPage() {
   const { projects: timerProjects, folders, timerSessions } = useWorkStore();
   const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
   const [analysisOpened, setAnalysisOpened] = useState(false);
+  const [calendarOpened, setCalendarOpened] = useState(false);
 
   const projects = timerProjects.map((project) => project.project);
 
@@ -46,6 +49,24 @@ export default function WorkOverviewPage() {
     );
   };
 
+  const handleCalendarToggle = () => {
+    if (calendarOpened) {
+      setCalendarOpened(false);
+      return;
+    }
+    setCalendarOpened(true);
+    setAnalysisOpened(false);
+  };
+
+  const handleAnalysisToggle = () => {
+    if (analysisOpened) {
+      setAnalysisOpened(false);
+      return;
+    }
+    setAnalysisOpened(true);
+    setCalendarOpened(false);
+  };
+
   return (
     <Stack align="center" w="100%" px="xl">
       <Header
@@ -60,15 +81,23 @@ export default function WorkOverviewPage() {
           />
         }
         rightButton={
-          <AnalysisActionIcon
-            onClick={() => setAnalysisOpened((state) => !state)}
-          />
+          <Group>
+            <AnalysisActionIcon
+              onClick={handleAnalysisToggle}
+            />
+            <CalendarActionIcon
+              onClick={handleCalendarToggle}
+            />
+          </Group>
         }
       />
       {timerSessions.length > 0 ? (
         <Box w="100%">
           <Collapse in={analysisOpened} transitionDuration={500}>
             <WorkAnalysis sessions={filteredSessions} isOverview={true} />
+          </Collapse>
+          <Collapse in={calendarOpened} transitionDuration={500}>
+            <WorkCalendar sessions={filteredSessions} />
           </Collapse>
           <BulkSelectionControls
             unpaidSessions={unpaidSessions}

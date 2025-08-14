@@ -101,6 +101,7 @@ export default function WorkPage() {
             {activeProject.sessions.length > 0 && (
               <AnalysisActionIcon
                 onClick={() => setAnalysisOpened((state) => !state)}
+                tooltipLabel="Analyse"
               />
             )}
             <EditProjectButton />
