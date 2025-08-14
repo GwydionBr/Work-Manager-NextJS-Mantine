@@ -181,3 +181,4 @@ export function areEarningsBreakdownEmpty(
 ): boolean {
   return areEarningsEmpty(earnings.paid) && areEarningsEmpty(earnings.unpaid);
 }
+

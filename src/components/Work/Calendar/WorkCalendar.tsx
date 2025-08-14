@@ -1,6 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useWorkStore } from "@/stores/workManagerStore";
+import { useViewportSize } from "@mantine/hooks";
+
 import {
   Box,
   Group,
@@ -13,6 +16,11 @@ import {
 } from "@mantine/core";
 import { Tables } from "@/types/db.types";
 import { formatDate } from "@/utils/workHelperFunctions";
+import {
+  areEarningsBreakdownEmpty,
+  formatEarnings,
+} from "@/utils/sessionHelperFunctions";
+import { EarningsBreakdown } from "@/types/timerSession.types";
 
 type ViewMode = "day" | "week";
 
@@ -36,9 +44,48 @@ function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
 }
 
+function renderEarnings(earnings: EarningsBreakdown) {
+  return (
+    <Group gap="xs">
+      {!areEarningsBreakdownEmpty(earnings) && (
+        <Group gap="xs">
+          {earnings.unpaid.some((e) => e.amount > 0) && (
+            <Text size="sm" c="red">
+              {formatEarnings(earnings.unpaid)} unpaid
+            </Text>
+          )}
+          {earnings.paid.some((e) => e.amount > 0) && (
+            <Text size="sm" c="dimmed">
+              {formatEarnings(earnings.paid)} paid
+            </Text>
+          )}
+        </Group>
+      )}
+    </Group>
+  );
+} 
+
 export default function WorkCalendar({ sessions }: WorkCalendarProps) {
   const [viewMode, setViewMode] = useState<ViewMode>("week");
   const [referenceDate, setReferenceDate] = useState<Date>(new Date());
+  const { projects: timerProjects } = useWorkStore();
+  const projects = timerProjects.map((project) => project.project);
+  const firstHeaderRef = useRef<HTMLDivElement | null>(null);
+  const [headerHeight, setHeaderHeight] = useState<number>(0);
+  const { height: viewportHeight } = useViewportSize();
+
+  function getEarnedSalary(
+    sessions: Tables<"timer_session">[],
+    unpaid: boolean
+  ) {
+    return sessions.reduce((sum, s) => {
+      const project = projects.find((p) => p.id === s.project_id);
+      if (project && project.hourly_payment && (unpaid ? !s.payed : s.payed)) {
+        return sum + (project.salary * s.active_seconds) / 3600;
+      }
+      return sum;
+    }, 0);
+  }
 
   const days: Date[] = useMemo(() => {
     if (viewMode === "day") return [getStartOfDay(referenceDate)];
@@ -85,20 +132,70 @@ export default function WorkCalendar({ sessions }: WorkCalendarProps) {
     return clamp(y, 0, (timelineEndHour - timelineStartHour) * hourHeight);
   };
 
-  const dayColumn = (day: Date) => {
+  useEffect(() => {
+    if (firstHeaderRef.current) {
+      const rect = firstHeaderRef.current.getBoundingClientRect();
+      setHeaderHeight(rect.height);
+    }
+  }, [viewMode, referenceDate]);
+
+  const timeColumn = () => {
+    return (
+      <Box style={{ width: 56 }}>
+        <Stack gap="xs">
+          <Box style={{ height: headerHeight }} />
+          <Box
+            style={{
+              position: "relative",
+              height: hourHeight * (timelineEndHour - timelineStartHour),
+            }}
+          >
+            {Array.from(
+              { length: timelineEndHour - timelineStartHour + 1 },
+              (_, i) => (
+                <Text
+                  key={i}
+                  size="xs"
+                  c="dimmed"
+                  style={{
+                    position: "absolute",
+                    top: i * hourHeight - 5,
+                    left: 0,
+                    width: "100%",
+                    textAlign: "right",
+                    paddingRight: 8,
+                  }}
+                >
+                  {String(i + timelineStartHour).padStart(2, "0")}:00
+                </Text>
+              )
+            )}
+          </Box>
+        </Stack>
+      </Box>
+    );
+  };
+
+  const dayColumn = (day: Date, isFirst: boolean) => {
     const key = getStartOfDay(day).toISOString().slice(0, 10);
     const items = sessionsByDay.get(key) ?? [];
 
     return (
-      <Box key={key} style={{ flex: 1, minWidth: 220 }}>
+      <Box key={key} style={{ flex: 1 }}>
         <Stack gap="xs">
-          <Text fw={600}>{formatDate(day)}</Text>
+          <Stack align="center" ref={isFirst ? firstHeaderRef : undefined}>
+            <Text fw={600}>{formatDate(day)}</Text>
+            {/* <Group>
+              <Text>{getEarnedSalary(items, true)}</Text>
+              <Text>{getEarnedSalary(items, false)}</Text>
+            </Group> */}
+          </Stack>
           <Box
             style={{
               position: "relative",
               height: hourHeight * (timelineEndHour - timelineStartHour),
               border: "1px solid var(--mantine-color-gray-3)",
-              borderRadius: 8,
+              borderRadius: 0,
               background: "var(--mantine-color-gray-0)",
             }}
           >
@@ -192,11 +289,12 @@ export default function WorkCalendar({ sessions }: WorkCalendarProps) {
         </Group>
 
         <ScrollArea
-          h={hourHeight * (timelineEndHour - timelineStartHour) + 120}
+          h={viewportHeight - 225}
           offsetScrollbars
         >
-          <Group align="flex-start" wrap="nowrap">
-            {days.map((d) => dayColumn(d))}
+          <Group align="flex-start" wrap="nowrap" gap={0}>
+            {timeColumn()}
+            {days.map((d, idx) => dayColumn(d, idx === 0))}
           </Group>
         </ScrollArea>
       </Stack>

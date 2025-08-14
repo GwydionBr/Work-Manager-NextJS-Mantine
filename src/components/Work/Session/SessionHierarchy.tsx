@@ -1,6 +1,6 @@
 "use client";
 
-import { Accordion, Group, Text } from "@mantine/core";
+import { Accordion, Group, Stack, Text } from "@mantine/core";
 import { IconCalendar, IconClock, IconFolder } from "@tabler/icons-react";
 import SessionRow from "@/components/Work/Session/SessionRow";
 import * as helper from "@/utils/workHelperFunctions";
@@ -44,7 +44,7 @@ export default function SessionHierarchy({
   const renderEarnings = (earnings: EarningsBreakdown) => (
     <Group gap="xs">
       {!areEarningsBreakdownEmpty(earnings) && (
-        <>
+        <Group gap="xs">
           {earnings.unpaid.some((e) => e.amount > 0) && (
             <Text size="sm" c="red">
               {formatEarnings(earnings.unpaid)} unpaid
@@ -55,7 +55,7 @@ export default function SessionHierarchy({
               {formatEarnings(earnings.paid)} paid
             </Text>
           )}
-        </>
+        </Group>
       )}
     </Group>
   );
