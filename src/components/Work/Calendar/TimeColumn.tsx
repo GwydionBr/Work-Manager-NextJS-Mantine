@@ -15,6 +15,8 @@ export function TimeColumn({
   startHour,
   endHour,
 }: TimeColumnProps) {
+  // Left time gutter with sticky header spacer and absolute-positioned labels.
+  // Labels are vertically centered on each hour grid line for easier scanning.
   return (
     <Box style={{ width: 56, flex: "0 0 auto" }}>
       <Stack gap="xs">

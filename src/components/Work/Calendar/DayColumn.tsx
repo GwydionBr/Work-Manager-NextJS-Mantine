@@ -42,6 +42,8 @@ export function DayColumn({
   getEarnedSalary,
   projects,
 }: DayColumnProps) {
+  // Clip sessions to the visible day window so cross-midnight sessions
+  // render only the portion within this column. This avoids negative/overflowing heights.
   const dayStart = getStartOfDay(day);
   const dayEnd = new Date(dayStart);
   dayEnd.setDate(dayStart.getDate() + 1);
@@ -61,12 +63,14 @@ export function DayColumn({
       active_seconds: s.active_seconds,
     };
   });
+  // Merge touching/overlapping sessions for the same project+memo to reduce clutter
   const itemsForRender: CalendarSession[] =
     mergeAdjacentSessionsForRender(clippedItems);
 
   return (
     <Box style={{ flex: 1, minWidth: 0 }}>
       <Stack gap="xs">
+        {/* Sticky header showing date and earned summary */}
         <Stack
           align="center"
           ref={isFirst ? headerRef : undefined}
@@ -90,6 +94,7 @@ export function DayColumn({
             <Text>{getEarnedSalary(items, false)}</Text>
           </Group>
         </Stack>
+        {/* Main timeline area with a vertical rail, hourly dots and grid lines */}
         <Box
           ref={isFirst ? columnRef : undefined}
           style={{
@@ -140,6 +145,7 @@ export function DayColumn({
             />
           ))}
 
+          {/* Bubble layout: assign a horizontal lane to avoid overlaps when many small sessions cluster */}
           {(() => {
             const laneHeights: number[] = [];
             const availableWidth = Math.max(
@@ -194,6 +200,7 @@ export function DayColumn({
                       background: colors.rail,
                     }}
                   />
+                  {/* Pointer connecting bubble to the rail */}
                   <Box
                     style={{
                       position: "absolute",
@@ -207,6 +214,7 @@ export function DayColumn({
                       zIndex: 1,
                     }}
                   />
+                  {/* Bubble itself (compact, ellipsized content) */}
                   <Box
                     style={{
                       position: "absolute",

@@ -30,10 +30,14 @@ interface WorkCalendarProps {
 }
 
 export default function WorkCalendar({ sessions }: WorkCalendarProps) {
+  // Controls whether we show a single day or a full week
   const [viewMode, setViewMode] = useState<ViewMode>("week");
+  // Anchor date (day or week) the calendar is based on
   const [referenceDate, setReferenceDate] = useState<Date>(new Date());
   const { projects: timerProjects } = useWorkStore();
   const projects = timerProjects.map((project) => project.project);
+  // Measuring first header and first column allows aligning the sticky header
+  // and computing available space for bubble lanes
   const firstHeaderRef = useRef<HTMLDivElement | null>(null);
   const viewport = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState<number>(0);
@@ -45,6 +49,7 @@ export default function WorkCalendar({ sessions }: WorkCalendarProps) {
     sessions: Tables<"timer_session">[],
     unpaid: boolean
   ) {
+    // Sum the salary only for sessions that are paid/unpaid according to the flag
     return sessions.reduce((sum, s) => {
       const project = projects.find((p) => p.id === s.project_id);
       if (project && project.hourly_payment && (unpaid ? !s.payed : s.payed)) {
@@ -67,6 +72,7 @@ export default function WorkCalendar({ sessions }: WorkCalendarProps) {
   }, [viewMode, referenceDate]);
 
   const sessionsByDay = useMemo(() => {
+    // Bucket raw sessions by day key so we can render a column per day
     const map = new Map<string, Tables<"timer_session">[]>();
     days.forEach((d) => {
       map.set(d.toISOString().slice(0, 10), []);
@@ -93,6 +99,7 @@ export default function WorkCalendar({ sessions }: WorkCalendarProps) {
   const timelineEndHour = 24;
 
   const toY = (date: Date) => {
+    // Convert a date to a Y-position within the day timeline
     const minutes = date.getHours() * 60 + date.getMinutes();
     const totalMinutes = (timelineEndHour - timelineStartHour) * 60;
     const y = (minutes / totalMinutes) * (totalMinutes / 60) * hourHeight;
@@ -146,6 +153,7 @@ export default function WorkCalendar({ sessions }: WorkCalendarProps) {
   }
 
   useEffect(() => {
+    // Measure sticky header height and column width for lane layout
     if (firstHeaderRef.current) {
       const rect = firstHeaderRef.current.getBoundingClientRect();
       setHeaderHeight(rect.height);
@@ -157,6 +165,7 @@ export default function WorkCalendar({ sessions }: WorkCalendarProps) {
   }, [viewMode, referenceDate, firstHeaderRef]);
 
   useEffect(() => {
+    // On initial mount, scroll to 07:00 (6 * hourHeight from midnight)
     if (viewport.current) {
       viewport.current.scrollTo({
         top: (6 - timelineStartHour) * hourHeight,
