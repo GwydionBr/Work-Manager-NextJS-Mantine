@@ -72,12 +72,13 @@ export function DayColumn({
       <Stack gap="xs">
         {/* Sticky header showing date and earned summary */}
         <Stack
+          pb="xs"
           align="center"
           ref={isFirst ? headerRef : undefined}
           style={{
             position: "sticky",
             top: 0,
-            zIndex: 2,
+            zIndex: 10,
             background: "var(--mantine-color-body)",
             borderBottom: "1px solid var(--mantine-color-gray-3)",
           }}
@@ -89,10 +90,11 @@ export function DayColumn({
               month: "short",
             })}
           </Text>
-          <Group>
+          {/* Earned salary */}
+          {/* <Group>
             <Text>{getEarnedSalary(items, true)}</Text>
             <Text>{getEarnedSalary(items, false)}</Text>
-          </Group>
+          </Group> */}
         </Stack>
         {/* Main timeline area with a vertical rail, hourly dots and grid lines */}
         <Box
@@ -209,7 +211,7 @@ export function DayColumn({
                   <Box
                     style={{
                       position: "absolute",
-                      left: bubbleLeft - 5,
+                      left: bubbleLeft - 3,
                       top: bubbleTop + Math.round(bubbleHeight / 2) - 5,
                       width: 10,
                       height: 10,
@@ -226,7 +228,7 @@ export function DayColumn({
                       left: bubbleLeft,
                       top: bubbleTop,
                       minHeight: bubbleHeight,
-                      maxWidth: laneWidth - 8,
+                      maxWidth: laneWidth - 10,
                       padding: "4px 8px",
                       borderRadius: 8,
                       background: "var(--mantine-color-body)",
@@ -240,6 +242,7 @@ export function DayColumn({
                       style={{
                         width: 8,
                         height: 8,
+                        zIndex: 2,
                         borderRadius: 8,
                         background: colors.rail,
                         boxShadow: `0 0 0 1px ${colors.border}`,

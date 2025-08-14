@@ -23,11 +23,11 @@ export function TimeColumn({
         <Box
           style={{
             height: headerHeight,
-            borderBottom: "1px solid var(--mantine-color-gray-3)",
+            // borderBottom: "1px solid var(--mantine-color-gray-3)",
             background: "var(--mantine-color-body)",
             position: "sticky",
             top: 0,
-            zIndex: 2,
+            zIndex: 10,
           }}
         />
         <Box

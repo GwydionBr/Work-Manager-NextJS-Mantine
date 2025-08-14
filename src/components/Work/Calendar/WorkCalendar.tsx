@@ -21,6 +21,7 @@ import {
   clamp,
   getStartOfDay,
   CalendarSession,
+  getProjectColor,
 } from "./calendarUtils";
 
 type ViewMode = "day" | "week";
@@ -93,6 +94,25 @@ export default function WorkCalendar({ sessions }: WorkCalendarProps) {
     });
     return map;
   }, [sessions, days]);
+
+  // Projects visible in the current view (based on sessions overlapping the visible days)
+  const visibleProjects = useMemo(() => {
+    const ids = new Set<string>();
+    sessionsByDay.forEach((items) => {
+      items.forEach((s) => ids.add(String(s.project_id)));
+    });
+    return Array.from(ids)
+      .map((id) => {
+        const p = projects.find((pp) => pp.id === id);
+        if (!p) return null;
+        return { id, title: p.title, colors: getProjectColor(id) };
+      })
+      .filter(Boolean) as {
+      id: string;
+      title: string;
+      colors: ReturnType<typeof getProjectColor>;
+    }[];
+  }, [sessionsByDay, projects]);
 
   const hourHeight = 60; // px per hour
   const timelineStartHour = 0;
@@ -237,6 +257,25 @@ export default function WorkCalendar({ sessions }: WorkCalendarProps) {
               { label: "Woche", value: "week" },
             ]}
           />
+          {/* Legend: show projects visible in the current range with their colors */}
+          {visibleProjects.length > 0 && (
+            <Group gap="xs" wrap="wrap">
+              {visibleProjects.map((p) => (
+                <Group key={p.id} gap={6} wrap="nowrap">
+                  <Box
+                    style={{
+                      width: 10,
+                      height: 10,
+                      borderRadius: 10,
+                      background: p.colors.rail,
+                      boxShadow: `0 0 0 1px ${p.colors.border}`,
+                    }}
+                  />
+                  <Text size="xs">{p.title}</Text>
+                </Group>
+              ))}
+            </Group>
+          )}
           <Group gap="xs">
             <Text
               style={{ cursor: "pointer" }}
