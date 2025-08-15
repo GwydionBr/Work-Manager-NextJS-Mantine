@@ -102,9 +102,9 @@ export function DayColumn({
           style={{
             position: "relative",
             height: hourHeight * (endHour - startHour),
-            border: "1px solid var(--mantine-color-gray-3)",
+            border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-gray-6))",
             borderRadius: 0,
-            background: "var(--mantine-color-gray-0)",
+            background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-gray-9))",
             overflow: "hidden",
           }}
         >
@@ -144,7 +144,7 @@ export function DayColumn({
                 left: 0,
                 right: 0,
                 height: 1,
-                borderTop: "1px dashed var(--mantine-color-gray-3)",
+                borderTop: "1px dashed light-dark(var(--mantine-color-gray-3), var(--mantine-color-gray-6))",
                 background: "none",
                 pointerEvents: "none",
               }}
@@ -229,7 +229,7 @@ export function DayColumn({
                       top: bubbleTop,
                       minHeight: bubbleHeight,
                       maxWidth: laneWidth - 10,
-                      padding: "4px 8px",
+                      padding: "4px 6px",
                       borderRadius: 8,
                       background: "var(--mantine-color-body)",
                       boxShadow: `inset 0 0 0 1px ${colors.border}`,
