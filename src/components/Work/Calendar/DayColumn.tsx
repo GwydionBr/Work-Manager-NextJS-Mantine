@@ -148,7 +148,7 @@ export function DayColumn({
             const laneWidth = Math.min(160, availableWidth);
             const bubbleHeight = 26;
             const railLeft = 3;
-            const segmentWidth = 6;
+            const segmentWidth = 10;
             const containerHeight = hourHeight * (endHour - startHour);
             const chooseLane = (top: number) => {
               for (let i = 0; i < laneHeights.length; i++) {
@@ -166,7 +166,7 @@ export function DayColumn({
               const bottom = toY(end);
               const height = Math.max(bottom - top, 4);
               const colors = getProjectColor(String(s.project_id));
-              const segmentLeft = railLeft - Math.floor(segmentWidth / 2);
+              const segmentLeft = railLeft - Math.floor(segmentWidth / 2) +2;
               const centerY = top + height / 2;
               const bubbleTop = clamp(
                 Math.round(centerY - bubbleHeight / 2),
@@ -193,9 +193,10 @@ export function DayColumn({
                           top,
                           width: segmentWidth,
                           height,
-                          borderRadius: 3,
+                          borderRadius: 5,
                           background: colors.rail,
                           cursor: "pointer",
+                          border: "1px solid light-dark(var(--mantine-color-dark-3), var(--mantine-color-gray-3))",
                         }}
                       />
                     </HoverCard.Target>

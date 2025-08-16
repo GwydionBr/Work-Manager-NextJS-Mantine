@@ -4,8 +4,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
 import {
   Box,
+  Grid,
   Group,
   Loader,
+  Center,
   ScrollArea,
   SegmentedControl,
   Stack,
@@ -23,6 +25,8 @@ import {
   CalendarSession,
   getProjectColor,
 } from "./calendarUtils";
+import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
+import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
 
 type ViewMode = "day" | "week";
 
@@ -243,7 +247,11 @@ export default function WorkCalendar() {
         <Title ta="center" order={1} mt="xs">
           Work Calendar
         </Title>
-        <Stack
+        <Grid
+          columns={12}
+          align="center"
+          justify="center"
+          w="100%"
           pt="xs"
           pb="md"
           style={{
@@ -253,21 +261,26 @@ export default function WorkCalendar() {
             background: "var(--mantine-color-body)",
           }}
         >
-          <Group justify="space-between" mx="md">
+          <Grid.Col span={3}>
             <SegmentedControl
+              ml="md"
               value={viewMode}
               onChange={(v) => setViewMode(v as ViewMode)}
               data={[
-                { label: "Tag", value: "day" },
-                { label: "Woche", value: "week" },
+                { label: "Day", value: "day" },
+                { label: "Week", value: "week" },
               ]}
             />
+          </Grid.Col>
+          <Grid.Col span={6}>
             {/* Legend: show projects visible in the current range with their colors */}
             {isFetching ? (
-              <Loader size="xs" />
+              <Center>
+                <Loader size="xs" />
+              </Center>
             ) : (
               visibleProjects.length > 0 && (
-                <Group gap="xs" wrap="wrap">
+                <Group gap="xs" wrap="wrap" justify="center">
                   {visibleProjects.map((p) => (
                     <Group key={p.id} gap={6} wrap="nowrap">
                       <Box
@@ -285,31 +298,27 @@ export default function WorkCalendar() {
                 </Group>
               )
             )}
-            <Group gap="xs">
-              <Text
-                style={{ cursor: "pointer" }}
+          </Grid.Col>
+          <Grid.Col span={3}>
+            <Group gap="xs" justify="flex-end">
+              <PrevActionIcon
                 onClick={() =>
                   setReferenceDate(
                     addDays(referenceDate, viewMode === "day" ? -1 : -7)
                   )
                 }
-              >
-                {"<"}
-              </Text>
+              />
               <Text>{formatDate(referenceDate)}</Text>
-              <Text
-                style={{ cursor: "pointer" }}
+              <NextActionIcon
                 onClick={() =>
                   setReferenceDate(
                     addDays(referenceDate, viewMode === "day" ? 1 : 7)
                   )
                 }
-              >
-                {">"}
-              </Text>
+              />
             </Group>
-          </Group>
-        </Stack>
+          </Grid.Col>
+        </Grid>
         <Group align="flex-start" wrap="nowrap" gap={0}>
           {timeColumn()}
           {days.map((d, idx) => (
