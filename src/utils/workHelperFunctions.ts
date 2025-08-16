@@ -103,7 +103,7 @@ export function formatEarningsAmount(amount: number, currency: Currency) {
 }
 
 export function formatDate(date: Date) {
-  return date.toLocaleDateString(undefined, {
+  return date.toLocaleDateString("en-US", {
     weekday: "short",
     day: "numeric",
     month: "short",
@@ -111,7 +111,7 @@ export function formatDate(date: Date) {
 }
 
 export function formatMonth(month: number) {
-  return new Date(2023, month - 1, 1).toLocaleString(undefined, {
+  return new Date(2023, month - 1, 1).toLocaleString("en-US", {
     month: "long",
   });
 }

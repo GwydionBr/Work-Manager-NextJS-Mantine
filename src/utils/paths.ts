@@ -22,6 +22,12 @@ const paths = {
     },
   },
 
+  workCalendar: {
+    workCalendarPage() {
+      return "/workCalendar";
+    },
+  },
+
   finances: {
     financesPage() {
       return "/finances";

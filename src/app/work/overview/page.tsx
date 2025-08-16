@@ -13,13 +13,11 @@ import BulkSelectionControls from "@/components/Work/Session/BulkSelectionContro
 import WorkAnalysis from "@/components/Work/Analysis/WorkAnalysis";
 import AnalysisActionIcon from "@/components/UI/ActionIcons/AnalysisActionIcon";
 import CalendarActionIcon from "@/components/UI/ActionIcons/CalendarActionIcon";
-import WorkCalendar from "@/components/Work/Calendar/WorkCalendar";
 
 export default function WorkOverviewPage() {
   const { projects: timerProjects, folders, timerSessions } = useWorkStore();
   const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
   const [analysisOpened, setAnalysisOpened] = useState(false);
-  const [calendarOpened, setCalendarOpened] = useState(false);
 
   const projects = timerProjects.map((project) => project.project);
 
@@ -49,24 +47,6 @@ export default function WorkOverviewPage() {
     );
   };
 
-  const handleCalendarToggle = () => {
-    if (calendarOpened) {
-      setCalendarOpened(false);
-      return;
-    }
-    setCalendarOpened(true);
-    setAnalysisOpened(false);
-  };
-
-  const handleAnalysisToggle = () => {
-    if (analysisOpened) {
-      setAnalysisOpened(false);
-      return;
-    }
-    setAnalysisOpened(true);
-    setCalendarOpened(false);
-  };
-
   return (
     <Stack align="center" w="100%" px="xl">
       <Header
@@ -82,8 +62,9 @@ export default function WorkOverviewPage() {
         }
         rightButton={
           <Group>
-            <AnalysisActionIcon onClick={handleAnalysisToggle} />
-            <CalendarActionIcon onClick={handleCalendarToggle} />
+            <AnalysisActionIcon
+              onClick={() => setAnalysisOpened((state) => !state)}
+            />
           </Group>
         }
       />
@@ -91,9 +72,6 @@ export default function WorkOverviewPage() {
         <Box w="100%">
           <Collapse in={analysisOpened} transitionDuration={500}>
             <WorkAnalysis sessions={filteredSessions} isOverview={true} />
-          </Collapse>
-          <Collapse in={calendarOpened} transitionDuration={500}>
-            <WorkCalendar sessions={filteredSessions} />
           </Collapse>
           <BulkSelectionControls
             unpaidSessions={unpaidSessions}

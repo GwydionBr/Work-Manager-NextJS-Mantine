@@ -58,7 +58,7 @@ export default function CalendarAsideBig({
       <ScrollArea h={250} type="scroll">
         <Stack>
           <Text size="lg" fw={700}>
-            {date?.toLocaleDateString()}
+            {date?.toLocaleDateString("en-US")}
           </Text>
           {renderAppointments()}
         </Stack>

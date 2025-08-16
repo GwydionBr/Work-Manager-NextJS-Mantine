@@ -26,16 +26,12 @@ import {
 
 type ViewMode = "day" | "week";
 
-interface WorkCalendarProps {
-  sessions: Tables<"timer_session">[];
-}
-
-export default function WorkCalendar({ sessions }: WorkCalendarProps) {
+export default function WorkCalendar() {
   // Controls whether we show a single day or a full week
   const [viewMode, setViewMode] = useState<ViewMode>("week");
   // Anchor date (day or week) the calendar is based on
   const [referenceDate, setReferenceDate] = useState<Date>(new Date());
-  const { projects: timerProjects } = useWorkStore();
+  const { projects: timerProjects, timerSessions } = useWorkStore();
   const projects = timerProjects.map((project) => project.project);
   // Measuring first header and first column allows aligning the sticky header
   // and computing available space for bubble lanes
@@ -78,7 +74,7 @@ export default function WorkCalendar({ sessions }: WorkCalendarProps) {
     days.forEach((d) => {
       map.set(d.toISOString().slice(0, 10), []);
     });
-    sessions.forEach((s) => {
+    timerSessions.forEach((s) => {
       const start = new Date(s.start_time);
       const end = new Date(s.end_time);
       // include session if any overlap with current range days
@@ -93,7 +89,7 @@ export default function WorkCalendar({ sessions }: WorkCalendarProps) {
       });
     });
     return map;
-  }, [sessions, days]);
+  }, [timerSessions, days]);
 
   // Projects visible in the current view (based on sessions overlapping the visible days)
   const visibleProjects = useMemo(() => {
@@ -302,7 +298,6 @@ export default function WorkCalendar({ sessions }: WorkCalendarProps) {
         </Group>
 
         <ScrollArea
-          h={viewportHeight - 225}
           offsetScrollbars
           viewportRef={viewport}
         >

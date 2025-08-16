@@ -1,6 +1,8 @@
 "use client";
 
-import { Box, Group, Stack, Text } from "@mantine/core";
+import { useState } from "react";
+
+import { Box, Group, Stack, Text, HoverCard } from "@mantine/core";
 import { Tables } from "@/types/db.types";
 import {
   CalendarSession,
@@ -9,6 +11,8 @@ import {
   getStartOfDay,
   mergeAdjacentSessionsForRender,
 } from "./calendarUtils";
+import TimerSessionDrawer from "../Session/TimerSessionDrawer";
+import { formatTimeSpan } from "@/utils/workHelperFunctions";
 
 interface DayColumnProps {
   day: Date;
@@ -42,6 +46,9 @@ export function DayColumn({
   getEarnedSalary,
   projects,
 }: DayColumnProps) {
+  const [drawerSession, setDrawerSession] =
+    useState<Tables<"timer_session"> | null>(null);
+  const [drawerOpened, setDrawerOpened] = useState(false);
   // Clip sessions to the visible day window so cross-midnight sessions
   // render only the portion within this column. This avoids negative/overflowing heights.
   const dayStart = getStartOfDay(day);
@@ -67,6 +74,14 @@ export function DayColumn({
   const itemsForRender: CalendarSession[] =
     mergeAdjacentSessionsForRender(clippedItems);
 
+  const handleSessionClick = (session: CalendarSession) => {
+    const item = items.find((i) => i.id === session.id);
+    console.log(item);
+    if (!item) return;
+    setDrawerSession(item);
+    setDrawerOpened(true);
+  };
+
   return (
     <Box style={{ flex: 1, minWidth: 0 }}>
       <Stack gap="xs">
@@ -84,17 +99,12 @@ export function DayColumn({
           }}
         >
           <Text fw={600}>
-            {day.toLocaleDateString(undefined, {
+            {day.toLocaleDateString("en-US", {
               weekday: "short",
               day: "2-digit",
               month: "short",
             })}
           </Text>
-          {/* Earned salary */}
-          {/* <Group>
-            <Text>{getEarnedSalary(items, true)}</Text>
-            <Text>{getEarnedSalary(items, false)}</Text>
-          </Group> */}
         </Stack>
         {/* Main timeline area with a vertical rail, hourly dots and grid lines */}
         <Box
@@ -102,38 +112,14 @@ export function DayColumn({
           style={{
             position: "relative",
             height: hourHeight * (endHour - startHour),
-            border: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-gray-6))",
+            border:
+              "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-gray-6))",
             borderRadius: 0,
-            background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-gray-9))",
+            background:
+              "light-dark(var(--mantine-color-gray-0), var(--mantine-color-gray-9))",
             overflow: "hidden",
           }}
         >
-          {/* Rail */}
-          {/* <Box
-            style={{
-              position: "absolute",
-              left: 0,
-              top: 0,
-              bottom: 0,
-              width: 2,
-              background: "var(--mantine-color-gray-4)",
-            }}
-          /> */}
-          {/* Hourly dots */}
-          {/* {Array.from({ length: endHour - startHour + 1 }, (_, i) => (
-            <Box
-              key={`dot-${startHour + i}`}
-              style={{
-                position: "absolute",
-                left: 16 - 3,
-                top: i * hourHeight - 3,
-                width: 6,
-                height: 6,
-                borderRadius: 6,
-                background: "var(--mantine-color-gray-5)",
-              }}
-            />
-          ))} */}
           {/* Grid lines */}
           {Array.from({ length: endHour - startHour + 1 }, (_, i) => (
             <Box
@@ -144,7 +130,8 @@ export function DayColumn({
                 left: 0,
                 right: 0,
                 height: 1,
-                borderTop: "1px dashed light-dark(var(--mantine-color-gray-3), var(--mantine-color-gray-6))",
+                borderTop:
+                  "1px dashed light-dark(var(--mantine-color-gray-3), var(--mantine-color-gray-6))",
                 background: "none",
                 pointerEvents: "none",
               }}
@@ -195,85 +182,124 @@ export function DayColumn({
 
               return (
                 <Box key={s.id}>
-                  {/* Segment on the rail */}
-                  <Box
-                    style={{
-                      position: "absolute",
-                      left: segmentLeft,
-                      top,
-                      width: segmentWidth,
-                      height,
-                      borderRadius: 3,
-                      background: colors.rail,
-                    }}
-                  />
+                  <HoverCard openDelay={100} closeDelay={100}>
+                    <HoverCard.Target>
+                      {/* Segment on the rail */}
+                      <Box
+                        onClick={() => handleSessionClick(s)}
+                        style={{
+                          position: "absolute",
+                          left: segmentLeft,
+                          top,
+                          width: segmentWidth,
+                          height,
+                          borderRadius: 3,
+                          background: colors.rail,
+                          cursor: "pointer",
+                        }}
+                      />
+                    </HoverCard.Target>
+                    <HoverCard.Dropdown>
+                      <Stack>
+                        <Text>{projectTitle}</Text>
+                        {s.memo && <Text>{s.memo}</Text>}
+                        <Text>
+                          {formatTimeSpan(
+                            new Date(s.start_time),
+                            new Date(s.end_time)
+                          )}
+                        </Text>
+                      </Stack>
+                    </HoverCard.Dropdown>
+                  </HoverCard>
                   {/* Pointer connecting bubble to the rail */}
                   <Box
-                    style={{
-                      position: "absolute",
-                      left: bubbleLeft - 3,
-                      top: bubbleTop + Math.round(bubbleHeight / 2) - 5,
-                      width: 10,
-                      height: 10,
-                      background: "var(--mantine-color-body)",
-                      transform: "rotate(45deg)",
-                      boxShadow: `-1px 1px 0 0 ${colors.border}`,
-                      zIndex: 1,
-                    }}
-                  />
-                  {/* Bubble itself (compact, ellipsized content) */}
-                  <Box
-                    style={{
-                      position: "absolute",
-                      left: bubbleLeft,
-                      top: bubbleTop,
-                      minHeight: bubbleHeight,
-                      maxWidth: laneWidth - 10,
-                      padding: "4px 6px",
-                      borderRadius: 8,
-                      background: "var(--mantine-color-body)",
-                      boxShadow: `inset 0 0 0 1px ${colors.border}`,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                    }}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleSessionClick(s)}
                   >
+                    <HoverCard openDelay={100} closeDelay={100}>
+                      <HoverCard.Target>
+                        <Box
+                          style={{
+                            position: "absolute",
+                            left: bubbleLeft - 3,
+                            top: bubbleTop + Math.round(bubbleHeight / 2) - 5,
+                            width: 10,
+                            height: 10,
+                            background: "var(--mantine-color-body)",
+                            transform: "rotate(45deg)",
+                            boxShadow: `-1px 1px 0 0 ${colors.border}`,
+                            zIndex: 1,
+                          }}
+                        />
+                      </HoverCard.Target>
+                      <HoverCard.Dropdown>
+                        <Stack>
+                          <Text>{projectTitle}</Text>
+                          {s.memo && <Text>{s.memo}</Text>}
+                          <Text>
+                            {formatTimeSpan(
+                              new Date(s.start_time),
+                              new Date(s.end_time)
+                            )}
+                          </Text>
+                        </Stack>
+                      </HoverCard.Dropdown>
+                    </HoverCard>
+                    {/* Bubble itself (compact, ellipsized content) */}
                     <Box
                       style={{
-                        width: 8,
-                        height: 8,
-                        zIndex: 2,
+                        position: "absolute",
+                        left: bubbleLeft,
+                        top: bubbleTop,
+                        minHeight: bubbleHeight,
+                        maxWidth: laneWidth - 10,
+                        padding: "4px 6px",
                         borderRadius: 8,
-                        background: colors.rail,
-                        boxShadow: `0 0 0 1px ${colors.border}`,
-                        flex: "0 0 auto",
+                        background: "var(--mantine-color-body)",
+                        boxShadow: `inset 0 0 0 1px ${colors.border}`,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
                       }}
-                    />
-                    <Box style={{ minWidth: 0 }}>
-                      <Text
-                        size="xs"
-                        fw={600}
+                    >
+                      <Box
                         style={{
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
+                          width: 8,
+                          height: 8,
+                          zIndex: 2,
+                          borderRadius: 8,
+                          background: colors.rail,
+                          boxShadow: `0 0 0 1px ${colors.border}`,
+                          flex: "0 0 auto",
                         }}
-                      >
-                        {projectTitle}
-                      </Text>
-                      {s.memo && (
+                      />
+                      <Box style={{ minWidth: 0 }}>
                         <Text
                           size="xs"
-                          c="dimmed"
+                          fw={600}
                           style={{
                             whiteSpace: "nowrap",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
                           }}
                         >
-                          {s.memo}
+                          {projectTitle}
                         </Text>
-                      )}
+                        {s.memo && (
+                          <Text
+                            size="xs"
+                            c="dimmed"
+                            style={{
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            {s.memo}
+                          </Text>
+                        )}
+                      </Box>
                     </Box>
                   </Box>
                 </Box>
@@ -282,6 +308,13 @@ export function DayColumn({
           })()}
         </Box>
       </Stack>
+      {drawerSession && (
+        <TimerSessionDrawer
+          timerSession={drawerSession}
+          opened={drawerOpened}
+          close={() => setDrawerOpened(false)}
+        />
+      )}
     </Box>
   );
 }

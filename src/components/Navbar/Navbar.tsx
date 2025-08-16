@@ -10,6 +10,7 @@ import {
   IconUser,
   IconBrandCashapp,
   IconUsersGroup,
+  IconCalendar,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import SchemeToggle from "@/components/Scheme/SchemeToggleButton";
@@ -26,6 +27,11 @@ interface LinkData {
 
 const mainLinksData = [
   { icon: IconBriefcase, label: "Work", to: paths.work.workPage() },
+  {
+    icon: IconCalendar,
+    label: "Work Calendar",
+    to: paths.workCalendar.workCalendarPage(),
+  },
   {
     icon: IconBrandCashapp,
     label: "Finance",
@@ -61,7 +67,14 @@ export default function Navbar() {
             className={classes.mainLink}
             data-active={
               link.to === pathname ||
-              (link.to !== "/" && pathname.startsWith(link.to)) ||
+              (link.to !== "/" &&
+                pathname.startsWith(link.to) &&
+                // Prevent /work from being active when on /workCalendar
+                !(
+                  link.to === "/work" &&
+                  pathname.startsWith("/workCalendar")
+                )
+              ) ||
               undefined
             }
           >
