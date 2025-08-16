@@ -83,7 +83,7 @@ export function DayColumn({
   };
 
   return (
-    <Box style={{ flex: 1, minWidth: 0 }}>
+    <Box style={{ flex: 1, minWidth: 0 }} mb="md">
       <Stack gap="xs">
         {/* Sticky header showing date and earned summary */}
         <Stack
@@ -92,7 +92,7 @@ export function DayColumn({
           ref={isFirst ? headerRef : undefined}
           style={{
             position: "sticky",
-            top: 0,
+            top: 60,
             zIndex: 10,
             background: "var(--mantine-color-body)",
             borderBottom: "1px solid var(--mantine-color-gray-3)",

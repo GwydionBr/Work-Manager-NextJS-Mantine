@@ -11,6 +11,7 @@ import {
   SegmentedControl,
   Stack,
   Text,
+  Title,
 } from "@mantine/core";
 import { Tables } from "@/types/db.types";
 import { formatDate } from "@/utils/workHelperFunctions";
@@ -242,78 +243,86 @@ export default function WorkCalendar() {
   };
 
   return (
-    <Paper withBorder radius="lg" p="md" mb="sm">
+    <ScrollArea offsetScrollbars viewportRef={viewport} h="100vh">
       <Stack>
-        <Group justify="space-between">
-          <SegmentedControl
-            value={viewMode}
-            onChange={(v) => setViewMode(v as ViewMode)}
-            data={[
-              { label: "Tag", value: "day" },
-              { label: "Woche", value: "week" },
-            ]}
-          />
-          {/* Legend: show projects visible in the current range with their colors */}
-          {visibleProjects.length > 0 && (
-            <Group gap="xs" wrap="wrap">
-              {visibleProjects.map((p) => (
-                <Group key={p.id} gap={6} wrap="nowrap">
-                  <Box
-                    style={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: 10,
-                      background: p.colors.rail,
-                      boxShadow: `0 0 0 1px ${p.colors.border}`,
-                    }}
-                  />
-                  <Text size="xs">{p.title}</Text>
-                </Group>
-              ))}
-            </Group>
-          )}
-          <Group gap="xs">
-            <Text
-              style={{ cursor: "pointer" }}
-              onClick={() =>
-                setReferenceDate(
-                  addDays(referenceDate, viewMode === "day" ? -1 : -7)
-                )
-              }
-            >
-              {"<"}
-            </Text>
-            <Text>{formatDate(referenceDate)}</Text>
-            <Text
-              style={{ cursor: "pointer" }}
-              onClick={() =>
-                setReferenceDate(
-                  addDays(referenceDate, viewMode === "day" ? 1 : 7)
-                )
-              }
-            >
-              {">"}
-            </Text>
-          </Group>
-        </Group>
-
-        <ScrollArea
-          offsetScrollbars
-          viewportRef={viewport}
+        <Title ta="center" order={1} mt="xs">
+          Work Calendar
+        </Title>
+        <Stack
+          pt="xs"
+          pb="md"
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 100,
+            background: "var(--mantine-color-body)",
+          }}
         >
-          <Group align="flex-start" wrap="nowrap" gap={0}>
-            {timeColumn()}
-            {days.map((d, idx) => (
-              <Box
-                key={`day-${getStartOfDay(d).toISOString().slice(0, 10)}`}
-                style={{ flex: 1, minWidth: 0 }}
+          <Group justify="space-between" mx="md">
+            <SegmentedControl
+              value={viewMode}
+              onChange={(v) => setViewMode(v as ViewMode)}
+              data={[
+                { label: "Tag", value: "day" },
+                { label: "Woche", value: "week" },
+              ]}
+            />
+            {/* Legend: show projects visible in the current range with their colors */}
+            {visibleProjects.length > 0 && (
+              <Group gap="xs" wrap="wrap">
+                {visibleProjects.map((p) => (
+                  <Group key={p.id} gap={6} wrap="nowrap">
+                    <Box
+                      style={{
+                        width: 10,
+                        height: 10,
+                        borderRadius: 10,
+                        background: p.colors.rail,
+                        boxShadow: `0 0 0 1px ${p.colors.border}`,
+                      }}
+                    />
+                    <Text size="xs">{p.title}</Text>
+                  </Group>
+                ))}
+              </Group>
+            )}
+            <Group gap="xs">
+              <Text
+                style={{ cursor: "pointer" }}
+                onClick={() =>
+                  setReferenceDate(
+                    addDays(referenceDate, viewMode === "day" ? -1 : -7)
+                  )
+                }
               >
-                {dayColumn(d, idx === 0)}
-              </Box>
-            ))}
+                {"<"}
+              </Text>
+              <Text>{formatDate(referenceDate)}</Text>
+              <Text
+                style={{ cursor: "pointer" }}
+                onClick={() =>
+                  setReferenceDate(
+                    addDays(referenceDate, viewMode === "day" ? 1 : 7)
+                  )
+                }
+              >
+                {">"}
+              </Text>
+            </Group>
           </Group>
-        </ScrollArea>
+        </Stack>
+        <Group align="flex-start" wrap="nowrap" gap={0}>
+          {timeColumn()}
+          {days.map((d, idx) => (
+            <Box
+              key={`day-${getStartOfDay(d).toISOString().slice(0, 10)}`}
+              style={{ flex: 1, minWidth: 0 }}
+            >
+              {dayColumn(d, idx === 0)}
+            </Box>
+          ))}
+        </Group>
       </Stack>
-    </Paper>
+    </ScrollArea>
   );
 }
