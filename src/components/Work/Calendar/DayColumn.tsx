@@ -3,19 +3,23 @@
 import { useState } from "react";
 
 import { Box, Group, Stack, Text, HoverCard } from "@mantine/core";
+import TimerSessionDrawer from "../Session/TimerSessionDrawer";
+
 import { Tables } from "@/types/db.types";
 import {
   CalendarSession,
   clamp,
   getProjectColor,
   getStartOfDay,
+  getEndOfDay,
   mergeAdjacentSessionsForRender,
 } from "./calendarUtils";
-import TimerSessionDrawer from "../Session/TimerSessionDrawer";
 import { formatTimeSpan } from "@/utils/workHelperFunctions";
+import { ViewMode } from "@/types/workCalendar.types";
 
 interface DayColumnProps {
   day: Date;
+  viewMode: ViewMode;
   items: Tables<"timer_session">[];
   isFirst: boolean;
   hourHeight: number;
@@ -30,9 +34,19 @@ interface DayColumnProps {
     unpaid: boolean
   ) => number;
   projects: { id: string; title: string }[];
+  visibleProjects: {
+    id: string;
+    title: string;
+    colors: {
+      rail: string;
+      border: string;
+      fill: string;
+    };
+  }[];
 }
 
 export function DayColumn({
+  viewMode,
   day,
   items,
   isFirst,
@@ -45,6 +59,7 @@ export function DayColumn({
   toY,
   getEarnedSalary,
   projects,
+  visibleProjects,
 }: DayColumnProps) {
   const [drawerSession, setDrawerSession] =
     useState<Tables<"timer_session"> | null>(null);
@@ -52,8 +67,7 @@ export function DayColumn({
   // Clip sessions to the visible day window so cross-midnight sessions
   // render only the portion within this column. This avoids negative/overflowing heights.
   const dayStart = getStartOfDay(day);
-  const dayEnd = new Date(dayStart);
-  dayEnd.setDate(dayStart.getDate() + 1);
+  const dayEnd = getEndOfDay(day);
 
   const clippedItems: CalendarSession[] = items.map((s) => {
     const sStart = new Date(s.start_time);
@@ -165,8 +179,10 @@ export function DayColumn({
               const top = toY(start);
               const bottom = toY(end);
               const height = Math.max(bottom - top, 4);
-              const colors = getProjectColor(String(s.project_id));
-              const segmentLeft = railLeft - Math.floor(segmentWidth / 2) +2;
+              const colors =
+                visibleProjects.find((p) => p.id === String(s.project_id))
+                  ?.colors || getProjectColor(String(s.project_id));
+              const segmentLeft = railLeft - Math.floor(segmentWidth / 2) + 2;
               const centerY = top + height / 2;
               const bubbleTop = clamp(
                 Math.round(centerY - bubbleHeight / 2),
@@ -174,7 +190,8 @@ export function DayColumn({
                 containerHeight - bubbleHeight
               );
               const laneIndex = chooseLane(bubbleTop);
-              const bubbleLeft = railLeft + 12 + laneIndex * laneWidth;
+              const bubbleLeft =
+                railLeft + 12 + laneIndex * (viewMode === "week" ? 30 : laneWidth);
               laneHeights[laneIndex] = bubbleTop + bubbleHeight;
 
               const projectTitle =
@@ -196,7 +213,7 @@ export function DayColumn({
                           borderRadius: 5,
                           background: colors.rail,
                           cursor: "pointer",
-                          border: "1px solid light-dark(var(--mantine-color-dark-3), var(--mantine-color-gray-3))",
+                          border: `1px solid ${colors.border}`,
                         }}
                       />
                     </HoverCard.Target>

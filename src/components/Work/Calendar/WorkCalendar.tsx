@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
+
 import {
   Box,
   Grid,
@@ -14,21 +15,21 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { Tables } from "@/types/db.types";
-import { formatDate } from "@/utils/workHelperFunctions";
+import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
+import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
 import { DayColumn } from "./DayColumn";
 import { TimeColumn } from "./TimeColumn";
+
+import { Tables } from "@/types/db.types";
+import { ViewMode } from "@/types/workCalendar.types";
+import { formatDate } from "@/utils/workHelperFunctions";
 import {
   addDays,
   clamp,
   getStartOfDay,
   CalendarSession,
-  getProjectColor,
+  getProjectColorByTimeRank,
 } from "./calendarUtils";
-import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
-import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
-
-type ViewMode = "day" | "week";
 
 export default function WorkCalendar() {
   // Controls whether we show a single day or a full week
@@ -100,17 +101,38 @@ export default function WorkCalendar() {
     sessionsByDay.forEach((items) => {
       items.forEach((s) => ids.add(String(s.project_id)));
     });
-    return Array.from(ids)
+
+    // Calculate total time for each project in the visible range
+    const projectTimeMap = new Map<string, number>();
+    sessionsByDay.forEach((items) => {
+      items.forEach((s) => {
+        const projectId = String(s.project_id);
+        const currentTime = projectTimeMap.get(projectId) || 0;
+        projectTimeMap.set(projectId, currentTime + (s.active_seconds || 0));
+      });
+    });
+
+    // Sort projects by total time (descending) and assign colors based on time ranking
+    const sortedProjects = Array.from(ids)
       .map((id) => {
         const p = projects.find((pp) => pp.id === id);
         if (!p) return null;
-        return { id, title: p.title, colors: getProjectColor(id) };
+        const totalTime = projectTimeMap.get(id) || 0;
+        return { id, title: p.title, totalTime };
       })
-      .filter(Boolean) as {
+      .filter(Boolean)
+      .sort((a, b) => (b?.totalTime || 0) - (a?.totalTime || 0))
+      .map((project, index) => ({
+        id: project!.id,
+        title: project!.title,
+        colors: getProjectColorByTimeRank(index),
+      })) as {
       id: string;
       title: string;
-      colors: ReturnType<typeof getProjectColor>;
+      colors: ReturnType<typeof getProjectColorByTimeRank>;
     }[];
+
+    return sortedProjects;
   }, [sessionsByDay, projects]);
 
   const hourHeight = 60; // px per hour
@@ -224,6 +246,7 @@ export default function WorkCalendar() {
 
     return (
       <DayColumn
+        viewMode={viewMode}
         key={key}
         day={day}
         items={items}
@@ -237,6 +260,7 @@ export default function WorkCalendar() {
         toY={toY}
         getEarnedSalary={getEarnedSalary}
         projects={projects.map((p) => ({ id: p.id, title: p.title }))}
+        visibleProjects={visibleProjects}
       />
     );
   };

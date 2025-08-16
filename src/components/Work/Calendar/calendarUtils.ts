@@ -24,6 +24,12 @@ export function getStartOfDay(date: Date) {
   return d;
 }
 
+export function getEndOfDay(date: Date) {
+  const d = new Date(date);
+  d.setHours(23, 59, 59, 999);
+  return d;
+}
+
 // Adds a number of days without mutating the original date.
 export function addDays(date: Date, days: number) {
   const d = new Date(date);
@@ -66,13 +72,86 @@ export function getProjectColor(projectId: string | null): {
     "lime",
     "indigo",
     "red",
+    "yellow",
+    "green",
+    "gray",
+    "dark",
   ];
-  const index = hashStringToNumber(projectId ?? "unknown") % palette.length;
+
+  // Use a more sophisticated hash to distribute colors better
+  const hash = hashStringToNumber(projectId ?? "unknown");
+  const index = hash % palette.length;
+
+  // For projects with similar hashes, try to use different color variations
   const color = palette[index];
+  const colorVariation = Math.floor((hash / palette.length) % 3); // 0, 1, or 2
+
+  // Use different color intensities based on the variation
+  const intensity =
+    colorVariation === 0 ? "6" : colorVariation === 1 ? "5" : "7";
+
   return {
-    rail: `var(--mantine-color-${color}-6)`,
-    border: `var(--mantine-color-${color}-7)`,
+    rail: `var(--mantine-color-${color}-${intensity})`,
+    border: `var(--mantine-color-${color}-${colorVariation === 0 ? "7" : colorVariation === 1 ? "6" : "8"})`,
     fill: `var(--mantine-color-${color}-1)`,
+  };
+}
+
+// Maps a project's time rank to a Mantine color trio based on time spent
+// - Projects with most time get primary colors
+// - Projects with less time get secondary/tertiary colors
+// - Ensures consistent color assignment based on time ranking
+export function getProjectColorByTimeRank(rank: number): {
+  rail: string;
+  border: string;
+  fill: string;
+} {
+  // Primary colors for top projects (most time)
+  const primaryColors = [
+    { name: "blue", rail: "6", border: "7", fill: "1" },
+    { name: "orange", rail: "6", border: "7", fill: "1" },
+    { name: "violet", rail: "6", border: "7", fill: "1" },
+    { name: "lime", rail: "6", border: "7", fill: "1" },
+    { name: "grape", rail: "6", border: "7", fill: "1" },
+  ];
+
+  // Secondary colors for medium projects
+  const secondaryColors = [
+    { name: "teal", rail: "5", border: "6", fill: "1" },
+    { name: "pink", rail: "5", border: "6", fill: "1" },
+    { name: "cyan", rail: "5", border: "6", fill: "1" },
+    { name: "indigo", rail: "5", border: "6", fill: "1" },
+    { name: "red", rail: "5", border: "6", fill: "1" },
+  ];
+
+  // Tertiary colors for smaller projects
+  const tertiaryColors = [
+    { name: "yellow", rail: "4", border: "5", fill: "1" },
+    { name: "green", rail: "4", border: "5", fill: "1" },
+    { name: "gray", rail: "4", border: "5", fill: "1" },
+    { name: "dark", rail: "4", border: "5", fill: "1" },
+  ];
+
+  let colorConfig;
+
+  if (rank < primaryColors.length) {
+    // Top projects get primary colors
+    colorConfig = primaryColors[rank];
+  } else if (rank < primaryColors.length + secondaryColors.length) {
+    // Medium projects get secondary colors
+    colorConfig = secondaryColors[rank - primaryColors.length];
+  } else {
+    // Smaller projects get tertiary colors, cycling through them
+    const tertiaryIndex =
+      (rank - primaryColors.length - secondaryColors.length) %
+      tertiaryColors.length;
+    colorConfig = tertiaryColors[tertiaryIndex];
+  }
+
+  return {
+    rail: `var(--mantine-color-${colorConfig.name}-${colorConfig.rail})`,
+    border: `var(--mantine-color-${colorConfig.name}-${colorConfig.border})`,
+    fill: `var(--mantine-color-${colorConfig.name}-${colorConfig.fill})`,
   };
 }
 
