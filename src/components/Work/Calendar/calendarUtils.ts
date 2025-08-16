@@ -108,11 +108,11 @@ export function getProjectColorByTimeRank(rank: number): {
 } {
   // Primary colors for top projects (most time)
   const primaryColors = [
-    { name: "blue", rail: "6", border: "7", fill: "1" },
+    { name: "indigo", rail: "6", border: "7", fill: "1" },
     { name: "orange", rail: "6", border: "7", fill: "1" },
-    { name: "violet", rail: "6", border: "7", fill: "1" },
-    { name: "lime", rail: "6", border: "7", fill: "1" },
     { name: "grape", rail: "6", border: "7", fill: "1" },
+    { name: "lime", rail: "6", border: "7", fill: "1" },
+    { name: "violet", rail: "6", border: "7", fill: "1" },
   ];
 
   // Secondary colors for medium projects
@@ -120,7 +120,7 @@ export function getProjectColorByTimeRank(rank: number): {
     { name: "teal", rail: "5", border: "6", fill: "1" },
     { name: "pink", rail: "5", border: "6", fill: "1" },
     { name: "cyan", rail: "5", border: "6", fill: "1" },
-    { name: "indigo", rail: "5", border: "6", fill: "1" },
+    { name: "blue", rail: "5", border: "6", fill: "1" },
     { name: "red", rail: "5", border: "6", fill: "1" },
   ];
 
