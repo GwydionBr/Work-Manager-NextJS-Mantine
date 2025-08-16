@@ -2,11 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
-import { useViewportSize } from "@mantine/hooks";
 import {
   Box,
   Group,
-  Paper,
+  Loader,
   ScrollArea,
   SegmentedControl,
   Stack,
@@ -32,14 +31,13 @@ export default function WorkCalendar() {
   const [viewMode, setViewMode] = useState<ViewMode>("week");
   // Anchor date (day or week) the calendar is based on
   const [referenceDate, setReferenceDate] = useState<Date>(new Date());
-  const { projects: timerProjects, timerSessions } = useWorkStore();
+  const { projects: timerProjects, timerSessions, isFetching } = useWorkStore();
   const projects = timerProjects.map((project) => project.project);
   // Measuring first header and first column allows aligning the sticky header
   // and computing available space for bubble lanes
   const firstHeaderRef = useRef<HTMLDivElement | null>(null);
   const viewport = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState<number>(0);
-  const { height: viewportHeight } = useViewportSize();
   const firstColumnContainerRef = useRef<HTMLDivElement | null>(null);
   const [columnWidth, setColumnWidth] = useState<number>(0);
 
@@ -182,14 +180,13 @@ export default function WorkCalendar() {
   }, [viewMode, referenceDate, firstHeaderRef]);
 
   useEffect(() => {
-    // On initial mount, scroll to 07:00 (6 * hourHeight from midnight)
-    if (viewport.current) {
+    if (viewport.current && !isFetching) {
       viewport.current.scrollTo({
-        top: (6 - timelineStartHour) * hourHeight,
-        behavior: "auto",
+        top: (8 - timelineStartHour) * hourHeight,
+        behavior: "smooth",
       });
     }
-  }, []);
+  }, [isFetching]);
 
   const timeColumn = () => (
     <TimeColumn
@@ -220,8 +217,6 @@ export default function WorkCalendar() {
         active_seconds: s.active_seconds,
       };
     });
-    const itemsForRender: CalendarSession[] =
-      mergeAdjacentSessionsForRender(clippedItems);
 
     return (
       <DayColumn
@@ -268,23 +263,27 @@ export default function WorkCalendar() {
               ]}
             />
             {/* Legend: show projects visible in the current range with their colors */}
-            {visibleProjects.length > 0 && (
-              <Group gap="xs" wrap="wrap">
-                {visibleProjects.map((p) => (
-                  <Group key={p.id} gap={6} wrap="nowrap">
-                    <Box
-                      style={{
-                        width: 10,
-                        height: 10,
-                        borderRadius: 10,
-                        background: p.colors.rail,
-                        boxShadow: `0 0 0 1px ${p.colors.border}`,
-                      }}
-                    />
-                    <Text size="xs">{p.title}</Text>
-                  </Group>
-                ))}
-              </Group>
+            {isFetching ? (
+              <Loader size="xs" />
+            ) : (
+              visibleProjects.length > 0 && (
+                <Group gap="xs" wrap="wrap">
+                  {visibleProjects.map((p) => (
+                    <Group key={p.id} gap={6} wrap="nowrap">
+                      <Box
+                        style={{
+                          width: 10,
+                          height: 10,
+                          borderRadius: 10,
+                          background: p.colors.rail,
+                          boxShadow: `0 0 0 1px ${p.colors.border}`,
+                        }}
+                      />
+                      <Text size="xs">{p.title}</Text>
+                    </Group>
+                  ))}
+                </Group>
+              )
             )}
             <Group gap="xs">
               <Text
