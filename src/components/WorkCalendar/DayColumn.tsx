@@ -18,6 +18,7 @@ import CalendarEvent from "./CalendarEvent/CalendarEvent";
 
 interface DayColumnProps {
   day: Date;
+  currentTime?: Date;
   viewMode: ViewMode;
   sessions: Tables<"timer_session">[];
   projects: { id: string; title: string }[];
@@ -35,6 +36,7 @@ interface DayColumnProps {
 export function DayColumn({
   viewMode,
   day,
+  currentTime,
   sessions,
   projects,
   visibleProjects,
@@ -42,6 +44,7 @@ export function DayColumn({
   const [drawerSession, setDrawerSession] =
     useState<Tables<"timer_session"> | null>(null);
   const [drawerOpened, setDrawerOpened] = useState(false);
+
   // Clip sessions to the visible day window so cross-midnight sessions
   // render only the portion within this column. This avoids negative/overflowing heights.
   const dayStart = getStartOfDay(day);
@@ -101,22 +104,50 @@ export function DayColumn({
           }}
         >
           {/* Grid lines */}
-          {Array.from({ length: 25 }, (_, i) => (
-            <Box
-              key={`line-${i}`}
+          {Array.from(
+            { length: 25 },
+            (_, i) =>
+              i !== 0 && (
+                <Box
+                  key={`line-${i}`}
+                  style={{
+                    position: "absolute",
+                    top: i * hourHeight,
+                    left: 0,
+                    right: 0,
+                    height: 1,
+                    borderTop:
+                      "1px dashed light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-2))",
+                    background: "none",
+                    pointerEvents: "none",
+                  }}
+                />
+              )
+          )}
+
+          {/* Current time indicator - red line for today */}
+          {currentTime && (
+            <Stack
+              gap={1}
               style={{
                 position: "absolute",
-                top: i * hourHeight,
+                top: toY(currentTime),
                 left: 0,
                 right: 0,
-                height: 1,
-                borderTop:
-                  "1px dashed light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-2))",
-                background: "none",
-                pointerEvents: "none",
+                height: 2,
+                background: "var(--mantine-color-red-6)",
+                zIndex: 10,
               }}
-            />
-          ))}
+            >
+              <Box />
+              <Text size="xs" c="red" ta="center" fw={600}>
+                {currentTime.toLocaleTimeString("en-US", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </Text>
+            </Stack>
+          )}
 
           {/* Bubble layout: assign a horizontal lane to avoid overlaps when many small sessions cluster */}
           {(() => {

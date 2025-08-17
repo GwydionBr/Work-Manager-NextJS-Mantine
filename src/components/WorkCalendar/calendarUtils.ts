@@ -37,6 +37,16 @@ export function addDays(date: Date, days: number) {
   return d;
 }
 
+// Check if the day is today
+export function isToday(date: Date) {
+  const today = new Date();
+  return (
+    date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear()
+  );
+}
+
 // Bounds a number between [min, max]. Useful for pixel positioning.
 export function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
