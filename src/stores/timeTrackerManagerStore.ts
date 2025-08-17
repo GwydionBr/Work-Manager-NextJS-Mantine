@@ -30,6 +30,7 @@ export interface TimerData {
 
 interface TimeTrackerManagerState {
   timers: Record<string, TimerData>;
+  isTimerRunning: boolean;
 
   // Timer Management
   addTimer: (timerData: Omit<TimerData, "id">) => {
@@ -40,6 +41,7 @@ interface TimeTrackerManagerState {
   removeTimer: (timerId: string) => void;
   updateTimer: (timerId: string, updates: Partial<TimerData>) => void;
   getTimer: (timerId: string) => TimerData | undefined;
+  getRunningTimer: () => TimerData | undefined;
   getAllTimers: () => TimerData[];
   setForceEndTimer: (timerId: string, forceEndTimer: boolean) => void;
 }
@@ -48,6 +50,7 @@ export const useTimeTrackerManager = create(
   persist<TimeTrackerManagerState>(
     (set, get) => ({
       timers: {} as Record<string, TimerData>,
+      isTimerRunning: false,
 
       addTimer: (timerData) => {
         const currentTimers = get().timers;
@@ -106,6 +109,14 @@ export const useTimeTrackerManager = create(
           const timer = state.timers[timerId];
           if (!timer) return state;
 
+          if (updates.state === TimerState.Running) {
+            set({ isTimerRunning: true });
+          } else {
+            const activeTimer = get().getRunningTimer();
+            if (!activeTimer) {
+              set({ isTimerRunning: false });
+            }
+          }
           return {
             timers: {
               ...state.timers,
@@ -117,6 +128,12 @@ export const useTimeTrackerManager = create(
 
       getTimer: (timerId) => {
         return get().timers[timerId];
+      },
+
+      getRunningTimer: () => {
+        return Object.values(get().timers).find(
+          (timer) => timer.state === TimerState.Running
+        );
       },
 
       getAllTimers: () => {

@@ -2,19 +2,20 @@
 
 import { useState } from "react";
 
-import { Box, Stack, Text } from "@mantine/core";
+import { Box, Stack } from "@mantine/core";
 import TimerSessionDrawer from "@/components/Work/Session/TimerSessionDrawer";
 
 import { Tables } from "@/types/db.types";
 import {
-  CalendarSession,
   getStartOfDay,
   getEndOfDay,
   mergeAdjacentSessionsForRender,
   clamp,
+  getProjectColor,
 } from "./calendarUtils";
-import { ViewMode } from "@/types/workCalendar.types";
+import { CalendarSession, ViewMode } from "@/types/workCalendar.types";
 import CalendarEvent from "./CalendarEvent/CalendarEvent";
+import TimeTrackerEvent from "./CalendarEvent/TimeTrackerEvent";
 
 interface DayColumnProps {
   day: Date;
@@ -63,6 +64,7 @@ export function DayColumn({
       memo: s.memo,
       payed: s.payed,
       active_seconds: s.active_seconds,
+      projectTitle: projects.find((p) => p.id === s.project_id)?.title ?? "",
     };
   });
   // Merge touching/overlapping sessions for the same project+memo to reduce clutter
@@ -127,32 +129,17 @@ export function DayColumn({
 
           {/* Current time indicator - red line for today */}
           {currentTime && (
-            <Stack
-              gap={1}
-              style={{
-                position: "absolute",
-                top: toY(currentTime),
-                left: 0,
-                right: 0,
-                height: 2,
-                background: "var(--mantine-color-red-6)",
-                zIndex: 10,
-              }}
-            >
-              <Box />
-              <Text size="xs" c="red" ta="center" fw={600}>
-                {currentTime.toLocaleTimeString("en-US", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </Text>
-            </Stack>
+            <TimeTrackerEvent
+              toY={toY}
+              currentTime={currentTime}
+              color={"var(--mantine-color-red-6)"}
+              visibleProjects={visibleProjects}
+            />
           )}
 
           {/* Bubble layout: assign a horizontal lane to avoid overlaps when many small sessions cluster */}
           {(() => {
             const laneHeights: number[] = [];
-            const containerHeight = hourHeight * 24;
             const chooseLane = (top: number) => {
               for (let i = 0; i < laneHeights.length; i++) {
                 if (laneHeights[i] + 4 <= top) {
@@ -169,10 +156,9 @@ export function DayColumn({
                   s={s}
                   toY={toY}
                   visibleProjects={visibleProjects}
-                  projects={projects}
                   handleSessionClick={handleSessionClick}
                   viewMode={viewMode}
-                  containerHeight={containerHeight}
+                  containerHeight={hourHeight * 24}
                   chooseLane={chooseLane}
                   laneHeights={laneHeights}
                 />

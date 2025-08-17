@@ -1,15 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
+
 import { Grid, Stack } from "@mantine/core";
 import { DayColumn } from "@/components/WorkCalendar/DayColumn";
-import { CalendarDay, ViewMode } from "@/types/workCalendar.types";
+import { TimeColumn } from "@/components/WorkCalendar/TimeColumn";
+import ColumnHeader from "@/components/WorkCalendar/Calendar/ColumnHeader";
+
 import {
   getStartOfDay,
   isToday,
 } from "@/components/WorkCalendar/calendarUtils";
-import { TimeColumn } from "@/components/WorkCalendar/TimeColumn";
-import ColumnHeader from "@/components/WorkCalendar/Calendar/ColumnHeader";
+
+import { CalendarDay, ViewMode } from "@/types/workCalendar.types";
 
 interface CalendarGridProps {
   days: CalendarDay[];

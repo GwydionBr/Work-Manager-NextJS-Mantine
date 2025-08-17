@@ -5,9 +5,13 @@ import { useHover } from "@mantine/hooks";
 
 import { Box, Text } from "@mantine/core";
 
-import { CalendarSession, clamp, getProjectColor } from "../calendarUtils";
+import {
+  clamp,
+  getProjectColor,
+} from "@/components/WorkCalendar/calendarUtils";
 
-import { ViewMode } from "@/types/workCalendar.types";
+import { CalendarSession, ViewMode } from "@/types/workCalendar.types";
+import { formatTimeSpan } from "@/utils/workHelperFunctions";
 
 interface CalendarEventProps {
   s: CalendarSession;
@@ -21,7 +25,6 @@ interface CalendarEventProps {
       fill: string;
     };
   }[];
-  projects: { id: string; title: string }[];
   handleSessionClick: (session: CalendarSession) => void;
   viewMode: ViewMode;
   containerHeight: number;
@@ -33,7 +36,6 @@ export default function CalendarEvent({
   s,
   toY,
   visibleProjects,
-  projects,
   handleSessionClick,
   viewMode,
   containerHeight,
@@ -71,9 +73,6 @@ export default function CalendarEvent({
   const laneIndex = chooseLane(bubbleTop);
   laneHeights[laneIndex] = bubbleTop + bubbleHeight;
 
-  const projectTitle =
-    projects.find((p) => p.id === s.project_id)?.title || "Projekt";
-
   return (
     <Box>
       <Box
@@ -88,7 +87,7 @@ export default function CalendarEvent({
           borderRadius: 5,
           background: colors.rail,
           cursor: "pointer",
-          border: `1px solid ${colors.border}`,
+          border: `1px solid light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-0))`,
         }}
       />
       <Box style={{ cursor: "pointer" }} onClick={() => handleSessionClick(s)}>
@@ -126,7 +125,7 @@ export default function CalendarEvent({
             gap: 8,
           }}
         >
-          <Box
+          {/* <Box
             style={{
               width: 8,
               height: 8,
@@ -136,8 +135,16 @@ export default function CalendarEvent({
               boxShadow: `0 0 0 1px ${colors.border}`,
               flex: "0 0 auto",
             }}
-          />
+          /> */}
           <Box style={{ maxWidth: 400 }}>
+            <Text size="xs" >
+              {formatTimeSpan(start, end)}
+            </Text>
+            {s.memo && (
+              <Text size="xs" c="dimmed">
+                {s.memo}
+              </Text>
+            )}
             <Text
               maw="100%"
               size="xs"
@@ -147,13 +154,8 @@ export default function CalendarEvent({
                 textOverflow: "ellipsis",
               }}
             >
-              {projectTitle}
+              {s.projectTitle}
             </Text>
-            {s.memo && (
-              <Text size="xs" c="dimmed">
-                {s.memo}
-              </Text>
-            )}
           </Box>
         </Box>
       </Box>

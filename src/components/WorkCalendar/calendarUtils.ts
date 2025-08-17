@@ -1,20 +1,4 @@
-import { Tables } from "@/types/db.types";
-
-// Shared types and utilities for the Work calendar UI.
-// Keep this file UI-framework agnostic so it can be reused across components.
-
-// Lightweight shape used by the calendar renderer. We deliberately
-// keep only the fields required for layout, grouping and labeling.
-export type CalendarSession = Pick<
-  Tables<"timer_session">,
-  | "id"
-  | "start_time"
-  | "end_time"
-  | "project_id"
-  | "memo"
-  | "payed"
-  | "active_seconds"
->;
+import { CalendarSession } from "@/types/workCalendar.types";
 
 // Normalizes a date to midnight (local time). Used for day-bounded layout
 // and clipping of sessions that cross day boundaries.
