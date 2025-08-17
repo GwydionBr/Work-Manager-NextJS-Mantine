@@ -189,7 +189,15 @@ export default function SessionHierarchy({
                                           </Accordion.Control>
                                           <Accordion.Panel>
                                             {dayData.sessions
-                                              .reverse()
+                                              .sort(
+                                                (a, b) =>
+                                                  new Date(
+                                                    a.start_time
+                                                  ).getTime() -
+                                                  new Date(
+                                                    b.start_time
+                                                  ).getTime()
+                                              )
                                               .map((session) => (
                                                 <SessionRow
                                                   key={session.id}
