@@ -119,6 +119,15 @@ export default function WorkCalendar() {
     return sortedProjects;
   }, [sessionsByDay, projects]);
 
+  function handleReferenceDateChange(date: Date) {
+    setReferenceDate(date);
+    setViewMode("day");
+    viewport.current?.scrollTo({
+      top: 8 * hourHeight,
+      behavior: "smooth",
+    });
+  }
+
   const hourHeight = 60; // px per hour
 
   useEffect(() => {
@@ -213,6 +222,7 @@ export default function WorkCalendar() {
           viewMode={viewMode}
           projects={projects}
           visibleProjects={visibleProjects}
+          setReferenceDate={handleReferenceDateChange}
         />
       </Stack>
     </ScrollArea>

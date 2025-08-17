@@ -10,6 +10,7 @@ import ColumnHeader from "./ColumnHeader";
 interface CalendarGridProps {
   days: CalendarDay[];
   viewMode: ViewMode;
+  setReferenceDate: (date: Date) => void;
   projects: { id: string; title: string }[];
   visibleProjects: {
     id: string;
@@ -21,11 +22,17 @@ interface CalendarGridProps {
     };
   }[];
 }
-
-const headerGrid = (days: CalendarDay[]) => {
+export default function CalendarGrid({
+  days,
+  viewMode,
+  setReferenceDate,
+  projects,
+  visibleProjects,
+}: CalendarGridProps) {
   return (
-    <Grid
-      columns={22}
+    <Stack h="100%" gap={10}>
+      <Grid
+      columns={440}
       gutter={0}
       align="flex-end"
       style={{
@@ -36,41 +43,28 @@ const headerGrid = (days: CalendarDay[]) => {
         borderBottom: "1px solid var(--mantine-color-gray-3)",
       }}
     >
-      <Grid.Col span={1}>
+      <Grid.Col span={20}>
        <ColumnHeader />
       </Grid.Col>
       {days.map((d) => {
         return (
           <Grid.Col
-            span={3}
+            span={Math.floor(420 / days.length)}
             key={`day-${getStartOfDay(d.day).toISOString().slice(0, 10)}`}
           >
-            <ColumnHeader day={d.day} />
+            <ColumnHeader day={d.day} setReferenceDate={setReferenceDate} />
           </Grid.Col>
         );
       })}
     </Grid>
-  );
-};
-
-export default function CalendarGrid({
-  days,
-  viewMode,
-  projects,
-  visibleProjects,
-}: CalendarGridProps) {
-  const header = headerGrid(days);
-  return (
-    <Stack h="100%" gap={0}>
-      {header}
-      <Grid columns={22} gutter={0} align="flex-end">
-        <Grid.Col span={1}>
+      <Grid columns={440} gutter={0} align="flex-end">
+        <Grid.Col span={20}>
           <TimeColumn hourHeight={60} />
         </Grid.Col>
         {days.map((d) => {
           return (
             <Grid.Col
-              span={3}
+              span={Math.floor(420 / days.length)}
               key={`day-${getStartOfDay(d.day).toISOString().slice(0, 10)}`}
             >
               <DayColumn
