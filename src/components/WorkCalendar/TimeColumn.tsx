@@ -3,14 +3,12 @@
 import { Box, Stack, Text } from "@mantine/core";
 
 interface TimeColumnProps {
-  headerHeight: number;
   hourHeight: number;
   startHour: number;
   endHour: number;
 }
 
 export function TimeColumn({
-  headerHeight,
   hourHeight,
   startHour,
   endHour,
@@ -20,16 +18,6 @@ export function TimeColumn({
   return (
     <Box style={{ width: 56, flex: "0 0 auto" }}>
       <Stack gap="xs">
-        <Box
-          style={{
-            height: headerHeight,
-            // borderBottom: "1px solid var(--mantine-color-gray-3)",
-            background: "var(--mantine-color-body)",
-            position: "sticky",
-            top: 0,
-            zIndex: 10,
-          }}
-        />
         <Box
           style={{
             position: "relative",

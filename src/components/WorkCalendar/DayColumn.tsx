@@ -2,19 +2,16 @@
 
 import { useState } from "react";
 
-import { Box, Stack, Text, HoverCard } from "@mantine/core";
+import { Box, Stack, Text } from "@mantine/core";
 import TimerSessionDrawer from "@/components/Work/Session/TimerSessionDrawer";
 
 import { Tables } from "@/types/db.types";
 import {
   CalendarSession,
-  clamp,
-  getProjectColor,
   getStartOfDay,
   getEndOfDay,
   mergeAdjacentSessionsForRender,
 } from "./calendarUtils";
-import { formatTimeSpan } from "@/utils/workHelperFunctions";
 import { ViewMode } from "@/types/workCalendar.types";
 import CalendarEvent from "./CalendarEvent/CalendarEvent";
 
@@ -22,18 +19,10 @@ interface DayColumnProps {
   day: Date;
   viewMode: ViewMode;
   items: Tables<"timer_session">[];
-  isFirst: boolean;
   hourHeight: number;
   startHour: number;
   endHour: number;
-  headerRef?: React.RefObject<HTMLDivElement>;
-  columnRef?: React.RefObject<HTMLDivElement>;
-  columnWidth: number;
   toY: (date: Date) => number;
-  getEarnedSalary: (
-    items: Tables<"timer_session">[],
-    unpaid: boolean
-  ) => number;
   projects: { id: string; title: string }[];
   visibleProjects: {
     id: string;
@@ -50,15 +39,10 @@ export function DayColumn({
   viewMode,
   day,
   items,
-  isFirst,
   hourHeight,
   startHour,
   endHour,
-  headerRef,
-  columnRef,
-  columnWidth,
   toY,
-  getEarnedSalary,
   projects,
   visibleProjects,
 }: DayColumnProps) {
@@ -104,7 +88,6 @@ export function DayColumn({
         <Stack
           pb="xs"
           align="center"
-          ref={isFirst ? headerRef : undefined}
           style={{
             position: "sticky",
             top: 60,
@@ -123,7 +106,6 @@ export function DayColumn({
         </Stack>
         {/* Main timeline area with a vertical rail, hourly dots and grid lines */}
         <Box
-          ref={isFirst ? columnRef : undefined}
           style={{
             position: "relative",
             height: hourHeight * (endHour - startHour),
@@ -153,18 +135,40 @@ export function DayColumn({
             />
           ))}
 
-          <CalendarEvent
-            itemsForRender={itemsForRender}
-            columnWidth={columnWidth}
-            hourHeight={hourHeight}
-            startHour={startHour}
-            endHour={endHour}
-            toY={toY}
-            visibleProjects={visibleProjects}
-            projects={projects}
-            handleSessionClick={handleSessionClick}
-            viewMode={viewMode}
-          />
+          {/* Bubble layout: assign a horizontal lane to avoid overlaps when many small sessions cluster */}
+          {(() => {
+            const laneHeights: number[] = [];
+            const bubbleHeight = 26;
+            const segmentWidth = 10;
+            const containerHeight = hourHeight * (endHour - startHour);
+            const chooseLane = (top: number) => {
+              for (let i = 0; i < laneHeights.length; i++) {
+                if (laneHeights[i] + 4 <= top) {
+                  return i;
+                }
+              }
+              laneHeights.push(0);
+              return laneHeights.length - 1;
+            };
+            return itemsForRender.map((s) => {
+              return (
+                <CalendarEvent
+                  key={s.id}
+                  s={s}
+                  toY={toY}
+                  visibleProjects={visibleProjects}
+                  projects={projects}
+                  handleSessionClick={handleSessionClick}
+                  viewMode={viewMode}
+                  segmentWidth={segmentWidth}
+                  bubbleHeight={bubbleHeight}
+                  containerHeight={containerHeight}
+                  chooseLane={chooseLane}
+                  laneHeights={laneHeights}
+                />
+              );
+            });
+          })()}
         </Box>
       </Stack>
       {drawerSession && (

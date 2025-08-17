@@ -27,9 +27,9 @@ import {
   addDays,
   clamp,
   getStartOfDay,
-  CalendarSession,
   getProjectColorByTimeRank,
 } from "./calendarUtils";
+import CalendarGrid from "./Calendar/CalendarGrid";
 
 export default function WorkCalendar() {
   // Controls whether we show a single day or a full week
@@ -38,27 +38,7 @@ export default function WorkCalendar() {
   const [referenceDate, setReferenceDate] = useState<Date>(new Date());
   const { projects: timerProjects, timerSessions, isFetching } = useWorkStore();
   const projects = timerProjects.map((project) => project.project);
-  // Measuring first header and first column allows aligning the sticky header
-  // and computing available space for bubble lanes
-  const firstHeaderRef = useRef<HTMLDivElement | null>(null);
   const viewport = useRef<HTMLDivElement>(null);
-  const [headerHeight, setHeaderHeight] = useState<number>(0);
-  const firstColumnContainerRef = useRef<HTMLDivElement | null>(null);
-  const [columnWidth, setColumnWidth] = useState<number>(0);
-
-  function getEarnedSalary(
-    sessions: Tables<"timer_session">[],
-    unpaid: boolean
-  ) {
-    // Sum the salary only for sessions that are paid/unpaid according to the flag
-    return sessions.reduce((sum, s) => {
-      const project = projects.find((p) => p.id === s.project_id);
-      if (project && project.hourly_payment && (unpaid ? !s.payed : s.payed)) {
-        return sum + (project.salary * s.active_seconds) / 3600;
-      }
-      return sum;
-    }, 0);
-  }
 
   const days: Date[] = useMemo(() => {
     if (viewMode === "day") return [getStartOfDay(referenceDate)];
@@ -147,64 +127,6 @@ export default function WorkCalendar() {
     return clamp(y, 0, (timelineEndHour - timelineStartHour) * hourHeight);
   };
 
-  function mergeAdjacentSessionsForRender(
-    items: CalendarSession[]
-  ): CalendarSession[] {
-    if (items.length === 0) return items;
-    const sorted = [...items].sort(
-      (a, b) =>
-        new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
-    );
-    const merged: CalendarSession[] = [];
-    for (const current of sorted) {
-      const prev = merged[merged.length - 1];
-      if (
-        prev &&
-        prev.project_id === current.project_id &&
-        (prev.memo || "") === (current.memo || "") &&
-        new Date(current.start_time).getTime() <=
-          new Date(prev.end_time).getTime()
-      ) {
-        // merge with previous
-        const durationPrev =
-          (new Date(prev.end_time).getTime() -
-            new Date(prev.start_time).getTime()) /
-          1000;
-        const durationCur =
-          (new Date(current.end_time).getTime() -
-            new Date(current.start_time).getTime()) /
-          1000;
-        merged[merged.length - 1] = {
-          ...prev,
-          id: `${prev.id}+${current.id}`,
-          end_time:
-            new Date(current.end_time).getTime() >
-            new Date(prev.end_time).getTime()
-              ? current.end_time
-              : prev.end_time,
-          active_seconds:
-            (prev.active_seconds || durationPrev) +
-            (current.active_seconds || durationCur),
-        };
-      } else {
-        merged.push({ ...current });
-      }
-    }
-    return merged;
-  }
-
-  useEffect(() => {
-    // Measure sticky header height and column width for lane layout
-    if (firstHeaderRef.current) {
-      const rect = firstHeaderRef.current.getBoundingClientRect();
-      setHeaderHeight(rect.height);
-    }
-    if (firstColumnContainerRef.current) {
-      const rect = firstColumnContainerRef.current.getBoundingClientRect();
-      setColumnWidth(rect.width);
-    }
-  }, [viewMode, referenceDate, firstHeaderRef]);
-
   useEffect(() => {
     if (viewport.current && !isFetching) {
       viewport.current.scrollTo({
@@ -216,33 +138,15 @@ export default function WorkCalendar() {
 
   const timeColumn = () => (
     <TimeColumn
-      headerHeight={headerHeight}
       hourHeight={hourHeight}
       startHour={timelineStartHour}
       endHour={timelineEndHour}
     />
   );
 
-  const dayColumn = (day: Date, isFirst: boolean) => {
+  const dayColumn = (day: Date) => {
     const key = getStartOfDay(day).toISOString().slice(0, 10);
     const items = sessionsByDay.get(key) ?? [];
-    const dayStart = getStartOfDay(day);
-    const dayEnd = addDays(dayStart, 1);
-    const clippedItems: CalendarSession[] = items.map((s) => {
-      const sStart = new Date(s.start_time);
-      const sEnd = new Date(s.end_time);
-      const start = sStart < dayStart ? dayStart : sStart;
-      const end = sEnd > dayEnd ? dayEnd : sEnd;
-      return {
-        id: s.id,
-        start_time: start.toISOString(),
-        end_time: end.toISOString(),
-        project_id: s.project_id,
-        memo: s.memo,
-        payed: s.payed,
-        active_seconds: s.active_seconds,
-      };
-    });
 
     return (
       <DayColumn
@@ -250,15 +154,10 @@ export default function WorkCalendar() {
         key={key}
         day={day}
         items={items}
-        isFirst={isFirst}
         hourHeight={hourHeight}
         startHour={timelineStartHour}
         endHour={timelineEndHour}
-        headerRef={firstHeaderRef as React.RefObject<HTMLDivElement>}
-        columnRef={firstColumnContainerRef as React.RefObject<HTMLDivElement>}
-        columnWidth={columnWidth}
         toY={toY}
-        getEarnedSalary={getEarnedSalary}
         projects={projects.map((p) => ({ id: p.id, title: p.title }))}
         visibleProjects={visibleProjects}
       />
@@ -343,17 +242,28 @@ export default function WorkCalendar() {
             </Group>
           </Grid.Col>
         </Grid>
-        <Group align="flex-start" wrap="nowrap" gap={0}>
-          {timeColumn()}
-          {days.map((d, idx) => (
-            <Box
+        {/* <CalendarGrid
+          days={days}
+          viewMode={viewMode}
+          items={timerSessions}
+          hourHeight={hourHeight}
+          timelineStartHour={timelineStartHour}
+          timelineEndHour={timelineEndHour}
+          toY={toY}
+          projects={projects}
+          visibleProjects={visibleProjects}
+        /> */}
+        <Grid columns={22} gutter={0}>
+          <Grid.Col span={1}>{timeColumn()}</Grid.Col>
+          {days.map((d) => (
+            <Grid.Col
+              span={3}
               key={`day-${getStartOfDay(d).toISOString().slice(0, 10)}`}
-              style={{ flex: 1, minWidth: 0 }}
             >
-              {dayColumn(d, idx === 0)}
-            </Box>
+              {dayColumn(d)}
+            </Grid.Col>
           ))}
-        </Group>
+        </Grid>
       </Stack>
     </ScrollArea>
   );

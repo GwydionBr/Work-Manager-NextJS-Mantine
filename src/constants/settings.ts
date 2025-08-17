@@ -3,7 +3,6 @@ import {
   RoundingAmount,
   RoundingDirection,
   FinanceInterval,
-  RoundingInTimeSections,
 } from "@/types/settings.types";
 
 export const currencies: { value: Currency; label: string }[] = [
