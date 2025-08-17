@@ -77,35 +77,7 @@ export default function CalendarEvent({
 
   return (
     <Box>
-      <Transition
-        mounted={opened}
-        transition="fade"
-        duration={200}
-        enterDelay={100}
-      >
-        {(styles) => (
-          <Card
-            shadow="md"
-            p="xl"
-            h={120}
-            style={{
-              position: "absolute",
-              maxWidth: 160,
-              right: 0,
-              top: bubbleTop,
-              zIndex: 1000,
-              ...styles,
-            }}
-          >
-            <Text>{projectTitle}</Text>
-            {s.memo && <Text>{s.memo}</Text>}
-            <Text>
-              {formatTimeSpan(new Date(s.start_time), new Date(s.end_time))}
-            </Text>
-          </Card>
-        )}
-      </Transition>
-      {/* Segment on the rail */}
+
       <Box
         ref={ref}
         onClick={() => handleSessionClick(s)}
