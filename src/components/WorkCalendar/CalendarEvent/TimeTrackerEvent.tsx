@@ -1,7 +1,8 @@
 "use client";
 
 import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
-import { Stack, Box, Text, Group } from "@mantine/core";
+import { TimerState } from "@/stores/timeTrackerStore";
+import { Stack, Box, Text, Group, Indicator } from "@mantine/core";
 
 interface TimeTrackerEventProps {
   toY: (date: Date) => number;
@@ -58,16 +59,17 @@ export default function TimeTrackerEvent({
 
   const top = toY(new Date(timer.startTime ?? 0));
   const bottom = toY(currentTime);
-  const height = Math.max(bottom - top, 4);
+  const realHeight = bottom - top;
+  const height = Math.max(realHeight, 4);
 
   return (
     <Box>
-      <Stack
+      <Box
+        h={Math.max(height, 20)}
         w="100%"
-        gap={1}
         style={{
           position: "absolute",
-          top: top,
+          top: bottom - Math.max(height, 18),
           left: 0,
           right: 0,
           zIndex: 10,
@@ -75,24 +77,37 @@ export default function TimeTrackerEvent({
             "light-dark(var(--mantine-color-white), var(--mantine-color-dark-9))",
         }}
       >
-        <Group justify="space-between" align="center" px="xs">
-          <Text size="xs" c={color ? color : "red"} ta="center" fw={600}>
-            {timer.activeTime}
-          </Text>
-        </Group>
-        {redLine}
-      </Stack>
+        <Stack
+          h={Math.max(height, 20)}
+          w="100%"
+          gap={0}
+          p={0}
+          justify="space-between"
+        >
+          <Group justify="center" align="center" px="xs">
+            <Indicator
+              size={10}
+              color={"var(--mantine-color-red-6)"}
+              processing={timer.state === TimerState.Running}
+            />
+            <Text size="xs" ta="center" fw={600}>
+              {timer.activeTime}
+            </Text>
+          </Group>
+          {redLine}
+        </Stack>
+      </Box>
       <Box
         style={{
           position: "absolute",
+          visibility: realHeight > 2 ? "visible" : "hidden",
           left: 0,
-          top,
+          top: top,
           width: 10,
           height,
-          borderRadius: 5,
           background: "var(--mantine-color-red-6)",
           border: `1px solid light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-0))`,
-          zIndex: 20,
+          zIndex: 10,
         }}
       />
     </Box>
