@@ -17,8 +17,7 @@ import {
 } from "@mantine/core";
 import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
 import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
-import { DayColumn } from "./DayColumn";
-import { TimeColumn } from "./TimeColumn";
+import CalendarGrid from "./Calendar/CalendarGrid";
 
 import { formatDate } from "@/utils/workHelperFunctions";
 import {
@@ -138,12 +137,12 @@ export default function WorkCalendar() {
           Work Calendar
         </Title>
         <Grid
+          h={60}
           columns={12}
           align="center"
           justify="center"
           w="100%"
           pt="xs"
-          pb="md"
           style={{
             position: "sticky",
             top: 0,
@@ -209,27 +208,12 @@ export default function WorkCalendar() {
             </Group>
           </Grid.Col>
         </Grid>
-        <Grid columns={22} gutter={0}>
-          <Grid.Col span={1}>
-            <TimeColumn hourHeight={hourHeight} />
-          </Grid.Col>
-          {calendarDays.map((d) => {
-            return (
-              <Grid.Col
-                span={3}
-                key={`day-${getStartOfDay(d.day).toISOString().slice(0, 10)}`}
-              >
-                <DayColumn
-                  viewMode={viewMode}
-                  day={d.day}
-                  sessions={d.sessions}
-                  projects={projects.map((p) => ({ id: p.id, title: p.title }))}
-                  visibleProjects={visibleProjects}
-                />
-              </Grid.Col>
-            );
-          })}
-        </Grid>
+        <CalendarGrid
+          days={calendarDays}
+          viewMode={viewMode}
+          projects={projects}
+          visibleProjects={visibleProjects}
+        />
       </Stack>
     </ScrollArea>
   );

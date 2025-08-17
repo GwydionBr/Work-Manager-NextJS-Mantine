@@ -87,26 +87,6 @@ export function DayColumn({
   return (
     <Box style={{ flex: 1, minWidth: 0 }} mb="md">
       <Stack gap="xs">
-        {/* Sticky header showing date and earned summary */}
-        <Stack
-          pb="xs"
-          align="center"
-          style={{
-            position: "sticky",
-            top: 60,
-            zIndex: 10,
-            background: "var(--mantine-color-body)",
-            borderBottom: "1px solid var(--mantine-color-gray-3)",
-          }}
-        >
-          <Text fw={600}>
-            {day.toLocaleDateString("en-US", {
-              weekday: "short",
-              day: "2-digit",
-              month: "short",
-            })}
-          </Text>
-        </Stack>
         {/* Main timeline area with a vertical rail, hourly dots and grid lines */}
         <Box
           style={{
