@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Box, Group, Stack, Text, HoverCard } from "@mantine/core";
+import { Box, Group, Stack, Text, HoverCard, Card } from "@mantine/core";
 import TimerSessionDrawer from "../Session/TimerSessionDrawer";
 
 import { Tables } from "@/types/db.types";
@@ -191,7 +191,9 @@ export function DayColumn({
               );
               const laneIndex = chooseLane(bubbleTop);
               const bubbleLeft =
-                railLeft + 12 + laneIndex * (viewMode === "week" ? 30 : laneWidth);
+                railLeft +
+                12 +
+                laneIndex * (viewMode === "week" ? 30 : laneWidth);
               laneHeights[laneIndex] = bubbleTop + bubbleHeight;
 
               const projectTitle =
@@ -199,7 +201,12 @@ export function DayColumn({
 
               return (
                 <Box key={s.id}>
-                  <HoverCard openDelay={100} closeDelay={100}>
+                  <HoverCard
+                    openDelay={100}
+                    closeDelay={100}
+                    position="right"
+                    shadow="md"
+                  >
                     <HoverCard.Target>
                       {/* Segment on the rail */}
                       <Box
