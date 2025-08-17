@@ -1,4 +1,4 @@
-import WorkCalendar from "@/components/Work/Calendar/WorkCalendar";
+import WorkCalendar from "@/components/WorkCalendar/WorkCalendar";
 
 export default function WorkCalendarPage() {
   return <WorkCalendar />;
