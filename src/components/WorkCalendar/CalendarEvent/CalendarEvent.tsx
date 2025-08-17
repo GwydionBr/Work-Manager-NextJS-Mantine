@@ -3,12 +3,11 @@
 import { useEffect, useState } from "react";
 import { useHover } from "@mantine/hooks";
 
-import { Box, Button, Card, Text, Transition } from "@mantine/core";
+import { Box, Text } from "@mantine/core";
 
 import { CalendarSession, clamp, getProjectColor } from "../calendarUtils";
 
 import { ViewMode } from "@/types/workCalendar.types";
-import { formatTimeSpan } from "@/utils/workHelperFunctions";
 
 interface CalendarEventProps {
   s: CalendarSession;
@@ -77,7 +76,6 @@ export default function CalendarEvent({
 
   return (
     <Box>
-
       <Box
         ref={ref}
         onClick={() => handleSessionClick(s)}
@@ -111,14 +109,14 @@ export default function CalendarEvent({
         />
         {/* Bubble itself (compact, ellipsized content) */}
         <Box
-          miw="80%"
-          maw={300}
+          mr={5}
           style={{
             position: "absolute",
             left: 16,
             top: bubbleTop,
             minHeight: bubbleHeight,
-            maxWidth: 160,
+            minWidth: viewMode === "day" ? "50%" : "70%",
+            maxWidth: 300,
             padding: "4px 6px",
             borderRadius: 8,
             background: "var(--mantine-color-body)",

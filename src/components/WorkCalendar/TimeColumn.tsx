@@ -24,7 +24,7 @@ export function TimeColumn({
             <Text
               key={i}
               size="xs"
-              c="dimmed"
+              c="light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-0))"
               style={{
                 position: "absolute",
                 top: i * hourHeight - 20,

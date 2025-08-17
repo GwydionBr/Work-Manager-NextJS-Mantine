@@ -93,7 +93,7 @@ export function DayColumn({
             position: "relative",
             height: hourHeight * 24,
             border:
-              "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-gray-6))",
+              "1px solid light-dark(var(--mantine-color-gray-6), var(--mantine-color-gray-6))",
             borderRadius: 0,
             background:
               "light-dark(var(--mantine-color-gray-0), var(--mantine-color-gray-9))",
@@ -111,7 +111,7 @@ export function DayColumn({
                 right: 0,
                 height: 1,
                 borderTop:
-                  "1px dashed light-dark(var(--mantine-color-gray-3), var(--mantine-color-gray-6))",
+                  "1px dashed light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-2))",
                 background: "none",
                 pointerEvents: "none",
               }}
