@@ -11,6 +11,7 @@ import {
   getStartOfDay,
   getEndOfDay,
   mergeAdjacentSessionsForRender,
+  clamp,
 } from "./calendarUtils";
 import { ViewMode } from "@/types/workCalendar.types";
 import CalendarEvent from "./CalendarEvent/CalendarEvent";
@@ -19,10 +20,8 @@ interface DayColumnProps {
   day: Date;
   viewMode: ViewMode;
   items: Tables<"timer_session">[];
-  hourHeight: number;
   startHour: number;
   endHour: number;
-  toY: (date: Date) => number;
   projects: { id: string; title: string }[];
   visibleProjects: {
     id: string;
@@ -39,10 +38,8 @@ export function DayColumn({
   viewMode,
   day,
   items,
-  hourHeight,
   startHour,
   endHour,
-  toY,
   projects,
   visibleProjects,
 }: DayColumnProps) {
@@ -79,6 +76,18 @@ export function DayColumn({
     if (!item) return;
     setDrawerSession(item);
     setDrawerOpened(true);
+  };
+
+  const hourHeight = 60; // px per hour
+  const timelineStartHour = 0;
+  const timelineEndHour = 24;
+
+  const toY = (date: Date) => {
+    // Convert a date to a Y-position within the day timeline
+    const minutes = date.getHours() * 60 + date.getMinutes();
+    const totalMinutes = (timelineEndHour - timelineStartHour) * 60;
+    const y = (minutes / totalMinutes) * (totalMinutes / 60) * hourHeight;
+    return clamp(y, 0, (timelineEndHour - timelineStartHour) * hourHeight);
   };
 
   return (

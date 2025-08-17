@@ -25,11 +25,9 @@ import { ViewMode } from "@/types/workCalendar.types";
 import { formatDate } from "@/utils/workHelperFunctions";
 import {
   addDays,
-  clamp,
   getStartOfDay,
   getProjectColorByTimeRank,
 } from "./calendarUtils";
-import CalendarGrid from "./Calendar/CalendarGrid";
 
 export default function WorkCalendar() {
   // Controls whether we show a single day or a full week
@@ -119,14 +117,6 @@ export default function WorkCalendar() {
   const timelineStartHour = 0;
   const timelineEndHour = 24;
 
-  const toY = (date: Date) => {
-    // Convert a date to a Y-position within the day timeline
-    const minutes = date.getHours() * 60 + date.getMinutes();
-    const totalMinutes = (timelineEndHour - timelineStartHour) * 60;
-    const y = (minutes / totalMinutes) * (totalMinutes / 60) * hourHeight;
-    return clamp(y, 0, (timelineEndHour - timelineStartHour) * hourHeight);
-  };
-
   useEffect(() => {
     if (viewport.current && !isFetching) {
       viewport.current.scrollTo({
@@ -135,34 +125,6 @@ export default function WorkCalendar() {
       });
     }
   }, [isFetching]);
-
-  const timeColumn = () => (
-    <TimeColumn
-      hourHeight={hourHeight}
-      startHour={timelineStartHour}
-      endHour={timelineEndHour}
-    />
-  );
-
-  const dayColumn = (day: Date) => {
-    const key = getStartOfDay(day).toISOString().slice(0, 10);
-    const items = sessionsByDay.get(key) ?? [];
-
-    return (
-      <DayColumn
-        viewMode={viewMode}
-        key={key}
-        day={day}
-        items={items}
-        hourHeight={hourHeight}
-        startHour={timelineStartHour}
-        endHour={timelineEndHour}
-        toY={toY}
-        projects={projects.map((p) => ({ id: p.id, title: p.title }))}
-        visibleProjects={visibleProjects}
-      />
-    );
-  };
 
   return (
     <ScrollArea offsetScrollbars viewportRef={viewport} h="100vh">
@@ -242,27 +204,35 @@ export default function WorkCalendar() {
             </Group>
           </Grid.Col>
         </Grid>
-        {/* <CalendarGrid
-          days={days}
-          viewMode={viewMode}
-          items={timerSessions}
-          hourHeight={hourHeight}
-          timelineStartHour={timelineStartHour}
-          timelineEndHour={timelineEndHour}
-          toY={toY}
-          projects={projects}
-          visibleProjects={visibleProjects}
-        /> */}
         <Grid columns={22} gutter={0}>
-          <Grid.Col span={1}>{timeColumn()}</Grid.Col>
-          {days.map((d) => (
-            <Grid.Col
-              span={3}
-              key={`day-${getStartOfDay(d).toISOString().slice(0, 10)}`}
-            >
-              {dayColumn(d)}
-            </Grid.Col>
-          ))}
+          <Grid.Col span={1}>
+            <TimeColumn
+              hourHeight={hourHeight}
+              startHour={timelineStartHour}
+              endHour={timelineEndHour}
+            />
+          </Grid.Col>
+          {days.map((d) => {
+            const key = getStartOfDay(d).toISOString().slice(0, 10);
+            const items = sessionsByDay.get(key) ?? [];
+            return (
+              <Grid.Col
+                span={3}
+                key={`day-${getStartOfDay(d).toISOString().slice(0, 10)}`}
+              >
+                <DayColumn
+                  viewMode={viewMode}
+                  key={key}
+                  day={d}
+                  items={items}
+                  startHour={timelineStartHour}
+                  endHour={timelineEndHour}
+                  projects={projects.map((p) => ({ id: p.id, title: p.title }))}
+                  visibleProjects={visibleProjects}
+                />
+              </Grid.Col>
+            );
+          })}
         </Grid>
       </Stack>
     </ScrollArea>

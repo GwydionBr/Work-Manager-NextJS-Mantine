@@ -14,7 +14,6 @@ interface CalendarGridProps {
   hourHeight: number;
   timelineStartHour: number;
   timelineEndHour: number;
-  toY: (date: Date) => number;
   projects: { id: string; title: string }[];
   visibleProjects: {
     id: string;
@@ -34,7 +33,6 @@ export default function CalendarGrid({
   hourHeight,
   timelineStartHour,
   timelineEndHour,
-  toY,
   projects,
   visibleProjects,
 }: CalendarGridProps) {
@@ -56,10 +54,8 @@ export default function CalendarGrid({
             viewMode={viewMode}
             day={d}
             items={items}
-            hourHeight={hourHeight}
             startHour={timelineStartHour}
             endHour={timelineEndHour}
-            toY={toY}
             projects={projects.map((p) => ({ id: p.id, title: p.title }))}
             visibleProjects={visibleProjects}
           />
