@@ -1,5 +1,3 @@
-
-
 import { Grid } from "@mantine/core";
 import { DayColumn } from "../DayColumn";
 import { ViewMode } from "@/types/workCalendar.types";
@@ -53,7 +51,7 @@ export default function CalendarGrid({
           <DayColumn
             viewMode={viewMode}
             day={d}
-            items={items}
+            sessions={items}
             startHour={timelineStartHour}
             endHour={timelineEndHour}
             projects={projects.map((p) => ({ id: p.id, title: p.title }))}

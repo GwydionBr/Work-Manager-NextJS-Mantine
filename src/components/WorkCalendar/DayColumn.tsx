@@ -19,9 +19,7 @@ import CalendarEvent from "./CalendarEvent/CalendarEvent";
 interface DayColumnProps {
   day: Date;
   viewMode: ViewMode;
-  items: Tables<"timer_session">[];
-  startHour: number;
-  endHour: number;
+  sessions: Tables<"timer_session">[];
   projects: { id: string; title: string }[];
   visibleProjects: {
     id: string;
@@ -37,9 +35,7 @@ interface DayColumnProps {
 export function DayColumn({
   viewMode,
   day,
-  items,
-  startHour,
-  endHour,
+  sessions,
   projects,
   visibleProjects,
 }: DayColumnProps) {
@@ -51,7 +47,7 @@ export function DayColumn({
   const dayStart = getStartOfDay(day);
   const dayEnd = getEndOfDay(day);
 
-  const clippedItems: CalendarSession[] = items.map((s) => {
+  const clippedItems: CalendarSession[] = sessions.map((s) => {
     const sStart = new Date(s.start_time);
     const sEnd = new Date(s.end_time);
     const start = sStart < dayStart ? dayStart : sStart;
@@ -71,7 +67,7 @@ export function DayColumn({
     mergeAdjacentSessionsForRender(clippedItems);
 
   const handleSessionClick = (session: CalendarSession) => {
-    const item = items.find((i) => i.id === session.id);
+    const item = sessions.find((i) => i.id === session.id);
     console.log(item);
     if (!item) return;
     setDrawerSession(item);
@@ -79,15 +75,13 @@ export function DayColumn({
   };
 
   const hourHeight = 60; // px per hour
-  const timelineStartHour = 0;
-  const timelineEndHour = 24;
 
   const toY = (date: Date) => {
     // Convert a date to a Y-position within the day timeline
     const minutes = date.getHours() * 60 + date.getMinutes();
-    const totalMinutes = (timelineEndHour - timelineStartHour) * 60;
+    const totalMinutes = 24 * 60;
     const y = (minutes / totalMinutes) * (totalMinutes / 60) * hourHeight;
-    return clamp(y, 0, (timelineEndHour - timelineStartHour) * hourHeight);
+    return clamp(y, 0, 24 * hourHeight);
   };
 
   return (
@@ -117,7 +111,7 @@ export function DayColumn({
         <Box
           style={{
             position: "relative",
-            height: hourHeight * (endHour - startHour),
+            height: hourHeight * 24,
             border:
               "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-gray-6))",
             borderRadius: 0,
@@ -127,9 +121,9 @@ export function DayColumn({
           }}
         >
           {/* Grid lines */}
-          {Array.from({ length: endHour - startHour + 1 }, (_, i) => (
+          {Array.from({ length: 25 }, (_, i) => (
             <Box
-              key={`line-${startHour + i}`}
+              key={`line-${i}`}
               style={{
                 position: "absolute",
                 top: i * hourHeight,
@@ -149,7 +143,7 @@ export function DayColumn({
             const laneHeights: number[] = [];
             const bubbleHeight = 26;
             const segmentWidth = 10;
-            const containerHeight = hourHeight * (endHour - startHour);
+            const containerHeight = hourHeight * 24;
             const chooseLane = (top: number) => {
               for (let i = 0; i < laneHeights.length; i++) {
                 if (laneHeights[i] + 4 <= top) {

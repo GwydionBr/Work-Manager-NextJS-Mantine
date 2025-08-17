@@ -20,8 +20,6 @@ import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
 import { DayColumn } from "./DayColumn";
 import { TimeColumn } from "./TimeColumn";
 
-import { Tables } from "@/types/db.types";
-import { ViewMode } from "@/types/workCalendar.types";
 import { formatDate } from "@/utils/workHelperFunctions";
 import {
   addDays,
@@ -29,10 +27,12 @@ import {
   getProjectColorByTimeRank,
 } from "./calendarUtils";
 
+import { Tables } from "@/types/db.types";
+import { ViewMode } from "@/types/workCalendar.types";
+import { CalendarDay } from "@/types/workCalendar.types";
+
 export default function WorkCalendar() {
-  // Controls whether we show a single day or a full week
   const [viewMode, setViewMode] = useState<ViewMode>("week");
-  // Anchor date (day or week) the calendar is based on
   const [referenceDate, setReferenceDate] = useState<Date>(new Date());
   const { projects: timerProjects, timerSessions, isFetching } = useWorkStore();
   const projects = timerProjects.map((project) => project.project);
@@ -72,6 +72,13 @@ export default function WorkCalendar() {
     });
     return map;
   }, [timerSessions, days]);
+
+  const calendarDays: CalendarDay[] = useMemo(() => {
+    return days.map((d) => ({
+      day: d,
+      sessions: sessionsByDay.get(d.toISOString().slice(0, 10)) ?? [],
+    }));
+  }, [days, sessionsByDay]);
 
   // Projects visible in the current view (based on sessions overlapping the visible days)
   const visibleProjects = useMemo(() => {
@@ -114,13 +121,11 @@ export default function WorkCalendar() {
   }, [sessionsByDay, projects]);
 
   const hourHeight = 60; // px per hour
-  const timelineStartHour = 0;
-  const timelineEndHour = 24;
 
   useEffect(() => {
     if (viewport.current && !isFetching) {
       viewport.current.scrollTo({
-        top: (8 - timelineStartHour) * hourHeight,
+        top: 8 * hourHeight,
         behavior: "smooth",
       });
     }
@@ -206,27 +211,18 @@ export default function WorkCalendar() {
         </Grid>
         <Grid columns={22} gutter={0}>
           <Grid.Col span={1}>
-            <TimeColumn
-              hourHeight={hourHeight}
-              startHour={timelineStartHour}
-              endHour={timelineEndHour}
-            />
+            <TimeColumn hourHeight={hourHeight} />
           </Grid.Col>
-          {days.map((d) => {
-            const key = getStartOfDay(d).toISOString().slice(0, 10);
-            const items = sessionsByDay.get(key) ?? [];
+          {calendarDays.map((d) => {
             return (
               <Grid.Col
                 span={3}
-                key={`day-${getStartOfDay(d).toISOString().slice(0, 10)}`}
+                key={`day-${getStartOfDay(d.day).toISOString().slice(0, 10)}`}
               >
                 <DayColumn
                   viewMode={viewMode}
-                  key={key}
-                  day={d}
-                  items={items}
-                  startHour={timelineStartHour}
-                  endHour={timelineEndHour}
+                  day={d.day}
+                  sessions={d.sessions}
                   projects={projects.map((p) => ({ id: p.id, title: p.title }))}
                   visibleProjects={visibleProjects}
                 />

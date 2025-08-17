@@ -4,14 +4,10 @@ import { Box, Stack, Text } from "@mantine/core";
 
 interface TimeColumnProps {
   hourHeight: number;
-  startHour: number;
-  endHour: number;
 }
 
 export function TimeColumn({
   hourHeight,
-  startHour,
-  endHour,
 }: TimeColumnProps) {
   // Left time gutter with sticky header spacer and absolute-positioned labels.
   // Labels are vertically centered on each hour grid line for easier scanning.
@@ -21,10 +17,10 @@ export function TimeColumn({
         <Box
           style={{
             position: "relative",
-            height: hourHeight * (endHour - startHour),
+            height: hourHeight * 24,
           }}
         >
-          {Array.from({ length: endHour - startHour + 1 }, (_, i) => (
+          {Array.from({ length: 24 }, (_, i) => (
             <Text
               key={i}
               size="xs"
@@ -38,7 +34,7 @@ export function TimeColumn({
                 paddingRight: 8,
               }}
             >
-              {String(i + startHour).padStart(2, "0")}:00
+              {String(i).padStart(2, "0")}:00
             </Text>
           ))}
         </Box>
