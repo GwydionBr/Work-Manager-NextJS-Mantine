@@ -121,8 +121,6 @@ export function DayColumn({
           {/* Bubble layout: assign a horizontal lane to avoid overlaps when many small sessions cluster */}
           {(() => {
             const laneHeights: number[] = [];
-            const bubbleHeight = 26;
-            const segmentWidth = 10;
             const containerHeight = hourHeight * 24;
             const chooseLane = (top: number) => {
               for (let i = 0; i < laneHeights.length; i++) {
@@ -143,8 +141,6 @@ export function DayColumn({
                   projects={projects}
                   handleSessionClick={handleSessionClick}
                   viewMode={viewMode}
-                  segmentWidth={segmentWidth}
-                  bubbleHeight={bubbleHeight}
                   containerHeight={containerHeight}
                   chooseLane={chooseLane}
                   laneHeights={laneHeights}

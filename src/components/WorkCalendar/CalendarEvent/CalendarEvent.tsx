@@ -1,5 +1,12 @@
-import { Box, Stack, Text, HoverCard } from "@mantine/core";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useHover } from "@mantine/hooks";
+
+import { Box, Button, Card, Text, Transition } from "@mantine/core";
+
 import { CalendarSession, clamp, getProjectColor } from "../calendarUtils";
+
 import { ViewMode } from "@/types/workCalendar.types";
 import { formatTimeSpan } from "@/utils/workHelperFunctions";
 
@@ -18,8 +25,6 @@ interface CalendarEventProps {
   projects: { id: string; title: string }[];
   handleSessionClick: (session: CalendarSession) => void;
   viewMode: ViewMode;
-  segmentWidth: number;
-  bubbleHeight: number;
   containerHeight: number;
   chooseLane: (top: number) => number;
   laneHeights: number[];
@@ -32,12 +37,23 @@ export default function CalendarEvent({
   projects,
   handleSessionClick,
   viewMode,
-  segmentWidth,
-  bubbleHeight,
   containerHeight,
   chooseLane,
   laneHeights,
 }: CalendarEventProps) {
+  const { hovered, ref } = useHover();
+  const { hovered: hovered2, ref: ref2 } = useHover();
+  const { hovered: hovered3, ref: ref3 } = useHover();
+  const [opened, setOpened] = useState(false);
+
+  useEffect(() => {
+    if (hovered || hovered2 || hovered3) {
+      setOpened(true);
+    } else {
+      setOpened(false);
+    }
+  }, [hovered, hovered2, hovered3]);
+
   const start = new Date(s.start_time);
   const end = new Date(s.end_time);
   const top = toY(start);
@@ -47,6 +63,7 @@ export default function CalendarEvent({
     visibleProjects.find((p) => p.id === String(s.project_id))?.colors ||
     getProjectColor(String(s.project_id));
   const centerY = top + height / 2;
+  const bubbleHeight = 26;
   const bubbleTop = clamp(
     Math.round(centerY - bubbleHeight / 2),
     0,
@@ -60,64 +77,70 @@ export default function CalendarEvent({
 
   return (
     <Box>
-      <HoverCard openDelay={100} closeDelay={100} position="right" shadow="md">
-        <HoverCard.Target>
-          {/* Segment on the rail */}
-          <Box
-            onClick={() => handleSessionClick(s)}
+      <Transition
+        mounted={opened}
+        transition="fade"
+        duration={200}
+        enterDelay={100}
+      >
+        {(styles) => (
+          <Card
+            shadow="md"
+            p="xl"
+            h={120}
             style={{
               position: "absolute",
-              left: 0,
-              top,
-              width: segmentWidth,
-              height,
-              borderRadius: 5,
-              background: colors.rail,
-              cursor: "pointer",
-              border: `1px solid ${colors.border}`,
+              maxWidth: 160,
+              right: 0,
+              top: bubbleTop,
+              zIndex: 1000,
+              ...styles,
             }}
-          />
-        </HoverCard.Target>
-        <HoverCard.Dropdown>
-          <Stack>
+          >
             <Text>{projectTitle}</Text>
             {s.memo && <Text>{s.memo}</Text>}
             <Text>
               {formatTimeSpan(new Date(s.start_time), new Date(s.end_time))}
             </Text>
-          </Stack>
-        </HoverCard.Dropdown>
-      </HoverCard>
-      {/* Pointer connecting bubble to the rail */}
+          </Card>
+        )}
+      </Transition>
+      {/* Segment on the rail */}
+      <Box
+        ref={ref}
+        onClick={() => handleSessionClick(s)}
+        style={{
+          position: "absolute",
+          left: 0,
+          top,
+          width: 10,
+          height,
+          borderRadius: 5,
+          background: colors.rail,
+          cursor: "pointer",
+          border: `1px solid ${colors.border}`,
+        }}
+      />
       <Box style={{ cursor: "pointer" }} onClick={() => handleSessionClick(s)}>
-        <HoverCard openDelay={100} closeDelay={100}>
-          <HoverCard.Target>
-            <Box
-              style={{
-                position: "absolute",
-                left: 13,
-                top: bubbleTop + Math.round(bubbleHeight / 2) - 5,
-                width: 10,
-                height: 10,
-                background: "var(--mantine-color-body)",
-                transform: "rotate(45deg)",
-                boxShadow: `-1px 1px 0 0 ${colors.border}`,
-                zIndex: 1,
-              }}
-            />
-          </HoverCard.Target>
-          <HoverCard.Dropdown>
-            <Stack>
-              <Text>{projectTitle}</Text>
-              {s.memo && <Text>{s.memo}</Text>}
-              <Text>
-                {formatTimeSpan(new Date(s.start_time), new Date(s.end_time))}
-              </Text>
-            </Stack>
-          </HoverCard.Dropdown>
-        </HoverCard>
+        {/* Pointer connecting bubble to the rail */}
+        <Box
+          ref={ref2}
+          style={{
+            position: "absolute",
+            left: 13,
+            top: bubbleTop + Math.round(bubbleHeight / 2) - 5,
+            width: 10,
+            height: 10,
+            background: "var(--mantine-color-body)",
+            transform: "rotate(45deg)",
+            boxShadow: `-1px 1px 0 0 ${colors.border}`,
+            zIndex: 1,
+          }}
+        />
         {/* Bubble itself (compact, ellipsized content) */}
         <Box
+          miw="80%"
+          maw={300}
           style={{
             position: "absolute",
             left: 16,
@@ -144,12 +167,12 @@ export default function CalendarEvent({
               flex: "0 0 auto",
             }}
           />
-          <Box style={{ minWidth: 0 }}>
+          <Box style={{ maxWidth: 400 }}>
             <Text
+              maw="100%"
               size="xs"
               fw={600}
               style={{
-                whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
               }}
@@ -157,15 +180,7 @@ export default function CalendarEvent({
               {projectTitle}
             </Text>
             {s.memo && (
-              <Text
-                size="xs"
-                c="dimmed"
-                style={{
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
+              <Text size="xs" c="dimmed">
                 {s.memo}
               </Text>
             )}
