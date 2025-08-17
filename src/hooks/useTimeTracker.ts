@@ -114,10 +114,13 @@ export function useTimeTracker(initialState: TimeTrackerState) {
   const modifyActiveSeconds = useCallback(
     (delta: number) => {
       const newActiveSeconds = Math.max(0, state.activeSeconds + delta);
+      const now = new Date().getTime();
+      const newStartTime = new Date(now - newActiveSeconds * 1000);
 
       if (state.state !== TimerState.Running) {
         setState((prev) => ({
           ...prev,
+          startTime: newStartTime.getTime(),
           storedActiveSeconds: newActiveSeconds,
           activeTime: secondsToTimerFormat(newActiveSeconds),
           activeSeconds: newActiveSeconds,
@@ -125,6 +128,7 @@ export function useTimeTracker(initialState: TimeTrackerState) {
       } else {
         setState((prev) => ({
           ...prev,
+          startTime: newStartTime.getTime(),
           activeSeconds: newActiveSeconds,
           activeTime: secondsToTimerFormat(newActiveSeconds),
           storedActiveSeconds: newActiveSeconds,
@@ -138,10 +142,15 @@ export function useTimeTracker(initialState: TimeTrackerState) {
   const modifyPausedSeconds = useCallback(
     (delta: number) => {
       const newPausedSeconds = Math.max(0, state.pausedSeconds + delta);
+      const now = new Date().getTime();
+      const newStartTime = new Date(
+        now - newPausedSeconds * 1000 - state.activeSeconds * 1000
+      );
 
       if (state.state !== TimerState.Paused) {
         setState((prev) => ({
           ...prev,
+          startTime: newStartTime.getTime(),
           storedPausedSeconds: newPausedSeconds,
           pausedTime: secondsToTimerFormat(newPausedSeconds),
           pausedSeconds: newPausedSeconds,
@@ -149,6 +158,7 @@ export function useTimeTracker(initialState: TimeTrackerState) {
       } else {
         setState((prev) => ({
           ...prev,
+          startTime: newStartTime.getTime(),
           pausedSeconds: newPausedSeconds,
           pausedTime: secondsToTimerFormat(newPausedSeconds),
           storedPausedSeconds: newPausedSeconds,
