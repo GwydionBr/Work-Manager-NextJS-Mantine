@@ -109,6 +109,7 @@ export default function TimeTrackerInstance({
     storedPausedSeconds: timer.storedPausedSeconds,
     timeSectionInterval: timeSectionInterval,
     roundInTimeSections: roundInTimeSections,
+    color: timer.color,
   });
 
   // Sync Hook state mit Store

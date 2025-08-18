@@ -49,7 +49,8 @@ export default function TimerManager({
     currency: Currency,
     salary: number,
     hourlyPayment: boolean,
-    userId: string
+    userId: string,
+    color: string | null
   ) => {
     const result = addTimer({
       projectId: projectId,
@@ -62,6 +63,7 @@ export default function TimerManager({
         roundingAmount,
         customRoundingAmount
       ),
+      color: color,
       roundingMode: roundingMode,
       state: TimerState.Stopped,
       activeSeconds: 0,
@@ -99,6 +101,7 @@ export default function TimerManager({
           roundingAmount,
           customRoundingAmount
         ),
+        color: activeProject.project.color,
         roundingMode: roundingMode,
         state: TimerState.Stopped,
         activeSeconds: 0,
@@ -180,7 +183,8 @@ export default function TimerManager({
             activeProject.project.currency,
             activeProject.project.salary,
             activeProject.project.hourly_payment,
-            activeProject.project.user_id
+            activeProject.project.user_id,
+            activeProject.project.color
           );
         }}
       />

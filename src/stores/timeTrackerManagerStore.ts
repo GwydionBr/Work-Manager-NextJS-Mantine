@@ -26,6 +26,7 @@ export interface TimerData {
   roundedActiveTime: string;
   pausedTime: string;
   forceEndTimer: boolean;
+  color: string | null;
 }
 
 interface TimeTrackerManagerState {

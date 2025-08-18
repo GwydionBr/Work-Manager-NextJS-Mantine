@@ -22,6 +22,7 @@ interface TimeTrackerState {
   salary: number;
   hourlyPayment: boolean;
   userId: string;
+  color: string | null;
   roundingInterval: number;
   roundingMode: RoundingDirection;
   timeSectionInterval: number;
@@ -180,7 +181,8 @@ export function useTimeTracker(initialState: TimeTrackerState) {
       currency: Currency,
       salary: number,
       hourlyPayment: boolean,
-      userId: string
+      userId: string,
+      color: string | null
     ) => {
       if (state.state !== TimerState.Stopped) return;
 
@@ -192,6 +194,7 @@ export function useTimeTracker(initialState: TimeTrackerState) {
         salary,
         hourlyPayment,
         userId,
+        color,
       }));
     },
     [state.state]
