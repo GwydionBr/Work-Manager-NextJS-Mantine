@@ -8,29 +8,15 @@ interface TimeTrackerEventProps {
   toY: (date: Date) => number;
   currentTime: Date;
   color: string;
-  visibleProjects: {
-    id: string;
-    title: string;
-    colors: {
-      rail: string;
-      border: string;
-      fill: string;
-    };
-  }[];
 }
 
 export default function TimeTrackerEvent({
   toY,
   currentTime,
-  visibleProjects,
+  color,
 }: TimeTrackerEventProps) {
   const { isTimerRunning, getRunningTimer } = useTimeTrackerManager();
   const timer = getRunningTimer();
-
-  const color = visibleProjects.find((p) => p.id === String(timer?.projectId))
-    ?.colors.rail;
-
-  const redLine = <Box w="100%" h={2} bg={color} style={{ zIndex: 11 }} />;
 
   if (!isTimerRunning || !timer) {
     return (
@@ -42,11 +28,11 @@ export default function TimeTrackerEvent({
           left: 0,
           right: 0,
           height: 2,
-          background: color ? color : "var(--mantine-color-red-6)",
+          background: "var(--mantine-color-red-6)",
           zIndex: 10,
         }}
       >
-        {redLine}
+        <Box w="100%" h={2} bg={"var(--mantine-color-red-6)"} style={{ zIndex: 11 }} />
         <Text size="xs" c="red" ta="center" fw={600}>
           {currentTime.toLocaleTimeString("en-US", {
             hour: "2-digit",

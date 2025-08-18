@@ -12,29 +12,15 @@ import {
   isToday,
 } from "@/components/WorkCalendar/calendarUtils";
 
-import { CalendarDay, ViewMode } from "@/types/workCalendar.types";
+import { CalendarDay } from "@/types/workCalendar.types";
 
 interface CalendarGridProps {
   days: CalendarDay[];
-  viewMode: ViewMode;
   setReferenceDate: (date: Date) => void;
-  projects: { id: string; title: string }[];
-  visibleProjects: {
-    id: string;
-    title: string;
-    colors: {
-      rail: string;
-      border: string;
-      fill: string;
-    };
-  }[];
 }
 export default function CalendarGrid({
   days,
-  viewMode,
   setReferenceDate,
-  projects,
-  visibleProjects,
 }: CalendarGridProps) {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
@@ -84,12 +70,9 @@ export default function CalendarGrid({
                 key={`day-${getStartOfDay(d.day).toISOString().slice(0, 10)}`}
               >
                 <DayColumn
-                  viewMode={viewMode}
                   day={d.day}
                   currentTime={isToday(d.day) ? currentTime : undefined}
                   sessions={d.sessions}
-                  projects={projects.map((p) => ({ id: p.id, title: p.title }))}
-                  visibleProjects={visibleProjects}
                 />
               </Grid.Col>
             );

@@ -27,7 +27,7 @@ import {
 } from "./calendarUtils";
 
 import { Tables } from "@/types/db.types";
-import { ViewMode } from "@/types/workCalendar.types";
+import { CalendarSession, ViewMode } from "@/types/workCalendar.types";
 import { CalendarDay } from "@/types/workCalendar.types";
 
 export default function WorkCalendar() {
@@ -51,7 +51,7 @@ export default function WorkCalendar() {
 
   const sessionsByDay = useMemo(() => {
     // Bucket raw sessions by day key so we can render a column per day
-    const map = new Map<string, Tables<"timer_session">[]>();
+    const map = new Map<string, CalendarSession[]>();
     days.forEach((d) => {
       map.set(d.toISOString().slice(0, 10), []);
     });
@@ -65,7 +65,11 @@ export default function WorkCalendar() {
         const overlaps = start < dayEnd && end > dayStart;
         if (overlaps) {
           const key = dayStart.toISOString().slice(0, 10);
-          map.get(key)?.push(s);
+          map.get(key)?.push({
+            ...s,
+            projectTitle: projects.find((p) => p.id === s.project_id)?.title ?? "",
+            color: getProjectColorByTimeRank(0), // TODO: fix this
+          });
         }
       });
     });
@@ -186,8 +190,8 @@ export default function WorkCalendar() {
                           width: 10,
                           height: 10,
                           borderRadius: 10,
-                          background: p.colors.rail,
-                          boxShadow: `0 0 0 1px ${p.colors.border}`,
+                          background: p.colors,
+                          boxShadow: `0 0 0 1px ${p.colors}`,
                         }}
                       />
                       <Text size="xs">{p.title}</Text>
@@ -219,9 +223,6 @@ export default function WorkCalendar() {
         </Grid>
         <CalendarGrid
           days={calendarDays}
-          viewMode={viewMode}
-          projects={projects}
-          visibleProjects={visibleProjects}
           setReferenceDate={handleReferenceDateChange}
         />
       </Stack>

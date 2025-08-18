@@ -95,11 +95,7 @@ export function getProjectColor(projectId: string | null): {
 // - Projects with most time get primary colors
 // - Projects with less time get secondary/tertiary colors
 // - Ensures consistent color assignment based on time ranking
-export function getProjectColorByTimeRank(rank: number): {
-  rail: string;
-  border: string;
-  fill: string;
-} {
+export function getProjectColorByTimeRank(rank: number): string {
   // Primary colors for top projects (most time)
   const primaryColors = [
     { name: "indigo", rail: "6", border: "7", fill: "1" },
@@ -142,11 +138,7 @@ export function getProjectColorByTimeRank(rank: number): {
     colorConfig = tertiaryColors[tertiaryIndex];
   }
 
-  return {
-    rail: `var(--mantine-color-${colorConfig.name}-${colorConfig.rail})`,
-    border: `var(--mantine-color-${colorConfig.name}-${colorConfig.border})`,
-    fill: `var(--mantine-color-${colorConfig.name}-${colorConfig.fill})`,
-  };
+  return `var(--mantine-color-${colorConfig.name}-6)`;
 }
 
 // Merge sessions that touch or overlap while having the same project and memo.

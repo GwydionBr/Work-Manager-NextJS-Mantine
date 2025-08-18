@@ -4,7 +4,7 @@ export type ViewMode = "day" | "week";
 
 export type CalendarDay = {
   day: Date;
-  sessions: Tables<"timer_session">[];
+  sessions: CalendarSession[];
 };
 
 export type CalendarSession = Pick<
@@ -18,4 +18,5 @@ export type CalendarSession = Pick<
   | "active_seconds"
 > & {
   projectTitle: string;
+  color: string;
 };
