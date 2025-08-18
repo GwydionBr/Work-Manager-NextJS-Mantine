@@ -198,6 +198,7 @@ export default function SessionHierarchy({
                                                     b.start_time
                                                   ).getTime()
                                               )
+                                              .reverse()
                                               .map((session) => (
                                                 <SessionRow
                                                   key={session.id}
