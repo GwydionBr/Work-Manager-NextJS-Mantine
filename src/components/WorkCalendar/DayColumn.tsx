@@ -106,7 +106,6 @@ export function DayColumn({
           <TimeTrackerEvent
             toY={toY}
             currentTime={currentTime}
-            color={"var(--mantine-color-red-6)"}
             day={day}
           />
 

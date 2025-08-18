@@ -1,26 +1,26 @@
 "use client";
 
 import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
-import { TimerState } from "@/stores/timeTrackerStore";
-import { Stack, Box, Text, Group, Indicator } from "@mantine/core";
+import { alpha, Stack, Text } from "@mantine/core";
 import { isYesterday } from "date-fns";
 import ActiveTimeTracker from "./ActiveTimeTracker";
 
 interface TimeTrackerEventProps {
   toY: (date: Date) => number;
   currentTime?: Date;
-  color: string;
   day: Date;
 }
 
 export default function TimeTrackerEvent({
   toY,
   currentTime,
-  color,
   day,
 }: TimeTrackerEventProps) {
   const { isTimerRunning, getRunningTimer } = useTimeTrackerManager();
   const timer = getRunningTimer();
+
+  const color = "var(--mantine-color-red-6)";
+  const backgroundColor = alpha(color, 0.10);
 
   if (!currentTime) {
     if (isYesterday(day) && isTimerRunning && timer) {
@@ -36,12 +36,13 @@ export default function TimeTrackerEvent({
 
         return (
           <ActiveTimeTracker
-            toY={toY}
             realHeight={height}
             height={height}
             top={top}
             bottom={bottom}
             timer={timer}
+            color={color}
+            backgroundColor={backgroundColor}
           />
         );
       }
@@ -81,12 +82,13 @@ export default function TimeTrackerEvent({
 
   return (
     <ActiveTimeTracker
-      toY={toY}
       realHeight={realHeight}
       height={height}
       top={top}
       bottom={bottom}
       timer={timer}
+      color={color}
+      backgroundColor={backgroundColor}
     />
   );
 }

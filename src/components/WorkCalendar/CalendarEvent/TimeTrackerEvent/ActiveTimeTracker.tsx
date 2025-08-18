@@ -3,21 +3,23 @@ import { TimerState } from "@/stores/timeTrackerStore";
 import { TimerData } from "@/stores/timeTrackerManagerStore";
 
 interface ActiveTimeTrackerProps {
-  toY: (date: Date) => number;
   realHeight: number;
   height: number;
   top: number;
   bottom: number;
   timer: TimerData;
+  color: string;
+  backgroundColor: string;
 }
 
 export default function ActiveTimeTracker({
-  toY,
   realHeight,
   height,
   top,
   bottom,
   timer,
+  color,
+  backgroundColor,
 }: ActiveTimeTrackerProps) {
   return (
     <Box>
@@ -39,17 +41,18 @@ export default function ActiveTimeTracker({
           w="100%"
           gap={0}
           p={0}
+          bg={backgroundColor}
           justify="space-between"
           style={{
-            border: "1px solid red",
-            borderBottom: "2px solid red",
+            border: `1px solid ${color}`,
+            borderBottom: `3px solid red`,
             borderRadius: 5,
           }}
         >
           <Group justify="center" align="center" px="xs">
             <Indicator
               size={10}
-              color={"var(--mantine-color-red-6)"}
+              color="red"
               processing={timer.state === TimerState.Running}
             />
             <Text size="xs" ta="center" fw={600}>
@@ -66,7 +69,7 @@ export default function ActiveTimeTracker({
           top: top,
           width: 6,
           height: realHeight,
-          background: "var(--mantine-color-red-6)",
+          background: color,
           borderRadius: 5,
           zIndex: 10,
         }}
