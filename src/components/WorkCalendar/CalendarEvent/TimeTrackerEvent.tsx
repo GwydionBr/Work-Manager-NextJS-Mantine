@@ -32,8 +32,19 @@ export default function TimeTrackerEvent({
           zIndex: 10,
         }}
       >
-        <Box w="100%" h={2} bg={"var(--mantine-color-red-6)"} style={{ zIndex: 11 }} />
-        <Text size="xs" c="red" ta="center" fw={600}>
+        <Box
+          w="100%"
+          h={2}
+          bg={"var(--mantine-color-red-6)"}
+          style={{ zIndex: 11 }}
+        />
+        <Text
+          size="xs"
+          c="red"
+          ta="center"
+          fw={600}
+          bg="light-dark(var(--mantine-color-white), var(--mantine-color-dark-7))"
+        >
           {currentTime.toLocaleTimeString("en-US", {
             hour: "2-digit",
             minute: "2-digit",
