@@ -7,10 +7,11 @@ import {
   getEndOfDay,
   clamp,
   mergeAdjacentSessionsForRender,
+  isToday,
 } from "./calendarUtils";
 import { CalendarSession } from "@/types/workCalendar.types";
 import CalendarEvent from "./CalendarEvent/CalendarEvent";
-import TimeTrackerEvent from "./CalendarEvent/TimeTrackerEvent";
+import TimeTrackerEvent from "./CalendarEvent/TimeTrackerEvent/TimeTrackerEvent";
 
 interface DayColumnProps {
   day: Date;
@@ -102,13 +103,12 @@ export function DayColumn({
           )}
 
           {/* Current time indicator - red line for today */}
-          {currentTime && (
-            <TimeTrackerEvent
-              toY={toY}
-              currentTime={currentTime}
-              color={"var(--mantine-color-red-6)"}
-            />
-          )}
+          <TimeTrackerEvent
+            toY={toY}
+            currentTime={currentTime}
+            color={"var(--mantine-color-red-6)"}
+            day={day}
+          />
 
           {/* Bubble layout: assign a horizontal lane to avoid overlaps when many small sessions cluster */}
           {(() => {
