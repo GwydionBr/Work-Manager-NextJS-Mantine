@@ -74,7 +74,7 @@ export default function WorkCalendar() {
           map.get(key)?.push({
             ...s,
             projectTitle: project?.title ?? "",
-            color: project?.color ?? "var(--mantine-color-gray-6)",
+            color: project?.color ?? "var(--mantine-color-teal-6)",
           });
         }
       });
@@ -104,7 +104,7 @@ export default function WorkCalendar() {
         return {
           id,
           title: p.title,
-          color: p.color ?? "var(--mantine-color-gray-6)",
+          color: p.color ?? "var(--mantine-color-teal-6)",
         };
       })
       .filter((p) => p !== undefined);
@@ -189,6 +189,7 @@ export default function WorkCalendar() {
                     >
                       <Popover.Target>
                         <Button
+                          c="light-dark(var(--mantine-color-black), var(--mantine-color-white))"
                           variant="subtle"
                           size="xs"
                           leftSection={
