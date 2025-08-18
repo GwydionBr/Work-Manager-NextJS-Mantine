@@ -28,6 +28,7 @@ export default function ColumnHeader({
         cursor: day ? "pointer" : "default",
         border: day ? "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))" : "none",
         backgroundColor: hovered && day ? "light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))" : "transparent",
+        borderRadius: 6,
       }}
     >
       <Text fw={600}>

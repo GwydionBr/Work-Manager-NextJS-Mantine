@@ -9,11 +9,9 @@ interface TimeColumnProps {
 export function TimeColumn({
   hourHeight,
 }: TimeColumnProps) {
-  // Left time gutter with sticky header spacer and absolute-positioned labels.
-  // Labels are vertically centered on each hour grid line for easier scanning.
   return (
     <Box w={56} style={{ flex: "0 0 auto" }} >
-      <Stack gap="xs">
+      <Stack gap="xs" >
         <Box
           style={{
             position: "relative",
@@ -27,8 +25,8 @@ export function TimeColumn({
               c="light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-0))"
               style={{
                 position: "absolute",
-                top: i * hourHeight - 20,
-                left: 0,
+                top: i * hourHeight - 4,
+                left: 2,
                 width: "100%",
                 textAlign: "right",
                 paddingRight: 8,

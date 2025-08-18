@@ -11,7 +11,6 @@ import {
   getEndOfDay,
   mergeAdjacentSessionsForRender,
   clamp,
-  getProjectColor,
 } from "./calendarUtils";
 import { CalendarSession, ViewMode } from "@/types/workCalendar.types";
 import CalendarEvent from "./CalendarEvent/CalendarEvent";

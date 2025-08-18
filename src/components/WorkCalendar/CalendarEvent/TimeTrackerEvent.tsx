@@ -30,7 +30,7 @@ export default function TimeTrackerEvent({
   const color = visibleProjects.find((p) => p.id === String(timer?.projectId))
     ?.colors.rail;
 
-  const redLine = <Box w="100%" h={2} bg={color} />;
+  const redLine = <Box w="100%" h={2} bg={color} style={{ zIndex: 11 }} />;
 
   if (!isTimerRunning || !timer) {
     return (
@@ -83,6 +83,7 @@ export default function TimeTrackerEvent({
           gap={0}
           p={0}
           justify="space-between"
+          style={{ border: "1px solid red", borderBottom: "2px solid red" }}
         >
           <Group justify="center" align="center" px="xs">
             <Indicator
@@ -94,7 +95,6 @@ export default function TimeTrackerEvent({
               {timer.activeTime}
             </Text>
           </Group>
-          {redLine}
         </Stack>
       </Box>
       <Box

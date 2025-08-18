@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
 
-import { Grid, Stack } from "@mantine/core";
+import { Grid, Stack, Group } from "@mantine/core";
 import { DayColumn } from "@/components/WorkCalendar/DayColumn";
 import { TimeColumn } from "@/components/WorkCalendar/TimeColumn";
 import ColumnHeader from "@/components/WorkCalendar/Calendar/ColumnHeader";
@@ -48,55 +47,55 @@ export default function CalendarGrid({
   }, []);
 
   return (
-    <Stack h="100%" gap={10}>
-      <Grid
-        columns={440}
-        gutter={0}
-        align="flex-end"
-        style={{
-          position: "sticky",
-          top: 60,
-          zIndex: 10,
-          background: "var(--mantine-color-body)",
-          borderBottom: "1px solid var(--mantine-color-gray-3)",
-        }}
-      >
-        <Grid.Col span={20}>
-          <ColumnHeader />
-        </Grid.Col>
-        {days.map((d) => {
-          return (
-            <Grid.Col
-              span={Math.floor(420 / days.length)}
-              key={`day-${getStartOfDay(d.day).toISOString().slice(0, 10)}`}
-            >
-              <ColumnHeader day={d.day} setReferenceDate={setReferenceDate} />
-            </Grid.Col>
-          );
-        })}
-      </Grid>
-      <Grid columns={440} gutter={0} align="flex-end">
-        <Grid.Col span={20}>
-          <TimeColumn hourHeight={60} />
-        </Grid.Col>
-        {days.map((d) => {
-          return (
-            <Grid.Col
-              span={Math.floor(420 / days.length)}
-              key={`day-${getStartOfDay(d.day).toISOString().slice(0, 10)}`}
-            >
-              <DayColumn
-                viewMode={viewMode}
-                day={d.day}
-                currentTime={isToday(d.day) ? currentTime : undefined}
-                sessions={d.sessions}
-                projects={projects.map((p) => ({ id: p.id, title: p.title }))}
-                visibleProjects={visibleProjects}
-              />
-            </Grid.Col>
-          );
-        })}
-      </Grid>
-    </Stack>
+    <Group h="100%" gap={0} wrap="nowrap">
+      <Stack w={56} align="flex-end" >
+        <ColumnHeader />
+        <TimeColumn hourHeight={60} />
+      </Stack>
+      <Stack h="100%" gap={10} w="100%">
+        <Grid
+          columns={420}
+          gutter={0}
+          align="flex-end"
+          style={{
+            position: "sticky",
+            top: 60,
+            zIndex: 10,
+            background: "var(--mantine-color-body)",
+            borderBottom: "1px solid var(--mantine-color-gray-3)",
+          }}
+        >
+          {days.map((d) => {
+            return (
+              <Grid.Col
+                span={Math.floor(420 / days.length)}
+                key={`day-${getStartOfDay(d.day).toISOString().slice(0, 10)}`}
+              >
+                <ColumnHeader day={d.day} setReferenceDate={setReferenceDate} />
+              </Grid.Col>
+            );
+          })}
+        </Grid>
+        <Grid columns={420} gutter={0} align="flex-end">
+          {days.map((d) => {
+            return (
+              <Grid.Col
+                span={Math.floor(420 / days.length)}
+                key={`day-${getStartOfDay(d.day).toISOString().slice(0, 10)}`}
+              >
+                <DayColumn
+                  viewMode={viewMode}
+                  day={d.day}
+                  currentTime={isToday(d.day) ? currentTime : undefined}
+                  sessions={d.sessions}
+                  projects={projects.map((p) => ({ id: p.id, title: p.title }))}
+                  visibleProjects={visibleProjects}
+                />
+              </Grid.Col>
+            );
+          })}
+        </Grid>
+      </Stack>
+    </Group>
   );
 }

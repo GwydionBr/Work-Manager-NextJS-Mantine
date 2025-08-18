@@ -84,7 +84,7 @@ export default function CalendarEvent({
           top,
           width: 10,
           height,
-          borderRadius: 5,
+          borderRadius: 3,
           background: colors.rail,
           cursor: "pointer",
           border: `1px solid light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-0))`,
@@ -125,17 +125,6 @@ export default function CalendarEvent({
             gap: 8,
           }}
         >
-          {/* <Box
-            style={{
-              width: 8,
-              height: 8,
-              zIndex: 2,
-              borderRadius: 8,
-              background: colors.rail,
-              boxShadow: `0 0 0 1px ${colors.border}`,
-              flex: "0 0 auto",
-            }}
-          /> */}
           <Box style={{ maxWidth: 400 }}>
             <Text size="xs" >
               {formatTimeSpan(start, end)}
