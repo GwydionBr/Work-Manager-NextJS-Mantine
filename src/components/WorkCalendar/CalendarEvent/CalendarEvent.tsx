@@ -25,6 +25,7 @@ export default function CalendarEvent({
   const top = toY(start);
   const bottom = toY(end);
   const height = bottom - top;
+  const backgroundColor = alpha(color, 0.15);
 
   return (
     <Card
@@ -33,7 +34,7 @@ export default function CalendarEvent({
       withBorder
       w="100%"
       h={Math.max(height, 4)}
-      bg="var(--mantine-color-body)"
+      bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-9))"
       style={{
         position: "absolute",
         left: 0,
@@ -44,7 +45,7 @@ export default function CalendarEvent({
       }}
       onClick={() => handleSessionClick(s.id)}
     >
-      <Stack h="100%" pl={6} pt={4} gap={0}>
+      <Stack h="100%" pl={6} pt={4} gap={0} bg={backgroundColor}>
         <Text size="xs">{formatTime(s.active_seconds)}</Text>
         {s.memo && (
           <Text size="xs" c="dimmed">

@@ -18,11 +18,13 @@ interface CalendarGridProps {
   days: CalendarDay[];
   setReferenceDate: (date: Date) => void;
   handleSessionClick: (sessionId: string) => void;
+  isFetching: boolean;
 }
 export default function CalendarGrid({
   days,
   setReferenceDate,
   handleSessionClick,
+  isFetching,
 }: CalendarGridProps) {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
@@ -73,6 +75,7 @@ export default function CalendarGrid({
               >
                 <DayColumn
                   day={d.day}
+                  isFetching={isFetching}
                   currentTime={isToday(d.day) ? currentTime : undefined}
                   sessions={d.sessions}
                   handleSessionClick={handleSessionClick}

@@ -271,6 +271,7 @@ export default function WorkCalendar() {
           </Grid.Col>
         </Grid>
         <CalendarGrid
+          isFetching={isFetching}
           days={calendarDays}
           setReferenceDate={handleReferenceDateChange}
           handleSessionClick={handleSessionClick}
