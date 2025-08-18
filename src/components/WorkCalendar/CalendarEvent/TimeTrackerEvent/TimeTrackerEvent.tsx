@@ -40,6 +40,7 @@ export default function TimeTrackerEvent({
             realHeight={height}
             height={height}
             top={top}
+            bottom={bottom}
             timer={timer}
           />
         );
@@ -76,7 +77,7 @@ export default function TimeTrackerEvent({
   const top = toY(new Date(timer.startTime ?? 0));
   const bottom = toY(currentTime);
   const realHeight = bottom - top;
-  const height = Math.max(realHeight, 4);
+  const height = Math.max(realHeight, 20);
 
   return (
     <ActiveTimeTracker
@@ -84,6 +85,7 @@ export default function TimeTrackerEvent({
       realHeight={realHeight}
       height={height}
       top={top}
+      bottom={bottom}
       timer={timer}
     />
   );

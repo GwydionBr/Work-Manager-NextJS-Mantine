@@ -7,6 +7,7 @@ interface ActiveTimeTrackerProps {
   realHeight: number;
   height: number;
   top: number;
+  bottom: number;
   timer: TimerData;
 }
 
@@ -15,16 +16,17 @@ export default function ActiveTimeTracker({
   realHeight,
   height,
   top,
+  bottom,
   timer,
 }: ActiveTimeTrackerProps) {
   return (
     <Box>
       <Box
-        h={Math.max(height, 20)}
+        h={height}
         w="100%"
         style={{
           position: "absolute",
-          top: top,
+          top: bottom - height,
           left: 0,
           right: 0,
           zIndex: 10,
@@ -33,14 +35,14 @@ export default function ActiveTimeTracker({
         }}
       >
         <Stack
-          h={Math.max(height, 20)}
+          h={height}
           w="100%"
           gap={0}
           p={0}
           justify="space-between"
           style={{
             border: "1px solid red",
-            borderTop: "2px solid red",
+            borderBottom: "2px solid red",
             borderRadius: 5,
           }}
         >
@@ -63,7 +65,7 @@ export default function ActiveTimeTracker({
           left: 0,
           top: top,
           width: 6,
-          height,
+          height: realHeight,
           background: "var(--mantine-color-red-6)",
           borderRadius: 5,
           zIndex: 10,
