@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 
 import {
@@ -22,17 +23,22 @@ import {
 import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
 import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
 import CalendarGrid from "./Calendar/CalendarGrid";
+import TimerSessionDrawer from "@/components/Work/Session/TimerSessionDrawer";
 
 import { formatDate } from "@/utils/workHelperFunctions";
 import { addDays, getStartOfDay } from "./calendarUtils";
 
 import { CalendarSession, ViewMode } from "@/types/workCalendar.types";
 import { CalendarDay } from "@/types/workCalendar.types";
+import { Tables } from "@/types/db.types";
 
 export default function WorkCalendar() {
   const [viewMode, setViewMode] = useState<ViewMode>("week");
   const [referenceDate, setReferenceDate] = useState<Date>(new Date());
+  const [selectedSession, setSelectedSession] =
+    useState<Tables<"timer_session"> | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>("#000000");
+  const [drawerOpened, { open, close }] = useDisclosure(false);
   const {
     projects: timerProjects,
     timerSessions,
@@ -123,10 +129,19 @@ export default function WorkCalendar() {
     });
   }
 
+  function handleSessionClick(sessionId: string) {
+    const session = timerSessions.find((s) => s.id === sessionId);
+    if (session) {
+      setSelectedSession(session);
+      open();
+    }
+  }
+
   const hourHeight = 60; // px per hour
 
   useEffect(() => {
     if (viewport.current && !isFetching) {
+      setSelectedSession(timerSessions[0] ?? null);
       viewport.current.scrollTo({
         top: 8 * hourHeight,
         behavior: "smooth",
@@ -258,8 +273,16 @@ export default function WorkCalendar() {
         <CalendarGrid
           days={calendarDays}
           setReferenceDate={handleReferenceDateChange}
+          handleSessionClick={handleSessionClick}
         />
       </Stack>
+      {selectedSession && (
+        <TimerSessionDrawer
+          timerSession={selectedSession}
+          opened={drawerOpened}
+          close={close}
+        />
+      )}
     </ScrollArea>
   );
 }

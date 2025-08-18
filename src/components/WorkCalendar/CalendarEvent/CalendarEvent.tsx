@@ -11,7 +11,7 @@ interface CalendarEventProps {
   s: CalendarSession;
   toY: (date: Date) => number;
   color: string;
-  handleSessionClick: (session: CalendarSession) => void;
+  handleSessionClick: (sessionId: string) => void;
 }
 
 export default function CalendarEvent({
@@ -42,7 +42,7 @@ export default function CalendarEvent({
         border: `1px solid ${color}`,
         borderLeft: `6px solid ${color}`,
       }}
-      onClick={() => handleSessionClick(s)}
+      onClick={() => handleSessionClick(s.id)}
     >
       <Stack h="100%" pl={6} pt={4} gap={0}>
         <Text size="xs">{formatTime(s.active_seconds)}</Text>

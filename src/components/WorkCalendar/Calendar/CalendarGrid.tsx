@@ -17,10 +17,12 @@ import { CalendarDay } from "@/types/workCalendar.types";
 interface CalendarGridProps {
   days: CalendarDay[];
   setReferenceDate: (date: Date) => void;
+  handleSessionClick: (sessionId: string) => void;
 }
 export default function CalendarGrid({
   days,
   setReferenceDate,
+  handleSessionClick,
 }: CalendarGridProps) {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
@@ -73,6 +75,7 @@ export default function CalendarGrid({
                   day={d.day}
                   currentTime={isToday(d.day) ? currentTime : undefined}
                   sessions={d.sessions}
+                  handleSessionClick={handleSessionClick}
                 />
               </Grid.Col>
             );

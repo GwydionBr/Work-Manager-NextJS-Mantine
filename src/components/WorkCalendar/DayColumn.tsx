@@ -2,7 +2,7 @@
 
 import { Box, Stack } from "@mantine/core";
 
-import { getStartOfDay, getEndOfDay, clamp } from "./calendarUtils";
+import { getStartOfDay, getEndOfDay, clamp, mergeAdjacentSessionsForRender } from "./calendarUtils";
 import { CalendarSession } from "@/types/workCalendar.types";
 import CalendarEvent from "./CalendarEvent/CalendarEvent";
 import TimeTrackerEvent from "./CalendarEvent/TimeTrackerEvent";
@@ -11,9 +11,10 @@ interface DayColumnProps {
   day: Date;
   currentTime?: Date;
   sessions: CalendarSession[];
+  handleSessionClick: (sessionId: string) => void;
 }
 
-export function DayColumn({ day, currentTime, sessions }: DayColumnProps) {
+export function DayColumn({ day, currentTime, sessions, handleSessionClick }: DayColumnProps) {
   // Clip sessions to the visible day window so cross-midnight sessions
   // render only the portion within this column. This avoids negative/overflowing heights.
   const dayStart = getStartOfDay(day);
@@ -35,9 +36,9 @@ export function DayColumn({ day, currentTime, sessions }: DayColumnProps) {
   //     projectTitle: projects.find((p) => p.id === s.project_id)?.title ?? "",
   //   };
   // });
-  // // Merge touching/overlapping sessions for the same project+memo to reduce clutter
-  // const itemsForRender: CalendarSession[] =
-  //   mergeAdjacentSessionsForRender(clippedItems);
+  // Merge touching/overlapping sessions for the same project+memo to reduce clutter
+  const itemsForRender: CalendarSession[] =
+    mergeAdjacentSessionsForRender(sessions);
 
   const hourHeight = 60; // px per hour
 
@@ -98,13 +99,13 @@ export function DayColumn({ day, currentTime, sessions }: DayColumnProps) {
 
           {/* Bubble layout: assign a horizontal lane to avoid overlaps when many small sessions cluster */}
           {(() => {
-            return sessions.map((s) => {
+            return itemsForRender.map((s) => {
               return (
                 <CalendarEvent
                   key={s.id}
                   s={s}
                   toY={toY}
-                  handleSessionClick={() => {}}
+                  handleSessionClick={handleSessionClick}
                   color={s.color}
                 />
               );
