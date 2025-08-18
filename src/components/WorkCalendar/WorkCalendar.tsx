@@ -5,6 +5,7 @@ import { useWorkStore } from "@/stores/workManagerStore";
 
 import {
   Box,
+  Button,
   Grid,
   Group,
   Loader,
@@ -14,16 +15,16 @@ import {
   Stack,
   Text,
   Title,
+  Popover,
+  ColorPicker,
+  DEFAULT_THEME,
 } from "@mantine/core";
 import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
 import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
 import CalendarGrid from "./Calendar/CalendarGrid";
 
 import { formatDate } from "@/utils/workHelperFunctions";
-import {
-  addDays,
-  getStartOfDay,
-} from "./calendarUtils";
+import { addDays, getStartOfDay } from "./calendarUtils";
 
 import { CalendarSession, ViewMode } from "@/types/workCalendar.types";
 import { CalendarDay } from "@/types/workCalendar.types";
@@ -31,7 +32,13 @@ import { CalendarDay } from "@/types/workCalendar.types";
 export default function WorkCalendar() {
   const [viewMode, setViewMode] = useState<ViewMode>("week");
   const [referenceDate, setReferenceDate] = useState<Date>(new Date());
-  const { projects: timerProjects, timerSessions, isFetching } = useWorkStore();
+  const [selectedColor, setSelectedColor] = useState<string>("#000000");
+  const {
+    projects: timerProjects,
+    timerSessions,
+    isFetching,
+    updateProject,
+  } = useWorkStore();
   const projects = timerProjects.map((project) => project.project);
   const viewport = useRef<HTMLDivElement>(null);
 
@@ -73,7 +80,7 @@ export default function WorkCalendar() {
       });
     });
     return map;
-  }, [timerSessions, days]);
+  }, [timerSessions, days, projects]);
 
   const calendarDays: CalendarDay[] = useMemo(() => {
     return days.map((d) => ({
@@ -94,7 +101,11 @@ export default function WorkCalendar() {
       .map((id) => {
         const p = projects.find((pp) => pp.id === id);
         if (!p) return undefined;
-        return { id, title: p.title, color: p.color ?? "var(--mantine-color-gray-6)" };
+        return {
+          id,
+          title: p.title,
+          color: p.color ?? "var(--mantine-color-gray-6)",
+        };
       })
       .filter((p) => p !== undefined);
 
@@ -162,20 +173,62 @@ export default function WorkCalendar() {
               </Center>
             ) : (
               visibleProjects.length > 0 && (
-                <Group gap="xs" wrap="wrap" justify="center">
+                <Group wrap="wrap" justify="center" gap={5}>
                   {visibleProjects.map((p) => (
-                    <Group key={p.id} gap={6} wrap="nowrap">
-                      <Box
-                        style={{
-                          width: 10,
-                          height: 10,
-                          borderRadius: 10,
-                          background: p.color,
-                          boxShadow: `0 0 0 1px ${p.color}`,
-                        }}
-                      />
-                      <Text size="xs">{p.title}</Text>
-                    </Group>
+                    <Popover
+                      key={p.id}
+                      onOpen={() => {
+                        setSelectedColor(p.color);
+                      }}
+                      onClose={() => {
+                        updateProject({
+                          id: p.id,
+                          color: selectedColor,
+                        });
+                      }}
+                    >
+                      <Popover.Target>
+                        <Button
+                          variant="subtle"
+                          size="xs"
+                          leftSection={
+                            <Box
+                              style={{
+                                width: 10,
+                                height: 10,
+                                borderRadius: 10,
+                                background: p.color,
+                                boxShadow: `0 0 0 1px ${p.color}`,
+                              }}
+                            />
+                          }
+                        >
+                          {p.title}
+                        </Button>
+                      </Popover.Target>
+                      <Popover.Dropdown>
+                        <ColorPicker
+                          value={selectedColor}
+                          onChange={(color) => {
+                            setSelectedColor(color);
+                          }}
+                          swatches={[
+                            DEFAULT_THEME.colors.red[6],
+                            DEFAULT_THEME.colors.pink[6],
+                            DEFAULT_THEME.colors.grape[6],
+                            DEFAULT_THEME.colors.violet[6],
+                            DEFAULT_THEME.colors.indigo[6],
+                            DEFAULT_THEME.colors.blue[6],
+                            DEFAULT_THEME.colors.cyan[6],
+                            DEFAULT_THEME.colors.teal[6],
+                            DEFAULT_THEME.colors.green[6],
+                            DEFAULT_THEME.colors.lime[6],
+                            DEFAULT_THEME.colors.yellow[6],
+                            DEFAULT_THEME.colors.orange[6],
+                          ]}
+                        />
+                      </Popover.Dropdown>
+                    </Popover>
                   ))}
                 </Group>
               )
