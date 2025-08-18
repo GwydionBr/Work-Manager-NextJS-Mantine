@@ -23,10 +23,8 @@ import { formatDate } from "@/utils/workHelperFunctions";
 import {
   addDays,
   getStartOfDay,
-  getProjectColorByTimeRank,
 } from "./calendarUtils";
 
-import { Tables } from "@/types/db.types";
 import { CalendarSession, ViewMode } from "@/types/workCalendar.types";
 import { CalendarDay } from "@/types/workCalendar.types";
 
@@ -63,12 +61,13 @@ export default function WorkCalendar() {
         const dayStart = getStartOfDay(d);
         const dayEnd = addDays(dayStart, 1);
         const overlaps = start < dayEnd && end > dayStart;
+        const project = projects.find((p) => p.id === s.project_id);
         if (overlaps) {
           const key = dayStart.toISOString().slice(0, 10);
           map.get(key)?.push({
             ...s,
-            projectTitle: projects.find((p) => p.id === s.project_id)?.title ?? "",
-            color: getProjectColorByTimeRank(0), // TODO: fix this
+            projectTitle: project?.title ?? "",
+            color: project?.color ?? "var(--mantine-color-gray-6)",
           });
         }
       });
@@ -90,37 +89,18 @@ export default function WorkCalendar() {
       items.forEach((s) => ids.add(String(s.project_id)));
     });
 
-    // Calculate total time for each project in the visible range
-    const projectTimeMap = new Map<string, number>();
-    sessionsByDay.forEach((items) => {
-      items.forEach((s) => {
-        const projectId = String(s.project_id);
-        const currentTime = projectTimeMap.get(projectId) || 0;
-        projectTimeMap.set(projectId, currentTime + (s.active_seconds || 0));
-      });
-    });
-
     // Sort projects by total time (descending) and assign colors based on time ranking
-    const sortedProjects = Array.from(ids)
+    const activeProjects = Array.from(ids)
       .map((id) => {
         const p = projects.find((pp) => pp.id === id);
-        if (!p) return null;
-        const totalTime = projectTimeMap.get(id) || 0;
-        return { id, title: p.title, totalTime };
+        if (!p) return undefined;
+        return { id, title: p.title, color: p.color ?? "var(--mantine-color-gray-6)" };
       })
-      .filter(Boolean)
-      .sort((a, b) => (b?.totalTime || 0) - (a?.totalTime || 0))
-      .map((project, index) => ({
-        id: project!.id,
-        title: project!.title,
-        colors: getProjectColorByTimeRank(index),
-      })) as {
-      id: string;
-      title: string;
-      colors: ReturnType<typeof getProjectColorByTimeRank>;
-    }[];
+      .filter((p) => p !== undefined);
 
-    return sortedProjects;
+    if (activeProjects.length === 0) return [];
+
+    return activeProjects;
   }, [sessionsByDay, projects]);
 
   function handleReferenceDateChange(date: Date) {
@@ -190,8 +170,8 @@ export default function WorkCalendar() {
                           width: 10,
                           height: 10,
                           borderRadius: 10,
-                          background: p.colors,
-                          boxShadow: `0 0 0 1px ${p.colors}`,
+                          background: p.color,
+                          boxShadow: `0 0 0 1px ${p.color}`,
                         }}
                       />
                       <Text size="xs">{p.title}</Text>

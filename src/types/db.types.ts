@@ -7,7 +7,7 @@ export type Json =
   | Json[];
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)";
@@ -22,10 +22,10 @@ export type Database = {
     Functions: {
       graphql: {
         Args: {
+          extensions?: Json;
           operationName?: string;
           query?: string;
           variables?: Json;
-          extensions?: Json;
         };
         Returns: Json;
       };
@@ -741,6 +741,7 @@ export type Database = {
       timer_project: {
         Row: {
           cash_flow_category_id: string | null;
+          color: string | null;
           created_at: string | null;
           currency: Database["public"]["Enums"]["currency"];
           description: string | null;
@@ -757,6 +758,7 @@ export type Database = {
         };
         Insert: {
           cash_flow_category_id?: string | null;
+          color?: string | null;
           created_at?: string | null;
           currency?: Database["public"]["Enums"]["currency"];
           description?: string | null;
@@ -773,6 +775,7 @@ export type Database = {
         };
         Update: {
           cash_flow_category_id?: string | null;
+          color?: string | null;
           created_at?: string | null;
           currency?: Database["public"]["Enums"]["currency"];
           description?: string | null;
