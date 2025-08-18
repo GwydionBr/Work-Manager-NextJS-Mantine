@@ -19,8 +19,8 @@ export default function TimeTrackerEvent({
   const { isTimerRunning, getRunningTimer } = useTimeTrackerManager();
   const timer = getRunningTimer();
 
-  const color = "var(--mantine-color-red-6)";
-  const backgroundColor = alpha(color, 0.10);
+  const color = timer?.color ?? "var(--mantine-color-red-6)";
+  const backgroundColor = alpha(color, 0.1);
 
   if (!currentTime) {
     if (isYesterday(day) && isTimerRunning && timer) {
@@ -43,6 +43,7 @@ export default function TimeTrackerEvent({
             timer={timer}
             color={color}
             backgroundColor={backgroundColor}
+            title={timer.projectTitle}
           />
         );
       }
@@ -89,6 +90,7 @@ export default function TimeTrackerEvent({
       timer={timer}
       color={color}
       backgroundColor={backgroundColor}
+      title={timer.projectTitle}
     />
   );
 }

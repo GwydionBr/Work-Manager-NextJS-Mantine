@@ -10,6 +10,7 @@ interface ActiveTimeTrackerProps {
   timer: TimerData;
   color: string;
   backgroundColor: string;
+  title: string;
 }
 
 export default function ActiveTimeTracker({
@@ -20,6 +21,7 @@ export default function ActiveTimeTracker({
   timer,
   color,
   backgroundColor,
+  title,
 }: ActiveTimeTrackerProps) {
   return (
     <Box>
@@ -59,6 +61,7 @@ export default function ActiveTimeTracker({
               {timer.activeTime}
             </Text>
           </Group>
+          <Text size="xs" ta="center" fw={600}>{title}</Text>
         </Stack>
       </Box>
       <Box
