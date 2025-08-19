@@ -1,11 +1,10 @@
 "use client";
 
+import { alpha, Card, HoverCard, Stack, Text } from "@mantine/core";
 
-import { alpha, Card, Stack, Text } from "@mantine/core";
-
-
-import { CalendarSession, ViewMode } from "@/types/workCalendar.types";
-import { formatTime, formatTimeSpan, secondsToTimerFormat } from "@/utils/workHelperFunctions";
+import { CalendarSession } from "@/types/workCalendar.types";
+import { formatTime } from "@/utils/workHelperFunctions";
+import CalendarEventHoverCard from "./CalendarEventHoverCard";
 
 interface CalendarEventProps {
   s: CalendarSession;
@@ -28,42 +27,49 @@ export default function CalendarEvent({
   const backgroundColor = alpha(color, 0.15);
 
   return (
-    <Card
-      p={0}
-      radius="sm"
-      withBorder
-      w="100%"
-      h={Math.max(height, 4)}
-      bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-9))"
-      style={{
-        position: "absolute",
-        left: 0,
-        top: top,
-        cursor: "pointer",
-        border: `1px solid ${color}`,
-        borderLeft: `6px solid ${color}`,
-      }}
-      onClick={() => handleSessionClick(s.id)}
-    >
-      <Stack h="100%" pl={6} pt={4} gap={0} bg={backgroundColor}>
-        <Text size="xs">{formatTime(s.active_seconds)}</Text>
-        {s.memo && (
-          <Text size="xs" c="dimmed">
-            {s.memo}
-          </Text>
-        )}
-        <Text
-          maw="100%"
-          size="xs"
-          fw={600}
+    <HoverCard>
+      <HoverCard.Target>
+        <Card
+          p={0}
+          radius="sm"
+          withBorder
+          w="100%"
+          h={Math.max(height, 4)}
+          bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-9))"
           style={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
+            position: "absolute",
+            left: 0,
+            top: top,
+            cursor: "pointer",
+            border: `1px solid ${color}`,
+            borderLeft: `6px solid ${color}`,
           }}
+          onClick={() => handleSessionClick(s.id)}
         >
-          {s.projectTitle}
-        </Text>
-      </Stack>
-    </Card>
+          <Stack h="100%" pl={6} pt={4} gap={0} bg={backgroundColor}>
+            <Text size="xs">{formatTime(s.active_seconds)}</Text>
+            {s.memo && (
+              <Text size="xs" c="dimmed">
+                {s.memo}
+              </Text>
+            )}
+            <Text
+              maw="100%"
+              size="xs"
+              fw={600}
+              style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {s.projectTitle}
+            </Text>
+          </Stack>
+        </Card>
+      </HoverCard.Target>
+      <HoverCard.Dropdown>
+        <CalendarEventHoverCard s={s} />
+      </HoverCard.Dropdown>
+    </HoverCard>
   );
 }
