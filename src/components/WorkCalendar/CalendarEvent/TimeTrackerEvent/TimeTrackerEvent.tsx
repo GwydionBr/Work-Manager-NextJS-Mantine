@@ -10,7 +10,6 @@ interface TimeTrackerEventProps {
   currentTime?: Date;
   day: Date;
 }
-
 export default function TimeTrackerEvent({
   toY,
   currentTime,

@@ -19,6 +19,7 @@ import {
   Popover,
   ColorPicker,
   DEFAULT_THEME,
+  ActionIcon,
 } from "@mantine/core";
 import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
 import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
@@ -31,10 +32,16 @@ import { addDays, getStartOfDay } from "./calendarUtils";
 import { CalendarSession, ViewMode } from "@/types/workCalendar.types";
 import { CalendarDay } from "@/types/workCalendar.types";
 import { Tables } from "@/types/db.types";
+import PlusActionIcon from "../UI/ActionIcons/PlusActionIcon";
+import MinusActionIcon from "../UI/ActionIcons/MinusActionIcon";
+
+const zoomLevel = [60, 30, 15, 10, 5];
+const rasterHeight = 60; // px per hour
 
 export default function WorkCalendar() {
   const [viewMode, setViewMode] = useState<ViewMode>("week");
   const [referenceDate, setReferenceDate] = useState<Date>(new Date());
+  const [zoomIndex, setZoomIndex] = useState(0);  
   const [selectedSession, setSelectedSession] =
     useState<Tables<"timer_session"> | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>("#000000");
@@ -124,7 +131,7 @@ export default function WorkCalendar() {
     setReferenceDate(date);
     setViewMode("day");
     viewport.current?.scrollTo({
-      top: 8 * hourHeight,
+      top: 8 * rasterHeight,
       behavior: "smooth",
     });
   }
@@ -137,13 +144,11 @@ export default function WorkCalendar() {
     }
   }
 
-  const hourHeight = 60; // px per hour
-
   useEffect(() => {
     if (viewport.current && !isFetching) {
       setSelectedSession(timerSessions[0] ?? null);
       viewport.current.scrollTo({
-        top: 8 * hourHeight,
+        top: 8 * rasterHeight,
         behavior: "smooth",
       });
     }
@@ -170,15 +175,30 @@ export default function WorkCalendar() {
           }}
         >
           <Grid.Col span={3}>
-            <SegmentedControl
-              ml="md"
-              value={viewMode}
-              onChange={(v) => setViewMode(v as ViewMode)}
-              data={[
-                { label: "Day", value: "day" },
-                { label: "Week", value: "week" },
-              ]}
-            />
+            <Group justify="flex-start" ml="md">
+              <ActionIcon.Group>
+                <MinusActionIcon
+                  onClick={() => setZoomIndex(zoomIndex - 1)}
+                  disabled={zoomIndex === 0}
+                  variant="outline"
+                  color="red"
+                />
+                <PlusActionIcon
+                  onClick={() => setZoomIndex(zoomIndex + 1)}
+                  disabled={zoomIndex === 4}
+                  variant="outline"
+                />
+              </ActionIcon.Group>
+              <SegmentedControl
+                ml="md"
+                value={viewMode}
+                onChange={(v) => setViewMode(v as ViewMode)}
+                data={[
+                  { label: "Day", value: "day" },
+                  { label: "Week", value: "week" },
+                ]}
+              />
+            </Group>
           </Grid.Col>
           <Grid.Col span={6}>
             {/* Legend: show projects visible in the current range with their colors */}

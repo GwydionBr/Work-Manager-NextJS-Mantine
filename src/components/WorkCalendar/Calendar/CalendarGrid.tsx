@@ -16,9 +16,9 @@ import { CalendarDay } from "@/types/workCalendar.types";
 
 interface CalendarGridProps {
   days: CalendarDay[];
+  isFetching: boolean;
   setReferenceDate: (date: Date) => void;
   handleSessionClick: (sessionId: string) => void;
-  isFetching: boolean;
 }
 export default function CalendarGrid({
   days,
@@ -38,7 +38,7 @@ export default function CalendarGrid({
 
   return (
     <Group h="100%" gap={0} wrap="nowrap">
-      <Stack w={56} align="flex-end" >
+      <Stack w={56} align="flex-end">
         <ColumnHeader />
         <TimeColumn hourHeight={60} />
       </Stack>
