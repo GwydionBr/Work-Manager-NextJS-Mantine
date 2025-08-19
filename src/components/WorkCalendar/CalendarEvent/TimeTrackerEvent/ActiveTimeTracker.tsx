@@ -26,11 +26,11 @@ export default function ActiveTimeTracker({
   return (
     <Box>
       <Box
-        h={height}
+        h={Math.max(height, title ? 40 : 20)}
         w="100%"
         style={{
           position: "absolute",
-          top: bottom - height,
+          top: bottom - Math.max(height, title ? 40 : 20),
           left: 0,
           right: 0,
           zIndex: 10,
@@ -39,7 +39,7 @@ export default function ActiveTimeTracker({
         }}
       >
         <Stack
-          h={height}
+          h={Math.max(height, title ? 40 : 20)}
           w="100%"
           gap={0}
           p={0}
@@ -61,7 +61,11 @@ export default function ActiveTimeTracker({
               {timer.activeTime}
             </Text>
           </Group>
-          <Text size="xs" ta="center" fw={600}>{title}</Text>
+          {title && (
+            <Text size="xs" ta="center" fw={600}>
+              {title}
+            </Text>
+          )}
         </Stack>
       </Box>
       <Box
