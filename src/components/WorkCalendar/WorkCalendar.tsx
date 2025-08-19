@@ -35,13 +35,13 @@ import { Tables } from "@/types/db.types";
 import PlusActionIcon from "../UI/ActionIcons/PlusActionIcon";
 import MinusActionIcon from "../UI/ActionIcons/MinusActionIcon";
 
-const zoomLevel = [60, 30, 15, 10, 5];
+const zoomLevel = [1, 2, 4, 6, 12]; // multiplier for hour height
 const rasterHeight = 60; // px per hour
 
 export default function WorkCalendar() {
   const [viewMode, setViewMode] = useState<ViewMode>("week");
   const [referenceDate, setReferenceDate] = useState<Date>(new Date());
-  const [zoomIndex, setZoomIndex] = useState(0);  
+  const [zoomIndex, setZoomIndex] = useState(0);
   const [selectedSession, setSelectedSession] =
     useState<Tables<"timer_session"> | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>("#000000");
@@ -175,7 +175,7 @@ export default function WorkCalendar() {
           }}
         >
           <Grid.Col span={3}>
-            <Group justify="flex-start" ml="md">
+            <Group justify="flex-start" ml="md" gap="xs">
               <ActionIcon.Group>
                 <MinusActionIcon
                   onClick={() => setZoomIndex(zoomIndex - 1)}
@@ -295,6 +295,8 @@ export default function WorkCalendar() {
           days={calendarDays}
           setReferenceDate={handleReferenceDateChange}
           handleSessionClick={handleSessionClick}
+          hourMultiplier={zoomLevel[zoomIndex]}
+          rasterHeight={rasterHeight}
         />
       </Stack>
       {selectedSession && (

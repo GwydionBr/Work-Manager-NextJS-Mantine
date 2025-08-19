@@ -7,7 +7,6 @@ import {
   getEndOfDay,
   clamp,
   mergeAdjacentSessionsForRender,
-  isToday,
 } from "./calendarUtils";
 import { CalendarSession } from "@/types/workCalendar.types";
 import CalendarEvent from "./CalendarEvent/CalendarEvent";
@@ -19,6 +18,8 @@ interface DayColumnProps {
   currentTime?: Date;
   sessions: CalendarSession[];
   handleSessionClick: (sessionId: string) => void;
+  hourMultiplier: number;
+  rasterHeight: number;
 }
 
 export function DayColumn({
@@ -27,6 +28,8 @@ export function DayColumn({
   currentTime,
   sessions,
   handleSessionClick,
+  hourMultiplier,
+  rasterHeight,
 }: DayColumnProps) {
   // Clip sessions to the visible day window so cross-midnight sessions
   // render only the portion within this column. This avoids negative/overflowing heights.
@@ -54,14 +57,12 @@ export function DayColumn({
   const itemsForRender: CalendarSession[] =
     mergeAdjacentSessionsForRender(clippedItems);
 
-  const hourHeight = 60; // px per hour
-
   const toY = (date: Date) => {
     // Convert a date to a Y-position within the day timeline
     const minutes = date.getHours() * 60 + date.getMinutes();
     const totalMinutes = 24 * 60;
-    const y = (minutes / totalMinutes) * (totalMinutes / 60) * hourHeight;
-    return clamp(y, 0, 24 * hourHeight);
+    const y = (minutes / totalMinutes) * (totalMinutes / 60) * rasterHeight * hourMultiplier;
+    return clamp(y, 0, 24 * rasterHeight * hourMultiplier);
   };
 
   return (
@@ -71,7 +72,7 @@ export function DayColumn({
         <Box
           style={{
             position: "relative",
-            height: hourHeight * 24,
+            height: rasterHeight * 24 * hourMultiplier,
             border:
               "1px solid light-dark(var(--mantine-color-gray-6), var(--mantine-color-gray-6))",
             borderRadius: 0,
@@ -82,14 +83,14 @@ export function DayColumn({
         >
           {/* Grid lines */}
           {Array.from(
-            { length: 25 },
+            { length: 24 * hourMultiplier + 1 },
             (_, i) =>
               i !== 0 && (
                 <Box
                   key={`line-${i}`}
                   style={{
                     position: "absolute",
-                    top: i * hourHeight,
+                    top: i * rasterHeight,
                     left: 0,
                     right: 0,
                     height: 1,
@@ -103,11 +104,7 @@ export function DayColumn({
           )}
 
           {/* Current time indicator - red line for today */}
-          <TimeTrackerEvent
-            toY={toY}
-            currentTime={currentTime}
-            day={day}
-          />
+          <TimeTrackerEvent toY={toY} currentTime={currentTime} day={day} />
 
           {/* Bubble layout: assign a horizontal lane to avoid overlaps when many small sessions cluster */}
           {(() => {

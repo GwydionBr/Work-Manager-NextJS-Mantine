@@ -17,14 +17,18 @@ import { CalendarDay } from "@/types/workCalendar.types";
 interface CalendarGridProps {
   days: CalendarDay[];
   isFetching: boolean;
+  hourMultiplier: number;
+  rasterHeight: number;
   setReferenceDate: (date: Date) => void;
   handleSessionClick: (sessionId: string) => void;
 }
 export default function CalendarGrid({
   days,
+  isFetching,
+  hourMultiplier,
+  rasterHeight,
   setReferenceDate,
   handleSessionClick,
-  isFetching,
 }: CalendarGridProps) {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
@@ -40,7 +44,7 @@ export default function CalendarGrid({
     <Group h="100%" gap={0} wrap="nowrap">
       <Stack w={56} align="flex-end">
         <ColumnHeader />
-        <TimeColumn hourHeight={60} />
+        <TimeColumn hourHeight={rasterHeight} hourMultiplier={hourMultiplier} />
       </Stack>
       <Stack h="100%" gap={10} w="100%">
         <Grid
@@ -79,6 +83,8 @@ export default function CalendarGrid({
                   currentTime={isToday(d.day) ? currentTime : undefined}
                   sessions={d.sessions}
                   handleSessionClick={handleSessionClick}
+                  hourMultiplier={hourMultiplier}
+                  rasterHeight={rasterHeight}
                 />
               </Grid.Col>
             );
