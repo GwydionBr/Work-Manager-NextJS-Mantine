@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
+import useSettingsStore from "@/stores/settingsStore";
 
 import {
   Grid,
@@ -13,6 +14,7 @@ import {
   Title,
   ActionIcon,
 } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
 import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
@@ -26,7 +28,6 @@ import { startOfWeek, endOfWeek, addDays } from "date-fns";
 import { CalendarSession, ViewMode } from "@/types/workCalendar.types";
 import { CalendarDay } from "@/types/workCalendar.types";
 import { Tables } from "@/types/db.types";
-import { DatePickerInput } from "@mantine/dates";
 
 const zoomLevel = [1, 2, 4, 6, 12]; // multiplier for hour height
 const zoomLabels = ["1 h", "30 min", "15 min", "10 min", "5 min"];
@@ -51,6 +52,7 @@ export default function WorkCalendar() {
   const { projects: timerProjects, timerSessions, isFetching } = useWorkStore();
   const projects = timerProjects.map((project) => project.project);
   const viewport = useRef<HTMLDivElement>(null);
+  const { locale } = useSettingsStore();
 
   const days: Date[] = useMemo(() => {
     if (viewMode === "day") return [getStartOfDay(referenceDate)];
@@ -124,14 +126,15 @@ export default function WorkCalendar() {
     return activeProjects;
   }, [sessionsByDay, projects]);
 
+  function getCurrentTime() {
+    const currentHour = new Date().getHours();
+    const currentMinute = new Date().getMinutes();
+    return (currentHour * 60 + currentMinute) / 60;
+  }
+
   function handleReferenceDateChange(date: Date) {
     setReferenceDate(date);
     setViewMode("day");
-    setViewportTop((prev) => ({
-      old: prev.old,
-      new: 6.75 * rasterHeight * zoomLevel[zoomIndex] + 100,
-      isSmooth: true,
-    }));
   }
 
   function handleSessionClick(sessionId: string) {
@@ -144,9 +147,10 @@ export default function WorkCalendar() {
 
   useEffect(() => {
     if (!isFetching) {
+      const currentTime = getCurrentTime();
       setViewportTop((prev) => ({
         old: prev.old,
-        new: 6.75 * rasterHeight * zoomLevel[zoomIndex] + 100,
+        new: currentTime * rasterHeight * zoomLevel[zoomIndex] + 50,
         isSmooth: true,
       }));
     }
@@ -259,6 +263,7 @@ export default function WorkCalendar() {
               {viewMode === "day" ? (
                 <DatePickerInput
                   value={referenceDate}
+                  locale={locale}
                   onChange={(value) => {
                     if (value) {
                       setReferenceDate(new Date(value));
@@ -270,6 +275,10 @@ export default function WorkCalendar() {
                   allowSingleDateInRange
                   type="range"
                   value={dateRange}
+                  valueFormat={
+                    locale === "de-DE" ? "D MMM, YYYY" : "MMM D, YYYY"
+                  }
+                  locale={locale}
                   onChange={(value) => {
                     const [start, end] = value;
                     setDateRange([

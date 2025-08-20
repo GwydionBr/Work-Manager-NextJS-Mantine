@@ -32,6 +32,7 @@ export default function LocaleSettings() {
         label="Locale"
         placeholder="Select Locale"
         value={locale}
+        allowDeselect={false}
         onChange={(value) => setLocale(value as Locale)}
         leftSection={
           currentLocale && (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useHover } from "@mantine/hooks";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Stack, Text } from "@mantine/core";
 
@@ -14,6 +15,7 @@ export default function ColumnHeader({
   setReferenceDate,
 }: ColumnHeaderProps) {
   const { hovered, ref } = useHover();
+  const { locale } = useSettingsStore();
   return (
     <Stack
       p={5}
@@ -32,7 +34,7 @@ export default function ColumnHeader({
       }}
     >
       <Text fw={600}>
-        {day?.toLocaleDateString("en-US", {
+        {day?.toLocaleDateString(locale, {
           weekday: "short",
           day: "2-digit",
           month: "short",

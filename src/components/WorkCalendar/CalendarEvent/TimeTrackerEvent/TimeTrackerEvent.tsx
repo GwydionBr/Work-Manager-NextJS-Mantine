@@ -1,6 +1,8 @@
 "use client";
 
 import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import { alpha, Stack, Text } from "@mantine/core";
 import { endOfDay, isToday, isYesterday, startOfDay } from "date-fns";
 import ActiveTimeTracker from "./ActiveTimeTracker";
@@ -17,6 +19,7 @@ export default function TimeTrackerEvent({
 }: TimeTrackerEventProps) {
   const { isTimerRunning, getRunningTimer } = useTimeTrackerManager();
   const timer = getRunningTimer();
+  const { locale } = useSettingsStore();
 
   const color = timer?.color ?? "var(--mantine-color-red-6)";
   const backgroundColor = alpha(color, 0.1);
@@ -65,7 +68,7 @@ export default function TimeTrackerEvent({
         }}
       >
         <Text size="xs" c="red" ta="center" fw={600}>
-          {currentTime.toLocaleTimeString("en-US", {
+          {currentTime.toLocaleTimeString(locale, {
             hour: "2-digit",
             minute: "2-digit",
           })}
