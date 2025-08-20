@@ -36,6 +36,11 @@ export default function WorkCalendar() {
   const [viewMode, setViewMode] = useState<ViewMode>("week");
   const [referenceDate, setReferenceDate] = useState<Date>(new Date());
   const [zoomIndex, setZoomIndex] = useState(0);
+  const [viewportTop, setViewportTop] = useState({
+    old: 0,
+    new: 0,
+    isSmooth: false,
+  });
   const [selectedSession, setSelectedSession] =
     useState<Tables<"timer_session"> | null>(null);
   const [drawerOpened, { open, close }] = useDisclosure(false);
@@ -118,10 +123,11 @@ export default function WorkCalendar() {
   function handleReferenceDateChange(date: Date) {
     setReferenceDate(date);
     setViewMode("day");
-    viewport.current?.scrollTo({
-      top: 6.75 * rasterHeight * zoomLevel[zoomIndex] + 100,
-      behavior: "smooth",
-    });
+    setViewportTop((prev) => ({
+      old: prev.old,
+      new: 6.75 * rasterHeight * zoomLevel[zoomIndex] + 100,
+      isSmooth: true,
+    }));
   }
 
   function handleSessionClick(sessionId: string) {
@@ -133,34 +139,44 @@ export default function WorkCalendar() {
   }
 
   useEffect(() => {
-    if (viewport.current && !isFetching) {
-      setSelectedSession(timerSessions[0] ?? null);
-      viewport.current.scrollTo({
-        top: 6.75 * rasterHeight * zoomLevel[zoomIndex] + 100,
-        behavior: "smooth",
-      });
+    if (!isFetching) {
+      setViewportTop((prev) => ({
+        old: prev.old,
+        new: 6.75 * rasterHeight * zoomLevel[zoomIndex] + 100,
+        isSmooth: true,
+      }));
     }
   }, [isFetching]);
 
+  useEffect(() => {
+    if (viewport.current && viewportTop.new !== viewportTop.old) {
+      viewport.current.scrollTo({
+        top: viewportTop.new,
+        behavior: viewportTop.isSmooth ? "smooth" : "instant",
+      });
+      setViewportTop({
+        old: viewportTop.new,
+        new: viewportTop.new,
+        isSmooth: true,
+      });
+    }
+  }, [viewportTop, viewport.current]);
+
   function handleZoomChange(oldIndex: number, newIndex: number) {
     if (viewport.current) {
-      // Get current scroll position
-      const currentScrollTop = viewport.current.scrollTop;
-      console.log("current scroll top", currentScrollTop);
       const currentTimeTop =
         (viewport.current.scrollTop - 100) /
         (rasterHeight * zoomLevel[oldIndex]);
 
       const roundedTimeTop = Math.round(currentTimeTop * 100) / 100;
-      console.log("rounded time top", roundedTimeTop);
 
       const newTop = roundedTimeTop * rasterHeight * zoomLevel[newIndex] + 100;
-      console.log("new top", newTop);
 
-      viewport.current.scrollTo({
-        top: newTop,
-        behavior: "instant",
-      });
+      setViewportTop((prev) => ({
+        old: prev.new,
+        new: newTop,
+        isSmooth: false,
+      }));
     }
   }
 
