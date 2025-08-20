@@ -6,7 +6,7 @@ import {
   Currency,
   RoundingAmount,
   RoundingDirection,
-  RoundingInTimeSections,
+  Locale,
 } from "@/types/settings.types";
 import * as actions from "@/actions";
 
@@ -30,6 +30,7 @@ interface SettingsState {
   roundInTimeSections: boolean;
   timeSectionInterval: number;
   automaticlyStopOtherTimer: boolean;
+  locale: Locale;
 }
 
 interface SettingsActions {
@@ -48,6 +49,7 @@ interface SettingsActions {
   setRoundInTimeSections: (roundInTimeSections: boolean) => Promise<void>;
   setTimeSectionInterval: (timeSectionInterval: number) => Promise<void>;
   setAutomaticlyStopOtherTimer: (automaticlyStopOtherTimer: boolean) => Promise<void>;
+  setLocale: (locale: Locale) => Promise<void>;
 }
 
 export const useSettingsStore = create<SettingsState & SettingsActions>()(
@@ -70,6 +72,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       roundInTimeSections: false,
       timeSectionInterval: 10,
       automaticlyStopOtherTimer: false,
+      locale: "en-US",
 
       fetchSettings: async () => {
         const { data } = await actions.getSettings();
@@ -87,6 +90,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
             roundInTimeSections: data.round_in_time_sections,
             timeSectionInterval: data.time_section_interval,
             automaticlyStopOtherTimer: data.automaticly_stop_other_timer,
+            locale: data.locale,
           });
         }
         set({ isFetching: false, lastFetch: new Date() });
@@ -177,6 +181,13 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
         });
         console.log(automaticlyStopOtherTimer);
         set({ automaticlyStopOtherTimer: automaticlyStopOtherTimer });
+      },
+      setLocale: async (locale: Locale) => {
+        await actions.updateSettings({
+          id: get().settingsId ?? "",
+          locale: locale,
+        });
+        set({ locale: locale });
       },
     }),
     {

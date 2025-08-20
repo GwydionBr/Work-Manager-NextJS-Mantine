@@ -10,32 +10,36 @@ import {
   ScrollArea,
   SegmentedControl,
   Stack,
-  Text,
   Title,
   ActionIcon,
 } from "@mantine/core";
+import { IconMinus, IconPlus } from "@tabler/icons-react";
 import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
 import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
 import CalendarGrid from "./Calendar/CalendarGrid";
 import TimerSessionDrawer from "@/components/Work/Session/TimerSessionDrawer";
-import PlusActionIcon from "../UI/ActionIcons/PlusActionIcon";
-import MinusActionIcon from "../UI/ActionIcons/MinusActionIcon";
 import CalendarLegend from "./Calendar/CalendarLegend";
 
-import { formatDate } from "@/utils/workHelperFunctions";
-import { addDays, getStartOfDay } from "./calendarUtils";
+import { getStartOfDay } from "./calendarUtils";
+import { startOfWeek, endOfWeek, addDays } from "date-fns";
 
 import { CalendarSession, ViewMode } from "@/types/workCalendar.types";
 import { CalendarDay } from "@/types/workCalendar.types";
 import { Tables } from "@/types/db.types";
+import { DatePickerInput } from "@mantine/dates";
 
 const zoomLevel = [1, 2, 4, 6, 12]; // multiplier for hour height
+const zoomLabels = ["1 h", "30 min", "15 min", "10 min", "5 min"];
 const rasterHeight = 60; // px per hour
 
 export default function WorkCalendar() {
   const [viewMode, setViewMode] = useState<ViewMode>("week");
   const [referenceDate, setReferenceDate] = useState<Date>(new Date());
-  const [zoomIndex, setZoomIndex] = useState(0);
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
+    addDays(startOfWeek(new Date()), 1),
+    addDays(endOfWeek(new Date()), 1),
+  ]);
+  const [zoomIndex, setZoomIndex] = useState(1);
   const [viewportTop, setViewportTop] = useState({
     old: 0,
     new: 0,
@@ -203,25 +207,43 @@ export default function WorkCalendar() {
           <Grid.Col span={4}>
             <Group justify="flex-start" ml="md" gap="xs">
               <ActionIcon.Group>
-                <MinusActionIcon
+                <ActionIcon
+                  variant="light"
+                  color="red"
+                  size="lg"
+                  radius="md"
                   onClick={() => {
                     const currentZoomIndex = zoomIndex;
                     setZoomIndex((prev) => prev - 1);
                     handleZoomChange(currentZoomIndex, currentZoomIndex - 1);
                   }}
                   disabled={zoomIndex === 0}
-                  variant="outline"
-                  color="red"
-                />
-                <PlusActionIcon
+                >
+                  <IconMinus color="var(--mantine-color-red-text)" />
+                </ActionIcon>
+                <ActionIcon.GroupSection
+                  variant="default"
+                  size="lg"
+                  bg="var(--mantine-color-body)"
+                  miw={85}
+                  ta="center"
+                  fw={600}
+                >
+                  {zoomLabels[zoomIndex]}
+                </ActionIcon.GroupSection>
+                <ActionIcon
+                  variant="light"
+                  size="lg"
+                  radius="md"
                   onClick={() => {
                     const currentZoomIndex = zoomIndex;
                     setZoomIndex((prev) => prev + 1);
                     handleZoomChange(currentZoomIndex, currentZoomIndex + 1);
                   }}
                   disabled={zoomIndex === 4}
-                  variant="outline"
-                />
+                >
+                  <IconPlus color="var(--mantine-color-teal-text)" />
+                </ActionIcon>
               </ActionIcon.Group>
             </Group>
           </Grid.Col>
@@ -234,7 +256,30 @@ export default function WorkCalendar() {
                   )
                 }
               />
-              <Text>{formatDate(referenceDate)}</Text>
+              {viewMode === "day" ? (
+                <DatePickerInput
+                  value={referenceDate}
+                  onChange={(value) => {
+                    if (value) {
+                      setReferenceDate(new Date(value));
+                    }
+                  }}
+                />
+              ) : (
+                <DatePickerInput
+                  allowSingleDateInRange
+                  type="range"
+                  value={dateRange}
+                  onChange={(value) => {
+                    const [start, end] = value;
+                    setDateRange([
+                      start ? new Date(start) : null,
+                      end ? new Date(end) : null,
+                    ]);
+                    start && setReferenceDate(new Date(start));
+                  }}
+                />
+              )}
               <NextActionIcon
                 onClick={() =>
                   setReferenceDate(

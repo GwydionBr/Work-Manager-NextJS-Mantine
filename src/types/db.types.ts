@@ -593,6 +593,7 @@ export type Database = {
           default_salary_amount: number;
           default_work_settings_id: string | null;
           id: string;
+          locale: Database["public"]["Enums"]["locales"];
           round_in_time_sections: boolean;
           rounding_amount: Database["public"]["Enums"]["roundingAmount"];
           rounding_custom_amount: number;
@@ -611,6 +612,7 @@ export type Database = {
           default_salary_amount?: number;
           default_work_settings_id?: string | null;
           id?: string;
+          locale?: Database["public"]["Enums"]["locales"];
           round_in_time_sections?: boolean;
           rounding_amount?: Database["public"]["Enums"]["roundingAmount"];
           rounding_custom_amount?: number;
@@ -629,6 +631,7 @@ export type Database = {
           default_salary_amount?: number;
           default_work_settings_id?: string | null;
           id?: string;
+          locale?: Database["public"]["Enums"]["locales"];
           round_in_time_sections?: boolean;
           rounding_amount?: Database["public"]["Enums"]["roundingAmount"];
           rounding_custom_amount?: number;
@@ -985,6 +988,7 @@ export type Database = {
         | "1/4 year"
         | "1/2 year"
         | "year";
+      locales: "en-US" | "de-DE";
       roundingAmount: "s" | "min" | "1/4h" | "1/2h" | "h" | "custom";
       roundingDirection: "up" | "down" | "nearest";
       status: "pending" | "accepted" | "declined";
@@ -1152,6 +1156,7 @@ export const Constants = {
         "1/2 year",
         "year",
       ],
+      locales: ["en-US", "de-DE"],
       roundingAmount: ["s", "min", "1/4h", "1/2h", "h", "custom"],
       roundingDirection: ["up", "down", "nearest"],
       status: ["pending", "accepted", "declined"],

@@ -1,6 +1,9 @@
+import { Database } from "./db.types";
+
 export type RoundingAmount = "s" | "min" | "1/4h" | "1/2h" | "h" | "custom";
 export type RoundingDirection = "up" | "down" | "nearest";
 export type RoundingInTimeSections = "5min" | "10min" | "15min" | "20min" | "30min" | "1h";
+export type Locale = Database["public"]["Enums"]["locales"];
 
 export type Currency =
   | "USD"
