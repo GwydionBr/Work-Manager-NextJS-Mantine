@@ -208,7 +208,7 @@ export default function WorkCalendar() {
             background: "var(--mantine-color-body)",
           }}
         >
-          <Grid.Col span={4}>
+          <Grid.Col span={2}>
             <Group justify="flex-start" ml="md" gap="xs">
               <ActionIcon.Group>
                 <ActionIcon
@@ -251,7 +251,7 @@ export default function WorkCalendar() {
               </ActionIcon.Group>
             </Group>
           </Grid.Col>
-          <Grid.Col span={4}>
+          <Grid.Col span={8}>
             <Group gap="xs" justify="center">
               <PrevActionIcon
                 onClick={() =>
@@ -298,7 +298,7 @@ export default function WorkCalendar() {
               />
             </Group>
           </Grid.Col>
-          <Grid.Col span={4}>
+          <Grid.Col span={2}>
             <Group justify="flex-end" mr="md" gap="xs">
               <SegmentedControl
                 ml="md"
