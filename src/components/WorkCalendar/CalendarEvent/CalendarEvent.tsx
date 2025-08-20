@@ -27,7 +27,7 @@ export default function CalendarEvent({
   const backgroundColor = alpha(color, 0.15);
 
   return (
-    <HoverCard>
+    <HoverCard openDelay={200} closeDelay={100}>
       <HoverCard.Target>
         <Card
           p={0}
@@ -67,8 +67,8 @@ export default function CalendarEvent({
           </Stack>
         </Card>
       </HoverCard.Target>
-      <HoverCard.Dropdown>
-        <CalendarEventHoverCard s={s} />
+      <HoverCard.Dropdown p={0}>
+        <CalendarEventHoverCard s={s} color={color} />
       </HoverCard.Dropdown>
     </HoverCard>
   );
