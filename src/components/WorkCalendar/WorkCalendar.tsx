@@ -5,11 +5,8 @@ import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 
 import {
-  Box,
   Grid,
   Group,
-  Loader,
-  Center,
   ScrollArea,
   SegmentedControl,
   Stack,
@@ -122,7 +119,7 @@ export default function WorkCalendar() {
     setReferenceDate(date);
     setViewMode("day");
     viewport.current?.scrollTo({
-      top: 8 * rasterHeight,
+      top: 6.75 * rasterHeight * zoomLevel[zoomIndex] + 100,
       behavior: "smooth",
     });
   }
@@ -139,11 +136,33 @@ export default function WorkCalendar() {
     if (viewport.current && !isFetching) {
       setSelectedSession(timerSessions[0] ?? null);
       viewport.current.scrollTo({
-        top: 8 * rasterHeight,
+        top: 6.75 * rasterHeight * zoomLevel[zoomIndex] + 100,
         behavior: "smooth",
       });
     }
   }, [isFetching]);
+
+  function handleZoomChange(oldIndex: number, newIndex: number) {
+    if (viewport.current) {
+      // Get current scroll position
+      const currentScrollTop = viewport.current.scrollTop;
+      console.log("current scroll top", currentScrollTop);
+      const currentTimeTop =
+        (viewport.current.scrollTop - 100) /
+        (rasterHeight * zoomLevel[oldIndex]);
+
+      const roundedTimeTop = Math.round(currentTimeTop * 100) / 100;
+      console.log("rounded time top", roundedTimeTop);
+
+      const newTop = roundedTimeTop * rasterHeight * zoomLevel[newIndex] + 100;
+      console.log("new top", newTop);
+
+      viewport.current.scrollTo({
+        top: newTop,
+        behavior: "instant",
+      });
+    }
+  }
 
   return (
     <ScrollArea offsetScrollbars viewportRef={viewport} h="100vh">
@@ -169,13 +188,21 @@ export default function WorkCalendar() {
             <Group justify="flex-start" ml="md" gap="xs">
               <ActionIcon.Group>
                 <MinusActionIcon
-                  onClick={() => setZoomIndex(zoomIndex - 1)}
+                  onClick={() => {
+                    const currentZoomIndex = zoomIndex;
+                    setZoomIndex((prev) => prev - 1);
+                    handleZoomChange(currentZoomIndex, currentZoomIndex - 1);
+                  }}
                   disabled={zoomIndex === 0}
                   variant="outline"
                   color="red"
                 />
                 <PlusActionIcon
-                  onClick={() => setZoomIndex(zoomIndex + 1)}
+                  onClick={() => {
+                    const currentZoomIndex = zoomIndex;
+                    setZoomIndex((prev) => prev + 1);
+                    handleZoomChange(currentZoomIndex, currentZoomIndex + 1);
+                  }}
                   disabled={zoomIndex === 4}
                   variant="outline"
                 />

@@ -1,7 +1,8 @@
 "use client";
 
 import { useDisclosure } from "@mantine/hooks";
-import { useHotkeys } from "@mantine/hooks";
+import { useEffect, useState } from "react";
+import { useHotkeys, useClickOutside } from "@mantine/hooks";
 
 import {
   useMantineColorScheme,
@@ -15,13 +16,20 @@ import DarkSchemeButton from "./DarkSchemeButton";
 import SystemSchemeButton from "./SystemSchemeButton";
 
 export default function SchemeToggle() {
-  const [isOpen, { toggle }] = useDisclosure(false);
+  const [isOpen, { close, toggle }] = useDisclosure(false);
   const { toggleColorScheme, setColorScheme, colorScheme } =
     useMantineColorScheme();
   useHotkeys([["mod + J", () => toggleColorScheme()]]);
+  const ref = useClickOutside(() => close());
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
-    <Stack justify="center">
+    <Stack justify="center" ref={ref}>
       <Transition mounted={isOpen} transition="fade-up" duration={400}>
         {(transitionStyles) => (
           <Stack style={transitionStyles}>
