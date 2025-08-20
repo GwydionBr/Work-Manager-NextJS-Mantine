@@ -2,7 +2,7 @@
 
 import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
 import { alpha, Stack, Text } from "@mantine/core";
-import { isYesterday } from "date-fns";
+import { endOfDay, isToday, isYesterday, startOfDay } from "date-fns";
 import ActiveTimeTracker from "./ActiveTimeTracker";
 
 interface TimeTrackerEventProps {
@@ -28,9 +28,8 @@ export default function TimeTrackerEvent({
       if (isYesterday(timerStartDate)) {
         // Timer started yesterday, show it from start time to end of day
         const top = toY(timerStartDate);
-        const endOfDay = new Date(day);
-        endOfDay.setHours(23, 59, 59, 999);
-        const bottom = toY(endOfDay);
+        const end = endOfDay(day);
+        const bottom = toY(end);
         const height = Math.max(bottom - top, 4);
 
         return (
@@ -55,7 +54,7 @@ export default function TimeTrackerEvent({
       <Stack
         gap={1}
         h={20}
-        bg="light-dark(var(--mantine-color-white), var(--mantine-color-dark-7))"
+        bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))"
         style={{
           position: "absolute",
           top: toY(currentTime),
@@ -75,7 +74,9 @@ export default function TimeTrackerEvent({
     );
   }
 
-  const top = toY(new Date(timer.startTime ?? 0));
+  const startTime = new Date(timer.startTime ?? 0);
+
+  const top = toY(isToday(startTime) ? startTime : startOfDay(currentTime));
   const bottom = toY(currentTime);
   const realHeight = bottom - top;
   const height = Math.max(realHeight, 20);

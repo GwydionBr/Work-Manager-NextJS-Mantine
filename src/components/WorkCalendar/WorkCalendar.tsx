@@ -6,7 +6,6 @@ import { useWorkStore } from "@/stores/workManagerStore";
 
 import {
   Box,
-  Button,
   Grid,
   Group,
   Loader,
@@ -16,15 +15,15 @@ import {
   Stack,
   Text,
   Title,
-  Popover,
-  ColorPicker,
-  DEFAULT_THEME,
   ActionIcon,
 } from "@mantine/core";
 import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
 import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
 import CalendarGrid from "./Calendar/CalendarGrid";
 import TimerSessionDrawer from "@/components/Work/Session/TimerSessionDrawer";
+import PlusActionIcon from "../UI/ActionIcons/PlusActionIcon";
+import MinusActionIcon from "../UI/ActionIcons/MinusActionIcon";
+import CalendarLegend from "./Calendar/CalendarLegend";
 
 import { formatDate } from "@/utils/workHelperFunctions";
 import { addDays, getStartOfDay } from "./calendarUtils";
@@ -32,8 +31,6 @@ import { addDays, getStartOfDay } from "./calendarUtils";
 import { CalendarSession, ViewMode } from "@/types/workCalendar.types";
 import { CalendarDay } from "@/types/workCalendar.types";
 import { Tables } from "@/types/db.types";
-import PlusActionIcon from "../UI/ActionIcons/PlusActionIcon";
-import MinusActionIcon from "../UI/ActionIcons/MinusActionIcon";
 
 const zoomLevel = [1, 2, 4, 6, 12]; // multiplier for hour height
 const rasterHeight = 60; // px per hour
@@ -44,14 +41,8 @@ export default function WorkCalendar() {
   const [zoomIndex, setZoomIndex] = useState(0);
   const [selectedSession, setSelectedSession] =
     useState<Tables<"timer_session"> | null>(null);
-  const [selectedColor, setSelectedColor] = useState<string>("#000000");
   const [drawerOpened, { open, close }] = useDisclosure(false);
-  const {
-    projects: timerProjects,
-    timerSessions,
-    isFetching,
-    updateProject,
-  } = useWorkStore();
+  const { projects: timerProjects, timerSessions, isFetching } = useWorkStore();
   const projects = timerProjects.map((project) => project.project);
   const viewport = useRef<HTMLDivElement>(null);
 
@@ -174,7 +165,7 @@ export default function WorkCalendar() {
             background: "var(--mantine-color-body)",
           }}
         >
-          <Grid.Col span={3}>
+          <Grid.Col span={4}>
             <Group justify="flex-start" ml="md" gap="xs">
               <ActionIcon.Group>
                 <MinusActionIcon
@@ -189,89 +180,10 @@ export default function WorkCalendar() {
                   variant="outline"
                 />
               </ActionIcon.Group>
-              <SegmentedControl
-                ml="md"
-                value={viewMode}
-                onChange={(v) => setViewMode(v as ViewMode)}
-                data={[
-                  { label: "Day", value: "day" },
-                  { label: "Week", value: "week" },
-                ]}
-              />
             </Group>
           </Grid.Col>
-          <Grid.Col span={6}>
-            {/* Legend: show projects visible in the current range with their colors */}
-            {isFetching ? (
-              <Center>
-                <Loader size="xs" />
-              </Center>
-            ) : (
-              visibleProjects.length > 0 && (
-                <Group wrap="wrap" justify="center" gap={5}>
-                  {visibleProjects.map((p) => (
-                    <Popover
-                      key={p.id}
-                      onOpen={() => {
-                        setSelectedColor(p.color);
-                      }}
-                      onClose={() => {
-                        updateProject({
-                          id: p.id,
-                          color: selectedColor,
-                        });
-                      }}
-                    >
-                      <Popover.Target>
-                        <Button
-                          c="light-dark(var(--mantine-color-black), var(--mantine-color-white))"
-                          variant="subtle"
-                          size="xs"
-                          leftSection={
-                            <Box
-                              style={{
-                                width: 10,
-                                height: 10,
-                                borderRadius: 10,
-                                background: p.color,
-                                boxShadow: `0 0 0 1px ${p.color}`,
-                              }}
-                            />
-                          }
-                        >
-                          {p.title}
-                        </Button>
-                      </Popover.Target>
-                      <Popover.Dropdown>
-                        <ColorPicker
-                          value={selectedColor}
-                          onChange={(color) => {
-                            setSelectedColor(color);
-                          }}
-                          swatches={[
-                            DEFAULT_THEME.colors.red[6],
-                            DEFAULT_THEME.colors.pink[6],
-                            DEFAULT_THEME.colors.grape[6],
-                            DEFAULT_THEME.colors.violet[6],
-                            DEFAULT_THEME.colors.indigo[6],
-                            DEFAULT_THEME.colors.blue[6],
-                            DEFAULT_THEME.colors.cyan[6],
-                            DEFAULT_THEME.colors.teal[6],
-                            DEFAULT_THEME.colors.green[6],
-                            DEFAULT_THEME.colors.lime[6],
-                            DEFAULT_THEME.colors.yellow[6],
-                            DEFAULT_THEME.colors.orange[6],
-                          ]}
-                        />
-                      </Popover.Dropdown>
-                    </Popover>
-                  ))}
-                </Group>
-              )
-            )}
-          </Grid.Col>
-          <Grid.Col span={3}>
-            <Group gap="xs" justify="flex-end">
+          <Grid.Col span={4}>
+            <Group gap="xs" justify="center">
               <PrevActionIcon
                 onClick={() =>
                   setReferenceDate(
@@ -289,6 +201,19 @@ export default function WorkCalendar() {
               />
             </Group>
           </Grid.Col>
+          <Grid.Col span={4}>
+            <Group justify="flex-end" mr="md" gap="xs">
+              <SegmentedControl
+                ml="md"
+                value={viewMode}
+                onChange={(v) => setViewMode(v as ViewMode)}
+                data={[
+                  { label: "Day", value: "day" },
+                  { label: "Week", value: "week" },
+                ]}
+              />
+            </Group>
+          </Grid.Col>
         </Grid>
         <CalendarGrid
           isFetching={isFetching}
@@ -299,6 +224,9 @@ export default function WorkCalendar() {
           rasterHeight={rasterHeight}
         />
       </Stack>
+      {visibleProjects.length > 0 && (
+        <CalendarLegend visibleProjects={visibleProjects} />
+      )}
       {selectedSession && (
         <TimerSessionDrawer
           timerSession={selectedSession}

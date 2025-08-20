@@ -1,6 +1,6 @@
 import { CalendarSession } from "@/types/workCalendar.types";
 import { alpha, Card, Stack, Text } from "@mantine/core";
-import { formatTime } from "@/utils/workHelperFunctions";
+import { formatTime, formatTimeSpan } from "@/utils/workHelperFunctions";
 
 interface CalendarEventHoverCardProps {
   s: CalendarSession;
@@ -12,11 +12,14 @@ export default function CalendarEventHoverCard({
   color,
 }: CalendarEventHoverCardProps) {
   return (
-    <Card withBorder bg={alpha(color, 0.15)} style={{ borderColor: color }}>
-      <Stack>
-        <Text>{s.projectTitle}</Text>
-        <Text>{s.memo}</Text>
-        <Text>{formatTime(s.active_seconds)}</Text>
+    <Card withBorder bg={alpha(color, 0.15)} style={{ borderColor: color, borderTop: `6px solid ${color}` }} miw={175}>
+      <Card.Section style={{ borderBottom: `1px solid ${color}` }}>
+        <Text size="md" fw={600} ta="center">{s.projectTitle}</Text>
+      </Card.Section>
+      <Stack pt="xs" gap="xs">
+        <Text ta="center" size="xs" fw={500}>{formatTimeSpan(new Date(s.start_time), new Date(s.end_time))}</Text>
+        <Text ta="center" size="xs" fw={500}>{formatTime(s.active_seconds)}</Text>
+        <Text ta="center" size="xs" fw={500}>{s.memo}</Text>
       </Stack>
     </Card>
   );

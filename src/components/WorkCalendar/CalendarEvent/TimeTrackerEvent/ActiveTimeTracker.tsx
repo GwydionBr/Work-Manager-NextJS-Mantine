@@ -33,7 +33,7 @@ export default function ActiveTimeTracker({
           top: bottom - Math.max(height, title ? 40 : 20),
           left: 0,
           right: 0,
-          zIndex: 10,
+          zIndex: 9,
           background:
             "light-dark(var(--mantine-color-white), var(--mantine-color-dark-9))",
         }}
@@ -78,7 +78,7 @@ export default function ActiveTimeTracker({
           height: realHeight,
           background: color,
           borderRadius: 5,
-          zIndex: 10,
+          zIndex: 9,
         }}
       />
     </Box>
