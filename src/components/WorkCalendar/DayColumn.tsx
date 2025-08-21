@@ -61,7 +61,11 @@ export function DayColumn({
     // Convert a date to a Y-position within the day timeline
     const minutes = date.getHours() * 60 + date.getMinutes();
     const totalMinutes = 24 * 60;
-    const y = (minutes / totalMinutes) * (totalMinutes / 60) * rasterHeight * hourMultiplier;
+    const y =
+      (minutes / totalMinutes) *
+      (totalMinutes / 60) *
+      rasterHeight *
+      hourMultiplier;
     return clamp(y, 0, 24 * rasterHeight * hourMultiplier);
   };
 
@@ -73,11 +77,13 @@ export function DayColumn({
           style={{
             position: "relative",
             height: rasterHeight * 24 * hourMultiplier,
-            border:
-              "1px solid light-dark(var(--mantine-color-gray-6), var(--mantine-color-gray-6))",
+            border: currentTime
+              ? "2px solid light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-3))"
+              : "1px solid light-dark(var(--mantine-color-gray-6), var(--mantine-color-gray-6))",
             borderRadius: 0,
-            background:
-              "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))",
+            background: currentTime
+              ? "light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))"
+              : "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))",
             overflow: "hidden",
           }}
         >

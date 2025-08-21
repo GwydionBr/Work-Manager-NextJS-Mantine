@@ -1,4 +1,5 @@
 "use client";
+import dayjs from "dayjs";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
@@ -23,7 +24,13 @@ import TimerSessionDrawer from "@/components/Work/Session/TimerSessionDrawer";
 import CalendarLegend from "./Calendar/CalendarLegend";
 
 import { getStartOfDay } from "./calendarUtils";
-import { startOfWeek, endOfWeek, addDays } from "date-fns";
+import {
+  startOfWeek,
+  endOfWeek,
+  addDays,
+  isSameDay,
+  differenceInCalendarDays,
+} from "date-fns";
 
 import { CalendarSession, ViewMode } from "@/types/workCalendar.types";
 import { CalendarDay } from "@/types/workCalendar.types";
@@ -37,8 +44,8 @@ export default function WorkCalendar() {
   const [viewMode, setViewMode] = useState<ViewMode>("week");
   const [referenceDate, setReferenceDate] = useState<Date>(new Date());
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
-    addDays(startOfWeek(new Date()), 1),
-    addDays(endOfWeek(new Date()), 1),
+    startOfWeek(new Date(), { weekStartsOn: 1 }),
+    endOfWeek(new Date(), { weekStartsOn: 1 }),
   ]);
   const [zoomIndex, setZoomIndex] = useState(1);
   const [viewportTop, setViewportTop] = useState({
@@ -49,22 +56,32 @@ export default function WorkCalendar() {
   const [selectedSession, setSelectedSession] =
     useState<Tables<"timer_session"> | null>(null);
   const [drawerOpened, { open, close }] = useDisclosure(false);
+  const { locale } = useSettingsStore();
   const { projects: timerProjects, timerSessions, isFetching } = useWorkStore();
   const projects = timerProjects.map((project) => project.project);
   const viewport = useRef<HTMLDivElement>(null);
-  const { locale } = useSettingsStore();
+
+  const today = dayjs();
 
   const days: Date[] = useMemo(() => {
     if (viewMode === "day") return [getStartOfDay(referenceDate)];
-    const startOfWeek = (() => {
+
+    const [rangeStart, rangeEnd] = dateRange;
+    if (rangeStart && rangeEnd) {
+      const start = getStartOfDay(rangeStart);
+      const end = getStartOfDay(rangeEnd);
+      const length = differenceInCalendarDays(end, start) + 1;
+      return Array.from({ length }, (_, i) => addDays(start, i));
+    }
+
+    const startOfW = (() => {
       const d = getStartOfDay(referenceDate);
-      // ISO week: Monday start
       const day = (d.getDay() + 6) % 7; // 0..6, 0 = Monday
       d.setDate(d.getDate() - day);
       return d;
     })();
-    return Array.from({ length: 7 }, (_, i) => addDays(startOfWeek, i));
-  }, [viewMode, referenceDate]);
+    return Array.from({ length: 7 }, (_, i) => addDays(startOfW, i));
+  }, [viewMode, referenceDate, dateRange]);
 
   const sessionsByDay = useMemo(() => {
     // Bucket raw sessions by day key so we can render a column per day
@@ -137,6 +154,20 @@ export default function WorkCalendar() {
     setViewMode("day");
   }
 
+  function setRangeAndMaybeSwitch(start: Date | null, end: Date | null) {
+    setDateRange([start ? new Date(start) : null, end ? new Date(end) : null]);
+    if (start && end) {
+      if (isSameDay(start, end)) {
+        setReferenceDate(new Date(start));
+        setViewMode("day");
+      } else {
+        setReferenceDate(new Date(start));
+        setViewMode("week");
+      }
+    } else if (start) {
+      setReferenceDate(new Date(start));
+    }
+  }
   function handleSessionClick(sessionId: string) {
     const session = timerSessions.find((s) => s.id === sessionId);
     if (session) {
@@ -254,11 +285,22 @@ export default function WorkCalendar() {
           <Grid.Col span={8}>
             <Group gap="xs" justify="center">
               <PrevActionIcon
-                onClick={() =>
-                  setReferenceDate(
-                    addDays(referenceDate, viewMode === "day" ? -1 : -7)
-                  )
-                }
+                onClick={() => {
+                  if (viewMode === "day") {
+                    setReferenceDate(addDays(referenceDate, -1));
+                    return;
+                  }
+                  const [s, e] = dateRange;
+                  if (s && e) {
+                    const len = differenceInCalendarDays(e, s) + 1;
+                    const ns = addDays(s, -len);
+                    const ne = addDays(e, -len);
+                    setDateRange([ns, ne]);
+                    setReferenceDate(ns);
+                  } else {
+                    setReferenceDate(addDays(referenceDate, -7));
+                  }
+                }}
               />
               {viewMode === "day" ? (
                 <DatePickerInput
@@ -281,20 +323,93 @@ export default function WorkCalendar() {
                   locale={locale}
                   onChange={(value) => {
                     const [start, end] = value;
-                    setDateRange([
-                      start ? new Date(start) : null,
-                      end ? new Date(end) : null,
-                    ]);
-                    start && setReferenceDate(new Date(start));
+                    const s = start ? new Date(start) : null;
+                    const e = end ? new Date(end) : null;
+                    setRangeAndMaybeSwitch(s, e);
                   }}
+                  presets={[
+                    {
+                      value: [
+                        today.subtract(2, "day").format("YYYY-MM-DD"),
+                        today.format("YYYY-MM-DD"),
+                      ],
+                      label:
+                        locale === "de-DE" ? "Letzte 2 Tage" : "Last 2 days",
+                    },
+                    {
+                      value: [
+                        today.subtract(7, "day").format("YYYY-MM-DD"),
+                        today.format("YYYY-MM-DD"),
+                      ],
+                      label:
+                        locale === "de-DE" ? "Letzte 7 Tage" : "Last 7 days",
+                    },
+                    {
+                      value: [
+                        today
+                          .startOf("week")
+                          .add(1, "day")
+                          .format("YYYY-MM-DD"),
+                        today.endOf("week").add(1, "day").format("YYYY-MM-DD"),
+                      ],
+                      label: locale === "de-DE" ? "Diese Woche" : "This week",
+                    },
+                    {
+                      value: [
+                        today
+                          .startOf("week")
+                          .subtract(1, "week")
+                          .add(1, "day")
+                          .format("YYYY-MM-DD"),
+                        today
+                          .endOf("week")
+                          .subtract(1, "week")
+                          .add(1, "day")
+                          .format("YYYY-MM-DD"),
+                      ],
+                      label: locale === "de-DE" ? "Letzte Woche" : "Last week",
+                    },
+                    {
+                      value: [
+                        today.startOf("month").format("YYYY-MM-DD"),
+                        today.endOf("month").format("YYYY-MM-DD"),
+                      ],
+                      label: locale === "de-DE" ? "Dieser Monat" : "This month",
+                    },
+                    {
+                      value: [
+                        today
+                          .subtract(1, "month")
+                          .startOf("month")
+                          .format("YYYY-MM-DD"),
+                        today
+                          .subtract(1, "month")
+                          .endOf("month")
+                          .format("YYYY-MM-DD"),
+                      ],
+                      label:
+                        locale === "de-DE" ? "Letzter Monat" : "Last month",
+                    },
+                  ]}
                 />
               )}
               <NextActionIcon
-                onClick={() =>
-                  setReferenceDate(
-                    addDays(referenceDate, viewMode === "day" ? 1 : 7)
-                  )
-                }
+                onClick={() => {
+                  if (viewMode === "day") {
+                    setReferenceDate(addDays(referenceDate, 1));
+                    return;
+                  }
+                  const [s, e] = dateRange;
+                  if (s && e) {
+                    const len = differenceInCalendarDays(e, s) + 1;
+                    const ns = addDays(s, len);
+                    const ne = addDays(e, len);
+                    setDateRange([ns, ne]);
+                    setReferenceDate(ns);
+                  } else {
+                    setReferenceDate(addDays(referenceDate, 7));
+                  }
+                }}
               />
             </Group>
           </Grid.Col>
@@ -306,7 +421,10 @@ export default function WorkCalendar() {
                 onChange={(v) => setViewMode(v as ViewMode)}
                 data={[
                   { label: locale === "de-DE" ? "Tag" : "Day", value: "day" },
-                  { label: locale === "de-DE" ? "Woche" : "Week", value: "week" },
+                  {
+                    label: locale === "de-DE" ? "Woche" : "Week",
+                    value: "week",
+                  },
                 ]}
               />
             </Group>

@@ -57,7 +57,7 @@ export default function TimeTrackerEvent({
       <Stack
         gap={1}
         h={20}
-        bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))"
+        bg="light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-7))"
         style={{
           position: "absolute",
           top: toY(currentTime),
