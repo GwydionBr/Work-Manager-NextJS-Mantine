@@ -42,6 +42,7 @@ export default function TimeTrackerInstance({
     timeSectionInterval,
     roundInTimeSections,
     automaticlyStopOtherTimer,
+    locale,
   } = useSettingsStore();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showSmall, setShowSmall] = useState(true);
@@ -193,7 +194,8 @@ export default function TimeTrackerInstance({
             .map((session) =>
               formatTimeSpan(
                 new Date(session.start_time),
-                new Date(session.end_time)
+                new Date(session.end_time),
+                locale
               )
             )
             .join("\n")}`

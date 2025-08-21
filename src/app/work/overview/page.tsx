@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 import { useSessionFiltering } from "@/hooks/useSessionFiltering";
 
 import { Box, Collapse, Group, Stack, Text } from "@mantine/core";
@@ -18,7 +19,7 @@ export default function WorkOverviewPage() {
   const { projects: timerProjects, folders, timerSessions } = useWorkStore();
   const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
   const [analysisOpened, setAnalysisOpened] = useState(false);
-
+  const { locale } = useSettingsStore();
   const projects = timerProjects.map((project) => project.project);
 
   // Use the custom hook for filtering logic with all new filter functionality
@@ -96,7 +97,7 @@ export default function WorkOverviewPage() {
           {/* Session Hierarchy */}
           {filteredSessions.length > 0 ? (
             <SessionHierarchy
-              groupedSessions={groupSessions(filteredSessions)}
+              groupedSessions={groupSessions(filteredSessions, locale)}
               selectedSessions={selectedSessions}
               onSessionToggle={handleSessionToggle}
               projects={projects}

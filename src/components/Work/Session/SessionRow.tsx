@@ -1,6 +1,7 @@
 "use client";
 
 import { useWorkStore } from "@/stores/workManagerStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 import { useDisclosure, useHover } from "@mantine/hooks";
 
 import { Card, Group, Stack, Text, Checkbox, Box } from "@mantine/core";
@@ -29,6 +30,7 @@ export default function SessionRow({
   onToggleSelection,
   isOverview = false,
 }: SessionRowProps) {
+  const { locale } = useSettingsStore();
   const [deleteModalOpened, deleteModalHandler] = useDisclosure(false);
   const [editDrawerOpened, editDrawerHandler] = useDisclosure(false);
   const { deleteTimerSession } = useWorkStore();
@@ -103,7 +105,8 @@ export default function SessionRow({
                 <Text>
                   {helper.formatTimeSpan(
                     new Date(session.start_time),
-                    new Date(session.end_time)
+                    new Date(session.end_time),
+                    locale
                   )}
                 </Text>
                 {sessionPaid && (

@@ -82,8 +82,6 @@ export default function WorkAnalysis({
           ) : (
             <AnalysisChart
               chartData={chartData}
-              formatCurrency={formatCurrencyWithSettings}
-              formatDate={formatDateWithInterval}
               formatTime={formatTimeWithSettings}
               showSalary={
                 project?.hourly_payment || isOverview ? showSalary : false
