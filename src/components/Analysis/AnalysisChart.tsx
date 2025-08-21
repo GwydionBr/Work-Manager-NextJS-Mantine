@@ -1,5 +1,8 @@
+"use client";
+
 import { Box } from "@mantine/core";
 import { AreaChart, BarChart, LineChart } from "@mantine/charts";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 type ChartType = "area" | "bar" | "line";
 type ChartMode = "work" | "finance";
@@ -25,8 +28,6 @@ type ChartData<T extends ChartMode> = T extends "finance"
 
 interface AnalysisChartProps<T extends ChartMode = ChartMode> {
   chartData: ChartData<T>;
-  formatCurrency: (value: number) => string;
-  formatDate: (value: string) => string;
   formatTime?: (value: number) => string;
   showNet?: boolean;
   showSalary?: boolean;
@@ -36,14 +37,13 @@ interface AnalysisChartProps<T extends ChartMode = ChartMode> {
 
 export default function AnalysisChart<T extends ChartMode>({
   chartData,
-  formatCurrency,
-  formatDate,
   formatTime,
   showNet,
   showSalary,
   chartType,
   chartMode,
 }: AnalysisChartProps<T>) {
+  const { locale, defaultFinanceCurrency } = useSettingsStore();
   /**
    * Render the appropriate chart component based on selected type
    * Configures common props and series for all chart types
@@ -76,10 +76,18 @@ export default function AnalysisChart<T extends ChartMode>({
             return formatTime(value);
           }
         }
-        return formatCurrency(value);
+        return value.toLocaleString(locale, {
+          style: "currency",
+          currency: defaultFinanceCurrency,
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 2,
+        });
       },
       xAxisProps: {
-        tickFormatter: (value: string) => formatDate(value),
+        tickFormatter: (value: string) =>
+          new Date(value).toLocaleDateString(locale, {
+            day: "numeric",
+          }),
       },
     };
 
@@ -87,16 +95,40 @@ export default function AnalysisChart<T extends ChartMode>({
     const series =
       chartMode === "finance"
         ? [
-            { name: "income", color: "teal.6", label: "Income" },
-            { name: "expense", color: "red.6", label: "Expenses" },
+            {
+              name: "income",
+              color: "teal.6",
+              label: locale === "de-DE" ? "Einnahmen" : "Income",
+            },
+            {
+              name: "expense",
+              color: "red.6",
+              label: locale === "de-DE" ? "Ausgaben" : "Expenses",
+            },
             ...(showNet
-              ? [{ name: "net", color: "blue.6", label: "Net" }]
+              ? [
+                  {
+                    name: "net",
+                    color: "blue.6",
+                    label: locale === "de-DE" ? "Netto" : "Net",
+                  },
+                ]
               : []),
           ]
         : [
-            { name: "time", color: "blue.6", label: "Time" },
+            {
+              name: "time",
+              color: "blue.6",
+              label: locale === "de-DE" ? "Zeit" : "Time",
+            },
             ...(showSalary
-              ? [{ name: "salary", color: "green.6", label: "Salary" }]
+              ? [
+                  {
+                    name: "salary",
+                    color: "green.6",
+                    label: locale === "de-DE" ? "Gehalt" : "Salary",
+                  },
+                ]
               : []),
           ];
 

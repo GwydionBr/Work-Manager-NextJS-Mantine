@@ -13,7 +13,7 @@ import { SettingsTab } from "../Settings/SettingsModal";
 
 export default function FinanceNavbar() {
   const { singleCashFlows, isFetching } = useFinanceStore();
-  const { setSelectedTab, setIsModalOpen } = useSettingsStore();
+  const { setSelectedTab, setIsModalOpen, locale } = useSettingsStore();
 
   const incomeCashFlows = singleCashFlows.filter(
     (cashFlow) => cashFlow.type === "income"
@@ -26,7 +26,7 @@ export default function FinanceNavbar() {
   return (
     <Box className={classes.main} w="250px">
       <Group className={classes.title} align="center" justify="space-between">
-        <Text>Finances</Text>
+        <Text>{locale === "de-DE" ? "Finanzen" : "Finances"}</Text>
         {!isFetching && (
           <Group gap={8}>
             <AdjustmentActionIcon
@@ -45,13 +45,13 @@ export default function FinanceNavbar() {
       </Group>
       <Box className={classes.financeSections}>
         <FinanceSection
-          title="Income"
+          title={locale === "de-DE" ? "Einnahmen" : "Income"}
           cashFlows={incomeCashFlows}
           isFetching={isFetching}
         />
         <Divider className={classes.divider} />
         <FinanceSection
-          title="Expenses"
+          title={locale === "de-DE" ? "Ausgaben" : "Expenses"}
           cashFlows={expenseCashFlows}
           isFetching={isFetching}
         />

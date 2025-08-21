@@ -2,6 +2,7 @@ import { Grid } from "@mantine/core";
 import StatisticCard from "./StatisticCard";
 import { ChartStats } from "@/hooks/useFinanceChartData";
 import { FinanceInterval } from "@/types/settings.types";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 /**
  * Props for the StatisticsCards component
@@ -9,8 +10,6 @@ import { FinanceInterval } from "@/types/settings.types";
 interface StatisticsCardsProps {
   stats: ChartStats;
   interval: FinanceInterval;
-  formatCurrency: (amount: number) => string;
-  formatDate: (dateString: string) => string;
 }
 
 /**
@@ -22,17 +21,40 @@ interface StatisticsCardsProps {
 export default function StatisticsCards({
   stats,
   interval,
-  formatCurrency,
-  formatDate,
 }: StatisticsCardsProps) {
+  const { locale, defaultFinanceCurrency } = useSettingsStore();
+
+  function getIntervalString() {
+    switch (interval) {
+      case "day":
+        return locale === "de-DE" ? "Tag" : "day";
+      case "week":
+        return locale === "de-DE" ? "Woche" : "week";
+      case "month":
+        return locale === "de-DE" ? "Monat" : "month";
+      case "1/4 year":
+        return locale === "de-DE" ? "Quartal" : "quarter";
+      case "1/2 year":
+        return locale === "de-DE" ? "Halbjahr" : "half year";
+      case "year":
+        return locale === "de-DE" ? "Jahr" : "year";
+    }
+  }
+
   return (
     <Grid gutter="md">
       {/* Total Income Card */}
       <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
         <StatisticCard
           type="totalIncome"
-          value={formatCurrency(stats.totalIncome)}
-          subtitle={`Ø ${formatCurrency(stats.averageIncome)} per ${interval}`}
+          value={stats.totalIncome.toLocaleString(locale, {
+            style: "currency",
+            currency: defaultFinanceCurrency,
+          })}
+          subtitle={`Ø ${stats.averageIncome.toLocaleString(locale, {
+            style: "currency",
+            currency: defaultFinanceCurrency,
+          })} ${locale === "de-DE" ? "pro" : "per"} ${getIntervalString()}`}
           color="teal"
         />
       </Grid.Col>
@@ -41,8 +63,14 @@ export default function StatisticsCards({
       <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
         <StatisticCard
           type="totalExpense"
-          value={formatCurrency(stats.totalExpense)}
-          subtitle={`Ø ${formatCurrency(stats.averageExpense)} per ${interval}`}
+          value={stats.totalExpense.toLocaleString(locale, {
+            style: "currency",
+            currency: defaultFinanceCurrency,
+          })}
+          subtitle={`Ø ${stats.averageExpense.toLocaleString(locale, {
+            style: "currency",
+            currency: defaultFinanceCurrency,
+          })} ${locale === "de-DE" ? "pro" : "per"} ${getIntervalString()}`}
           color="red"
         />
       </Grid.Col>
@@ -51,9 +79,20 @@ export default function StatisticsCards({
       <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
         <StatisticCard
           type="net"
-          value={formatCurrency(stats.netAmount)}
+          value={stats.netAmount.toLocaleString(locale, {
+            style: "currency",
+            currency: defaultFinanceCurrency,
+          })}
           color={stats.netAmount >= 0 ? "green" : "red"}
-          badge={stats.netAmount >= 0 ? "Profit" : "Loss"}
+          badge={
+            stats.netAmount >= 0
+              ? locale === "de-DE"
+                ? "Gewinn"
+                : "Profit"
+              : locale === "de-DE"
+                ? "Verlust"
+                : "Loss"
+          }
           badgeColor={stats.netAmount >= 0 ? "green" : "red"}
         />
       </Grid.Col>
@@ -63,7 +102,7 @@ export default function StatisticsCards({
         <StatisticCard
           type="profitMargin"
           value={`${stats.profitMargin.toFixed(1)}%`}
-          subtitle={`${stats.totalPeriods} periods`}
+          subtitle={`${stats.totalPeriods} ${locale === "de-DE" ? "Perioden" : "Periods"}`}
           color={stats.profitMargin >= 0 ? "green" : "red"}
         />
       </Grid.Col>
@@ -72,8 +111,16 @@ export default function StatisticsCards({
       <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
         <StatisticCard
           type="bestPeriod"
-          value={stats.bestMonth ? formatDate(stats.bestMonth) : "-"}
-          subtitle="Highest Net Value"
+          value={
+            stats.bestMonth
+              ? new Date(stats.bestMonth).toLocaleDateString(locale, {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })
+              : "-"
+          }
+          subtitle={locale === "de-DE" ? "Höchster Nettobetrag" : "Highest Net Value"}
           color="green"
         />
       </Grid.Col>
@@ -82,8 +129,20 @@ export default function StatisticsCards({
       <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
         <StatisticCard
           type="worstPeriod"
-          value={stats.worstMonth ? formatDate(stats.worstMonth) : "-"}
-          subtitle="Lowest Net Value"
+          value={
+            stats.worstMonth
+              ? new Date(stats.worstMonth).toLocaleDateString(locale, {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })
+              : "-"
+          }
+          subtitle={
+            locale === "de-DE"
+              ? "Niedrigster Nettobetrag"
+              : "Lowest Net Value"
+          }
           color="red"
         />
       </Grid.Col>

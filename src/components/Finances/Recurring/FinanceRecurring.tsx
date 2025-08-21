@@ -1,6 +1,7 @@
 "use client";
 
 import { useFinanceStore } from "@/stores/financeStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
   Box,
@@ -19,6 +20,7 @@ import NewCashFlowButton from "../NewCashFlowButton";
 
 export default function FinanceRecurring() {
   const { recurringCashFlows } = useFinanceStore();
+  const { locale, defaultFinanceCurrency } = useSettingsStore();
 
   // Filter active and completed recurring cash flows
   const today = new Date();
@@ -67,15 +69,25 @@ export default function FinanceRecurring() {
           <Stack>
             <Group justify="space-between">
               <Group gap="xs">
-                <Text>Expense Sum:</Text>
+                <Text>{locale === "de-DE" ? "Ausgaben" : "Expense"}:</Text>
                 <Text c="red" fw={700}>
-                  {expenseSum ? expenseSum : 0}
+                  {expenseSum ? expenseSum.toLocaleString(locale, {
+                    style: "currency",
+                    currency: defaultFinanceCurrency,
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2,
+                  }) : 0}
                 </Text>
               </Group>
               <Group gap="xs">
-                <Text>Income Sum:</Text>
+                <Text>{locale === "de-DE" ? "Einnahmen" : "Income"}:</Text>
                 <Text c="green" fw={700}>
-                  {incomeSum ? incomeSum : 0}
+                  {incomeSum ? incomeSum.toLocaleString(locale, {
+                    style: "currency",
+                    currency: defaultFinanceCurrency,
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2,
+                  }) : 0}
                 </Text>
               </Group>
             </Group>
@@ -106,20 +118,27 @@ export default function FinanceRecurring() {
           {cashFlows.map((cashFlow) => (
             <Table.Tr key={cashFlow.id}>
               <Table.Td>{cashFlow.title}</Table.Td>
-              <Table.Td>{cashFlow.amount}</Table.Td>
-              <Table.Td>{cashFlow.type}</Table.Td>
+              <Table.Td>
+                {cashFlow.amount.toLocaleString(locale, {
+                  style: "currency",
+                  currency: cashFlow.currency,
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2,
+                })}
+              </Table.Td>
+              <Table.Td>{cashFlow.type === "expense" ? "Expense" : "Income"}</Table.Td>
               <Table.Td>{cashFlow.interval}</Table.Td>
               {showStartDates && (
                 <Table.Td>
                   {cashFlow.start_date
-                    ? new Date(cashFlow.start_date).toLocaleDateString()
+                    ? new Date(cashFlow.start_date).toLocaleDateString(locale)
                     : "Unlimited"}
                 </Table.Td>
               )}
               {showEndDates && (
                 <Table.Td>
                   {cashFlow.end_date
-                    ? new Date(cashFlow.end_date).toLocaleDateString()
+                    ? new Date(cashFlow.end_date).toLocaleDateString(locale)
                     : "Unlimited"}
                 </Table.Td>
               )}

@@ -2,6 +2,7 @@
 
 import { useDisclosure } from "@mantine/hooks";
 import { useState, useMemo, useEffect } from "react";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
   Group,
@@ -87,6 +88,7 @@ export default function ChartControls({
   dateRange,
   setDateRange,
 }: ChartControlsProps) {
+  const { locale } = useSettingsStore();
   const [filterOpen, { toggle }] = useDisclosure(false);
   const [navigationMode, setNavigationMode] = useState<NavigationMode>("month");
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
@@ -107,7 +109,7 @@ export default function ChartControls({
 
     switch (navigationMode) {
       case "month":
-        return new Date(year, month).toLocaleDateString("en-US", {
+        return new Date(year, month).toLocaleDateString(locale, {
           month: "long",
           year: "numeric",
         });

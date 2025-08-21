@@ -13,8 +13,6 @@ import StatisticsCards from "./StatisticsCards";
 import ChartControls, { type ChartType } from "./ChartControls";
 
 import {
-  formatCurrency,
-  formatDate,
   getStartOfMonth,
   getEndOfMonth,
 } from "@/utils/financeChartHelperFunctions";
@@ -47,8 +45,7 @@ export default function FinanceOverview() {
   });
 
   // Get currency from settings
-  const { defaultFinanceCurrency } = useSettingsStore();
-
+  const { locale } = useSettingsStore();
   // Use custom hook for chart data and statistics
   const { chartData, stats } = useFinanceChartData(interval, dateRange);
 
@@ -60,12 +57,6 @@ export default function FinanceOverview() {
       to: getEndOfMonth(now),
     });
   }, []);
-
-  // Create formatter functions with current settings
-  const formatCurrencyWithSettings = (amount: number) =>
-    formatCurrency(amount, defaultFinanceCurrency);
-  const formatDateWithInterval = (dateString: string) =>
-    formatDate(dateString, interval);
 
   return (
     <Stack className={classes.financeOverviewContainer} mb="xl">
@@ -82,13 +73,15 @@ export default function FinanceOverview() {
       <Paper w="100%" h="100%" p="xl" withBorder>
         {chartData.length === 0 ? (
           <Stack align="center" justify="center" h={300}>
-            <Text c="dimmed">Keine Daten für den ausgewählten Zeitraum</Text>
+            <Text c="dimmed">
+              {locale === "de-DE"
+                ? "Keine Daten für den ausgewählten Zeitraum"
+                : "No data for the selected time period"}
+            </Text>
           </Stack>
         ) : (
           <AnalysisChart
             chartData={chartData}
-            formatCurrency={formatCurrencyWithSettings}
-            formatDate={formatDateWithInterval}
             showNet={showNet}
             chartType={chartType}
             chartMode="finance"
@@ -96,12 +89,7 @@ export default function FinanceOverview() {
         )}
       </Paper>
       <Box w="100%" h="100%" mt="xl">
-        <StatisticsCards
-          stats={stats}
-          interval={interval}
-          formatCurrency={formatCurrencyWithSettings}
-          formatDate={formatDateWithInterval}
-        />
+        <StatisticsCards stats={stats} interval={interval} />
       </Box>
     </Stack>
   );

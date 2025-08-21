@@ -1,3 +1,5 @@
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import { Card, Text, Badge, Group } from "@mantine/core";
 import {
   IconCash,
@@ -43,48 +45,50 @@ export default function StatisticCard({
   badge,
   badgeColor = "green",
 }: StatisticCardProps) {
+  const { locale } = useSettingsStore();
+
   // Get title and default styling based on type
   const getCardConfig = () => {
     switch (type) {
       case "totalIncome":
         return {
-          title: "Total Income",
+          title: locale === "de-DE" ? "Gesamteinnahmen" : "Total Income",
           defaultColor: "teal" as const,
           icon: IconCash,
         };
       case "totalExpense":
         return {
-          title: "Total Expenses",
+          title: locale === "de-DE" ? "Gesamtausgaben" : "Total Expenses",
           defaultColor: "red" as const,
           icon: IconReceipt,
         };
       case "net":
         return {
-          title: "Net",
+          title: locale === "de-DE" ? "Netto" : "Net",
           defaultColor: "green" as const,
           icon: IconChartBar,
         };
       case "profitMargin":
         return {
-          title: "Profit Margin",
+          title: locale === "de-DE" ? "Gewinnspanne" : "Profit Margin",
           defaultColor: "green" as const,
           icon: IconTrendingUp,
         };
       case "bestPeriod":
         return {
-          title: "Best Period",
+          title: locale === "de-DE" ? "Bester Zeitraum" : "Best Period",
           defaultColor: "green" as const,
           icon: IconTrophy,
         };
       case "worstPeriod":
         return {
-          title: "Worst Period",
+          title: locale === "de-DE" ? "Schlechtester Zeitraum" : "Worst Period",
           defaultColor: "red" as const,
           icon: IconAlertTriangle,
         };
       default:
         return {
-          title: "Statistic",
+          title: locale === "de-DE" ? "Statistik" : "Statistic",
           defaultColor: "blue" as const,
           icon: IconChartBar,
         };

@@ -1,3 +1,7 @@
+"use client";
+
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import {
   Container,
   Text,
@@ -11,7 +15,7 @@ import {
   Grid,
 } from "@mantine/core";
 import { formatDistanceToNow } from "date-fns";
-import { enUS } from "date-fns/locale";
+import { enUS, de } from "date-fns/locale";
 
 import { Tables } from "@/types/db.types";
 
@@ -25,17 +29,18 @@ interface FinanceSectionProps {
 }
 
 export default function FinanceSection({
-  title,
+  title,  
   cashFlows,
   isFetching,
 }: FinanceSectionProps) {
+  const { locale } = useSettingsStore();
   // Sort cash flows by date (most recent first) and take only the 4 most recent ones
   const recentCashFlows = [...cashFlows]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 3);
 
   const backgroundColor =
-    title === "Income"
+    title === "Income" || title === "Einnahmen"
       ? alpha("var(--mantine-color-green-8)", 0.4)
       : alpha("var(--mantine-color-red-8)", 0.4);
 
@@ -60,7 +65,7 @@ export default function FinanceSection({
               >
                 {formatDistanceToNow(new Date(cashFlow.date), {
                   addSuffix: true,
-                  locale: enUS,
+                  locale: locale === "de-DE" ? de : enUS,
                 })}
               </Badge>
               <Card
@@ -79,7 +84,12 @@ export default function FinanceSection({
                   </Grid.Col>
                   <Grid.Col span={6}>
                     <Text p="xs" ta="right">
-                      {formatMoney(cashFlow.amount, cashFlow.currency)}
+                      {cashFlow.amount.toLocaleString(locale, {
+                        style: "currency",
+                        currency: cashFlow.currency,
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2,
+                      })}
                     </Text>
                   </Grid.Col>
                 </Grid>

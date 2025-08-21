@@ -1,6 +1,7 @@
 "use client";
 
 import { useFinanceStore } from "@/stores/financeStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Box, Table, alpha, Group, Text } from "@mantine/core";
 
@@ -10,6 +11,7 @@ import NewCashFlowButton from "../NewCashFlowButton";
 
 export default function FinanceSingle() {
   const { singleCashFlows, financeCategories } = useFinanceStore();
+  const { locale } = useSettingsStore();
 
   const sortedSingleCashFlows = singleCashFlows.sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
@@ -40,14 +42,21 @@ export default function FinanceSingle() {
                 }
               >
                 <Table.Td>
-                  {new Date(cashFlow.date).toLocaleDateString("en-US", {
+                  {new Date(cashFlow.date).toLocaleDateString(locale, {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
                   })}
                 </Table.Td>
                 <Table.Td>{cashFlow.title}</Table.Td>
-                <Table.Td>{cashFlow.amount}</Table.Td>
+                <Table.Td>
+                  {cashFlow.amount.toLocaleString(locale, {
+                    style: "currency",
+                    currency: cashFlow.currency,
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2,
+                  })}
+                </Table.Td>
                 <Table.Td>
                   {
                     financeCategories.find(
