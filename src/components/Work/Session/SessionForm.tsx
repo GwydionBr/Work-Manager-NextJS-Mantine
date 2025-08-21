@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useWorkStore } from "@/stores/workManagerStore";
 import { useForm } from "@mantine/form";
 
 import { NumberInput, Select, Stack, Textarea } from "@mantine/core";
@@ -18,6 +19,7 @@ import CreateButton from "@/components/UI/Buttons/CreateButton";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 
 interface NewSession {
+  project_id?: string;
   start_time: string;
   end_time: string;
   active_seconds: number;
@@ -45,15 +47,14 @@ export default function SessionForm({
   project,
   submitting,
 }: SessionFormProps) {
+  const { projects: timerProjects } = useWorkStore();
   const [userChangedStartTime, setUserChangedStartTime] = useState(false);
   const [userChangedEndTime, setUserChangedEndTime] = useState(false);
   const [formInitialized, setFormInitialized] = useState(false);
-
-  // If project doesn't have hourly payment, set salary to 0 and currency to project currency
-  const shouldShowPaymentFields = project?.hourly_payment ?? true;
-
+  const [showPaymentFields, setShowPaymentFields] = useState(false);
   // Create conditional schema based on hourly_payment
   const schema = z.object({
+    project_id: z.string(),
     start_time: z.string().transform((str) => new Date(str).toISOString()),
     end_time: z.string().transform((str) => new Date(str).toISOString()),
     active_seconds: z
@@ -63,10 +64,10 @@ export default function SessionForm({
       .number()
       .min(0, { message: "Paused time must be positive or 0" }),
     memo: z.string().optional(),
-    currency: shouldShowPaymentFields
+    currency: showPaymentFields
       ? z.string().min(1, { message: "Currency is required" })
       : z.string().optional(),
-    salary: shouldShowPaymentFields
+    salary: showPaymentFields
       ? z.number().min(0, { message: "Salary must be positive" })
       : z.number().optional(),
   });
@@ -87,6 +88,21 @@ export default function SessionForm({
       setFormInitialized(true);
     }
   }, [formInitialized, form]);
+
+  useEffect(() => {
+    if (project) {
+      setShowPaymentFields(project.hourly_payment);
+    }
+  }, [project]);
+
+  const projects = useMemo(() => {
+    return (
+      timerProjects.map((timerProject) => ({
+        value: timerProject.project.id,
+        label: timerProject.project.title,
+      })) || []
+    );
+  }, [timerProjects]);
 
   // Calculate end_time when active_seconds changes
   const handleActiveSecondsChange = (value: number) => {
@@ -197,9 +213,29 @@ export default function SessionForm({
     }
   };
 
+  function handleProjectChange(value: string | null) {
+    if (!value) return;
+    const project = timerProjects.find((p) => p.project.id === value);
+    if (project) {
+      form.setFieldValue("project_id", value);
+      form.setFieldValue("currency", project.project.currency);
+      form.setFieldValue("salary", project.project.salary);
+      form.setFieldValue("hourly_payment", project.project.hourly_payment);
+      setShowPaymentFields(project.project.hourly_payment);
+    }
+  }
+
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
       <Stack gap="lg">
+        <Select
+          allowDeselect={false}
+          label="Project"
+          placeholder="Select project"
+          data={projects}
+          searchable
+          onChange={handleProjectChange}
+        />
         <TimeInput
           label="Active Time"
           value={form.values.active_seconds}
@@ -236,7 +272,7 @@ export default function SessionForm({
           placeholder="Memo"
           {...form.getInputProps("memo")}
         />
-        {shouldShowPaymentFields ? (
+        {showPaymentFields ? (
           <>
             <NumberInput
               label="Salary"

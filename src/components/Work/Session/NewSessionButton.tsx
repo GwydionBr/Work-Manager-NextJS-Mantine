@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 
-import { Box, Drawer, Flex } from "@mantine/core";
+import { Box, Flex, Modal } from "@mantine/core";
 import SessionForm from "@/components/Work/Session/SessionForm";
 import AddActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 
@@ -35,7 +35,6 @@ export default function NewSessionButton() {
 
     const newSession: TablesInsert<"timer_session"> = {
       ...values,
-      project_id: activeProject.project.id,
       user_id: activeProject.project.user_id,
       start_time: new Date(values.start_time).toISOString(),
       end_time: new Date(values.end_time).toISOString(),
@@ -57,33 +56,32 @@ export default function NewSessionButton() {
 
   return (
     <Box>
-      <Drawer
+      <Modal
         opened={opened}
         onClose={close}
         title="Add Session"
-        size="md"
+        size="lg"
         padding="md"
       >
-        <Flex direction="column" gap="xl">
-          <SessionForm
-            initialValues={{
-              start_time: new Date().toISOString(),
-              end_time: new Date().toISOString(),
-              active_seconds: 0,
-              paused_seconds: 0,
-              currency: activeProject?.project.currency || "USD",
-              salary: activeProject?.project.hourly_payment
-                ? activeProject?.project.salary || 0
-                : 0,
-            }}
-            onSubmit={handleSubmit}
-            onCancel={close}
-            newSession
-            project={activeProject?.project}
-            submitting={submitting}
-          />
-        </Flex>
-      </Drawer>
+        <SessionForm
+          initialValues={{
+            project_id: activeProject?.project.id,
+            start_time: new Date().toISOString(),
+            end_time: new Date().toISOString(),
+            active_seconds: 0,
+            paused_seconds: 0,
+            currency: activeProject?.project.currency || "USD",
+            salary: activeProject?.project.hourly_payment
+              ? activeProject?.project.salary || 0
+              : 0,
+          }}
+          onSubmit={handleSubmit}
+          onCancel={close}
+          newSession
+          project={activeProject?.project}
+          submitting={submitting}
+        />
+      </Modal>
 
       <AddActionIcon
         aria-label="Add session"

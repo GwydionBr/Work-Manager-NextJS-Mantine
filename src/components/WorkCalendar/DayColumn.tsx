@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useMouse, useHover, useHotkeys } from "@mantine/hooks";
+import { useMouse, useHover, useHotkeys, useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useWorkStore } from "@/stores/workManagerStore";
 
-import { Box, Skeleton, Stack, Text } from "@mantine/core";
+import { Box, Button, Modal, Skeleton, Stack, Text } from "@mantine/core";
 
 import {
   getStartOfDay,
@@ -36,17 +37,12 @@ export function DayColumn({
   hourMultiplier,
   rasterHeight,
 }: DayColumnProps) {
-  const [newSessionTimes, setNewSessionTimes] = useState<{
-    start: number | null;
-    end: number | null;
-  }>({ start: null, end: null });
-  const { ref, x, y } = useMouse();
+  const [startNewSession, setStartNewSession] = useState<number | null>(null);
+  const { ref, y } = useMouse();
   const { hovered, ref: hoverRef } = useHover();
   const { locale } = useSettingsStore();
 
-  useHotkeys([
-    ["escape", () => setNewSessionTimes({ start: null, end: null })],
-  ]);
+  useHotkeys([["escape", () => setStartNewSession(null)]]);
 
   // Clip sessions to the visible day window so cross-midnight sessions
   // render only the portion within this column. This avoids negative/overflowing heights.
@@ -90,23 +86,18 @@ export function DayColumn({
     const minutes = (y / (rasterHeight * hourMultiplier)) * 60;
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
-    return new Date(0, 0, 0, hours, remainingMinutes).toLocaleTimeString(
-      locale,
-      {
-        hour: "2-digit",
-        minute: "2-digit",
-      }
+    return new Date(
+      day.getFullYear(),
+      day.getMonth(),
+      day.getDate(),
+      hours,
+      remainingMinutes
     );
   };
 
   function handleNewSessionClick(y: number) {
-    if (newSessionTimes.start === null) {
-      setNewSessionTimes({ start: y, end: null });
-    } else {
-      setNewSessionTimes({
-        start: Math.max(newSessionTimes.start, y),
-        end: Math.min(newSessionTimes.start, y),
-      });
+    if (startNewSession === null) {
+      setStartNewSession(y);
     }
   }
 
@@ -165,15 +156,21 @@ export function DayColumn({
                 "3px solid light-dark(var(--mantine-color-teal-6), var(--mantine-color-teal-7))",
             }}
           >
-            {newSessionTimes.start === null && (
-              <Text ta="center">{yToTime(y)}</Text>
+            {startNewSession === null && (
+              <Text ta="center">
+                {yToTime(y).toLocaleTimeString(locale, {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </Text>
             )}
           </Stack>
         )}
 
-        {newSessionTimes.start !== null && (
+        {startNewSession !== null && (
           <NewSessionEvent
-            start={newSessionTimes.start}
+            onSubmit={() => setStartNewSession(null)}
+            start={startNewSession}
             y={y}
             yToTime={yToTime}
           />
