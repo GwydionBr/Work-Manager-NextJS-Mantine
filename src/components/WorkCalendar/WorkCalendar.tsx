@@ -305,8 +305,8 @@ export default function WorkCalendar() {
                 value={viewMode}
                 onChange={(v) => setViewMode(v as ViewMode)}
                 data={[
-                  { label: "Day", value: "day" },
-                  { label: "Week", value: "week" },
+                  { label: locale === "de-DE" ? "Tag" : "Day", value: "day" },
+                  { label: locale === "de-DE" ? "Woche" : "Week", value: "week" },
                 ]}
               />
             </Group>

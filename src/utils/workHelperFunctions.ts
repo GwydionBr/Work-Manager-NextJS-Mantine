@@ -6,6 +6,7 @@ import {
 import { shortCurrencies } from "@/constants/settings";
 import { Tables, TablesInsert } from "@/types/db.types";
 import { TimerState } from "@/stores/timeTrackerStore";
+import { Locale } from "@/types/settings.types";
 
 export function getStatusColor(state: TimerState) {
   switch (state) {
@@ -72,16 +73,14 @@ export function formatTime(seconds: number): string {
   return `${hours}h - ${minutes}min`;
 }
 
-export function formatTimeSpan(start: Date, end: Date): string {
-  return `${formatDateTime(start)} - ${formatDateTime(end)}`;
+export function formatTimeSpan(start: Date, end: Date, locale: Locale): string {
+  return `${formatDateTime(start, locale)} - ${formatDateTime(end, locale)}`;
 }
 
-export function formatDateTime(date: Date) {
-  // TODO: implement different locales
-  return date.toLocaleString("de-DE", {
+export function formatDateTime(date: Date, locale: Locale) {
+  return date.toLocaleString(locale, {
     hour: "2-digit",
     minute: "2-digit",
-    hour12: false,
   });
 }
 

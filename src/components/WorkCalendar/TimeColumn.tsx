@@ -1,6 +1,8 @@
 "use client";
 
 import { Box, Stack, Text } from "@mantine/core";
+import { useMemo } from "react";
+import useSettingsStore from "@/stores/settingsStore";
 
 interface TimeColumnProps {
   hourHeight: number;
@@ -11,36 +13,33 @@ export function TimeColumn({ hourHeight, hourMultiplier }: TimeColumnProps) {
   // Berechne die Anzahl der Zeiteinheiten pro Stunde basierend auf dem Multiplier
   const timeUnitsPerHour = hourMultiplier;
 
+  // Locale aus den Settings lesen
+  const locale = useSettingsStore((state) => state.locale);
+
+  // Formatter, der sich an der aktuellen Locale orientiert
+  const timeFormatter = useMemo(() => {
+    return new Intl.DateTimeFormat(locale, {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }, [locale]);
+
   // Berechne die Gesamtanzahl der Zeiteinheiten für 24 Stunden
   const totalTimeUnits = 24 * timeUnitsPerHour;
 
   // Berechne die Höhe pro Zeiteinheit
   const timeUnitHeight = hourHeight;
 
-  // Funktion zum Formatieren der Zeit basierend auf dem Multiplier
+  // Funktion zum Formatieren der Zeit basierend auf Locale
   const formatTime = (timeUnitIndex: number) => {
     const totalMinutes = (timeUnitIndex * 60) / timeUnitsPerHour;
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = Math.floor(totalMinutes % 60);
+    const normalizedTotalMinutes =
+      ((totalMinutes % (24 * 60)) + 24 * 60) % (24 * 60);
+    const hours = Math.floor(normalizedTotalMinutes / 60);
+    const minutes = Math.floor(normalizedTotalMinutes % 60);
 
-    if (timeUnitsPerHour === 1) {
-      // Nur volle Stunden
-      return `${String(hours).padStart(2, "0")}:00`;
-    } else if (timeUnitsPerHour === 2) {
-      // Halbe Stunden
-      return `${String(hours).padStart(2, "0")}:${minutes === 0 ? "00" : "30"}`;
-    } else if (timeUnitsPerHour === 4) {
-      // Viertelstunden
-      return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
-    } else if (timeUnitsPerHour === 6) {
-      // Jede 10. Minute
-      return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
-    } else if (timeUnitsPerHour === 12) {
-      // Jede 5. Minute
-      return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
-    }
-
-    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+    const date = new Date(1970, 0, 1, hours, minutes, 0, 0);
+    return timeFormatter.format(date);
   };
 
   return (
