@@ -41,7 +41,7 @@ export default function CalendarGrid({
   }, []);
 
   return (
-    <Group h="100%" gap={0} wrap="nowrap">
+    <Group gap={0} wrap="nowrap">
       <Stack w={56} align="flex-end">
         <ColumnHeader />
         <TimeColumn hourHeight={rasterHeight} hourMultiplier={hourMultiplier} />
@@ -54,7 +54,7 @@ export default function CalendarGrid({
           style={{
             position: "sticky",
             top: 60,
-            zIndex: 10,
+            zIndex: 20,
             background: "var(--mantine-color-body)",
             borderBottom: "1px solid var(--mantine-color-gray-3)",
           }}

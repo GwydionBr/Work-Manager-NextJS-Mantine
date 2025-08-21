@@ -14,6 +14,8 @@ import {
   Stack,
   Title,
   ActionIcon,
+  Loader,
+  Center,
 } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
@@ -47,6 +49,10 @@ export default function WorkCalendar() {
     startOfWeek(new Date(), { weekStartsOn: 1 }),
     endOfWeek(new Date(), { weekStartsOn: 1 }),
   ]);
+  const [currentDateRange, setCurrentDateRange] = useState<[Date, Date]>([
+    startOfWeek(new Date(), { weekStartsOn: 1 }),
+    endOfWeek(new Date(), { weekStartsOn: 1 }),
+  ]);
   const [zoomIndex, setZoomIndex] = useState(1);
   const [viewportTop, setViewportTop] = useState({
     old: 0,
@@ -64,24 +70,14 @@ export default function WorkCalendar() {
   const today = dayjs();
 
   const days: Date[] = useMemo(() => {
+    const [rangeStart, rangeEnd] = currentDateRange;
     if (viewMode === "day") return [getStartOfDay(referenceDate)];
 
-    const [rangeStart, rangeEnd] = dateRange;
-    if (rangeStart && rangeEnd) {
-      const start = getStartOfDay(rangeStart);
-      const end = getStartOfDay(rangeEnd);
-      const length = differenceInCalendarDays(end, start) + 1;
-      return Array.from({ length }, (_, i) => addDays(start, i));
-    }
-
-    const startOfW = (() => {
-      const d = getStartOfDay(referenceDate);
-      const day = (d.getDay() + 6) % 7; // 0..6, 0 = Monday
-      d.setDate(d.getDate() - day);
-      return d;
-    })();
-    return Array.from({ length: 7 }, (_, i) => addDays(startOfW, i));
-  }, [viewMode, referenceDate, dateRange]);
+    const start = getStartOfDay(rangeStart);
+    const end = getStartOfDay(rangeEnd);
+    const length = differenceInCalendarDays(end, start) + 1;
+    return Array.from({ length }, (_, i) => addDays(start, i));
+  }, [viewMode, currentDateRange, referenceDate]);
 
   const sessionsByDay = useMemo(() => {
     // Bucket raw sessions by day key so we can render a column per day
@@ -155,8 +151,13 @@ export default function WorkCalendar() {
   }
 
   function setRangeAndMaybeSwitch(start: Date | null, end: Date | null) {
+    if (!start && !end) {
+      setDateRange([currentDateRange[0], currentDateRange[1]]);
+      return;
+    }
     setDateRange([start ? new Date(start) : null, end ? new Date(end) : null]);
     if (start && end) {
+      setCurrentDateRange([start, end]);
       if (isSameDay(start, end)) {
         setReferenceDate(new Date(start));
         setViewMode("day");
@@ -164,10 +165,27 @@ export default function WorkCalendar() {
         setReferenceDate(new Date(start));
         setViewMode("week");
       }
-    } else if (start) {
-      setReferenceDate(new Date(start));
     }
   }
+
+  function handleNextAndPrev(delta: number = 1) {
+    if (viewMode === "day") {
+      setReferenceDate(addDays(referenceDate, delta));
+      return;
+    }
+    const [s, e] = dateRange;
+    if (s && e) {
+      const len = differenceInCalendarDays(e, s) + 1;
+      const ns = addDays(s, delta * len);
+      const ne = addDays(e, delta * len);
+      setDateRange([ns, ne]);
+      setCurrentDateRange([ns, ne]);
+      setReferenceDate(ns);
+    } else {
+      setReferenceDate(addDays(referenceDate, delta * 7));
+    }
+  }
+
   function handleSessionClick(sessionId: string) {
     const session = timerSessions.find((s) => s.id === sessionId);
     if (session) {
@@ -239,7 +257,7 @@ export default function WorkCalendar() {
             background: "var(--mantine-color-body)",
           }}
         >
-          <Grid.Col span={2}>
+          <Grid.Col span={3}>
             <Group justify="flex-start" ml="md" gap="xs">
               <ActionIcon.Group>
                 <ActionIcon
@@ -282,139 +300,116 @@ export default function WorkCalendar() {
               </ActionIcon.Group>
             </Group>
           </Grid.Col>
-          <Grid.Col span={8}>
-            <Group gap="xs" justify="center">
-              <PrevActionIcon
-                onClick={() => {
-                  if (viewMode === "day") {
-                    setReferenceDate(addDays(referenceDate, -1));
-                    return;
-                  }
-                  const [s, e] = dateRange;
-                  if (s && e) {
-                    const len = differenceInCalendarDays(e, s) + 1;
-                    const ns = addDays(s, -len);
-                    const ne = addDays(e, -len);
-                    setDateRange([ns, ne]);
-                    setReferenceDate(ns);
-                  } else {
-                    setReferenceDate(addDays(referenceDate, -7));
-                  }
-                }}
-              />
-              {viewMode === "day" ? (
-                <DatePickerInput
-                  value={referenceDate}
-                  locale={locale}
-                  onChange={(value) => {
-                    if (value) {
-                      setReferenceDate(new Date(value));
+          <Grid.Col span={6}>
+            {isFetching ? (
+              <Center>
+                <Loader size="sm" color="var(--mantine-color-teal-text)" />
+              </Center>
+            ) : (
+              <Group gap="xs" justify="center">
+                <PrevActionIcon onClick={() => handleNextAndPrev(-1)} />
+                {viewMode === "day" ? (
+                  <DatePickerInput
+                    value={referenceDate}
+                    locale={locale}
+                    onChange={(value) => {
+                      if (value) {
+                        setReferenceDate(new Date(value));
+                      }
+                    }}
+                  />
+                ) : (
+                  <DatePickerInput
+                    allowSingleDateInRange
+                    type="range"
+                    value={dateRange}
+                    valueFormat={
+                      locale === "de-DE" ? "D MMM, YYYY" : "MMM D, YYYY"
                     }
-                  }}
-                />
-              ) : (
-                <DatePickerInput
-                  allowSingleDateInRange
-                  type="range"
-                  value={dateRange}
-                  valueFormat={
-                    locale === "de-DE" ? "D MMM, YYYY" : "MMM D, YYYY"
-                  }
-                  locale={locale}
-                  onChange={(value) => {
-                    const [start, end] = value;
-                    const s = start ? new Date(start) : null;
-                    const e = end ? new Date(end) : null;
-                    setRangeAndMaybeSwitch(s, e);
-                  }}
-                  presets={[
-                    {
-                      value: [
-                        today.subtract(2, "day").format("YYYY-MM-DD"),
-                        today.format("YYYY-MM-DD"),
-                      ],
-                      label:
-                        locale === "de-DE" ? "Letzte 2 Tage" : "Last 2 days",
-                    },
-                    {
-                      value: [
-                        today.subtract(7, "day").format("YYYY-MM-DD"),
-                        today.format("YYYY-MM-DD"),
-                      ],
-                      label:
-                        locale === "de-DE" ? "Letzte 7 Tage" : "Last 7 days",
-                    },
-                    {
-                      value: [
-                        today
-                          .startOf("week")
-                          .add(1, "day")
-                          .format("YYYY-MM-DD"),
-                        today.endOf("week").add(1, "day").format("YYYY-MM-DD"),
-                      ],
-                      label: locale === "de-DE" ? "Diese Woche" : "This week",
-                    },
-                    {
-                      value: [
-                        today
-                          .startOf("week")
-                          .subtract(1, "week")
-                          .add(1, "day")
-                          .format("YYYY-MM-DD"),
-                        today
-                          .endOf("week")
-                          .subtract(1, "week")
-                          .add(1, "day")
-                          .format("YYYY-MM-DD"),
-                      ],
-                      label: locale === "de-DE" ? "Letzte Woche" : "Last week",
-                    },
-                    {
-                      value: [
-                        today.startOf("month").format("YYYY-MM-DD"),
-                        today.endOf("month").format("YYYY-MM-DD"),
-                      ],
-                      label: locale === "de-DE" ? "Dieser Monat" : "This month",
-                    },
-                    {
-                      value: [
-                        today
-                          .subtract(1, "month")
-                          .startOf("month")
-                          .format("YYYY-MM-DD"),
-                        today
-                          .subtract(1, "month")
-                          .endOf("month")
-                          .format("YYYY-MM-DD"),
-                      ],
-                      label:
-                        locale === "de-DE" ? "Letzter Monat" : "Last month",
-                    },
-                  ]}
-                />
-              )}
-              <NextActionIcon
-                onClick={() => {
-                  if (viewMode === "day") {
-                    setReferenceDate(addDays(referenceDate, 1));
-                    return;
-                  }
-                  const [s, e] = dateRange;
-                  if (s && e) {
-                    const len = differenceInCalendarDays(e, s) + 1;
-                    const ns = addDays(s, len);
-                    const ne = addDays(e, len);
-                    setDateRange([ns, ne]);
-                    setReferenceDate(ns);
-                  } else {
-                    setReferenceDate(addDays(referenceDate, 7));
-                  }
-                }}
-              />
-            </Group>
+                    locale={locale}
+                    onChange={(value) => {
+                      const [start, end] = value;
+                      const s = start ? new Date(start) : null;
+                      const e = end ? new Date(end) : null;
+                      setRangeAndMaybeSwitch(s, e);
+                    }}
+                    presets={[
+                      {
+                        value: [
+                          today.subtract(2, "day").format("YYYY-MM-DD"),
+                          today.format("YYYY-MM-DD"),
+                        ],
+                        label:
+                          locale === "de-DE" ? "Letzte 2 Tage" : "Last 2 days",
+                      },
+                      {
+                        value: [
+                          today.subtract(7, "day").format("YYYY-MM-DD"),
+                          today.format("YYYY-MM-DD"),
+                        ],
+                        label:
+                          locale === "de-DE" ? "Letzte 7 Tage" : "Last 7 days",
+                      },
+                      {
+                        value: [
+                          today
+                            .startOf("week")
+                            .add(1, "day")
+                            .format("YYYY-MM-DD"),
+                          today
+                            .endOf("week")
+                            .add(1, "day")
+                            .format("YYYY-MM-DD"),
+                        ],
+                        label: locale === "de-DE" ? "Diese Woche" : "This week",
+                      },
+                      {
+                        value: [
+                          today
+                            .startOf("week")
+                            .subtract(1, "week")
+                            .add(1, "day")
+                            .format("YYYY-MM-DD"),
+                          today
+                            .endOf("week")
+                            .subtract(1, "week")
+                            .add(1, "day")
+                            .format("YYYY-MM-DD"),
+                        ],
+                        label:
+                          locale === "de-DE" ? "Letzte Woche" : "Last week",
+                      },
+                      {
+                        value: [
+                          today.startOf("month").format("YYYY-MM-DD"),
+                          today.endOf("month").format("YYYY-MM-DD"),
+                        ],
+                        label:
+                          locale === "de-DE" ? "Dieser Monat" : "This month",
+                      },
+                      {
+                        value: [
+                          today
+                            .subtract(1, "month")
+                            .startOf("month")
+                            .format("YYYY-MM-DD"),
+                          today
+                            .subtract(1, "month")
+                            .endOf("month")
+                            .format("YYYY-MM-DD"),
+                        ],
+                        label:
+                          locale === "de-DE" ? "Letzter Monat" : "Last month",
+                      },
+                    ]}
+                  />
+                )}
+                <NextActionIcon onClick={() => handleNextAndPrev(1)} />
+              </Group>
+            )}
           </Grid.Col>
-          <Grid.Col span={2}>
-            <Group justify="flex-end" mr="md" gap="xs">
+          <Grid.Col span={3}>
+            <Group justify="flex-end" mr="md" gap="xs" w="100%">
               <SegmentedControl
                 ml="md"
                 value={viewMode}

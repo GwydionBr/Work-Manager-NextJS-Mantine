@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Stack } from "@mantine/core";
+import { Box, Skeleton, Stack } from "@mantine/core";
 
 import {
   getStartOfDay,
@@ -113,19 +113,32 @@ export function DayColumn({
           <TimeTrackerEvent toY={toY} currentTime={currentTime} day={day} />
 
           {/* Bubble layout: assign a horizontal lane to avoid overlaps when many small sessions cluster */}
-          {(() => {
-            return itemsForRender.map((s) => {
-              return (
-                <CalendarEvent
-                  key={s.id}
-                  s={s}
-                  toY={toY}
-                  handleSessionClick={handleSessionClick}
-                  color={s.color}
+          {isFetching
+            ? Array.from({ length: 24 }, (_, i) => (
+                <Skeleton
+                  key={`line-${i}`}
+                  height={rasterHeight + i * 3}
+                  w="90%"
+                  mx="auto"
+                  style={{
+                    position: "absolute",
+                    top: i * (rasterHeight + i * 3 + 30),
+                    border: "1px solid light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-4))",
+                    borderLeft: "6px solid light-dark(var(--mantine-color-gray-5), var(--mantine-color-gray-6))",
+                  }}
                 />
-              );
-            });
-          })()}
+              ))
+            : itemsForRender.map((s) => {
+                return (
+                  <CalendarEvent
+                    key={s.id}
+                    s={s}
+                    toY={toY}
+                    handleSessionClick={handleSessionClick}
+                    color={s.color}
+                  />
+                );
+              })}
         </Box>
       </Stack>
     </Box>
