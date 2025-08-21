@@ -7,7 +7,8 @@ import type {
 } from "@/types/timerSession.types";
 
 export function groupSessions(
-  sessions: Tables<"timer_session">[]
+  sessions: Tables<"timer_session">[],
+  locale: string
 ): { year: number; data: Year }[] {
   const groupedSessions: Record<number, Year> = sessions.reduce(
     (acc, session) => {
@@ -17,10 +18,11 @@ export function groupSessions(
 
       const startTime = new Date(session.start_time);
       const year = startTime.getFullYear();
+      // Use numeric month (1-12) as stable key to avoid locale parsing issues
       const month = startTime.getMonth() + 1;
       const week = helper.getWeekNumber(startTime);
-      const day = startTime.toISOString().split("T")[0];
-
+      // Use ISO date (YYYY-MM-DD) as stable key to avoid Invalid Date parsing
+      const day = startTime.toISOString().slice(0, 10);
       // Calculate earnings for all sessions (both paid and unpaid)
       const earnings: Earnings = {
         amount: session.hourly_payment
@@ -181,4 +183,3 @@ export function areEarningsBreakdownEmpty(
 ): boolean {
   return areEarningsEmpty(earnings.paid) && areEarningsEmpty(earnings.unpaid);
 }
-

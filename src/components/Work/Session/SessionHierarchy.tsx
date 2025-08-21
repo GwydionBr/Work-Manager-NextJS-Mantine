@@ -1,12 +1,13 @@
 "use client";
 
-import { Accordion, Group, Stack, Text } from "@mantine/core";
+import { useSettingsStore } from "@/stores/settingsStore";
+
+import { Accordion, Box, Group, Text } from "@mantine/core";
 import { IconCalendar, IconClock, IconFolder } from "@tabler/icons-react";
 import SessionRow from "@/components/Work/Session/SessionRow";
 import * as helper from "@/utils/workHelperFunctions";
 import {
   formatTime,
-  formatEarnings,
   areEarningsBreakdownEmpty,
 } from "@/utils/sessionHelperFunctions";
 
@@ -32,6 +33,8 @@ export default function SessionHierarchy({
   projects,
   isOverview,
 }: SessionHierarchyProps) {
+  const { locale } = useSettingsStore();
+
   const renderTime = (seconds: number) => (
     <Text
       size="sm"
@@ -47,12 +50,28 @@ export default function SessionHierarchy({
         <Group gap="xs">
           {earnings.unpaid.some((e) => e.amount > 0) && (
             <Text size="sm" c="red">
-              {formatEarnings(earnings.unpaid)} unpaid
+              {earnings.unpaid
+                .map((e) =>
+                  new Intl.NumberFormat(locale, {
+                    style: "currency",
+                    currency: e.currency,
+                  }).format(e.amount)
+                )
+                .join(" ") + " "}
+              unpaid
             </Text>
           )}
           {earnings.paid.some((e) => e.amount > 0) && (
             <Text size="sm" c="dimmed">
-              {formatEarnings(earnings.paid)} paid
+              {earnings.paid
+                .map((e) =>
+                  new Intl.NumberFormat(locale, {
+                    style: "currency",
+                    currency: e.currency,
+                  }).format(e.amount)
+                )
+                .join(" ") + " "}
+              paid
             </Text>
           )}
         </Group>
@@ -61,7 +80,7 @@ export default function SessionHierarchy({
   );
 
   return (
-    <>
+    <Box>
       {groupedSessions.reverse().map(({ year, data: yearData }, index) => (
         // Year Section
         <Accordion
@@ -104,7 +123,12 @@ export default function SessionHierarchy({
                         icon={<IconFolder size={18} color="blue" />}
                       >
                         <Group>
-                          {helper.formatMonth(Number(month))}
+                          {new Date(0, Number(month) - 1).toLocaleDateString(
+                            locale,
+                            {
+                              month: "long",
+                            }
+                          )}
                           {!areEarningsBreakdownEmpty(
                             monthData.totalEarnings
                           ) && renderEarnings(monthData.totalEarnings)}
@@ -138,7 +162,9 @@ export default function SessionHierarchy({
                                   }
                                 >
                                   <Group>
-                                    Week {week}
+                                    {locale === "de-DE"
+                                      ? `${week}. Woche`
+                                      : `Week ${week}`}
                                     {!areEarningsBreakdownEmpty(
                                       weekData.totalEarnings
                                     ) && renderEarnings(weekData.totalEarnings)}
@@ -176,7 +202,13 @@ export default function SessionHierarchy({
                                             }
                                           >
                                             <Group>
-                                              {helper.formatDate(new Date(day))}
+                                              {new Date(day).toLocaleDateString(
+                                                locale,
+                                                {
+                                                  weekday: "short",
+                                                  day: "2-digit",
+                                                }
+                                              )}
                                               {!areEarningsBreakdownEmpty(
                                                 dayData.totalEarnings
                                               ) &&
@@ -236,6 +268,6 @@ export default function SessionHierarchy({
           </Accordion.Item>
         </Accordion>
       ))}
-    </>
+    </Box>
   );
 }

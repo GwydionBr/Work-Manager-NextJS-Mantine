@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSessionFiltering } from "@/hooks/useSessionFiltering";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Box, Collapse, Group, Loader, Stack, Text } from "@mantine/core";
 import NewSessionButton from "@/components/Work/Session/NewSessionButton";
@@ -19,6 +20,7 @@ import AnalysisActionIcon from "@/components/UI/ActionIcons/AnalysisActionIcon";
 
 export default function WorkPage() {
   const { activeProjectId, isFetching } = useWorkStore();
+  const { locale } = useSettingsStore();
   const activeProject = useWorkStore((state) =>
     state.projects.find((p) => p.project.id === activeProjectId)
   );
@@ -144,7 +146,7 @@ export default function WorkPage() {
           {/* Session Hierarchy */}
           {filteredSessions.length > 0 ? (
             <SessionHierarchy
-              groupedSessions={groupSessions(filteredSessions)}
+              groupedSessions={groupSessions(filteredSessions, locale)}
               selectedSessions={selectedSessions}
               onSessionToggle={handleSessionToggle}
               project={activeProject.project}
