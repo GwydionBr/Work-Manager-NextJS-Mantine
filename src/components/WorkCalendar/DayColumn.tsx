@@ -1,6 +1,7 @@
 "use client";
 
-import { useMouse, useHover } from "@mantine/hooks";
+import { useState } from "react";
+import { useMouse, useHover, useHotkeys } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Box, Skeleton, Stack, Text } from "@mantine/core";
@@ -14,6 +15,7 @@ import {
 import { CalendarSession } from "@/types/workCalendar.types";
 import CalendarEvent from "./CalendarEvent/CalendarEvent";
 import TimeTrackerEvent from "./CalendarEvent/TimeTrackerEvent/TimeTrackerEvent";
+import NewSessionEvent from "./CalendarEvent/NewSessionEvent";
 
 interface DayColumnProps {
   day: Date;
@@ -34,9 +36,18 @@ export function DayColumn({
   hourMultiplier,
   rasterHeight,
 }: DayColumnProps) {
+  const [newSessionTimes, setNewSessionTimes] = useState<{
+    start: number | null;
+    end: number | null;
+  }>({ start: null, end: null });
   const { ref, x, y } = useMouse();
   const { hovered, ref: hoverRef } = useHover();
   const { locale } = useSettingsStore();
+
+  useHotkeys([
+    ["escape", () => setNewSessionTimes({ start: null, end: null })],
+  ]);
+
   // Clip sessions to the visible day window so cross-midnight sessions
   // render only the portion within this column. This avoids negative/overflowing heights.
   const dayStart = getStartOfDay(day);
@@ -88,6 +99,17 @@ export function DayColumn({
     );
   };
 
+  function handleNewSessionClick(y: number) {
+    if (newSessionTimes.start === null) {
+      setNewSessionTimes({ start: y, end: null });
+    } else {
+      setNewSessionTimes({
+        start: Math.max(newSessionTimes.start, y),
+        end: Math.min(newSessionTimes.start, y),
+      });
+    }
+  }
+
   return (
     <Box ref={hoverRef}>
       <Box
@@ -133,20 +155,28 @@ export function DayColumn({
 
         {hovered && (
           <Stack
-            onClick={() => {
-              //TODO: Add a new session at the clicked time
-              console.log(yToTime(y));
-            }}
+            onClick={() => handleNewSessionClick(y)}
             style={{
               position: "absolute",
               top: y,
               left: 0,
               right: 0,
-              borderTop: "3px solid var(--mantine-color-teal-6)",
+              borderTop:
+                "3px solid light-dark(var(--mantine-color-teal-6), var(--mantine-color-teal-7))",
             }}
           >
-            <Text ta="center">{yToTime(y)}</Text>
+            {newSessionTimes.start === null && (
+              <Text ta="center">{yToTime(y)}</Text>
+            )}
           </Stack>
+        )}
+
+        {newSessionTimes.start !== null && (
+          <NewSessionEvent
+            start={newSessionTimes.start}
+            y={y}
+            yToTime={yToTime}
+          />
         )}
 
         {/* Bubble layout: assign a horizontal lane to avoid overlaps when many small sessions cluster */}
