@@ -73,7 +73,10 @@ export default function SessionForm({
   });
 
   const form = useForm<NewSession>({
-    initialValues,
+    initialValues: {
+      ...initialValues,
+      project_id: initialValues.project_id || project?.id || undefined,
+    },
     validate: zodResolver(schema),
   });
 
@@ -231,10 +234,12 @@ export default function SessionForm({
         <Select
           allowDeselect={false}
           label="Project"
+          value={form.values.project_id}
           placeholder="Select project"
           data={projects}
           searchable
           onChange={handleProjectChange}
+          data-autofocus={false}
         />
         <TimeInput
           label="Active Time"
@@ -243,7 +248,7 @@ export default function SessionForm({
           error={form.errors.active_seconds}
           icon={<IconPlayerPlay size={18} />}
           color="green"
-          autoFocus={true}
+          data-autofocus={true}
           isOpen={true}
         />
         <TimeInput
