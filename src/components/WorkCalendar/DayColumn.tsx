@@ -1,6 +1,9 @@
 "use client";
 
-import { Box, Skeleton, Stack } from "@mantine/core";
+import { useMouse, useHover } from "@mantine/hooks";
+import { useSettingsStore } from "@/stores/settingsStore";
+
+import { Box, Skeleton, Stack, Text } from "@mantine/core";
 
 import {
   getStartOfDay,
@@ -31,6 +34,9 @@ export function DayColumn({
   hourMultiplier,
   rasterHeight,
 }: DayColumnProps) {
+  const { ref, x, y } = useMouse();
+  const { hovered, ref: hoverRef } = useHover();
+  const { locale } = useSettingsStore();
   // Clip sessions to the visible day window so cross-midnight sessions
   // render only the portion within this column. This avoids negative/overflowing heights.
   const dayStart = getStartOfDay(day);
@@ -69,78 +75,110 @@ export function DayColumn({
     return clamp(y, 0, 24 * rasterHeight * hourMultiplier);
   };
 
+  const yToTime = (y: number) => {
+    const minutes = (y / (rasterHeight * hourMultiplier)) * 60;
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return new Date(0, 0, 0, hours, remainingMinutes).toLocaleTimeString(
+      locale,
+      {
+        hour: "2-digit",
+        minute: "2-digit",
+      }
+    );
+  };
+
   return (
-    <Box style={{ flex: 1, minWidth: 0 }} mb="md">
-      <Stack gap="xs">
-        {/* Main timeline area with a vertical rail, hourly dots and grid lines */}
-        <Box
-          style={{
-            position: "relative",
-            height: rasterHeight * 24 * hourMultiplier,
-            border: currentTime
-              ? "2px solid light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-3))"
-              : "1px solid light-dark(var(--mantine-color-gray-6), var(--mantine-color-gray-6))",
-            borderRadius: 0,
-            background: currentTime
-              ? "light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))"
-              : "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))",
-            overflow: "hidden",
-          }}
-        >
-          {/* Grid lines */}
-          {Array.from(
-            { length: 24 * hourMultiplier + 1 },
-            (_, i) =>
-              i !== 0 && (
-                <Box
-                  key={`line-${i}`}
-                  style={{
-                    position: "absolute",
-                    top: i * rasterHeight,
-                    left: 0,
-                    right: 0,
-                    height: 1,
-                    borderTop:
-                      "1px dashed light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-2))",
-                    background: "none",
-                    pointerEvents: "none",
-                  }}
-                />
-              )
-          )}
+    <Box ref={hoverRef}>
+      <Box
+        ref={ref}
+        mb="xl"
+        style={{
+          position: "relative",
+          height: rasterHeight * 24 * hourMultiplier,
+          border: currentTime
+            ? "2px solid light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-3))"
+            : "1px solid light-dark(var(--mantine-color-gray-6), var(--mantine-color-gray-6))",
+          borderRadius: 0,
+          background: currentTime
+            ? "light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))"
+            : "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))",
+          overflow: "hidden",
+        }}
+      >
+        {/* Grid lines */}
+        {Array.from(
+          { length: 24 * hourMultiplier + 1 },
+          (_, i) =>
+            i !== 0 && (
+              <Box
+                key={`line-${i}`}
+                style={{
+                  position: "absolute",
+                  top: i * rasterHeight,
+                  left: 0,
+                  right: 0,
+                  height: 1,
+                  borderTop:
+                    "1px dashed light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-2))",
+                  background: "none",
+                  pointerEvents: "none",
+                }}
+              />
+            )
+        )}
 
-          {/* Current time indicator - red line for today */}
-          <TimeTrackerEvent toY={toY} currentTime={currentTime} day={day} />
+        {/* Current time indicator - red line for today */}
+        <TimeTrackerEvent toY={toY} currentTime={currentTime} day={day} />
 
-          {/* Bubble layout: assign a horizontal lane to avoid overlaps when many small sessions cluster */}
-          {isFetching
-            ? Array.from({ length: 24 }, (_, i) => (
-                <Skeleton
-                  key={`line-${i}`}
-                  height={rasterHeight + i * 3}
-                  w="90%"
-                  mx="auto"
-                  style={{
-                    position: "absolute",
-                    top: i * (rasterHeight + i * 3 + 30),
-                    border: "1px solid light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-4))",
-                    borderLeft: "6px solid light-dark(var(--mantine-color-gray-5), var(--mantine-color-gray-6))",
-                  }}
+        {hovered && (
+          <Stack
+            onClick={() => {
+              //TODO: Add a new session at the clicked time
+              console.log(yToTime(y));
+            }}
+            style={{
+              position: "absolute",
+              top: y,
+              left: 0,
+              right: 0,
+              borderTop: "3px solid var(--mantine-color-teal-6)",
+            }}
+          >
+            <Text ta="center">{yToTime(y)}</Text>
+          </Stack>
+        )}
+
+        {/* Bubble layout: assign a horizontal lane to avoid overlaps when many small sessions cluster */}
+        {isFetching
+          ? Array.from({ length: 24 }, (_, i) => (
+              <Skeleton
+                key={`line-${i}`}
+                height={rasterHeight + i * 3}
+                w="90%"
+                mx="auto"
+                style={{
+                  position: "absolute",
+                  top: i * (rasterHeight + i * 3 + 30),
+                  border:
+                    "1px solid light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-4))",
+                  borderLeft:
+                    "6px solid light-dark(var(--mantine-color-gray-5), var(--mantine-color-gray-6))",
+                }}
+              />
+            ))
+          : itemsForRender.map((s) => {
+              return (
+                <CalendarEvent
+                  key={s.id}
+                  s={s}
+                  toY={toY}
+                  handleSessionClick={handleSessionClick}
+                  color={s.color}
                 />
-              ))
-            : itemsForRender.map((s) => {
-                return (
-                  <CalendarEvent
-                    key={s.id}
-                    s={s}
-                    toY={toY}
-                    handleSessionClick={handleSessionClick}
-                    color={s.color}
-                  />
-                );
-              })}
-        </Box>
-      </Stack>
+              );
+            })}
+      </Box>
     </Box>
   );
 }
