@@ -235,11 +235,11 @@ export default function SessionForm({
           allowDeselect={false}
           label="Project"
           value={form.values.project_id}
+          error={form.errors.project_id}
           placeholder="Select project"
           data={projects}
           searchable
           onChange={handleProjectChange}
-          data-autofocus={false}
         />
         <TimeInput
           label="Active Time"
