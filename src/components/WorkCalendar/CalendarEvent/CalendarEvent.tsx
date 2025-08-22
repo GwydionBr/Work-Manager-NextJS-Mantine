@@ -7,6 +7,7 @@ import { formatTime } from "@/utils/workHelperFunctions";
 import CalendarEventHoverCard from "./CalendarEventHoverCard";
 
 interface CalendarEventProps {
+  isNewSession?: boolean;
   s: CalendarSession;
   toY: (date: Date) => number;
   color: string;
@@ -14,6 +15,7 @@ interface CalendarEventProps {
 }
 
 export default function CalendarEvent({
+  isNewSession,
   s,
   color,
   toY,
@@ -27,7 +29,12 @@ export default function CalendarEvent({
   const backgroundColor = alpha(color, 0.15);
 
   return (
-    <HoverCard openDelay={200} closeDelay={100} position="right">
+    <HoverCard
+      openDelay={200}
+      closeDelay={100}
+      position="right"
+      disabled={isNewSession}
+    >
       <HoverCard.Target>
         <Card
           p={0}
@@ -43,8 +50,13 @@ export default function CalendarEvent({
             cursor: "pointer",
             border: `1px solid ${color}`,
             borderLeft: `6px solid ${color}`,
+            zIndex: 13,
           }}
-          onClick={() => handleSessionClick(s.id)}
+          onClick={() => {
+            if (!isNewSession) {
+              handleSessionClick(s.id);
+            }
+          }}
         >
           <Stack h="100%" pl={6} pt={4} gap={0} bg={backgroundColor}>
             <Text size="xs">{formatTime(s.active_seconds)}</Text>

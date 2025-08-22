@@ -20,25 +20,37 @@ import NewSessionEvent from "./CalendarEvent/NewSessionEvent";
 
 interface DayColumnProps {
   day: Date;
+  y: number;
+  yToTime: (y: number, day: Date) => Date;
+  toY: (date: Date) => number;
   isFetching: boolean;
   currentTime?: Date;
   sessions: CalendarSession[];
   handleSessionClick: (sessionId: string) => void;
   hourMultiplier: number;
   rasterHeight: number;
+  startNewSession: number | null;
+  setStartNewSession: (y: number | null) => void;
+  newSessionDay: Date | null;
+  setNewSessionDay: (day: Date | null) => void;
 }
 
 export function DayColumn({
   day,
+  y,
+  yToTime,
+  toY,
   isFetching,
   currentTime,
   sessions,
   handleSessionClick,
   hourMultiplier,
   rasterHeight,
+  startNewSession,
+  setStartNewSession,
+  newSessionDay,
+  setNewSessionDay,
 }: DayColumnProps) {
-  const [startNewSession, setStartNewSession] = useState<number | null>(null);
-  const { ref, y } = useMouse();
   const { hovered, ref: hoverRef } = useHover();
   const { locale } = useSettingsStore();
 
@@ -70,41 +82,16 @@ export function DayColumn({
   const itemsForRender: CalendarSession[] =
     mergeAdjacentSessionsForRender(clippedItems);
 
-  const toY = (date: Date) => {
-    // Convert a date to a Y-position within the day timeline
-    const minutes = date.getHours() * 60 + date.getMinutes();
-    const totalMinutes = 24 * 60;
-    const y =
-      (minutes / totalMinutes) *
-      (totalMinutes / 60) *
-      rasterHeight *
-      hourMultiplier;
-    return clamp(y, 0, 24 * rasterHeight * hourMultiplier);
-  };
-
-  const yToTime = (y: number) => {
-    const minutes = (y / (rasterHeight * hourMultiplier)) * 60;
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
-    return new Date(
-      day.getFullYear(),
-      day.getMonth(),
-      day.getDate(),
-      hours,
-      remainingMinutes
-    );
-  };
-
   function handleNewSessionClick(y: number) {
     if (startNewSession === null) {
       setStartNewSession(y);
+      setNewSessionDay(day);
     }
   }
 
   return (
     <Box ref={hoverRef}>
       <Box
-        ref={ref}
         mb="xl"
         style={{
           position: "relative",
@@ -144,35 +131,37 @@ export function DayColumn({
         {/* Current time indicator - red line for today */}
         <TimeTrackerEvent toY={toY} currentTime={currentTime} day={day} />
 
-        {hovered && (
+        {/* New session event */}
+        {hovered && startNewSession === null && (
           <Stack
-            onClick={() => handleNewSessionClick(y)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleNewSessionClick(y);
+            }}
             style={{
               position: "absolute",
-              top: y,
+              top: y - 2,
               left: 0,
               right: 0,
               borderTop:
                 "3px solid light-dark(var(--mantine-color-teal-6), var(--mantine-color-teal-7))",
+              zIndex: 10,
             }}
           >
-            {startNewSession === null && (
-              <Text ta="center">
-                {yToTime(y).toLocaleTimeString(locale, {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </Text>
-            )}
+            <Text ta="center">
+              {yToTime(y, day).toLocaleTimeString(locale, {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </Text>
           </Stack>
         )}
 
-        {startNewSession !== null && (
+        {startNewSession !== null && newSessionDay === day && (
           <NewSessionEvent
-            onSubmit={() => setStartNewSession(null)}
             start={startNewSession}
             y={y}
-            yToTime={yToTime}
+            yToTime={(y) => yToTime(y, day)}
           />
         )}
 
@@ -198,6 +187,7 @@ export function DayColumn({
               return (
                 <CalendarEvent
                   key={s.id}
+                  isNewSession={startNewSession !== null}
                   s={s}
                   toY={toY}
                   handleSessionClick={handleSessionClick}

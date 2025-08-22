@@ -1,18 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useMouse, useDisclosure } from "@mantine/hooks";
+import { useWorkStore } from "@/stores/workManagerStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Grid, Stack, Group } from "@mantine/core";
+import { Grid, Stack, Group, Box, Modal } from "@mantine/core";
 import { DayColumn } from "@/components/WorkCalendar/DayColumn";
 import { TimeColumn } from "@/components/WorkCalendar/TimeColumn";
 import ColumnHeader from "@/components/WorkCalendar/Calendar/ColumnHeader";
+import SessionForm from "@/components/Work/Session/SessionForm";
+import { clamp } from "@/components/WorkCalendar/calendarUtils";
 
 import {
   getStartOfDay,
   isToday,
 } from "@/components/WorkCalendar/calendarUtils";
 
+import { Currency } from "@/types/settings.types";
 import { CalendarDay } from "@/types/workCalendar.types";
+import { TablesInsert } from "@/types/db.types";
 
 interface CalendarGridProps {
   days: CalendarDay[];
@@ -31,7 +38,18 @@ export default function CalendarGrid({
   handleSessionClick,
 }: CalendarGridProps) {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
+  const [startNewSession, setStartNewSession] = useState<number | null>(null);
+  const [newSessionDay, setNewSessionDay] = useState<Date | null>(null);
+  const [modalOpened, { open, close }] = useDisclosure(false);
+  const [submitting, setSubmitting] = useState(false);
+  const { addTimerSession } = useWorkStore();
+  const {
+    defaultSalaryCurrency,
+    defaultSalaryAmount,
+    defaultProjectHourlyPayment,
+  } = useSettingsStore();
 
+  const { ref, x, y } = useMouse();
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
@@ -40,57 +58,190 @@ export default function CalendarGrid({
     return () => clearInterval(interval);
   }, []);
 
+  function handleClick() {
+    if (newSessionDay && startNewSession) {
+      open();
+      return;
+    }
+  }
+
+  const toY = (date: Date) => {
+    // Convert a date to a Y-position within the day timeline
+    const minutes = date.getHours() * 60 + date.getMinutes();
+    const totalMinutes = 24 * 60;
+    const y =
+      (minutes / totalMinutes) *
+      (totalMinutes / 60) *
+      rasterHeight *
+      hourMultiplier;
+    return clamp(y, 0, 24 * rasterHeight * hourMultiplier);
+  };
+
+  const yToTime = (y: number, day: Date) => {
+    const minutes = (y / (rasterHeight * hourMultiplier)) * 60;
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return new Date(
+      day.getFullYear(),
+      day.getMonth(),
+      day.getDate(),
+      hours,
+      remainingMinutes
+    );
+  };
+
+  async function handleSubmit(values: {
+    project_id?: string;
+    start_time: string;
+    end_time: string;
+    active_seconds: number;
+    paused_seconds: number;
+    currency: Currency;
+    salary: number;
+    memo?: string;
+  }) {
+    setSubmitting(true);
+
+    if (!values.project_id) {
+      setSubmitting(false);
+      return;
+    }
+
+    const newSession: TablesInsert<"timer_session"> = {
+      ...values,
+      start_time: new Date(values.start_time).toISOString(),
+      end_time: new Date(values.end_time).toISOString(),
+      true_end_time: new Date(values.end_time).toISOString(),
+      memo: values.memo || null,
+    };
+
+    const success = await addTimerSession(newSession);
+    if (success) {
+      close();
+      setStartNewSession(null);
+      setNewSessionDay(null);
+    }
+    setSubmitting(false);
+  }
+
   return (
-    <Group gap={0} wrap="nowrap">
-      <Stack w={56} align="flex-end">
-        <ColumnHeader />
-        <TimeColumn hourHeight={rasterHeight} hourMultiplier={hourMultiplier} />
-      </Stack>
-      <Stack h="100%" gap={10} w="100%">
-        <Grid
-          columns={420}
-          gutter={0}
-          align="flex-end"
-          style={{
-            position: "sticky",
-            top: 60,
-            zIndex: 20,
-            background: "var(--mantine-color-body)",
-            borderBottom: "1px solid var(--mantine-color-gray-3)",
-          }}
-        >
-          {days.map((d) => {
-            return (
-              <Grid.Col
-                span={Math.floor(420 / days.length)}
-                key={`day-${getStartOfDay(d.day).toISOString().slice(0, 10)}`}
-              >
-                <ColumnHeader day={d.day} setReferenceDate={setReferenceDate} />
-              </Grid.Col>
-            );
-          })}
-        </Grid>
-        <Grid columns={420} gutter={0} align="flex-end">
-          {days.map((d) => {
-            return (
-              <Grid.Col
-                span={Math.floor(420 / days.length)}
-                key={`day-${getStartOfDay(d.day).toISOString().slice(0, 10)}`}
-              >
-                <DayColumn
-                  day={d.day}
-                  isFetching={isFetching}
-                  currentTime={isToday(d.day) ? currentTime : undefined}
-                  sessions={d.sessions}
-                  handleSessionClick={handleSessionClick}
-                  hourMultiplier={hourMultiplier}
-                  rasterHeight={rasterHeight}
-                />
-              </Grid.Col>
-            );
-          })}
-        </Grid>
-      </Stack>
-    </Group>
+    <Box>
+      <Group gap={0} wrap="nowrap">
+        <Stack w={56} align="flex-end">
+          <ColumnHeader />
+          <TimeColumn
+            hourHeight={rasterHeight}
+            hourMultiplier={hourMultiplier}
+          />
+        </Stack>
+        <Stack h="100%" gap={10} w="100%">
+          <Grid
+            columns={420}
+            gutter={0}
+            align="flex-end"
+            style={{
+              position: "sticky",
+              top: 60,
+              zIndex: 20,
+              background: "var(--mantine-color-body)",
+              borderBottom: "1px solid var(--mantine-color-gray-3)",
+            }}
+          >
+            {days.map((d) => {
+              return (
+                <Grid.Col
+                  span={Math.floor(420 / days.length)}
+                  key={`day-${getStartOfDay(d.day).toISOString().slice(0, 10)}`}
+                >
+                  <ColumnHeader
+                    day={d.day}
+                    setReferenceDate={setReferenceDate}
+                  />
+                </Grid.Col>
+              );
+            })}
+          </Grid>
+          <Grid
+            columns={420}
+            gutter={0}
+            align="flex-end"
+            ref={ref}
+            onClick={handleClick}
+          >
+            {days.map((d) => {
+              return (
+                <Grid.Col
+                  span={Math.floor(420 / days.length)}
+                  key={`day-${getStartOfDay(d.day).toISOString().slice(0, 10)}`}
+                >
+                  <DayColumn
+                    day={d.day}
+                    y={y}
+                    yToTime={yToTime}
+                    toY={toY}
+                    isFetching={isFetching}
+                    currentTime={isToday(d.day) ? currentTime : undefined}
+                    sessions={d.sessions}
+                    handleSessionClick={handleSessionClick}
+                    hourMultiplier={hourMultiplier}
+                    rasterHeight={rasterHeight}
+                    startNewSession={startNewSession}
+                    setStartNewSession={setStartNewSession}
+                    newSessionDay={newSessionDay}
+                    setNewSessionDay={setNewSessionDay}
+                  />
+                </Grid.Col>
+              );
+            })}
+          </Grid>
+        </Stack>
+      </Group>
+      <Modal
+        opened={modalOpened}
+        onClose={() => {
+          close();
+          setStartNewSession(null);
+          setNewSessionDay(null);
+        }}
+        title="Add Session"
+        size="lg"
+        padding="md"
+      >
+        {newSessionDay && startNewSession && (
+          <SessionForm
+            initialValues={{
+              start_time: yToTime(
+                Math.min(startNewSession, y),
+                newSessionDay
+              ).toISOString(),
+              end_time: yToTime(
+                Math.max(startNewSession, y),
+                newSessionDay
+              ).toISOString(),
+              active_seconds:
+                (new Date(
+                  yToTime(Math.max(startNewSession, y), newSessionDay)
+                ).getTime() -
+                  new Date(
+                    yToTime(Math.min(startNewSession, y), newSessionDay)
+                  ).getTime()) /
+                1000,
+              paused_seconds: 0,
+              currency: defaultSalaryCurrency,
+              salary: defaultSalaryAmount,
+              hourly_payment: defaultProjectHourlyPayment,
+            }}
+            onSubmit={handleSubmit}
+            onCancel={() => {
+              close();
+              setStartNewSession(null);
+              setNewSessionDay(null);
+            }}
+            newSession
+            submitting={submitting}
+          />
+        )}
+      </Modal>
+    </Box>
   );
 }
