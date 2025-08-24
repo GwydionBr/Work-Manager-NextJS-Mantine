@@ -1,16 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { useMouse, useHover, useHotkeys, useDisclosure } from "@mantine/hooks";
+import { useHover, useHotkeys } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useWorkStore } from "@/stores/workManagerStore";
 
-import { Box, Button, Modal, Skeleton, Stack, Text } from "@mantine/core";
+import { Box, Skeleton, Stack, Text } from "@mantine/core";
 
 import {
   getStartOfDay,
   getEndOfDay,
-  clamp,
   mergeAdjacentSessionsForRender,
 } from "./calendarUtils";
 import { CalendarSession } from "@/types/workCalendar.types";
@@ -76,6 +73,8 @@ export function DayColumn({
       active_seconds: s.active_seconds,
       projectTitle: s.projectTitle,
       color: s.color,
+      currency: s.currency,
+      salary: s.salary,
     };
   });
   // Merge touching/overlapping sessions for the same project+memo to reduce clutter
@@ -165,11 +164,10 @@ export function DayColumn({
           />
         )}
 
-        {/* Bubble layout: assign a horizontal lane to avoid overlaps when many small sessions cluster */}
         {isFetching
           ? Array.from({ length: 24 }, (_, i) => (
               <Skeleton
-                key={`line-${i}`}
+                key={`line-${i}`} 
                 height={rasterHeight + i * 3}
                 w="90%"
                 mx="auto"

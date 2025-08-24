@@ -25,6 +25,8 @@ export type CalendarSession = Pick<
   | "memo"
   | "payed"
   | "active_seconds"
+  | "currency"
+  | "salary"
 > & {
   projectTitle: string;
   color: string;

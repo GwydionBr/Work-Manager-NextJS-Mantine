@@ -18,7 +18,7 @@ import {
   Center,
 } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
-import { IconArrowDown, IconMinus, IconPlus } from "@tabler/icons-react";
+import { IconMinus, IconPlus } from "@tabler/icons-react";
 import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
 import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
 import CalendarGrid from "./Calendar/CalendarGrid";
@@ -41,7 +41,6 @@ import {
   VisibleProject,
 } from "@/types/workCalendar.types";
 import { Tables } from "@/types/db.types";
-import DelayedTooltip from "../UI/DelayedTooltip";
 
 const zoomLevel = [1, 2, 4, 6, 12]; // multiplier for hour height
 const zoomLabels = ["1 h", "30 min", "15 min", "10 min", "5 min"];

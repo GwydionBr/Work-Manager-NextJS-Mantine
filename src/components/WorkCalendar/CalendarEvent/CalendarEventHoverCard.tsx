@@ -4,7 +4,11 @@ import { useSettingsStore } from "@/stores/settingsStore";
 
 import { CalendarSession } from "@/types/workCalendar.types";
 import { alpha, Card, Stack, Text } from "@mantine/core";
-import { formatTime, formatTimeSpan } from "@/utils/workHelperFunctions";
+import {
+  formatMoney,
+  formatTime,
+  formatTimeSpan,
+} from "@/utils/workHelperFunctions";
 
 interface CalendarEventHoverCardProps {
   s: CalendarSession;
@@ -16,6 +20,7 @@ export default function CalendarEventHoverCard({
   color,
 }: CalendarEventHoverCardProps) {
   const { locale } = useSettingsStore();
+  const earnings = (s.salary * s.active_seconds) / 3600;
   return (
     <Card
       withBorder
@@ -23,7 +28,7 @@ export default function CalendarEventHoverCard({
       style={{ borderColor: color, borderTop: `6px solid ${color}` }}
       miw={175}
     >
-      <Card.Section style={{ borderBottom: `1px solid ${color}` }}>
+      <Card.Section p="xs" style={{ borderBottom: `1px solid ${color}` }}>
         <Text size="md" fw={600} ta="center">
           {s.projectTitle}
         </Text>
@@ -35,9 +40,18 @@ export default function CalendarEventHoverCard({
         <Text ta="center" size="xs" fw={500}>
           {formatTime(s.active_seconds)}
         </Text>
-        <Text ta="center" size="xs" fw={500}>
-          {s.memo}
-        </Text>
+        {earnings > 0 && (
+          <Text ta="center" size="xs" fw={500}>
+            {formatMoney(earnings, s.currency)}
+          </Text>
+        )}
+        {s.memo && (
+          <Card.Section p="xs" style={{ borderTop: `1px solid ${color}` }}>
+            <Text ta="center" size="xs" fw={500}>
+              {s.memo}
+            </Text>
+          </Card.Section>
+        )}
       </Stack>
     </Card>
   );
