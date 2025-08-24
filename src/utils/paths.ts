@@ -46,6 +46,12 @@ const paths = {
     },
   },
 
+  tasks: {
+    tasksPage() {
+      return "/tasks";
+    },
+  },
+
   account: {
     accountPage() {
       return "/account";

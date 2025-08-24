@@ -11,6 +11,7 @@ import {
   IconBrandCashapp,
   IconUsersGroup,
   IconCalendar,
+  IconListCheck,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import SchemeToggle from "@/components/Scheme/SchemeToggleButton";
@@ -31,6 +32,11 @@ const mainLinksData = [
     icon: IconCalendar,
     label: "Work Calendar",
     to: paths.workCalendar.workCalendarPage(),
+  },
+  {
+    icon: IconListCheck,
+    label: "Tasks",
+    to: paths.tasks.tasksPage(),
   },
   {
     icon: IconBrandCashapp,
@@ -71,10 +77,8 @@ export default function Navbar() {
                 pathname.startsWith(link.to) &&
                 // Prevent /work from being active when on /workCalendar
                 !(
-                  link.to === "/work" &&
-                  pathname.startsWith("/workCalendar")
-                )
-              ) ||
+                  link.to === "/work" && pathname.startsWith("/workCalendar")
+                )) ||
               undefined
             }
           >
