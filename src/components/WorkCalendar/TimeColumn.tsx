@@ -58,7 +58,7 @@ export function TimeColumn({ hourHeight, hourMultiplier }: TimeColumnProps) {
               c="light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-0))"
               style={{
                 position: "absolute",
-                top: i * timeUnitHeight - 12,
+                top: i * timeUnitHeight - 6,
                 left: 2,
                 width: "100%",
                 textAlign: "right",

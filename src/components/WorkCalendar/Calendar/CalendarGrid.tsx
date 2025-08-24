@@ -22,6 +22,7 @@ import { CalendarDay } from "@/types/workCalendar.types";
 import { TablesInsert } from "@/types/db.types";
 import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
 import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
+import { formatTime } from "@/utils/workHelperFunctions";
 
 interface CalendarGridProps {
   days: CalendarDay[];
@@ -129,23 +130,28 @@ export default function CalendarGrid({
   }
 
   return (
-    <Box>
-      <Group gap={0} wrap="nowrap" align="flex-start">
-        <Stack w={42} align="center">
-          <ColumnHeader
-            icon={
-              <PrevActionIcon
-                onClick={() => handleNextAndPrev(-1)}
-              />
-            }
-          />
-          <TimeColumn
-            hourHeight={rasterHeight}
-            hourMultiplier={hourMultiplier}
-          />
-        </Stack>
-        <Stack h="100%" gap={10} w="100%">
+    <Box w="100%">
+      <Stack w="100%">
+        {/* Header */}
+        <Group
+          gap={0}
+          wrap="nowrap"
+          w="100%"
+          bg="var(--mantine-color-body)"
+          style={{
+            position: "sticky",
+            top: 60,
+            zIndex: 20,
+            borderBottom: "2px solid light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2))",
+          }}
+        >
+          <Box w={42}>
+            <ColumnHeader
+              icon={<PrevActionIcon onClick={() => handleNextAndPrev(-1)} />}
+            />
+          </Box>
           <Grid
+            w="100%"
             columns={420}
             gutter={0}
             align="flex-end"
@@ -163,57 +169,70 @@ export default function CalendarGrid({
                   key={`day-${getStartOfDay(d.day).toISOString().slice(0, 10)}`}
                 >
                   <ColumnHeader
-                    day={d.day}
+                    day={d}
                     setReferenceDate={setReferenceDate}
                   />
                 </Grid.Col>
               );
             })}
           </Grid>
-          <Grid
-            columns={420}
-            gutter={0}
-            align="flex-end"
-            ref={ref}
-            onClick={handleClick}
-          >
-            {days.map((d) => {
-              return (
-                <Grid.Col
-                  span={Math.floor(420 / days.length)}
-                  key={`day-${getStartOfDay(d.day).toISOString().slice(0, 10)}`}
-                >
-                  <DayColumn
-                    day={d.day}
-                    y={y}
-                    yToTime={yToTime}
-                    toY={toY}
-                    isFetching={isFetching}
-                    currentTime={isToday(d.day) ? currentTime : undefined}
-                    sessions={d.sessions}
-                    handleSessionClick={handleSessionClick}
-                    hourMultiplier={hourMultiplier}
-                    rasterHeight={rasterHeight}
-                    startNewSession={startNewSession}
-                    setStartNewSession={setStartNewSession}
-                    newSessionDay={newSessionDay}
-                    setNewSessionDay={setNewSessionDay}
-                  />
-                </Grid.Col>
-              );
-            })}
-          </Grid>
-        </Stack>
-        <Stack w={42} align="center">
-          <ColumnHeader
-            icon={<NextActionIcon onClick={() => handleNextAndPrev(1)} />}
-          />
-          <TimeColumn
-            hourHeight={rasterHeight}
-            hourMultiplier={hourMultiplier}
-          />
-        </Stack>
-      </Group>
+          <Box w={42}>
+            <ColumnHeader
+              icon={<NextActionIcon onClick={() => handleNextAndPrev(1)} />}
+            />
+          </Box>
+        </Group>
+        {/* Body */}
+        <Group gap={0} wrap="nowrap" align="flex-start">
+          <Stack w={42} align="center">
+            <TimeColumn
+              hourHeight={rasterHeight}
+              hourMultiplier={hourMultiplier}
+            />
+          </Stack>
+          <Stack h="100%" gap={10} w="100%">
+            <Grid
+              columns={420}
+              gutter={0}
+              align="flex-end"
+              ref={ref}
+              onClick={handleClick}
+            >
+              {days.map((d) => {
+                return (
+                  <Grid.Col
+                    span={Math.floor(420 / days.length)}
+                    key={`day-${getStartOfDay(d.day).toISOString().slice(0, 10)}`}
+                  >
+                    <DayColumn
+                      day={d.day}
+                      y={y}
+                      yToTime={yToTime}
+                      toY={toY}
+                      isFetching={isFetching}
+                      currentTime={isToday(d.day) ? currentTime : undefined}
+                      sessions={d.sessions}
+                      handleSessionClick={handleSessionClick}
+                      hourMultiplier={hourMultiplier}
+                      rasterHeight={rasterHeight}
+                      startNewSession={startNewSession}
+                      setStartNewSession={setStartNewSession}
+                      newSessionDay={newSessionDay}
+                      setNewSessionDay={setNewSessionDay}
+                    />
+                  </Grid.Col>
+                );
+              })}
+            </Grid>
+          </Stack>
+          <Stack w={42} align="center">
+            <TimeColumn
+              hourHeight={rasterHeight}
+              hourMultiplier={hourMultiplier}
+            />
+          </Stack>
+        </Group>
+      </Stack>
       <Modal
         opened={modalOpened}
         onClose={() => {
