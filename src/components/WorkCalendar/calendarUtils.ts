@@ -93,3 +93,29 @@ export function mergeAdjacentSessionsForRender(
   }
   return merged;
 }
+
+// Calculate the actual time a session contributes to a specific day
+// This is needed when sessions span multiple days
+export function calculateSessionTimeForDay(
+  session: CalendarSession,
+  day: Date
+): number {
+  const dayStart = getStartOfDay(day);
+  const dayEnd = getEndOfDay(day);
+
+  const sessionStart = new Date(session.start_time);
+  const sessionEnd = new Date(session.end_time);
+
+  // If session doesn't overlap with this day, return 0
+  if (sessionEnd <= dayStart || sessionStart >= dayEnd) {
+    return 0;
+  }
+
+  // Calculate the actual start and end times within this day
+  const actualStart = sessionStart < dayStart ? dayStart : sessionStart;
+  const actualEnd = sessionEnd > dayEnd ? dayEnd : sessionEnd;
+
+  const dayDuration = actualEnd.getTime() - actualStart.getTime();
+
+  return Math.round(dayDuration / 1000);
+}

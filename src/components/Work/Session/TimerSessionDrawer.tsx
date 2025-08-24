@@ -29,6 +29,7 @@ export default function TimerSessionDrawer({
   )?.project;
 
   async function handleSubmit(values: {
+    project_id?: string;
     start_time: string;
     end_time: string;
     active_seconds: number;
@@ -45,7 +46,7 @@ export default function TimerSessionDrawer({
       true_end_time: timerSession.true_end_time,
       created_at: new Date().toISOString(),
       id: timerSession.id,
-      project_id: timerSession.project_id,
+      project_id: values.project_id || timerSession.project_id,
       user_id: timerSession.user_id,
       start_time: new Date(values.start_time).toISOString(),
       hourly_payment: timerSession.hourly_payment,
@@ -78,6 +79,7 @@ export default function TimerSessionDrawer({
       <Flex direction="column" gap="xl">
         <SessionForm
           initialValues={{
+            project_id: timerSession.project_id,
             start_time: timerSession.start_time,
             end_time: timerSession.end_time,
             active_seconds: timerSession.active_seconds,

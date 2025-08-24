@@ -7,6 +7,7 @@ import { Box, Card, Group, HoverCard, Stack, Text } from "@mantine/core";
 import { CalendarDay, VisibleProject } from "@/types/workCalendar.types";
 import { formatMoney, formatTime } from "@/utils/workHelperFunctions";
 import { useMemo } from "react";
+import { calculateSessionTimeForDay } from "../calendarUtils";
 
 interface ColumnHeaderProps {
   day?: CalendarDay;
@@ -24,16 +25,19 @@ export default function ColumnHeader({
   const { hovered, ref } = useHover();
   const { locale } = useSettingsStore();
   const totalTime = useMemo(() => {
-    return (
-      day?.sessions.reduce((acc, session) => acc + session.active_seconds, 0) ??
+    if (!day) return 0;
+    return day.sessions.reduce(
+      (acc, session) => acc + calculateSessionTimeForDay(session, day.day),
       0
     );
   }, [day]);
+
   return (
     <HoverCard
-      openDelay={100}
+      openDelay={300}
       closeDelay={100}
       disabled={!day || visibleProjects.length === 0 || totalTime === 0}
+      position="bottom"
     >
       <HoverCard.Target>
         <Stack
@@ -72,8 +76,8 @@ export default function ColumnHeader({
                   month: "short",
                 })}
               </Text>
-              <Text size="xs" c="dimmed" fw={500}>
-                Total: {formatTime(totalTime)}
+              <Text size="xs" c="dimmed" fw={500} ta="center">
+                {formatTime(totalTime)}
               </Text>
             </Stack>
           )}
@@ -86,10 +90,11 @@ export default function ColumnHeader({
               day?.sessions.reduce(
                 (acc, session) =>
                   session.project_id === p.id
-                    ? acc + session.active_seconds
+                    ? acc + calculateSessionTimeForDay(session, day.day)
                     : acc,
                 0
               ) ?? 0;
+            const earnings = (p.salary * totalTime) / 3600;
 
             if (totalTime === 0) return null;
             return (
@@ -103,9 +108,11 @@ export default function ColumnHeader({
                     <Text size="xs" c="dimmed" fw={500}>
                       {formatTime(totalTime)}
                     </Text>
-                    <Text size="xs" c="dimmed" fw={500}>
-                      {formatMoney((p.salary * totalTime) / 3600, p.currency)}
-                    </Text>
+                    {earnings > 0 && (
+                      <Text size="xs" c="dimmed" fw={500}>
+                        {formatMoney(earnings, p.currency)}
+                      </Text>
+                    )}
                   </Stack>
                 </Group>
               </Card>

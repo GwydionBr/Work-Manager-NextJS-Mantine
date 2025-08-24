@@ -5,7 +5,6 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import { Accordion, Box, Group, Text } from "@mantine/core";
 import { IconCalendar, IconClock, IconFolder } from "@tabler/icons-react";
 import SessionRow from "@/components/Work/Session/SessionRow";
-import * as helper from "@/utils/workHelperFunctions";
 import {
   formatTime,
   areEarningsBreakdownEmpty,
