@@ -27,7 +27,7 @@ export default function CalendarLegend({
       gap="xs"
       style={{
         position: "sticky",
-        bottom: -12,
+        bottom: 0,
         zIndex: 100,
         background: "var(--mantine-color-body)",
         borderTop: "1px solid light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-1))",

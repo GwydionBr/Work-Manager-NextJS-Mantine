@@ -18,11 +18,10 @@ import {
 } from "@/components/WorkCalendar/calendarUtils";
 
 import { Currency } from "@/types/settings.types";
-import { CalendarDay } from "@/types/workCalendar.types";
+import { CalendarDay, VisibleProject } from "@/types/workCalendar.types";
 import { TablesInsert } from "@/types/db.types";
 import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
 import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
-import { formatTime } from "@/utils/workHelperFunctions";
 
 interface CalendarGridProps {
   days: CalendarDay[];
@@ -32,6 +31,7 @@ interface CalendarGridProps {
   setReferenceDate: (date: Date) => void;
   handleSessionClick: (sessionId: string) => void;
   handleNextAndPrev: (direction: number) => void;
+  visibleProjects: VisibleProject[];
 }
 export default function CalendarGrid({
   days,
@@ -41,6 +41,7 @@ export default function CalendarGrid({
   setReferenceDate,
   handleSessionClick,
   handleNextAndPrev,
+  visibleProjects,
 }: CalendarGridProps) {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
   const [startNewSession, setStartNewSession] = useState<number | null>(null);
@@ -142,12 +143,14 @@ export default function CalendarGrid({
             position: "sticky",
             top: 60,
             zIndex: 20,
-            borderBottom: "2px solid light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2))",
+            borderBottom:
+              "2px solid light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2))",
           }}
         >
           <Box w={42}>
             <ColumnHeader
               icon={<PrevActionIcon onClick={() => handleNextAndPrev(-1)} />}
+              visibleProjects={visibleProjects}
             />
           </Box>
           <Grid
@@ -171,6 +174,7 @@ export default function CalendarGrid({
                   <ColumnHeader
                     day={d}
                     setReferenceDate={setReferenceDate}
+                    visibleProjects={visibleProjects}
                   />
                 </Grid.Col>
               );
@@ -179,6 +183,7 @@ export default function CalendarGrid({
           <Box w={42}>
             <ColumnHeader
               icon={<NextActionIcon onClick={() => handleNextAndPrev(1)} />}
+              visibleProjects={visibleProjects}
             />
           </Box>
         </Group>

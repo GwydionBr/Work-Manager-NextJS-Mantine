@@ -34,8 +34,12 @@ import {
   differenceInCalendarDays,
 } from "date-fns";
 
-import { CalendarSession, ViewMode } from "@/types/workCalendar.types";
-import { CalendarDay } from "@/types/workCalendar.types";
+import {
+  CalendarSession,
+  ViewMode,
+  CalendarDay,
+  VisibleProject,
+} from "@/types/workCalendar.types";
 import { Tables } from "@/types/db.types";
 
 const zoomLevel = [1, 2, 4, 6, 12]; // multiplier for hour height
@@ -115,7 +119,7 @@ export default function WorkCalendar() {
   }, [days, sessionsByDay]);
 
   // Projects visible in the current view (based on sessions overlapping the visible days)
-  const visibleProjects = useMemo(() => {
+  const visibleProjects: VisibleProject[] = useMemo(() => {
     const ids = new Set<string>();
     sessionsByDay.forEach((items) => {
       items.forEach((s) => ids.add(String(s.project_id)));
@@ -130,6 +134,8 @@ export default function WorkCalendar() {
           id,
           title: p.title,
           color: p.color ?? "var(--mantine-color-teal-6)",
+          salary: p.salary ?? 0,
+          currency: p.currency ?? "USD",
         };
       })
       .filter((p) => p !== undefined);
@@ -431,6 +437,7 @@ export default function WorkCalendar() {
           </Grid.Col>
         </Grid>
         <CalendarGrid
+          visibleProjects={visibleProjects}
           handleNextAndPrev={handleNextAndPrev}
           isFetching={isFetching}
           days={calendarDays}

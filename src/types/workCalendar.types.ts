@@ -1,10 +1,19 @@
 import { Tables } from "./db.types";
+import { Currency } from "./settings.types";
 
 export type ViewMode = "day" | "week";
 
 export type CalendarDay = {
   day: Date;
   sessions: CalendarSession[];
+};
+
+export type VisibleProject = {
+  id: string;
+  title: string;
+  color: string;
+  salary: number;
+  currency: Currency;
 };
 
 export type CalendarSession = Pick<
