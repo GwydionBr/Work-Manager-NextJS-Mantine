@@ -132,7 +132,7 @@ export function DayColumn({
         <TimeTrackerEvent toY={toY} currentTime={currentTime} day={day} />
 
         {/* New session event */}
-        {hovered && startNewSession === null && (
+        {!isFetching && hovered && startNewSession === null && (
           <Stack
             onClick={(e) => {
               e.stopPropagation();
@@ -157,7 +157,7 @@ export function DayColumn({
           </Stack>
         )}
 
-        {startNewSession !== null && newSessionDay === day && (
+        {!isFetching && startNewSession !== null && newSessionDay === day && (
           <NewSessionEvent
             start={startNewSession}
             y={y}

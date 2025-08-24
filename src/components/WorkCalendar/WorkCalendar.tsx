@@ -18,7 +18,7 @@ import {
   Center,
 } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
-import { IconMinus, IconPlus } from "@tabler/icons-react";
+import { IconArrowDown, IconMinus, IconPlus } from "@tabler/icons-react";
 import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
 import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
 import CalendarGrid from "./Calendar/CalendarGrid";
@@ -41,6 +41,7 @@ import {
   VisibleProject,
 } from "@/types/workCalendar.types";
 import { Tables } from "@/types/db.types";
+import DelayedTooltip from "../UI/DelayedTooltip";
 
 const zoomLevel = [1, 2, 4, 6, 12]; // multiplier for hour height
 const zoomLabels = ["1 h", "30 min", "15 min", "10 min", "5 min"];
@@ -243,15 +244,25 @@ export default function WorkCalendar() {
     }
   }
 
+  function handleScrollToNow() {
+    if (viewport.current) {
+      const currentTime = getCurrentTime();
+      viewport.current.scrollTo({
+        top: currentTime * rasterHeight * zoomLevel[zoomIndex] + 50,
+        behavior: "smooth",
+      });
+    }
+  }
+
   return (
     <ScrollArea
       viewportRef={viewport}
       h="100vh"
-      type="scroll"
+      type="never"
       scrollHideDelay={100}
     >
       <Stack>
-        <Title ta="center" order={1} mt="xs">
+        <Title ta="center" order={1} mt="xs" w="100%" style={{ zIndex: 100 }}>
           Work Calendar
         </Title>
         <Grid
@@ -270,6 +281,22 @@ export default function WorkCalendar() {
         >
           <Grid.Col span={3}>
             <Group justify="flex-start" ml="md" gap="xs">
+              <DelayedTooltip
+                label={
+                  locale === "de-DE"
+                    ? "Springe zur aktuellen Zeit"
+                    : "Scroll to current time"
+                }
+              >
+                <ActionIcon
+                  variant="light"
+                  size="lg"
+                  radius="md"
+                  onClick={handleScrollToNow}
+                >
+                  <IconArrowDown color="var(--mantine-color-teal-text)" />
+                </ActionIcon>
+              </DelayedTooltip>
               <ActionIcon.Group>
                 <ActionIcon
                   variant="light"
@@ -422,6 +449,7 @@ export default function WorkCalendar() {
           <Grid.Col span={3} pr="md">
             <Group justify="flex-end" gap="xs" w="100%">
               <SegmentedControl
+                color="teal"
                 ml="md"
                 value={viewMode}
                 onChange={(v) => setViewMode(v as ViewMode)}
