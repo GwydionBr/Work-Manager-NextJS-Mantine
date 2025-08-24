@@ -281,22 +281,6 @@ export default function WorkCalendar() {
         >
           <Grid.Col span={3}>
             <Group justify="flex-start" ml="md" gap="xs">
-              <DelayedTooltip
-                label={
-                  locale === "de-DE"
-                    ? "Springe zur aktuellen Zeit"
-                    : "Scroll to current time"
-                }
-              >
-                <ActionIcon
-                  variant="light"
-                  size="lg"
-                  radius="md"
-                  onClick={handleScrollToNow}
-                >
-                  <IconArrowDown color="var(--mantine-color-teal-text)" />
-                </ActionIcon>
-              </DelayedTooltip>
               <ActionIcon.Group>
                 <ActionIcon
                   variant="light"
@@ -476,7 +460,10 @@ export default function WorkCalendar() {
         />
       </Stack>
       {visibleProjects.length > 0 && (
-        <CalendarLegend visibleProjects={visibleProjects} />
+        <CalendarLegend
+          visibleProjects={visibleProjects}
+          handleScrollToNow={handleScrollToNow}
+        />
       )}
       {selectedSession && (
         <TimerSessionDrawer
