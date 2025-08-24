@@ -20,6 +20,8 @@ import {
 import { Currency } from "@/types/settings.types";
 import { CalendarDay } from "@/types/workCalendar.types";
 import { TablesInsert } from "@/types/db.types";
+import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
+import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
 
 interface CalendarGridProps {
   days: CalendarDay[];
@@ -28,6 +30,7 @@ interface CalendarGridProps {
   rasterHeight: number;
   setReferenceDate: (date: Date) => void;
   handleSessionClick: (sessionId: string) => void;
+  handleNextAndPrev: (direction: number) => void;
 }
 export default function CalendarGrid({
   days,
@@ -36,6 +39,7 @@ export default function CalendarGrid({
   rasterHeight,
   setReferenceDate,
   handleSessionClick,
+  handleNextAndPrev,
 }: CalendarGridProps) {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
   const [startNewSession, setStartNewSession] = useState<number | null>(null);
@@ -126,9 +130,15 @@ export default function CalendarGrid({
 
   return (
     <Box>
-      <Group gap={0} wrap="nowrap">
-        <Stack w={56} align="flex-end">
-          <ColumnHeader />
+      <Group gap={0} wrap="nowrap" align="flex-start">
+        <Stack w={42} align="center">
+          <ColumnHeader
+            icon={
+              <PrevActionIcon
+                onClick={() => handleNextAndPrev(-1)}
+              />
+            }
+          />
           <TimeColumn
             hourHeight={rasterHeight}
             hourMultiplier={hourMultiplier}
@@ -144,7 +154,6 @@ export default function CalendarGrid({
               top: 60,
               zIndex: 20,
               background: "var(--mantine-color-body)",
-              borderBottom: "1px solid var(--mantine-color-gray-3)",
             }}
           >
             {days.map((d) => {
@@ -194,6 +203,15 @@ export default function CalendarGrid({
               );
             })}
           </Grid>
+        </Stack>
+        <Stack w={42} align="center">
+          <ColumnHeader
+            icon={<NextActionIcon onClick={() => handleNextAndPrev(1)} />}
+          />
+          <TimeColumn
+            hourHeight={rasterHeight}
+            hourMultiplier={hourMultiplier}
+          />
         </Stack>
       </Group>
       <Modal

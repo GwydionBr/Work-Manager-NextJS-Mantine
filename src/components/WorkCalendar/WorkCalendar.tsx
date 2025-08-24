@@ -238,7 +238,12 @@ export default function WorkCalendar() {
   }
 
   return (
-    <ScrollArea offsetScrollbars viewportRef={viewport} h="100vh">
+    <ScrollArea
+      viewportRef={viewport}
+      h="100vh"
+      type="scroll"
+      scrollHideDelay={100}
+    >
       <Stack>
         <Title ta="center" order={1} mt="xs">
           Work Calendar
@@ -426,6 +431,7 @@ export default function WorkCalendar() {
           </Grid.Col>
         </Grid>
         <CalendarGrid
+          handleNextAndPrev={handleNextAndPrev}
           isFetching={isFetching}
           days={calendarDays}
           setReferenceDate={handleReferenceDateChange}

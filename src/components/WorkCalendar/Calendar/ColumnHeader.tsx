@@ -8,11 +8,13 @@ import { Stack, Text } from "@mantine/core";
 interface ColumnHeaderProps {
   day?: Date;
   setReferenceDate?: (date: Date) => void;
+  icon?: React.ReactNode;
 }
 
 export default function ColumnHeader({
   day,
   setReferenceDate,
+  icon,
 }: ColumnHeaderProps) {
   const { hovered, ref } = useHover();
   const { locale } = useSettingsStore();
@@ -27,19 +29,30 @@ export default function ColumnHeader({
       }}
       ref={ref}
       style={{
+        position: "sticky",
+        top: 60,
+        zIndex: 20,
         cursor: day ? "pointer" : "default",
-        border: day ? "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))" : "none",
-        backgroundColor: hovered && day ? "light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))" : "transparent",
-        borderRadius: 6,
+        border: day
+          ? "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))"
+          : "none",
+        backgroundColor:
+          hovered && day
+            ? "light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))"
+            : "var(--mantine-color-body)",
+        borderRadius: day ? 6 : 0,
       }}
     >
-      <Text fw={600}>
-        {day?.toLocaleDateString(locale, {
-          weekday: "short",
-          day: "2-digit",
-          month: "short",
-        })}
-      </Text>
+      {icon && icon}
+      {day && (
+        <Text fw={600}>
+          {day?.toLocaleDateString(locale, {
+            weekday: "short",
+            day: "2-digit",
+            month: "short",
+          })}
+        </Text>
+      )}
     </Stack>
   );
 }

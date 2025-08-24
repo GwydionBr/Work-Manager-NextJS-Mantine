@@ -43,12 +43,13 @@ export function TimeColumn({ hourHeight, hourMultiplier }: TimeColumnProps) {
   };
 
   return (
-    <Box w={56} style={{ flex: "0 0 auto" }}>
+    <Box w={42} style={{ flex: "0 0 auto" }}>
       <Stack gap="xs">
         <Box
           style={{
             position: "relative",
             height: totalTimeUnits * timeUnitHeight,
+            zIndex: 10,
           }}
         >
           {Array.from({ length: totalTimeUnits + 1 }, (_, i) => (
@@ -58,7 +59,7 @@ export function TimeColumn({ hourHeight, hourMultiplier }: TimeColumnProps) {
               c="light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-0))"
               style={{
                 position: "absolute",
-                top: i * timeUnitHeight - 4,
+                top: i * timeUnitHeight - 12,
                 left: 2,
                 width: "100%",
                 textAlign: "right",
