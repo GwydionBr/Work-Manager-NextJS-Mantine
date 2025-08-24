@@ -31,16 +31,20 @@ export default function ColumnHeader({
       style={{
         position: "sticky",
         top: 60,
-        zIndex: 20,
+        zIndex: 10,
         cursor: day ? "pointer" : "default",
         border: day
           ? "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))"
+          : "none",
+        borderBottom: day
+          ? "2px solid light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2))"
           : "none",
         backgroundColor:
           hovered && day
             ? "light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))"
             : "var(--mantine-color-body)",
-        borderRadius: day ? 6 : 0,
+        borderTopLeftRadius: day ? 6 : 0,
+        borderTopRightRadius: day ? 6 : 0,
       }}
     >
       {icon && icon}

@@ -49,7 +49,6 @@ export function TimeColumn({ hourHeight, hourMultiplier }: TimeColumnProps) {
           style={{
             position: "relative",
             height: totalTimeUnits * timeUnitHeight,
-            zIndex: 10,
           }}
         >
           {Array.from({ length: totalTimeUnits + 1 }, (_, i) => (
