@@ -413,8 +413,8 @@ export default function WorkCalendar() {
               </Group>
             )}
           </Grid.Col>
-          <Grid.Col span={3}>
-            <Group justify="flex-end" mr="md" gap="xs" w="100%">
+          <Grid.Col span={3} pr="md">
+            <Group justify="flex-end" gap="xs" w="100%">
               <SegmentedControl
                 ml="md"
                 value={viewMode}
