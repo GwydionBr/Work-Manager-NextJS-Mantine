@@ -1,9 +1,9 @@
-import Header from "@/components/Header/Header";
+import { Stack, Text } from "@mantine/core";
 
 export default function Tasks() {
   return (
-    <div>
-      <Header headerTitle="Tasks" />
-    </div>
+    <Stack>
+      <Text>Tasks</Text>
+    </Stack>
   );
 }

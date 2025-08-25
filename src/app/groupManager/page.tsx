@@ -5,7 +5,7 @@ import { useGroupStore } from "@/stores/groupStore";
 import classes from "./GroupManager.module.css";
 
 import { Box, Loader, Tabs } from "@mantine/core";
-import { IconCalendar, IconChecklist } from "@tabler/icons-react";
+import { IconCalendar, IconChecklist, IconListCheck } from "@tabler/icons-react";
 import Header from "@/components/Header/Header";
 import EditGroupButton from "@/components/GroupManager/Group/EditGroupButton";
 import TaskList from "@/components/GroupManager/ToDo/TaskList";
@@ -32,6 +32,12 @@ export default function GroupManagerPage() {
               value="Calendar"
             >
               Calendar
+            </Tabs.Tab>
+            <Tabs.Tab
+              leftSection={<IconListCheck color="light-dark(blue, cyan)" />}
+              value="Tasks"
+            >
+              Tasks
             </Tabs.Tab>
             <Tabs.Tab
               leftSection={<IconChecklist color="light-dark(blue, cyan)" />}

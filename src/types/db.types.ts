@@ -741,6 +741,44 @@ export type Database = {
           },
         ];
       };
+      task: {
+        Row: {
+          created_at: string;
+          exectution_date: string;
+          executed: boolean;
+          id: string;
+          timer_project_id: string | null;
+          title: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          exectution_date?: string;
+          executed?: boolean;
+          id?: string;
+          timer_project_id?: string | null;
+          title?: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          exectution_date?: string;
+          executed?: boolean;
+          id?: string;
+          timer_project_id?: string | null;
+          title?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "task_timer_project_id_fkey";
+            columns: ["timer_project_id"];
+            isOneToOne: false;
+            referencedRelation: "timer_project";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       timer_project: {
         Row: {
           cash_flow_category_id: string | null;

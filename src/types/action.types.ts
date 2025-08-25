@@ -20,7 +20,9 @@ export type TableNames =
   | "finance_rule_category"
   | "finance_rule_timer_project"
   | "timer_project_folder"
-  | "payout";
+  | "payout"
+  | "task";
+
 
 // Response after an error occurs
 export interface ErrorResponse {

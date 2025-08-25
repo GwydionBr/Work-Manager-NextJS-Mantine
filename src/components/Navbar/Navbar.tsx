@@ -33,21 +33,21 @@ const mainLinksData = [
     label: "Work Calendar",
     to: paths.workCalendar.workCalendarPage(),
   },
-  // {
-  //   icon: IconListCheck,
-  //   label: "Tasks",
-  //   to: paths.tasks.tasksPage(),
-  // },
+  {
+    icon: IconListCheck,
+    label: "Tasks",
+    to: paths.tasks.tasksPage(),
+  },
   {
     icon: IconBrandCashapp,
     label: "Finance",
     to: paths.finances.financesPage(),
   },
-  {
-    icon: IconUsersGroup,
-    label: "Group Manager",
-    to: paths.groupManager.groupManagerPage(),
-  },
+  // {
+  //   icon: IconUsersGroup,
+  //   label: "Group Manager",
+  //   to: paths.groupManager.groupManagerPage(),
+  // },
 ];
 
 const profileLinksData = [

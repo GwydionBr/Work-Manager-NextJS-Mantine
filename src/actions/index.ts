@@ -16,6 +16,10 @@ export {
   deleteProjectFolder,
 } from "./work/timerProjectFolderActions";
 
+// Task Actions
+
+export { getAllTasks } from "./tasks/getAllTasks";
+
 // Payout Actions
 
 export { payoutSessions } from "./payout/sessionPayout";
