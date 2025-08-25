@@ -10,6 +10,7 @@ import Header from "@/components/Header/Header";
 import EditGroupButton from "@/components/GroupManager/Group/EditGroupButton";
 import TaskList from "@/components/GroupManager/ToDo/TaskList";
 import Calendar from "@/components/Calendar/Calendar";
+import GroceryList from "@/components/GroupManager/Grocery/GroceryList";
 
 export default function GroupManagerPage() {
   const { isFetching, groups, activeGroupId } = useGroupStore();
@@ -37,7 +38,7 @@ export default function GroupManagerPage() {
               leftSection={<IconListCheck color="light-dark(blue, cyan)" />}
               value="Tasks"
             >
-              Tasks
+              Groceries
             </Tabs.Tab>
             <Tabs.Tab
               leftSection={<IconChecklist color="light-dark(blue, cyan)" />}
@@ -51,6 +52,9 @@ export default function GroupManagerPage() {
             <Box className={classes.mainCalendarContainer}>
               <Calendar />
             </Box>
+          </Tabs.Panel>
+          <Tabs.Panel value="Tasks">
+            <GroceryList />
           </Tabs.Panel>
           <Tabs.Panel value="To Do">
             <TaskList />

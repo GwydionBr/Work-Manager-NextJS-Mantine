@@ -19,6 +19,9 @@ export {
 // Task Actions
 
 export { getAllTasks } from "./tasks/getAllTasks";
+export { createTask } from "./tasks/createTask";
+export { updateTask } from "./tasks/updateTask";
+export { deleteTask } from "./tasks/deleteTask";
 
 // Payout Actions
 

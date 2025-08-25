@@ -1,50 +1,45 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "@mantine/form";
+import { useTaskStore } from "@/stores/taskStore";
 
 import { ActionIcon, Alert, Group, Stack, TextInput } from "@mantine/core";
 import { IconX, IconPlus } from "@tabler/icons-react";
 
-import classes from "./Grocery.module.css";
 import AddActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 
-interface GroceryInputProps {
-  placeholder: string;
-  onValueChange: (value: string) => void;
-  value: string;
-  onSubmit: () => void;
-  clearInput: () => void;
-  isLoading: boolean;
-  error: string | null;
-  onCloseError: () => void;
-}
+interface TaskInputProps {}
 
-export default function GroceryInput({
-  placeholder,
-  onValueChange,
-  clearInput,
-  value,
-  onSubmit,
-  isLoading,
-  error,
-  onCloseError,
-}: GroceryInputProps) {
+export default function TaskInput({}: TaskInputProps) {
+  const { createTask } = useTaskStore();
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm({
     initialValues: {
-      value: "",
+      title: "",
     },
   });
+
+  const onSubmit = async (values: typeof form.values) => {
+    setIsLoading(true);
+    await createTask({
+      title: values.title,
+    });
+    form.reset();
+    setIsLoading(false);
+  };
+
   return (
     <Stack w="100%">
       <form onSubmit={form.onSubmit(onSubmit)}>
         <Group justify="center">
           <TextInput
-            style={{ flexGrow: 1 }}
+            style={{ flexGrow: 1, borderRadius: "5px" }}
             leftSection={
-              value !== "" && (
+              form.values.title !== "" && (
                 <ActionIcon
-                  onClick={clearInput}
-                  disabled={!value}
+                  onClick={() => form.reset()}
+                  disabled={!form.values.title}
                   variant="transparent"
                   color="red"
                 >
@@ -52,22 +47,25 @@ export default function GroceryInput({
                 </ActionIcon>
               )
             }
-            placeholder={placeholder}
-            className={classes.groceryInput}
-            value={value}
-            onChange={(e) => onValueChange(e.target.value)}
+            placeholder="Add a task"
+            value={form.values.title}
+            onChange={(e) => form.setFieldValue("title", e.target.value)}
           />
           <AddActionIcon
-            onClick={onSubmit}
+            onClick={form.onSubmit(onSubmit)}
             loading={isLoading}
-            aria-label="Add grocery"
-            tooltipLabel="Add grocery"
+            aria-label="Add task"
+            tooltipLabel="Add task"
             variant="filled"
           />
         </Group>
-        {error && (
-          <Alert withCloseButton color="red" onClose={onCloseError}>
-            {error}
+        {form.errors.title && (
+          <Alert
+            withCloseButton
+            color="red"
+            onClose={() => form.setErrors({ title: null })}
+          >
+            {form.errors.title}
           </Alert>
         )}
       </form>

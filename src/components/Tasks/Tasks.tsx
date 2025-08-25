@@ -1,9 +1,12 @@
-import { Stack, Text } from "@mantine/core";
+"use client";
+
+import { Stack } from "@mantine/core";
+import TaskList from "./TaskList";
 
 export default function Tasks() {
   return (
-    <Stack>
-      <Text>Tasks</Text>
+    <Stack w="100%" align="center">
+      <TaskList />
     </Stack>
   );
 }

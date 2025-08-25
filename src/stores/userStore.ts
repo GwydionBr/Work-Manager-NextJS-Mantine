@@ -23,7 +23,7 @@ interface UserState {
 }
 
 interface UserActions {
-  fetchUserData: () => void;
+  fetchUserData: () => Promise<void>;
   logout: () => Promise<boolean>;
   updateProfile: (profile: TablesUpdate<"profiles">) => Promise<boolean>;
   addFriend: (friendId: string) => Promise<boolean>;
@@ -43,6 +43,7 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
   lastFetch: null,
 
   fetchUserData: async () => {
+    set({ isFetching: true });
     const profileResponse = await actions.getProfile();
 
     if (profileResponse.success) {

@@ -8,6 +8,7 @@ import { useGroupStore } from "@/stores/groupStore";
 import { useUserStore } from "@/stores/userStore";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useWorkStore } from "@/stores/workManagerStore";
+import { useTaskStore } from "@/stores/taskStore";
 
 import classes from "./AppShell.module.css";
 
@@ -20,6 +21,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { fetchUserData, lastFetch: lastUserFetch } = useUserStore();
   const { fetchFinanceData, lastFetch: lastFinanceFetch } = useFinanceStore();
   const { fetchWorkData, lastFetch: lastWorkFetch } = useWorkStore();
+  const { fetchTasksData, lastFetch: lastTaskFetch } = useTaskStore();
   const {
     isAsideOpen,
     setIsAsideOpen,
@@ -57,6 +59,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       }
       if (pathname.startsWith("/finances") && shouldFetch(lastFinanceFetch)) {
         await fetchFinanceData();
+      } else if (pathname.startsWith("/tasks") && shouldFetch(lastTaskFetch)) {
+        await fetchTasksData();
       } else if (pathname.startsWith("/work") && shouldFetch(lastWorkFetch)) {
         await fetchWorkData();
       } else if (pathname.startsWith("/group") && shouldFetch(lastGroupFetch)) {
@@ -74,6 +78,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         if (shouldFetch(lastFinanceFetch)) fetchFinanceData();
         if (shouldFetch(lastWorkFetch)) fetchWorkData();
         if (shouldFetch(lastGroupFetch)) fetchGroupData();
+        if (shouldFetch(lastTaskFetch)) fetchTasksData();
       };
 
       backgroundFetch();
