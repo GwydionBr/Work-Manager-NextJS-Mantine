@@ -33,11 +33,11 @@ const mainLinksData = [
     label: "Work Calendar",
     to: paths.workCalendar.workCalendarPage(),
   },
-  {
-    icon: IconListCheck,
-    label: "Tasks",
-    to: paths.tasks.tasksPage(),
-  },
+  // {
+  //   icon: IconListCheck,
+  //   label: "Tasks",
+  //   to: paths.tasks.tasksPage(),
+  // },
   {
     icon: IconBrandCashapp,
     label: "Finance",
