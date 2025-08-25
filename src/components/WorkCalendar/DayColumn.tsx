@@ -91,7 +91,6 @@ export function DayColumn({
   return (
     <Box ref={hoverRef}>
       <Box
-        mb="xl"
         style={{
           position: "relative",
           height: rasterHeight * 24 * hourMultiplier,

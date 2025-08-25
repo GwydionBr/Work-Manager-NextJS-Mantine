@@ -195,7 +195,22 @@ export default function CalendarGrid({
               hourMultiplier={hourMultiplier}
             />
           </Stack>
-          <Stack h="100%" gap={10} w="100%">
+          <Stack
+            h="100%"
+            gap={10}
+            w="100%"
+            mb="xl"
+            style={{
+              borderLeft:
+                "4px solid light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-0))",
+              borderRight:
+                "4px solid light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-0))",
+              borderTop:
+                "4px solid light-dark(var(--mantine-color-teal-6), var(--mantine-color-teal-6))",
+              borderBottom:
+                "4px solid light-dark(var(--mantine-color-teal-6), var(--mantine-color-teal-6))",
+            }}
+          >
             <Grid
               columns={420}
               gutter={0}
