@@ -30,6 +30,8 @@ interface TimeTrackerComponentBigProps {
   storedActiveSeconds: number;
   storedPausedSeconds: number;
   memo: string;
+  color: string | null;
+  backgroundColor: string;
   removeTimer: () => void;
   submitTimer: () => void;
   setIsTimeTrackerMinimized: (value: boolean) => void;
@@ -66,6 +68,8 @@ export default function TimeTrackerComponentBig({
   currency,
   hourlyPayment,
   memo,
+  color,
+  backgroundColor,
   removeTimer,
   submitTimer,
   startTimer,
@@ -104,6 +108,8 @@ export default function TimeTrackerComponentBig({
           modifyActiveSeconds={modifyActiveSeconds}
           modifyPausedSeconds={modifyPausedSeconds}
           setRoundingAmount={setRoundingAmount}
+          color={color}
+          backgroundColor={backgroundColor}
         />
       </Collapse>
       <Collapse in={!isTimeTrackerMinimized} transitionDuration={400}>
@@ -125,6 +131,8 @@ export default function TimeTrackerComponentBig({
           salary={salary}
           hourlyPayment={hourlyPayment}
           errorMessage={errorMessage}
+          color={color}
+          backgroundColor={backgroundColor}
           startTimer={startTimer}
           pauseTimer={pauseTimer}
           resumeTimer={resumeTimer}

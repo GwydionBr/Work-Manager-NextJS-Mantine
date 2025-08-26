@@ -12,6 +12,7 @@ import {
   Button,
   Paper,
   Collapse,
+  alpha,
 } from "@mantine/core";
 import { TimerState } from "@/types/timeTracker.types";
 import TimeTrackerRow from "../TimeTrackerRow";
@@ -52,6 +53,8 @@ interface TimeTrackerComponentBigMaxProps {
   hourlyPayment: boolean;
   errorMessage: string | null;
   memo: string;
+  color: string | null;
+  backgroundColor: string;
   startTimer: () => void;
   pauseTimer: () => void;
   resumeTimer: () => void;
@@ -86,6 +89,8 @@ export default function TimeTrackerComponentBigMax({
   hourlyPayment,
   errorMessage,
   memo,
+  color,
+  backgroundColor,
   startTimer,
   pauseTimer,
   resumeTimer,
@@ -100,7 +105,15 @@ export default function TimeTrackerComponentBigMax({
   const { roundInTimeSections } = useSettingsStore();
 
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder w={270}>
+    <Card
+      shadow="sm"
+      padding="lg"
+      radius="md"
+      withBorder
+      w={270}
+      bg={backgroundColor}
+      style={{ border: color ? `2px solid ${color}` : "none" }}
+    >
       <LoadingOverlay visible={isSubmitting} overlayProps={{ blur: 2 }} />
       <Stack gap="md" align="center">
         {/* State Badge */}

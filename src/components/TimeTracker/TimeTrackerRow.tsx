@@ -39,11 +39,11 @@ export default function TimeTrackerRow({
       radius="xl"
       withBorder
       style={{
-        borderColor: isMemo
-          ? "light-dark(var(--mantine-color-gray-5), var(--mantine-color-gray-6))"
+        border: isMemo
+          ? "2px solid light-dark(var(--mantine-color-gray-5), var(--mantine-color-gray-6))"
           : state === activationState
-            ? color
-            : "",
+            ? `2px solid ${color}`
+            : "none",
       }}
       {...props}
     >

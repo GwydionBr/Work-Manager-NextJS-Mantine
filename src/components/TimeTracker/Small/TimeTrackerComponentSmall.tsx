@@ -42,6 +42,8 @@ interface TimeTrackerComponentSmallProps {
   hourlyPayment: boolean;
   storedActiveSeconds: number;
   storedPausedSeconds: number;
+  color: string | null;
+  backgroundColor: string;
   setShowSmall: (showSmall: boolean) => void;
   submitTimer: () => void;
   startTimer: () => void;
@@ -71,6 +73,8 @@ export default function TimeTrackerComponentSmall({
   salary,
   currency,
   hourlyPayment,
+  color,
+  backgroundColor,
   setShowSmall,
   storedActiveSeconds,
   storedPausedSeconds,
@@ -86,7 +90,17 @@ export default function TimeTrackerComponentSmall({
   const { roundInTimeSections } = useSettingsStore();
 
   return (
-    <Stack w={50} align="center" justify="center" gap="xs">
+    <Stack
+      w={50}
+      align="center"
+      justify="center"
+      gap="xs"
+      bg={backgroundColor}
+      style={{
+        borderTop: color ? `2px solid ${color}` : "none",
+        borderBottom: color ? `2px solid ${color}` : "none",
+      }}
+    >
       <Collapse in={showSmall} transitionDuration={400}>
         <Stack gap="xs" align="center" justify="center" pos="relative">
           <LoadingOverlay visible={isSubmitting} overlayProps={{ blur: 2 }} />
@@ -123,10 +137,10 @@ export default function TimeTrackerComponentSmall({
             radius="md"
             withBorder
             style={{
-              borderColor:
+              border:
                 state === TimerState.Running
-                  ? "var(--mantine-color-blue-6)"
-                  : "",
+                  ? `2px solid var(--mantine-color-blue-6)`
+                  : "none",
             }}
           >
             <Text fz={11} c="dimmed" ta="center">

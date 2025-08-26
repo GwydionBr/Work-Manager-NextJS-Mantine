@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
+import {
+  TimerData,
+  useTimeTrackerManager,
+} from "@/stores/timeTrackerManagerStore";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -29,14 +32,18 @@ export default function TimerManager({
 }: TimerManagerProps) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isClient, setIsClient] = useState(false);
-  const { getAllTimers, addTimer } = useTimeTrackerManager();
+  const { getAllTimers, addTimer, timers: timerData } = useTimeTrackerManager();
   const { activeProjectId } = useWorkStore();
   const { roundingAmount, roundingMode, customRoundingAmount } =
     useSettingsStore();
   const activeProject = useWorkStore((state) =>
     state.projects.find((p) => p.project.id === activeProjectId)
   );
-  const timers = getAllTimers();
+  const [timers, setTimers] = useState<TimerData[]>([]);
+
+  useEffect(() => {
+    setTimers(getAllTimers());
+  }, [timerData, getAllTimers]);
 
   // Client-side hydration
   useEffect(() => {
@@ -199,7 +206,7 @@ export default function TimerManager({
       {timers.map((timer) => (
         <TimeTrackerInstance
           key={timer.id}
-          timerId={timer.id}
+          timer={timer}
           isBig={isBig}
           isTimeTrackerMinimized={isTimeTrackerMinimized}
           setIsTimeTrackerMinimized={setIsTimeTrackerMinimized}

@@ -41,6 +41,8 @@ interface TimeTrackerComponentBigMinProps {
   hourlyPayment: boolean;
   storedActiveSeconds: number;
   storedPausedSeconds: number;
+  color: string | null;
+  backgroundColor: string;
   modifyActiveSeconds: (delta: number) => void;
   modifyPausedSeconds: (delta: number) => void;
   setRoundingAmount: (
@@ -80,11 +82,21 @@ export default function TimeTrackerComponentBigMin({
   submitTimer,
   cancelTimer,
   removeTimer,
+  color,
+  backgroundColor,
 }: TimeTrackerComponentBigMinProps) {
   const { roundInTimeSections } = useSettingsStore();
 
   return (
-    <Card shadow="sm" padding="xs" radius="md" withBorder w={270}>
+    <Card
+      shadow="sm"
+      padding="xs"
+      radius="md"
+      withBorder
+      w={270}
+      bg={backgroundColor}
+      style={{ border: color ? `2px solid ${color}` : "none" }}
+    >
       <LoadingOverlay visible={isSubmitting} overlayProps={{ blur: 2 }} />
       <Group justify="center" align="center">
         <ModifyTimeTrackerModal

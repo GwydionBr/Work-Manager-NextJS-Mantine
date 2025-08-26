@@ -4,11 +4,14 @@ import { useState, useEffect, useCallback } from "react";
 import { useTimeTracker } from "@/hooks/useTimeTracker";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
+import {
+  useTimeTrackerManager,
+  TimerData,
+} from "@/stores/timeTrackerManagerStore";
 
-import { Box, Transition } from "@mantine/core";
+import { alpha, Box, Transition } from "@mantine/core";
 import TimeTrackerComponentBig from "./Big/TimeTrackerComponentBig";
 import TimeTrackerComponentSmall from "./Small/TimeTrackerComponentSmall";
-import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
 
 import {
   formatTimeSpan,
@@ -18,7 +21,7 @@ import {
 import { TimerState } from "@/types/timeTracker.types";
 
 interface TimeTrackerInstanceProps {
-  timerId: string;
+  timer: TimerData;
   isBig: boolean;
   isTimeTrackerMinimized: boolean;
   forceEndTimer: boolean;
@@ -26,7 +29,7 @@ interface TimeTrackerInstanceProps {
 }
 
 export default function TimeTrackerInstance({
-  timerId,
+  timer,
   isBig,
   isTimeTrackerMinimized,
   forceEndTimer,
@@ -34,7 +37,6 @@ export default function TimeTrackerInstance({
 }: TimeTrackerInstanceProps) {
   const [isClient, setIsClient] = useState(false);
   const [memo, setMemo] = useState<string>("");
-  const timer = useTimeTrackerManager((state) => state.getTimer(timerId));
   const { updateTimer, removeTimer, setForceEndTimer, getAllTimers } =
     useTimeTrackerManager();
   const { addTimerSession, addMultipleTimerSessions } = useWorkStore();
@@ -53,13 +55,13 @@ export default function TimeTrackerInstance({
     const allTimers = getAllTimers();
     allTimers.forEach((otherTimer) => {
       if (
-        otherTimer.id !== timerId &&
+        otherTimer.id !== timer.id &&
         otherTimer.state === TimerState.Running
       ) {
         setForceEndTimer(otherTimer.id, true);
       }
     });
-  }, [timerId, getAllTimers, setForceEndTimer]);
+  }, [timer, getAllTimers, setForceEndTimer]);
 
   if (!timer) return null;
 
@@ -115,7 +117,7 @@ export default function TimeTrackerInstance({
 
   // Sync Hook state mit Store
   useEffect(() => {
-    updateTimer(timerId, {
+    updateTimer(timer.id, {
       state,
       activeTime,
       pausedTime,
@@ -132,7 +134,7 @@ export default function TimeTrackerInstance({
     activeTime,
     pausedTime,
     moneyEarned,
-    timerId,
+    timer.id,
     updateTimer,
     activeSeconds,
     pausedSeconds,
@@ -158,7 +160,7 @@ export default function TimeTrackerInstance({
   useEffect(() => {
     if (forceEndTimer) {
       submitTimer();
-      setForceEndTimer(timerId, false);
+      setForceEndTimer(timer.id, false);
     }
   }, [forceEndTimer]);
 
@@ -231,7 +233,11 @@ export default function TimeTrackerInstance({
           <div style={styles}>
             <TimeTrackerComponentBig
               projectTitle={timer.projectTitle}
-              removeTimer={() => removeTimer(timerId)}
+              color={timer.color}
+              backgroundColor={
+                timer.color ? alpha(timer.color, 0.1) : "var(--mantine-color-body)"
+              }
+              removeTimer={() => removeTimer(timer.id)}
               moneyEarned={moneyEarned}
               currency={timer.currency}
               hourlyPayment={timer.hourlyPayment}
@@ -272,6 +278,10 @@ export default function TimeTrackerInstance({
         {(styles) => (
           <div style={styles}>
             <TimeTrackerComponentSmall
+              color={timer.color}
+              backgroundColor={
+                timer.color ? alpha(timer.color, 0.1) : "var(--mantine-color-body)"
+              }
               roundedActiveTime={roundedActiveTime}
               state={state}
               activeTime={activeTime}
