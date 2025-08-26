@@ -28,6 +28,7 @@ export default function NewProjectButton({
   } = useSettingsStore();
 
   async function handleSubmit(values: {
+    color: string | null;
     title: string;
     description: string;
     salary: number;
@@ -57,6 +58,7 @@ export default function NewProjectButton({
         <Flex direction="column" gap="xl">
           <ProjectForm
             initialValues={{
+              color: null,
               title: "",
               description: "",
               salary: defaultSalaryAmount,

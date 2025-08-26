@@ -4,11 +4,20 @@ import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 
-import { Box, Drawer, Flex } from "@mantine/core";
+import {
+  Box,
+  Drawer,
+  Group,
+  Stack,
+  Text,
+  Button,
+  useDrawersStack,
+} from "@mantine/core";
 import ProjectForm from "@/components/Work/Project/ProjectForm";
 import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
+import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 
 import { Currency } from "@/types/settings.types";
 
@@ -23,8 +32,10 @@ export default function EditProjectButton() {
     state.projects.find((p) => p.project.id === activeProjectId)
   );
   const [submitting, setSubmitting] = useState(false);
+  const drawersStack = useDrawersStack(["edit-project", "delete-project"]);
 
   async function handleSubmit(values: {
+    color: string | null;
     title: string;
     description: string | null;
     salary: number;
@@ -41,7 +52,7 @@ export default function EditProjectButton() {
       ...values,
     });
     if (success) {
-      close();
+      drawersStack.closeAll();
     }
     setSubmitting(false);
   }
@@ -50,8 +61,7 @@ export default function EditProjectButton() {
     if (activeProject) {
       const result = await deleteProject(activeProject.project.id);
       if (result) {
-        closeDeleteModal();
-        close();
+        drawersStack.closeAll();
       }
     }
   }
@@ -62,44 +72,62 @@ export default function EditProjectButton() {
 
   return (
     <Box>
-      <Drawer
-        opened={opened}
-        onClose={close}
-        title="Edit Project"
-        size="md"
-        padding="md"
-      >
-        <Flex direction="column" gap="xl">
-          <ProjectForm
-            initialValues={{
-              title: activeProject.project.title,
-              description: activeProject.project.description,
-              salary: activeProject.project.salary,
-              currency: activeProject.project.currency ?? "",
-              hourly_payment: activeProject.project.hourly_payment,
-              cash_flow_category_id:
-                activeProject.project.cash_flow_category_id,
-            }}
-            onSubmit={handleSubmit}
-            onCancel={close}
-            newProject={false}
-            submitting={submitting}
-          />
-          <DeleteButton onClick={openDeleteModal} />
-        </Flex>
-      </Drawer>
-
-      <ConfirmDeleteModal
-        opened={deleteModalOpened}
-        onClose={closeDeleteModal}
-        onDelete={handleDelete}
-        title="Delete Project"
-        message="Are you sure you want to delete this project? This action cannot be undone."
-      />
+      <Drawer.Stack>
+        <Drawer
+          {...drawersStack.register("edit-project")}
+          offset={8}
+          title={
+            <Group gap="xs">
+              <DeleteActionIcon
+                onClick={() => drawersStack.open("delete-project")}
+              />
+              <Text fw={600}>Edit project</Text>
+            </Group>
+          }
+          size="md"
+          padding="md"
+        >
+          <Stack justify="flex-start" gap="xl">
+            <ProjectForm
+              initialValues={{
+                color: activeProject.project.color,
+                title: activeProject.project.title,
+                description: activeProject.project.description,
+                salary: activeProject.project.salary,
+                currency: activeProject.project.currency ?? "",
+                hourly_payment: activeProject.project.hourly_payment,
+                cash_flow_category_id:
+                  activeProject.project.cash_flow_category_id,
+              }}
+              onSubmit={handleSubmit}
+              onCancel={drawersStack.closeAll}
+              newProject={false}
+              submitting={submitting}
+            />
+          </Stack>
+        </Drawer>
+        <Drawer
+          {...drawersStack.register("delete-project")}
+          title={"Delete Project"}
+        >
+          <Text>
+            Are you sure you want to delete this project? This action cannot be
+            undone.
+          </Text>
+          <Group mt="md" justify="flex-end" gap="sm">
+            <Button onClick={drawersStack.closeAll} variant="outline">
+              Cancel
+            </Button>
+            <Button onClick={handleDelete} color="red">
+              Delete
+            </Button>
+          </Group>
+        </Drawer>
+      </Drawer.Stack>
 
       <EditActionIcon
         aria-label="Edit project"
-        onClick={open}
+        onClick={() => drawersStack.open("edit-project")}
         size="md"
         tooltipLabel="Edit project"
       />

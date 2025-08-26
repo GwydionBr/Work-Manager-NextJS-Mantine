@@ -2,6 +2,7 @@
 
 import { useForm } from "@mantine/form";
 import { useEffect, useState } from "react";
+import { useDisclosure, useClickOutside } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 
 import {
@@ -14,6 +15,9 @@ import {
   Switch,
   Tooltip,
   Collapse,
+  Popover,
+  Button,
+  Fieldset,
 } from "@mantine/core";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
@@ -21,32 +25,32 @@ import { currencies } from "@/constants/settings";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 import UpdateButton from "@/components/UI/Buttons/UpdateButton";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
+import ProjectColorPicker from "@/components/UI/ProjectColorPicker";
+import { IconPalette } from "@tabler/icons-react";
 
 interface ProjectFormProps {
   initialValues: {
+    color: string | null;
     title: string;
     description: string | null;
     salary: number;
     hourly_payment: boolean;
     currency: string;
-    folder_id?: string | null;
     cash_flow_category_id?: string | null;
   };
   onSubmit: (values: any) => void;
   onCancel?: () => void;
   newProject: boolean;
   submitting?: boolean;
-  showFolderSelect?: boolean;
-  folders?: Array<{ id: string; title: string }>;
 }
 
 const schema = z.object({
+  color: z.string().nullable().optional(),
   title: z.string().min(1, { message: "Title is required" }),
   description: z.string().optional(),
   salary: z.number().min(0, { message: "Salary must be positive" }),
   hourly_payment: z.boolean(),
   currency: z.string().min(1, { message: "Currency is required" }),
-  folder_id: z.string().nullable().optional(),
   cash_flow_category_id: z.string().nullable().optional(),
 });
 
@@ -56,9 +60,12 @@ export default function ProjectForm({
   onCancel,
   newProject,
   submitting,
-  showFolderSelect = false,
-  folders = [],
 }: ProjectFormProps) {
+  const [isColorPickerOpen, { open, close }] = useDisclosure(false);
+  const ref = useClickOutside(() => {
+    close();
+  });
+
   // State to store previous work values
   const [previousWorkValues, setPreviousWorkValues] = useState({
     salary: initialValues.salary,
@@ -110,11 +117,6 @@ export default function ProjectForm({
     }
   };
 
-  const folderOptions = folders.map((folder) => ({
-    value: folder.id,
-    label: folder.title,
-  }));
-
   const categoryOptions = financeCategories.map((category) => ({
     value: category.id,
     label: category.title,
@@ -122,98 +124,124 @@ export default function ProjectForm({
 
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
-      <Stack>
-        <TextInput
-          withAsterisk
-          data-autofocus
-          label="Title"
-          placeholder="Enter project title"
-          {...form.getInputProps("title")}
-        />
-        <Textarea
-          label="Description"
-          placeholder="Enter project description"
-          {...form.getInputProps("description")}
-        />
-
-        <Group align="flex-end">
-          <Tooltip label="Project type" refProp="rootRef" openDelay={500}>
-            <Switch
-              size="xl"
-              pt={25}
-              onLabel="Hobby"
-              offLabel="Work"
-              checked={isHobby}
-              onChange={(event) =>
-                handleHobbyToggle(event.currentTarget.checked)
-              }
-            />
-          </Tooltip>
-
-          <Collapse in={!isHobby}>
-            <Group align="flex-end">
-              <NumberInput
-                allowLeadingZeros={false}
-                allowNegative={false}
-                withAsterisk
-                label="Salary"
-                min={0}
-                step={0.01}
-                value={form.values.salary}
-                onChange={(value) =>
-                  handleWorkFieldChange("salary", value || 0)
-                }
-                error={form.errors.salary}
-              />
-              <Tooltip label="Payment method" refProp="rootRef" openDelay={500}>
-                <Switch
-                  size="xl"
-                  onLabel="Hourly"
-                  offLabel="Project"
-                  checked={form.values.hourly_payment}
-                  onChange={(event) =>
-                    handleWorkFieldChange(
-                      "hourly_payment",
-                      event.currentTarget.checked
-                    )
-                  }
-                />
-              </Tooltip>
-            </Group>
-          </Collapse>
-        </Group>
-
-        {/* Currency - only show for work projects */}
-        <Collapse in={!isHobby}>
-          <Select
+      <Stack gap="xl">
+        <Fieldset legend="Project details">
+          <TextInput
             withAsterisk
-            label="Currency"
-            placeholder="Select currency"
-            data={currencies}
-            value={form.values.currency}
-            onChange={(value) => handleWorkFieldChange("currency", value || "")}
-            error={form.errors.currency}
+            data-autofocus
+            label="Title"
+            placeholder="Enter project title"
+            {...form.getInputProps("title")}
           />
-        </Collapse>
+          <Textarea
+            label="Description"
+            placeholder="Enter project description"
+            {...form.getInputProps("description")}
+          />
+        </Fieldset>
 
-        <Select
-          label="Category"
-          placeholder="Select category (optional)"
-          data={categoryOptions}
-          clearable
-          searchable
-          nothingFoundMessage="No categories found"
-          {...form.getInputProps("cash_flow_category_id")}
-        />
-        {showFolderSelect && (
-          <Select
-            label="Folder"
-            placeholder="Select folder (optional)"
-            data={folderOptions}
-            clearable
-            {...form.getInputProps("folder_id")}
-          />
-        )}
+        <Fieldset legend="Finance settings">
+          <Stack gap="xs" align="flex-start">
+            <Tooltip label="Project type" refProp="rootRef" openDelay={500}>
+              <Switch
+                size="xl"
+                pt={25}
+                onLabel="Hobby"
+                offLabel="Work"
+                checked={isHobby}
+                onChange={(event) =>
+                  handleHobbyToggle(event.currentTarget.checked)
+                }
+              />
+            </Tooltip>
+
+            <Collapse in={!isHobby}>
+              <Group align="flex-end">
+                <NumberInput
+                  allowLeadingZeros={false}
+                  allowNegative={false}
+                  withAsterisk
+                  label="Salary"
+                  min={0}
+                  step={0.01}
+                  value={form.values.salary}
+                  onChange={(value) =>
+                    handleWorkFieldChange("salary", value || 0)
+                  }
+                  error={form.errors.salary}
+                />
+                <Tooltip
+                  label="Payment method"
+                  refProp="rootRef"
+                  openDelay={500}
+                >
+                  <Switch
+                    size="xl"
+                    onLabel="Hourly"
+                    offLabel="Project"
+                    checked={form.values.hourly_payment}
+                    onChange={(event) =>
+                      handleWorkFieldChange(
+                        "hourly_payment",
+                        event.currentTarget.checked
+                      )
+                    }
+                  />
+                </Tooltip>
+              </Group>
+            </Collapse>
+            {/* Currency - only show for work projects */}
+            <Collapse in={!isHobby}>
+              <Select
+                withAsterisk
+                label="Currency"
+                placeholder="Select currency"
+                data={currencies}
+                value={form.values.currency}
+                onChange={(value) =>
+                  handleWorkFieldChange("currency", value || "")
+                }
+                error={form.errors.currency}
+              />
+            </Collapse>
+          </Stack>
+        </Fieldset>
+
+        <Fieldset legend="Configuration">
+          <Group wrap="nowrap" justify="space-between">
+            <Popover opened={isColorPickerOpen} onClose={close} onOpen={open}>
+              <Popover.Target>
+                <Button
+                  mt="lg"
+                  leftSection={<IconPalette />}
+                  variant="light"
+                  size="sm"
+                  onClick={open}
+                  color={form.values.color || "teal"}
+                >
+                  Color
+                </Button>
+              </Popover.Target>
+              <Popover.Dropdown ref={ref}>
+                <ProjectColorPicker
+                  value={form.values.color || ""}
+                  onChange={(value) => form.setFieldValue("color", value)}
+                  onClose={close}
+                />
+              </Popover.Dropdown>
+            </Popover>
+
+            <Select
+              label="Category"
+              placeholder="Select category (optional)"
+              data={categoryOptions}
+              clearable
+              searchable
+              nothingFoundMessage="No categories found"
+              {...form.getInputProps("cash_flow_category_id")}
+            />
+          </Group>
+        </Fieldset>
         {newProject ? (
           <CreateButton
             onClick={form.onSubmit(onSubmit)}
