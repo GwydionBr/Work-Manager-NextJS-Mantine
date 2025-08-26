@@ -33,7 +33,7 @@ export default function ActiveTimeTracker({
           top: bottom - Math.max(height, title ? 40 : 20),
           left: 0,
           right: 0,
-          zIndex: 9,
+          zIndex: 15,
           background:
             "light-dark(var(--mantine-color-white), var(--mantine-color-dark-9))",
         }}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
 
 import { Box } from "@mantine/core";
@@ -12,6 +13,7 @@ export default function WorkLayout({
   children: React.ReactNode;
 }) {
   const { projects, isFetching } = useWorkStore();
+  const [isNavbarMinimized, setIsNavbarMinimized] = useState<boolean>(false);
 
   if (projects.length === 0 && !isFetching) {
     return <WorkInitializer />;
@@ -19,8 +21,16 @@ export default function WorkLayout({
 
   return (
     <Box>
-      <ProjectNavbar />
-      <Box ml="250px">{children}</Box>
+      <ProjectNavbar
+        isNavbarMinimized={isNavbarMinimized}
+        setIsNavbarMinimized={setIsNavbarMinimized}
+      />
+      <Box
+        ml={isNavbarMinimized ? 60 : 250}
+        style={{ transition: "margin 0.4s ease-in-out" }}
+      >
+        {children}
+      </Box>
     </Box>
   );
 }
