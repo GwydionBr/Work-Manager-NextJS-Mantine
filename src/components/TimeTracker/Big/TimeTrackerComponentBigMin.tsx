@@ -125,7 +125,7 @@ export default function TimeTrackerComponentBigMin({
         </Text>
         <XActionIcon onClick={removeTimer} size="xs" />
       </Group>
-      <Group align="center" justify="center" gap="xs">
+      <Group align="center" justify="center" gap={5}>
         <Card
           shadow="sm"
           padding="xs"
@@ -207,7 +207,7 @@ export default function TimeTrackerComponentBigMin({
           duration={400}
         >
           {(styles) => (
-            <Group gap="xs" align="center" justify="center" style={styles}>
+            <Group gap={5} align="center" justify="center" style={styles}>
               <StopActionIcon stopTimer={submitTimer} disabled={isSubmitting} />
               <CancelActionIcon
                 cancelTimer={cancelTimer}
