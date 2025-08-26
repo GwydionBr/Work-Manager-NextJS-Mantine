@@ -64,7 +64,11 @@ export default function Header({
           {description}
         </Title>
       )}
-      {secondaryButton && secondaryButton}
+      {secondaryButton && (
+        <Box w="100%" style={{ position: "sticky", top: 0, zIndex: 1000, left: 0 }}>
+          {secondaryButton}
+        </Box>
+      )}
     </Stack>
   );
 }

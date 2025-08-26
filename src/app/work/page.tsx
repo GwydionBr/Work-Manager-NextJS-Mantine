@@ -97,7 +97,6 @@ export default function WorkPage() {
           activeProject.project.salary === 0 ? undefined : hourlySalary
         }
         description={activeProject.project.description ?? undefined}
-        secondaryButton={<NewSessionButton />}
         rightButton={
           <Group>
             {activeProject.sessions.length > 0 && (
@@ -120,6 +119,15 @@ export default function WorkPage() {
       />
       {activeProject?.sessions.length > 0 ? (
         <Box w="100%">
+          <Group
+            justify="center"
+            w="100%"
+            p="xs"
+            bg="var(--mantine-color-body)"
+            style={{ position: "sticky", top: 0, zIndex: 10, left: 0 }}
+          >
+            <NewSessionButton />
+          </Group>
           <Collapse in={analysisOpened} transitionDuration={500}>
             <WorkAnalysis
               sessions={activeProject.sessions}
