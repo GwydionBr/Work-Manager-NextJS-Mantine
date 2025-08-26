@@ -63,7 +63,7 @@ export default function TimeTrackerEvent({
           top: toY(currentTime),
           left: 0,
           right: 0,
-          zIndex: 10,
+          zIndex: 15,
           borderTop: "2px solid var(--mantine-color-red-6)",
         }}
       >

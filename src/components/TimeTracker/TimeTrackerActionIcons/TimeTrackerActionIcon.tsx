@@ -1,6 +1,6 @@
 import { ActionIcon, ActionIconProps, Indicator, Tooltip } from "@mantine/core";
 import { IconStopwatch } from "@tabler/icons-react";
-import { TimerState } from "@/stores/timeTrackerStore";
+import { TimerState } from "@/types/timeTracker.types";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 
 interface TimeTrackerActionIconProps extends ActionIconProps {
