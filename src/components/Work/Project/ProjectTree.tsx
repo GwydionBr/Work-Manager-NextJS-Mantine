@@ -51,7 +51,7 @@ export default function ProjectTree() {
         data={projectTree}
         openByDefault={false}
         width={400}
-        height={height - 145}
+        height={height - 175}
         indent={24}
         rowHeight={30}
         paddingTop={10}
