@@ -5,7 +5,7 @@ import {
 } from "@/types/settings.types";
 import { shortCurrencies } from "@/constants/settings";
 import { Tables, TablesInsert } from "@/types/db.types";
-import { TimerState } from "@/stores/timeTrackerStore";
+import { TimerState } from "@/types/timeTracker.types";
 import { Locale } from "@/types/settings.types";
 
 export function getStatusColor(state: TimerState) {

@@ -33,11 +33,11 @@ const mainLinksData = [
     label: "Work Calendar",
     to: paths.workCalendar.workCalendarPage(),
   },
-  {
-    icon: IconListCheck,
-    label: "Tasks",
-    to: paths.tasks.tasksPage(),
-  },
+  // {
+  //   icon: IconListCheck,
+  //   label: "Tasks",
+  //   to: paths.tasks.tasksPage(),
+  // },
   {
     icon: IconBrandCashapp,
     label: "Finance",
@@ -100,7 +100,7 @@ export default function Navbar() {
       align="center"
       justify="flex-start"
       style={{ height: "100%" }}
-      className={classes.navbar}
+      bg="light-dark(var(--mantine-color-teal-4),var(--mantine-color-teal-8))"
     >
       <Button
         variant="light"
@@ -116,7 +116,7 @@ export default function Navbar() {
         direction="column"
         justify="space-between"
         style={{ height: "100%" }}
-        pb={50}
+        pb={20}
         pt={20}
       >
         <Stack gap="xs">{mainLinks}</Stack>

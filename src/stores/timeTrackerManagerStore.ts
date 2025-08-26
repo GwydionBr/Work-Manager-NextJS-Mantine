@@ -1,8 +1,8 @@
 // src/stores/timeTrackerManagerStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { TimerState } from "./timeTrackerStore";
 import { Currency, RoundingDirection } from "@/types/settings.types";
+import { TimerState } from "@/types/timeTracker.types";
 
 export interface TimerData {
   id: string;

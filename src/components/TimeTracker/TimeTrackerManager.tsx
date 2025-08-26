@@ -6,7 +6,7 @@ import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Alert, Stack, Text } from "@mantine/core";
-import { TimerState } from "@/stores/timeTrackerStore";
+import { TimerState } from "@/types/timeTracker.types";
 import TimeTrackerInstance from "./TimeTrackerInstance";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import { Currency } from "@/types/settings.types";

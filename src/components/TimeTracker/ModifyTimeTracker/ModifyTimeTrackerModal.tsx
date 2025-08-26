@@ -8,7 +8,7 @@ import MoreActionIcon from "../../UI/ActionIcons/MoreActionIcon";
 import ModifyTime from "./ModifyTime";
 import ModifyRounding from "./ModifyRounding";
 
-import { TimerState } from "@/stores/timeTrackerStore";
+import { TimerState } from "@/types/timeTracker.types";
 import { RoundingAmount, RoundingDirection } from "@/types/settings.types";
 
 interface ModifyTimeTrackerModalProps {

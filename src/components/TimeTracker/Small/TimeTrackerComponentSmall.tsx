@@ -19,7 +19,7 @@ import CancelActionIcon from "../TimeTrackerActionIcons/CancelActionIcon";
 import TimeTrackerInfoHoverCard from "../TimeTrackerInfoHoverCard";
 import ModifyTimeTrackerModal from "../ModifyTimeTracker/ModifyTimeTrackerModal";
 
-import { TimerState } from "@/stores/timeTrackerStore";
+import { TimerState } from "@/types/timeTracker.types";
 import {
   Currency,
   RoundingAmount,

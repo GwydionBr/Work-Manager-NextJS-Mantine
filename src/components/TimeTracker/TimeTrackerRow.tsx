@@ -7,7 +7,7 @@ import {
   Divider,
   TextInput,
 } from "@mantine/core";
-import { TimerState } from "@/stores/timeTrackerStore";
+import { TimerState } from "@/types/timeTracker.types";
 
 import classes from "./TimeTracker.module.css";
 

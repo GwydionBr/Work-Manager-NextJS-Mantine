@@ -2,7 +2,7 @@
 
 // src/hooks/useTimeTracker.ts
 import { useState, useEffect, useCallback, useRef } from "react";
-import { TimerState } from "@/stores/timeTrackerStore";
+import { TimerState } from "@/types/timeTracker.types";
 import {
   secondsToTimerFormat,
   getRoundedSeconds,

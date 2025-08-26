@@ -1,6 +1,6 @@
 "use client";
 
-import { TimerState } from "@/stores/timeTrackerStore";
+import { TimerState } from "@/types/timeTracker.types";
 
 import { Stack, Collapse } from "@mantine/core";
 import {

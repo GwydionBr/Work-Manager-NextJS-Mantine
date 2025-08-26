@@ -11,7 +11,7 @@ import {
   Text,
   Transition,
 } from "@mantine/core";
-import { TimerState } from "@/stores/timeTrackerStore";
+import { TimerState } from "@/types/timeTracker.types";
 import StartActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/StartActionIcons";
 import PauseActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/PauseActionIcon";
 import ResumeActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/ResumeActionIcon";

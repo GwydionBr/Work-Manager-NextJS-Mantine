@@ -15,7 +15,7 @@ import {
   getTimeSectionSessions,
 } from "@/utils/workHelperFunctions";
 
-import { TimerState } from "@/stores/timeTrackerStore";
+import { TimerState } from "@/types/timeTracker.types";
 
 interface TimeTrackerInstanceProps {
   timerId: string;

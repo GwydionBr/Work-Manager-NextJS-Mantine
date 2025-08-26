@@ -13,7 +13,7 @@ import {
   Paper,
   Collapse,
 } from "@mantine/core";
-import { TimerState } from "@/stores/timeTrackerStore";
+import { TimerState } from "@/types/timeTracker.types";
 import TimeTrackerRow from "../TimeTrackerRow";
 import {
   IconCurrencyEuro,

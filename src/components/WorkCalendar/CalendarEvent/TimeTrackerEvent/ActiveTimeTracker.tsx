@@ -1,5 +1,5 @@
 import { Box, Group, Stack, Text, Indicator } from "@mantine/core";
-import { TimerState } from "@/stores/timeTrackerStore";
+import { TimerState } from "@/types/timeTracker.types";
 import { TimerData } from "@/stores/timeTrackerManagerStore";
 
 interface ActiveTimeTrackerProps {
