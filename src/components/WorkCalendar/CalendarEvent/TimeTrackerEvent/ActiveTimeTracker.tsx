@@ -78,7 +78,7 @@ export default function ActiveTimeTracker({
           height: realHeight,
           background: color,
           borderRadius: 5,
-          zIndex: 9,
+          zIndex: 16,
         }}
       />
     </Box>
