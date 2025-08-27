@@ -1,5 +1,8 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { DateRange, useWorkChartData } from "@/hooks/useWorkChartData";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Stack, Paper, Text, Box, Card } from "@mantine/core";
 import WorkChartControls, { ChartType } from "./WorkChartControls";
@@ -26,6 +29,7 @@ export default function WorkAnalysis({
   project,
   isOverview,
 }: WorkAnalysisProps) {
+  const { locale } = useSettingsStore();
   // Chart configuration state
   const [interval, setInterval] = useState<FinanceInterval>("day");
   const [chartType, setChartType] = useState<ChartType>("area");
@@ -77,7 +81,11 @@ export default function WorkAnalysis({
         <Paper w="100%" h="100%" p="xl" withBorder>
           {chartData.length === 0 ? (
             <Stack align="center" justify="center" h={300}>
-              <Text c="dimmed">Keine Daten für den ausgewählten Zeitraum</Text>
+              <Text c="dimmed">
+                {locale === "de-DE"
+                  ? "Keine Daten für den ausgewählten Zeitraum"
+                  : "No data for the selected time period"}
+              </Text>
             </Stack>
           ) : (
             <AnalysisChart

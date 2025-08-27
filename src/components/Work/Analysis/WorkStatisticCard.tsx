@@ -1,3 +1,7 @@
+"use client";
+
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import { Card, Text, Badge, Group } from "@mantine/core";
 import {
   IconClock,
@@ -43,48 +47,49 @@ export default function WorkStatisticCard({
   badge,
   badgeColor = "green",
 }: WorkStatisticCardProps) {
+  const { locale } = useSettingsStore();
   // Get title and default styling based on type
   const getCardConfig = () => {
     switch (type) {
       case "totalTime":
         return {
-          title: "Total Time",
+          title: locale === "de-DE" ? "Gesamtzeit" : "Total Time",
           defaultColor: "blue" as const,
           icon: IconClock,
         };
       case "totalSalary":
         return {
-          title: "Total Salary",
+          title: locale === "de-DE" ? "Gesamtgehalt" : "Total Salary",
           defaultColor: "green" as const,
           icon: IconCash,
         };
       case "hourlyRate":
         return {
-          title: "Hourly Rate",
+          title: locale === "de-DE" ? "Stundenrate" : "Hourly Rate",
           defaultColor: "teal" as const,
           icon: IconTrendingUp,
         };
       case "bestPeriod":
         return {
-          title: "Best Period",
+          title: locale === "de-DE" ? "Bester Tag" : "Best Period",
           defaultColor: "green" as const,
           icon: IconTrophy,
         };
       case "worstPeriod":
         return {
-          title: "Worst Period",
+          title: locale === "de-DE" ? "Schlechteste Tag" : "Worst Period",
           defaultColor: "red" as const,
           icon: IconAlertTriangle,
         };
       case "totalPeriods":
         return {
-          title: "Total Periods",
+          title: locale === "de-DE" ? "Gesamtperioden" : "Total Periods",
           defaultColor: "blue" as const,
           icon: IconCalendar,
         };
       default:
         return {
-          title: "Statistic",
+          title: locale === "de-DE" ? "Statistik" : "Statistic",
           defaultColor: "blue" as const,
           icon: IconClock,
         };

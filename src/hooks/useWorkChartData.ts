@@ -1,4 +1,8 @@
+"use client";
+
 import { useEffect, useState, useMemo, useCallback } from "react";
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import { FinanceInterval } from "@/types/settings.types";
 import {
   dateToISOString,
@@ -66,6 +70,7 @@ export function useWorkChartData(
   sessions: Tables<"timer_session">[],
   projectId?: string
 ) {
+  const { locale } = useSettingsStore();
   // Data and loading state
   const [chartData, setChartData] = useState<WorkChartData[]>([]);
 

@@ -1,3 +1,7 @@
+"use client";
+
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import { Grid } from "@mantine/core";
 import WorkStatisticCard from "./WorkStatisticCard";
 import { WorkChartStats } from "@/hooks/useWorkChartData";
@@ -26,6 +30,26 @@ export default function WorkStatisticsCards({
   formatCurrency,
   formatDate,
 }: WorkStatisticsCardsProps) {
+  const { locale } = useSettingsStore();
+
+  const getIntervalString = () => {
+    switch (interval) {
+      case "day":
+        return locale === "de-DE" ? "Tag" : "Day";
+      case "week":
+        return locale === "de-DE" ? "Woche" : "Week";
+      case "month":
+        return locale === "de-DE" ? "Monat" : "Month";
+      case "1/4 year":
+        return locale === "de-DE" ? "Quartal" : "Quarter";
+      case "1/2 year":
+        return locale === "de-DE" ? "Halbjahr" : "Half Year";
+      case "year":
+        return locale === "de-DE" ? "Jahr" : "Year";
+    }
+    return interval;
+  };
+
   return (
     <Grid gutter="md">
       {/* Total Time Card */}
@@ -33,7 +57,7 @@ export default function WorkStatisticsCards({
         <WorkStatisticCard
           type="totalTime"
           value={formatTime(stats.totalTime)}
-          subtitle={`Ø ${formatTime(stats.averageTime)} per ${interval}`}
+          subtitle={`Ø ${formatTime(stats.averageTime)} ${locale === "de-DE" ? "pro" : "per"} ${getIntervalString()}`}
           color="blue"
         />
       </Grid.Col>
@@ -43,7 +67,7 @@ export default function WorkStatisticsCards({
         <WorkStatisticCard
           type="totalSalary"
           value={formatCurrency(stats.totalSalary)}
-          subtitle={`Ø ${formatCurrency(stats.averageSalary)} per ${interval}`}
+          subtitle={`Ø ${formatCurrency(stats.averageSalary)} ${locale === "de-DE" ? "pro" : "per"} ${getIntervalString()}`}
           color="green"
         />
       </Grid.Col>
@@ -53,7 +77,11 @@ export default function WorkStatisticsCards({
         <WorkStatisticCard
           type="hourlyRate"
           value={formatCurrency(stats.hourlyRate)}
-          subtitle="Average hourly rate"
+          subtitle={
+            locale === "de-DE"
+              ? "Durchschnittliche Stundenrate"
+              : "Average hourly rate"
+          }
           color="teal"
         />
       </Grid.Col>
@@ -63,7 +91,7 @@ export default function WorkStatisticsCards({
         <WorkStatisticCard
           type="bestPeriod"
           value={stats.bestPeriod ? formatDate(stats.bestPeriod) : "-"}
-          subtitle="Highest Salary"
+          subtitle={locale === "de-DE" ? "Höchstes Gehalt" : "Highest Salary"}
           color="green"
         />
       </Grid.Col>
@@ -73,7 +101,7 @@ export default function WorkStatisticsCards({
         <WorkStatisticCard
           type="worstPeriod"
           value={stats.worstPeriod ? formatDate(stats.worstPeriod) : "-"}
-          subtitle="Lowest Salary"
+          subtitle={locale === "de-DE" ? "Niedrigstes Gehalt" : "Lowest Salary"}
           color="red"
         />
       </Grid.Col>
@@ -83,7 +111,7 @@ export default function WorkStatisticsCards({
         <WorkStatisticCard
           type="totalPeriods"
           value={stats.totalPeriods.toString()}
-          subtitle="Total periods"
+          subtitle={locale === "de-DE" ? "Gesamtperiode" : "Total period"}
           color="blue"
         />
       </Grid.Col>

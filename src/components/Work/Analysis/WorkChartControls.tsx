@@ -2,6 +2,7 @@
 
 import { useDisclosure } from "@mantine/hooks";
 import { useState, useMemo, useEffect } from "react";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
   Group,
@@ -87,6 +88,7 @@ export default function WorkChartControls({
   dateRange,
   setDateRange,
 }: WorkChartControlsProps) {
+  const { locale } = useSettingsStore();
   const [filterOpen, { toggle }] = useDisclosure(false);
   const [navigationMode, setNavigationMode] = useState<NavigationMode>("month");
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
@@ -107,7 +109,7 @@ export default function WorkChartControls({
 
     switch (navigationMode) {
       case "month":
-        return new Date(year, month).toLocaleDateString("en-US", {
+        return new Date(year, month).toLocaleDateString(locale, {
           month: "long",
           year: "numeric",
         });
@@ -295,16 +297,29 @@ export default function WorkChartControls({
               {/* Navigation Mode Selection */}
               <Group>
                 <Text size="sm" fw={500}>
-                  Time Period:
+                  {locale === "de-DE" ? "Zeitrahmen" : "Time Period"}:
                 </Text>
                 <SegmentedControl
                   value={navigationMode}
                   onChange={handleNavigationModeChange}
                   data={[
-                    { value: "month", label: "Month" },
-                    { value: "quarter", label: "Quarter" },
-                    { value: "year", label: "Year" },
-                    { value: "custom", label: "Custom" },
+                    {
+                      value: "month",
+                      label: locale === "de-DE" ? "Monat" : "Month",
+                    },
+                    {
+                      value: "quarter",
+                      label: locale === "de-DE" ? "Quartal" : "Quarter",
+                    },
+                    {
+                      value: "year",
+                      label: locale === "de-DE" ? "Jahr" : "Year",
+                    },
+                    {
+                      value: "custom",
+                      label:
+                        locale === "de-DE" ? "Benutzerdefiniert" : "Custom",
+                    },
                   ]}
                   size="xs"
                 />
@@ -314,23 +329,33 @@ export default function WorkChartControls({
               <Group justify="space-between" align="flex-end">
                 <Group>
                   <Select
-                    label="Time Interval"
+                    label={
+                      locale === "de-DE" ? "Zeitintervall" : "Time Interval"
+                    }
                     value={interval}
                     onChange={(value) => setInterval(value as FinanceInterval)}
                     data={financeIntervals}
                     w={150}
                     description={
                       navigationMode === "month"
-                        ? "All days of the month"
+                        ? locale === "de-DE"
+                          ? "Alle Tage des Monats"
+                          : "All days of the month"
                         : navigationMode === "quarter"
-                          ? "All weeks of the quarter"
+                          ? locale === "de-DE"
+                            ? "Alle Wochen des Quartals"
+                            : "All weeks of the quarter"
                           : navigationMode === "year"
-                            ? "All months of the year"
-                            : "Automatically based on time period"
+                            ? locale === "de-DE"
+                              ? "Alle Monate des Jahres"
+                              : "All months of the year"
+                            : locale === "de-DE"
+                              ? "Automatisch basierend auf dem Zeitrahmen"
+                              : "Automatically based on time period"
                     }
                   />
                   <Select
-                    label="Chart Type"
+                    label={locale === "de-DE" ? "Graphiktyp" : "Chart Type"}
                     value={chartType}
                     onChange={(value) => setChartType(value as ChartType)}
                     data={chartTypeOptions}
@@ -351,7 +376,7 @@ export default function WorkChartControls({
 
                 <Group>
                   <Switch
-                    label="Show Salary"
+                    label={locale === "de-DE" ? "Gehalt anzeigen" : "Show Salary"}
                     checked={showSalary}
                     onChange={(event) =>
                       setShowSalary(event.currentTarget.checked)
@@ -364,7 +389,7 @@ export default function WorkChartControls({
               {navigationMode === "custom" && (
                 <Group>
                   <DatePickerInput
-                    label="From Date"
+                    label={locale === "de-DE" ? "Erster Tag" : "From Date"}
                     placeholder="Select start date"
                     value={dateRange.from}
                     onChange={(value: string | null) =>
@@ -376,7 +401,7 @@ export default function WorkChartControls({
                     w={150}
                   />
                   <DatePickerInput
-                    label="To Date"
+                    label={locale === "de-DE" ? "Letzter Tag" : "To Date"}
                     placeholder="Select end date"
                     value={dateRange.to}
                     onChange={(value: string | null) =>
@@ -403,7 +428,7 @@ export default function WorkChartControls({
                       }}
                       leftSection={<IconCalendar size={14} />}
                     >
-                      Last Year
+                      {locale === "de-DE" ? "Letztes Jahr" : "Last Year"}
                     </Button>
                     <Button
                       variant="light"
@@ -418,7 +443,7 @@ export default function WorkChartControls({
                       }}
                       leftSection={<IconCalendar size={14} />}
                     >
-                      Last Month
+                      {locale === "de-DE" ? "Letzter Monat" : "Last Month"}
                     </Button>
                     <Button
                       variant="light"
@@ -433,7 +458,7 @@ export default function WorkChartControls({
                       }}
                       leftSection={<IconCalendar size={14} />}
                     >
-                      Last Week
+                      {locale === "de-DE" ? "Letzte Woche" : "Last Week"}
                     </Button>
                   </Group>
                 </Group>
