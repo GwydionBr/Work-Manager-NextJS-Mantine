@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
   Box,
@@ -15,18 +15,12 @@ import {
 } from "@mantine/core";
 import ProjectForm from "@/components/Work/Project/ProjectForm";
 import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
-import DeleteButton from "@/components/UI/Buttons/DeleteButton";
-import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 
 import { Currency } from "@/types/settings.types";
 
 export default function EditProjectButton() {
-  const [opened, { open, close }] = useDisclosure(false);
-  const [
-    deleteModalOpened,
-    { open: openDeleteModal, close: closeDeleteModal },
-  ] = useDisclosure(false);
+  const { locale } = useSettingsStore();
   const { activeProjectId, updateProject, deleteProject } = useWorkStore();
   const activeProject = useWorkStore((state) =>
     state.projects.find((p) => p.project.id === activeProjectId)
@@ -81,7 +75,9 @@ export default function EditProjectButton() {
               <DeleteActionIcon
                 onClick={() => drawersStack.open("delete-project")}
               />
-              <Text fw={600}>Edit project</Text>
+              <Text fw={600}>
+                {locale === "de-DE" ? "Projekt bearbeiten" : "Edit project"}
+              </Text>
             </Group>
           }
           size="md"
@@ -108,28 +104,31 @@ export default function EditProjectButton() {
         </Drawer>
         <Drawer
           {...drawersStack.register("delete-project")}
-          title={"Delete Project"}
+          title={locale === "de-DE" ? "Projekt löschen" : "Delete Project"}
         >
           <Text>
-            Are you sure you want to delete this project? This action cannot be
-            undone.
+            {locale === "de-DE"
+              ? "Sind Sie sicher, dass Sie dieses Projekt löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+              : "Are you sure you want to delete this project? This action cannot be undone."}
           </Text>
           <Group mt="md" justify="flex-end" gap="sm">
             <Button onClick={drawersStack.closeAll} variant="outline">
-              Cancel
+              {locale === "de-DE" ? "Abbrechen" : "Cancel"}
             </Button>
             <Button onClick={handleDelete} color="red">
-              Delete
+              {locale === "de-DE" ? "Löschen" : "Delete"}
             </Button>
           </Group>
         </Drawer>
       </Drawer.Stack>
 
       <EditActionIcon
-        aria-label="Edit project"
+        aria-label={locale === "de-DE" ? "Projekt bearbeiten" : "Edit project"}
         onClick={() => drawersStack.open("edit-project")}
         size="md"
-        tooltipLabel="Edit project"
+        tooltipLabel={
+          locale === "de-DE" ? "Projekt bearbeiten" : "Edit project"
+        }
       />
     </Box>
   );

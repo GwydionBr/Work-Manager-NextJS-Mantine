@@ -22,6 +22,7 @@ export default function NewProjectButton({
   const [submitting, setSubmitting] = useState(false);
   const { addProject } = useWorkStore();
   const {
+    locale,
     defaultSalaryCurrency,
     defaultSalaryAmount,
     defaultProjectHourlyPayment,
@@ -51,7 +52,7 @@ export default function NewProjectButton({
       <Modal
         opened={opened}
         onClose={close}
-        title="Add Project"
+        title={locale === "de-DE" ? "Neues Projekt" : "New Project"}
         size="md"
         padding="md"
       >
