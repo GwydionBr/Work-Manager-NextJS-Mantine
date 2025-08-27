@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useWorkStore } from "@/stores/workManagerStore";
 import { useForm } from "@mantine/form";
+import { useWorkStore } from "@/stores/workManagerStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { NumberInput, Select, Stack, Textarea } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
@@ -47,6 +48,7 @@ export default function SessionForm({
   project,
   submitting,
 }: SessionFormProps) {
+  const { locale } = useSettingsStore();
   const { projects: timerProjects } = useWorkStore();
   const [userChangedStartTime, setUserChangedStartTime] = useState(false);
   const [userChangedEndTime, setUserChangedEndTime] = useState(false);
@@ -57,18 +59,34 @@ export default function SessionForm({
     project_id: z.string(),
     start_time: z.string().transform((str) => new Date(str).toISOString()),
     end_time: z.string().transform((str) => new Date(str).toISOString()),
-    active_seconds: z
-      .number()
-      .min(1, { message: "Active time must be greater than 0" }),
-    paused_seconds: z
-      .number()
-      .min(0, { message: "Paused time must be positive or 0" }),
+    active_seconds: z.number().min(1, {
+      message:
+        locale === "de-DE"
+          ? "Aktive Zeit muss größer als 0 sein"
+          : "Active time must be greater than 0",
+    }),
+    paused_seconds: z.number().min(0, {
+      message:
+        locale === "de-DE"
+          ? "Pausierte Zeit muss positiv oder 0 sein"
+          : "Paused time must be positive or 0",
+    }),
     memo: z.string().optional(),
     currency: showPaymentFields
-      ? z.string().min(1, { message: "Currency is required" })
+      ? z.string().min(1, {
+          message:
+            locale === "de-DE"
+              ? "Währung ist erforderlich"
+              : "Currency is required",
+        })
       : z.string().optional(),
     salary: showPaymentFields
-      ? z.number().min(0, { message: "Salary must be positive" })
+      ? z.number().min(0, {
+          message:
+            locale === "de-DE"
+              ? "Gehalt muss positiv sein"
+              : "Salary must be positive",
+        })
       : z.number().optional(),
   });
 
@@ -233,16 +251,18 @@ export default function SessionForm({
       <Stack gap="lg">
         <Select
           allowDeselect={false}
-          label="Project"
+          label={locale === "de-DE" ? "Projekt" : "Project"}
           value={form.values.project_id}
           error={form.errors.project_id}
-          placeholder="Select project"
+          placeholder={
+            locale === "de-DE" ? "Projekt auswählen" : "Select project"
+          }
           data={projects}
           searchable
           onChange={handleProjectChange}
         />
         <TimeInput
-          label="Active Time"
+          label={locale === "de-DE" ? "Aktive Zeit" : "Active Time"}
           value={form.values.active_seconds}
           onChange={handleActiveSecondsChange}
           error={form.errors.active_seconds}
@@ -252,7 +272,7 @@ export default function SessionForm({
           isOpen={true}
         />
         <TimeInput
-          label="Paused Time"
+          label={locale === "de-DE" ? "Pausierte Zeit" : "Paused Time"}
           isOpen={true}
           value={form.values.paused_seconds}
           onChange={handlePausedSecondsChange}
@@ -261,33 +281,35 @@ export default function SessionForm({
           color="orange"
         />
         <DateTimePicker
-          label="Start Time"
+          label={locale === "de-DE" ? "Startzeit" : "Start Time"}
           value={form.values.start_time}
           onChange={handleStartTimeChange}
           error={form.errors.start_time}
         />
         <DateTimePicker
-          label="End Time"
+          label={locale === "de-DE" ? "Endzeit" : "End Time"}
           value={form.values.end_time}
           onChange={handleEndTimeChange}
           error={form.errors.end_time}
         />
         <Textarea
-          label="Memo"
-          placeholder="Memo"
+          label={locale === "de-DE" ? "Notiz" : "Memo"}
+          placeholder={locale === "de-DE" ? "Notiz eingeben" : "Memo"}
           {...form.getInputProps("memo")}
         />
         {showPaymentFields ? (
           <>
             <NumberInput
-              label="Salary"
+              label={locale === "de-DE" ? "Gehalt" : "Salary"}
               min={0}
               step={0.01}
               {...form.getInputProps("salary")}
             />
             <Select
-              label="Currency"
-              placeholder="Select currency"
+              label={locale === "de-DE" ? "Währung" : "Currency"}
+              placeholder={
+                locale === "de-DE" ? "Währung auswählen" : "Select currency"
+              }
               data={currencies}
               {...form.getInputProps("currency")}
             />
@@ -305,7 +327,7 @@ export default function SessionForm({
             type="submit"
             loading={submitting}
             mt="md"
-            title="Create Session"
+            title={locale === "de-DE" ? "Sitzung erstellen" : "Create Session"}
           />
         ) : (
           <UpdateButton
@@ -313,10 +335,16 @@ export default function SessionForm({
             type="submit"
             loading={submitting}
             mt="md"
-            title="Update Session"
+            title={
+              locale === "de-DE" ? "Sitzung aktualisieren" : "Update Session"
+            }
           />
         )}
-        {onCancel && <CancelButton onClick={onCancel} />}
+        {onCancel && (
+          <CancelButton
+            onClick={onCancel}
+          />
+        )}
       </Stack>
     </form>
   );

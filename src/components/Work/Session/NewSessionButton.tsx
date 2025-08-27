@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Box, Flex, Modal } from "@mantine/core";
 import SessionForm from "@/components/Work/Session/SessionForm";
@@ -12,6 +13,7 @@ import { TablesInsert } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
 
 export default function NewSessionButton() {
+  const { locale } = useSettingsStore();
   const [opened, { open, close }] = useDisclosure(false);
   const { activeProjectId, addTimerSession } = useWorkStore();
   const activeProject = useWorkStore((state) =>
@@ -59,7 +61,7 @@ export default function NewSessionButton() {
       <Modal
         opened={opened}
         onClose={close}
-        title="Add Session"
+        title={locale === "de-DE" ? "Sitzung hinzufügen" : "Add Session"}
         size="lg"
         padding="md"
       >
@@ -84,10 +86,10 @@ export default function NewSessionButton() {
       </Modal>
 
       <AddActionIcon
-        aria-label="Add session"
+        aria-label={locale === "de-DE" ? "Sitzung hinzufügen" : "Add session"}
         onClick={open}
         size="md"
-        tooltipLabel="Add session"
+        tooltipLabel={locale === "de-DE" ? "Sitzung hinzufügen" : "Add session"}
       />
     </Box>
   );

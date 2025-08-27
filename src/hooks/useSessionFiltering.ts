@@ -1,4 +1,7 @@
+"use client";
+
 import { useState, useMemo } from "react";
+import { useSettingsStore } from "@/stores/settingsStore";
 import type { Tables } from "@/types/db.types";
 import type { TimePreset } from "@/types/timerSession.types";
 
@@ -31,6 +34,8 @@ export function useSessionFiltering(
   folders?: Tables<"timer_project_folder">[],
   isOverview = false
 ) {
+  const { locale } = useSettingsStore();
+
   // Unified filter state for all filters
   const [filterState, setFilterState] = useState<FilterState>({
     selectedTimePreset: null,
@@ -44,20 +49,48 @@ export function useSessionFiltering(
   // Predefined time periods for quick filtering
   const timePresets = useMemo(
     (): TimePreset[] => [
-      { value: "today", label: "Today", days: 1 },
-      { value: "yesterday", label: "Yesterday", days: 1 },
-      { value: "last3days", label: "Last 3 days", days: 3 },
-      { value: "last7days", label: "Last 7 days", days: 7 },
-      { value: "last14days", label: "Last 14 days", days: 14 },
-      { value: "last30days", label: "Last 30 days", days: 30 },
-      { value: "last90days", label: "Last 90 days", days: 90 },
+      {
+        value: "today",
+        label: locale === "de-DE" ? "Heute" : "Today",
+        days: 1,
+      },
+      {
+        value: "yesterday",
+        label: locale === "de-DE" ? "Gestern" : "Yesterday",
+        days: 1,
+      },
+      {
+        value: "last3days",
+        label: locale === "de-DE" ? "Letzte 3 Tage" : "Last 3 days",
+        days: 3,
+      },
+      {
+        value: "last7days",
+        label: locale === "de-DE" ? "Letzte 7 Tage" : "Last 7 days",
+        days: 7,
+      },
+      {
+        value: "last14days",
+        label: locale === "de-DE" ? "Letzte 14 Tage" : "Last 14 days",
+        days: 14,
+      },
+      {
+        value: "last30days",
+        label: locale === "de-DE" ? "Letzte 30 Tage" : "Last 30 days",
+        days: 30,
+      },
+      {
+        value: "last90days",
+        label: locale === "de-DE" ? "Letzte 90 Tage" : "Last 90 days",
+        days: 90,
+      },
       {
         value: "custom",
-        label: `Custom`,
+        label: locale === "de-DE" ? "Benutzerdefiniert" : "Custom",
         days: filterState.timeFilterDays,
       },
     ],
-    [filterState.timeFilterDays]
+    [filterState.timeFilterDays, locale]
   );
 
   /**

@@ -57,7 +57,7 @@ export default function SessionHierarchy({
                   }).format(e.amount)
                 )
                 .join(" ") + " "}
-              unpaid
+              {locale === "de-DE" ? "unbezahlt" : "unpaid"}
             </Text>
           )}
           {earnings.paid.some((e) => e.amount > 0) && (
@@ -69,8 +69,8 @@ export default function SessionHierarchy({
                     currency: e.currency,
                   }).format(e.amount)
                 )
-                .join(" ") + " "}
-              paid
+                .join(" ") + " "} 
+              {locale === "de-DE" ? "bezahlt" : "paid"}
             </Text>
           )}
         </Group>

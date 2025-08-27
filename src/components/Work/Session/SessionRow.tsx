@@ -111,7 +111,7 @@ export default function SessionRow({
                 </Text>
                 {sessionPaid && (
                   <Text size="xs" c="green" fw={500}>
-                    ✓ Paid
+                    {locale === "de-DE" ? "✓ Bezahlt" : "✓ Paid"}
                   </Text>
                 )}
               </Group>
@@ -122,10 +122,12 @@ export default function SessionRow({
               )}
               <Group>
                 <Text size="sm" c="teal">
-                  Active: {helper.formatTime(session.active_seconds)}
+                  {locale === "de-DE" ? "Aktiv" : "Active"}:{" "}
+                  {helper.formatTime(session.active_seconds)}
                 </Text>
                 <Text size="sm" c="dimmed">
-                  Paused: {helper.formatTime(session.paused_seconds)}
+                  {locale === "de-DE" ? "Pausiert" : "Paused"}:{" "}
+                  {helper.formatTime(session.paused_seconds)}
                 </Text>
               </Group>
             </Stack>
@@ -133,11 +135,13 @@ export default function SessionRow({
               <Group>
                 <PencilActionIcon
                   onClick={() => editDrawerHandler.open()}
-                  aria-label="Edit session"
+                  aria-label={locale === "de-DE" ? "Sitzung bearbeiten" : "Edit session"}
                 />
                 <DeleteActionIcon
                   onClick={() => deleteModalHandler.open()}
-                  aria-label="Delete session"
+                  aria-label={
+                    locale === "de-DE" ? "Sitzung löschen" : "Delete session"
+                  }
                 />
               </Group>
             )}
@@ -172,8 +176,12 @@ export default function SessionRow({
         opened={deleteModalOpened}
         onClose={() => deleteModalHandler.close()}
         onDelete={handleDelete}
-        title="Delete Session"
-        message="Are you sure you want to delete this session? This action cannot be undone."
+        title={locale === "de-DE" ? "Sitzung löschen" : "Delete Session"}
+        message={
+          locale === "de-DE"
+            ? "Sind Sie sicher, dass Sie diese Sitzung löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+            : "Are you sure you want to delete this session? This action cannot be undone."
+        }
       />
     </Box>
   );

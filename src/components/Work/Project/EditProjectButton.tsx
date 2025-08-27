@@ -69,7 +69,6 @@ export default function EditProjectButton() {
       <Drawer.Stack>
         <Drawer
           {...drawersStack.register("edit-project")}
-          offset={8}
           title={
             <Group gap="xs">
               <DeleteActionIcon

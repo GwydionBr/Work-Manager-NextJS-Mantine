@@ -1,5 +1,7 @@
 "use client";
 
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import {
   Collapse,
   Group,
@@ -47,6 +49,7 @@ export default function TimeInput({
   autoFocus = false,
   isOpen,
 }: TimeInputProps) {
+  const { locale } = useSettingsStore();
   const timeComponents = secondsToTimeComponents(value);
 
   const handleHoursChange = (hours: string | number) => {
@@ -102,7 +105,7 @@ export default function TimeInput({
                 min={0}
                 max={999}
                 placeholder="0"
-                label="Hours"
+                label={locale === "de-DE" ? "Stunden" : "Hours"}
                 size="sm"
                 value={
                   timeComponents.hours > 0 ? timeComponents.hours : undefined
@@ -124,7 +127,7 @@ export default function TimeInput({
                 min={0}
                 max={59}
                 placeholder="0"
-                label="Minutes"
+                label={locale === "de-DE" ? "Minuten" : "Minutes"}
                 size="sm"
                 value={
                   timeComponents.minutes > 0
@@ -149,7 +152,7 @@ export default function TimeInput({
                 min={0}
                 max={59}
                 placeholder="0"
-                label="Seconds"
+                label={locale === "de-DE" ? "Sekunden" : "Seconds"}
                 size="sm"
                 value={
                   timeComponents.seconds > 0

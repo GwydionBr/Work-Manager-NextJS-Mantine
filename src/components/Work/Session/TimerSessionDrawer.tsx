@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Drawer, Flex } from "@mantine/core";
 import SessionForm from "@/components/Work/Session/SessionForm";
@@ -20,6 +21,7 @@ export default function TimerSessionDrawer({
   opened,
   close,
 }: TimerSessionModalProps) {
+  const { locale } = useSettingsStore();
   const { updateTimerSession, projects } = useWorkStore();
   const [submitting, setSubmitting] = useState(false);
 
@@ -72,7 +74,7 @@ export default function TimerSessionDrawer({
     <Drawer
       opened={opened}
       onClose={close}
-      title="Edit Timer-Session"
+      title={locale === "de-DE" ? "Sitzung bearbeiten" : "Edit Timer-Session"}
       size="md"
       padding="md"
     >

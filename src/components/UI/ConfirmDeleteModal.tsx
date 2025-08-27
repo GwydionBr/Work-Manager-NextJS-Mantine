@@ -1,4 +1,5 @@
 import { Button, Group, Modal, Text } from "@mantine/core";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 interface ConfirmDeleteModalProps {
   opened: boolean;
@@ -15,15 +16,17 @@ export default function ConfirmDeleteModal({
   title,
   message,
 }: ConfirmDeleteModalProps) {
+  const { locale } = useSettingsStore();
+
   return (
     <Modal opened={opened} onClose={onClose} title={title} centered>
       <Text>{message}</Text>
       <Group mt="md" justify="flex-end" gap="sm">
         <Button onClick={onClose} variant="outline">
-          Cancel
+          {locale === "de-DE" ? "Abbrechen" : "Cancel"}
         </Button>
         <Button onClick={onDelete} color="red">
-          Delete
+          {locale === "de-DE" ? "Löschen" : "Delete"}
         </Button>
       </Group>
     </Modal>

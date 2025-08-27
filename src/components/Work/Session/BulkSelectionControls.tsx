@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useFinanceStore } from "@/stores/financeStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
   Group,
@@ -78,6 +79,7 @@ export default function BulkSelectionControls({
   onFilterLogicChange,
   onClearAllFilters,
 }: BulkSelectionControlsProps) {
+  const { locale } = useSettingsStore();
   const { financeCategories } = useFinanceStore();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -162,7 +164,7 @@ export default function BulkSelectionControls({
         <Group justify="space-between">
           <Group>
             <Checkbox
-              label={`Select All (${unpaidSessions.length} unpaid sessions)`}
+              label={`${locale === "de-DE" ? "Alle auswählen" : "Select All"} (${unpaidSessions.length} ${locale === "de-DE" ? "unbezahlte Sitzungen" : "unpaid sessions"})`}
               checked={
                 selectedSessions.length === unpaidSessions.length &&
                 unpaidSessions.length > 0
@@ -177,18 +179,25 @@ export default function BulkSelectionControls({
             <Stack gap="xs" align="flex-end">
               {unpaidSessions.length > 0 && selectedSessions.length > 0 && (
                 <Text size="sm" c="dimmed">
-                  {selectedSessions.length} session
-                  {selectedSessions.length > 1 ? "s" : ""} selected
+                  {selectedSessions.length}{" "}
+                  {locale === "de-DE" ? "Sitzung" : "session"}
+                  {selectedSessions.length > 1 ? "en" : ""}{" "}
+                  {locale === "de-DE" ? "ausgewählt" : "selected"}
                 </Text>
               )}
               {unpaidSessions.length === 0 && (
                 <Text size="sm" c="dimmed">
-                  All sessions paid
+                  {locale === "de-DE"
+                    ? "Alle Sitzungen bezahlt"
+                    : "All sessions paid"}
                 </Text>
               )}
             </Stack>
           </Group>
-          <Tooltip label="Filter Sessions" openDelay={500}>
+          <Tooltip
+            label={locale === "de-DE" ? "Sitzungen filtern" : "Filter Sessions"}
+            openDelay={500}
+          >
             <Indicator
               size={10}
               color="red"
@@ -209,12 +218,18 @@ export default function BulkSelectionControls({
           <Divider my="xs" />
           <Stack gap="xs">
             <Text size="sm" fw={500}>
-              Select Sessions by Time Period
+              {locale === "de-DE"
+                ? "Sitzungen nach Zeitrahmen filtern"
+                : "Select Sessions by Time Period"}
             </Text>
             <Group gap="md" align="flex-end">
               <Select
-                label="Time Period"
-                placeholder="Select a time period"
+                label={locale === "de-DE" ? "Zeitrahmen" : "Time Period"}
+                placeholder={
+                  locale === "de-DE"
+                    ? "Zeitrahmen auswählen"
+                    : "Select a time period"
+                }
                 data={timePresets.map((preset) => ({
                   value: preset.value,
                   label: preset.label,
@@ -227,14 +242,19 @@ export default function BulkSelectionControls({
               {selectedTimePreset && !isOverview && (
                 <Button size="sm" onClick={handleSelectAll} variant="light">
                   {selectedSessions.length === unpaidSessions.length
-                    ? `Deselect all Sessions`
-                    : `Select ${unpaidSessions.length} Unpaid Sessions`}
+                    ? `${locale === "de-DE" ? "Alle Sitzungen abwählen" : "Deselect all Sessions"}`
+                    : `${locale === "de-DE" ? "Alle unbezahlten Sitzungen auswählen" : "Select ${unpaidSessions.length} Unpaid Sessions"}`}
                 </Button>
               )}
             </Group>
             {selectedTimePreset === "custom" && (
               <Stack gap="xs">
-                <Text size="sm">Custom Days: {timeFilterDays}</Text>
+                <Text size="sm">
+                  {locale === "de-DE"
+                    ? "Benutzerdefinierte Tage"
+                    : "Custom Days"}
+                  : {timeFilterDays}
+                </Text>
                 <Slider
                   value={timeFilterDays}
                   onChange={handleCustomDaysChange}
@@ -257,8 +277,12 @@ export default function BulkSelectionControls({
                 color={unpaidSessions.length > 0 ? "blue" : "red"}
                 variant="light"
               >
-                {unpaidSessions.length} unpaid sessions in last {timeFilterDays}{" "}
-                days
+                {unpaidSessions.length}{" "}
+                {locale === "de-DE"
+                  ? "unbezahlte Sitzungen"
+                  : "unpaid sessions"}
+                {locale === "de-DE" ? "in letzten" : "in last"} {timeFilterDays}{" "}
+                {locale === "de-DE" ? "Tagen" : "days"}
               </Badge>
             </Collapse>
           </Stack>
@@ -269,14 +293,22 @@ export default function BulkSelectionControls({
               <Divider my="xs" />
               <Stack gap="xs">
                 <Text size="sm" fw={500}>
-                  Filter Sessions by Project Criteria
+                  {locale === "de-DE"
+                    ? "Sitzungen nach Projektkriterien filtern"
+                    : "Filter Sessions by Project Criteria"}
                 </Text>
 
                 {/* Filter Controls */}
                 <Group gap="md" align="flex-end">
                   <MultiSelect
-                    label="Filter by Folders"
-                    placeholder="Choose folders"
+                    label={
+                      locale === "de-DE"
+                        ? "Nach Ordner filtern"
+                        : "Filter by Folders"
+                    }
+                    placeholder={
+                      locale === "de-DE" ? "Ordner auswählen" : "Choose folders"
+                    }
                     data={getFolders()}
                     value={filterState?.selectedFolders || []}
                     onChange={onFolderFilterChange}
@@ -284,8 +316,16 @@ export default function BulkSelectionControls({
                     style={{ flex: 1 }}
                   />
                   <MultiSelect
-                    label="Filter by Projects"
-                    placeholder="Choose projects"
+                    label={
+                      locale === "de-DE"
+                        ? "Nach Projekt filtern"
+                        : "Filter by Projects"
+                    }
+                    placeholder={
+                      locale === "de-DE"
+                        ? "Projekt auswählen"
+                        : "Choose projects"
+                    }
                     data={getProjects()}
                     value={filterState?.selectedProjects || []}
                     onChange={onProjectFilterChange}
@@ -293,8 +333,16 @@ export default function BulkSelectionControls({
                     style={{ flex: 1 }}
                   />
                   <MultiSelect
-                    label="Filter by Categories"
-                    placeholder="Choose categories"
+                    label={
+                      locale === "de-DE"
+                        ? "Nach Kategorie filtern"
+                        : "Filter by Categories"
+                    }
+                    placeholder={
+                      locale === "de-DE"
+                        ? "Kategorie auswählen"
+                        : "Choose categories"
+                    }
                     data={getCashFlowCategories()}
                     value={filterState?.selectedCategories || []}
                     onChange={onCategoryFilterChange}
@@ -317,15 +365,23 @@ export default function BulkSelectionControls({
                       label={
                         <Text size="sm">
                           {filterState?.filterLogic === "AND"
-                            ? "All filters must match (AND)"
-                            : "Any filter can match (OR)"}
+                            ? locale === "de-DE"
+                              ? "Alle Filter müssen zutreffen (UND)"
+                              : "All filters must match (AND)"
+                            : locale === "de-DE"
+                              ? "Ein Filter kann zutreffen (ODER)"
+                              : "Any filter can match (OR)"}
                         </Text>
                       }
                     />
                     <Text size="xs" c="dimmed">
                       {filterState?.filterLogic === "AND"
-                        ? "Sessions must belong to ALL selected criteria"
-                        : "Sessions can belong to ANY selected criteria"}
+                        ? locale === "de-DE"
+                          ? "Sitzungen müssen allen ausgewählten Kriterien entsprechen"
+                          : "Sessions must belong to ALL selected criteria"
+                        : locale === "de-DE"
+                          ? "Sitzungen können einem der ausgewählten Kriterien entsprechen"
+                          : "Sessions can belong to ANY selected criteria"}
                     </Text>
                   </Group>
                 </Collapse>
@@ -336,8 +392,12 @@ export default function BulkSelectionControls({
                       color={unpaidSessions.length > 0 ? "blue" : "red"}
                       variant="light"
                     >
-                      {unpaidSessions.length} unpaid sessions in last{" "}
-                      {timeFilterDays} days
+                      {unpaidSessions.length}{" "}
+                      {locale === "de-DE"
+                        ? "unbezahlte Sitzungen"
+                        : "unpaid sessions"}
+                      {locale === "de-DE" ? "in letzten" : "in last"}{" "}
+                      {timeFilterDays} {locale === "de-DE" ? "Tagen" : "days"}
                     </Badge>
                   </Stack>
                 </Collapse>
@@ -353,8 +413,8 @@ export default function BulkSelectionControls({
                           variant="light"
                         >
                           {selectedSessions.length === unpaidSessions.length
-                            ? `Deselect all Sessions`
-                            : `Select ${unpaidSessions.length} Unpaid Sessions`}
+                            ? `${locale === "de-DE" ? "Alle Sitzungen abwählen" : "Deselect all Sessions"}`
+                            : `${locale === "de-DE" ? "Alle unbezahlten Sitzungen auswählen" : "Select ${unpaidSessions.length} Unpaid Sessions"}`}
                         </Button>
                       )}
                       <Button
@@ -363,7 +423,9 @@ export default function BulkSelectionControls({
                         color="red"
                         onClick={onClearAllFilters}
                       >
-                        Clear All Filters
+                        {locale === "de-DE"
+                          ? "Alle Filter löschen"
+                          : "Clear All Filters"}
                       </Button>
                     </Stack>
                   </Stack>
