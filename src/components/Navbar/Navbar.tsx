@@ -9,9 +9,7 @@ import {
   IconSettings,
   IconUser,
   IconBrandCashapp,
-  IconUsersGroup,
   IconCalendar,
-  IconListCheck,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import SchemeToggle from "@/components/Scheme/SchemeToggleButton";
@@ -26,38 +24,46 @@ interface LinkData {
   to: string;
 }
 
-const mainLinksData = [
-  { icon: IconBriefcase, label: "Work", to: paths.work.workPage() },
-  {
-    icon: IconCalendar,
-    label: "Work Calendar",
-    to: paths.workCalendar.workCalendarPage(),
-  },
-  // {
-  //   icon: IconListCheck,
-  //   label: "Tasks",
-  //   to: paths.tasks.tasksPage(),
-  // },
-  {
-    icon: IconBrandCashapp,
-    label: "Finance",
-    to: paths.finances.financesPage(),
-  },
-  // {
-  //   icon: IconUsersGroup,
-  //   label: "Group Manager",
-  //   to: paths.groupManager.groupManagerPage(),
-  // },
-];
-
-const profileLinksData = [
-  { icon: IconUser, label: "Account", to: paths.account.accountPage() },
-];
-
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { setSelectedTab, setIsModalOpen } = useSettingsStore();
+  const { locale, setSelectedTab, setIsModalOpen } = useSettingsStore();
+
+  const profileLinksData = [
+    {
+      icon: IconUser,
+      label: locale === "de-DE" ? "Konto" : "Account",
+      to: paths.account.accountPage(),
+    },
+  ];
+
+  const mainLinksData = [
+    {
+      icon: IconBriefcase,
+      label: locale === "de-DE" ? "Arbeitsmanager" : "Work Manager",
+      to: paths.work.workPage(),
+    },
+    {
+      icon: IconCalendar,
+      label: locale === "de-DE" ? "Kalender" : "Work Calendar",
+      to: paths.workCalendar.workCalendarPage(),
+    },
+    // {
+    //   icon: IconListCheck,
+    //   label: "Tasks",
+    //   to: paths.tasks.tasksPage(),
+    // },
+    {
+      icon: IconBrandCashapp,
+      label: locale === "de-DE" ? "Finanzen" : "Finance",
+      to: paths.finances.financesPage(),
+    },
+    // {
+    //   icon: IconUsersGroup,
+    //   label: "Group Manager",
+    //   to: paths.groupManager.groupManagerPage(),
+    // },
+  ];
 
   function createLinks(linksData: LinkData[]) {
     const links = linksData.map((link) => (
@@ -125,7 +131,7 @@ export default function Navbar() {
           <Stack gap="xs">
             {profileLinks}
             <Tooltip
-              label="Settings"
+              label={locale === "de-DE" ? "Einstellungen" : "Settings"}
               position="right"
               withArrow
               transitionProps={{ duration: 0 }}

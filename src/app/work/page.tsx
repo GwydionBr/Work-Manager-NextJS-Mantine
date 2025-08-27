@@ -47,7 +47,9 @@ export default function WorkPage() {
   if (!activeProject || isFetching) {
     return (
       <Stack align="center" w="100%" px="xl">
-        <Header headerTitle="Work Manager" />
+        <Header
+          headerTitle={locale === "de-DE" ? "Arbeitsmanager" : "Work Manager"}
+        />
         <Loader />
       </Stack>
     );
@@ -162,13 +164,17 @@ export default function WorkPage() {
             />
           ) : (
             <Text size="lg" c="gray" ta="center">
-              No Sessions in the time period
+              {locale === "de-DE"
+                ? "Keine Sitzungen im ausgewählten Zeitraum"
+                : "No Sessions in the time period"}
             </Text>
           )}
         </Box>
       ) : (
         <Text size="lg" c="gray" ta="center">
-          Add as Session to see it here
+          {locale === "de-DE"
+            ? "Fügen Sie eine Sitzung hinzu, um sie hier zu sehen"
+            : "Add as Session to see it here"}
         </Text>
       )}
     </Stack>

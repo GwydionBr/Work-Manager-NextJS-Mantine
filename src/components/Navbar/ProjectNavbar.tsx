@@ -34,7 +34,7 @@ export default function ProjectNavbar({
 }) {
   const { isFetching } = useWorkStore();
 
-  const { setSelectedTab, setIsModalOpen } = useSettingsStore();
+  const { locale, setSelectedTab, setIsModalOpen } = useSettingsStore();
   const router = useRouter();
   const pathname = usePathname();
   const [isOverview, setIsOverview] = useState<boolean>(false);
@@ -69,7 +69,11 @@ export default function ProjectNavbar({
           duration={200}
           enterDelay={200}
         >
-          {(styles) => <Text style={styles}>Projects</Text>}
+          {(styles) => (
+            <Text style={styles}>
+              {locale === "de-DE" ? "Projekte" : "Projects"}
+            </Text>
+          )}
         </Transition>
         {!isFetching && (
           <>
@@ -83,7 +87,11 @@ export default function ProjectNavbar({
                 <Group gap={8} style={styles}>
                   <AdjustmentActionIcon
                     aria-label="Adjust project settings"
-                    tooltipLabel="Adjust project settings"
+                    tooltipLabel={
+                      locale === "de-DE"
+                        ? "Projekteinstellungen anpassen"
+                        : "Adjust project settings"
+                    }
                     size="md"
                     iconSize={20}
                     onClick={() => {
@@ -106,7 +114,11 @@ export default function ProjectNavbar({
                   <NewProjectButton />
                   <AdjustmentActionIcon
                     aria-label="Adjust project settings"
-                    tooltipLabel="Adjust project settings"
+                    tooltipLabel={
+                      locale === "de-DE"
+                        ? "Projekteinstellungen anpassen"
+                        : "Adjust project settings"
+                    }
                     size="md"
                     iconSize={20}
                     onClick={() => {
@@ -138,7 +150,7 @@ export default function ProjectNavbar({
               }
             }}
           >
-            Overview
+            {locale === "de-DE" ? "Übersicht" : "Overview"}
           </Box>
         )}
       </Transition>
