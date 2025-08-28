@@ -40,7 +40,7 @@ export default function FinanceNavbar() {
               iconSize={20}
               onClick={() => {
                 setIsModalOpen(true);
-                setSelectedTab(SettingsTab.GROUP);
+                setSelectedTab(SettingsTab.WORK);
               }}
             />
             <NewGroupButton />
