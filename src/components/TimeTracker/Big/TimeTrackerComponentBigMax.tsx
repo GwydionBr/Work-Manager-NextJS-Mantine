@@ -102,7 +102,7 @@ export default function TimeTrackerComponentBigMax({
   removeTimer,
   setMemo,
 }: TimeTrackerComponentBigMaxProps) {
-  const { roundInTimeSections } = useSettingsStore();
+  const { roundInTimeFragments: roundInTimeSections } = useSettingsStore();
 
   return (
     <Card

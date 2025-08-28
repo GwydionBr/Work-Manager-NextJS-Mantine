@@ -45,6 +45,7 @@ export default function CalendarGrid({
 }: CalendarGridProps) {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
   const [startNewSession, setStartNewSession] = useState<number | null>(null);
+  const [endNewSession, setEndNewSession] = useState<number | null>(null);
   const [newSessionDay, setNewSessionDay] = useState<Date | null>(null);
   const [modalOpened, { open, close }] = useDisclosure(false);
   const [submitting, setSubmitting] = useState(false);
@@ -53,6 +54,8 @@ export default function CalendarGrid({
     defaultSalaryCurrency,
     defaultSalaryAmount,
     defaultProjectHourlyPayment,
+    roundInTimeFragments,
+    timeFragmentInterval,
   } = useSettingsStore();
 
   const { ref, x, y } = useMouse();
@@ -71,7 +74,7 @@ export default function CalendarGrid({
     }
   }
 
-  const toY = (date: Date) => {
+  const timeToY = (date: Date) => {
     // Convert a date to a Y-position within the day timeline
     const minutes = date.getHours() * 60 + date.getMinutes();
     const totalMinutes = 24 * 60;
@@ -83,18 +86,39 @@ export default function CalendarGrid({
     return clamp(y, 0, 24 * rasterHeight * hourMultiplier);
   };
 
+  // yToTime soll die exakte Umkehrfunktion von timeToY sein, ohne Rundungsfehler.
   const yToTime = (y: number, day: Date) => {
+
     const minutes = (y / (rasterHeight * hourMultiplier)) * 60;
     const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
+    const mins = Math.round(minutes - hours * 60); // exaktere Minutenberechnung
     return new Date(
       day.getFullYear(),
       day.getMonth(),
       day.getDate(),
       hours,
-      remainingMinutes
+      mins,
+      0,
+      0
     );
   };
+
+  function snapYToInterval(inputY: number, day: Date) {
+    if (!roundInTimeFragments || !timeFragmentInterval) return inputY;
+    const date = yToTime(inputY, day);
+    const totalMinutes = date.getHours() * 60 + date.getMinutes();
+    const minutesToRound = totalMinutes % timeFragmentInterval;
+    const minutesToAdd =
+      minutesToRound > timeFragmentInterval / 2
+        ? timeFragmentInterval - minutesToRound
+        : -minutesToRound;
+    const totalMinutesRounded = totalMinutes + minutesToAdd;
+    const snapped = new Date(date);
+    const hours = Math.floor(totalMinutesRounded / 60);
+    const minutes = totalMinutesRounded % 60;
+    snapped.setHours(hours, minutes, 0, 0);
+    return Math.round(timeToY(snapped));
+  }
 
   async function handleSubmit(values: {
     project_id?: string;
@@ -228,7 +252,7 @@ export default function CalendarGrid({
                       day={d.day}
                       y={y}
                       yToTime={yToTime}
-                      toY={toY}
+                      timeToY={timeToY}
                       isFetching={isFetching}
                       currentTime={isToday(d.day) ? currentTime : undefined}
                       sessions={d.sessions}
@@ -239,6 +263,8 @@ export default function CalendarGrid({
                       setStartNewSession={setStartNewSession}
                       newSessionDay={newSessionDay}
                       setNewSessionDay={setNewSessionDay}
+                      setEndNewSession={setEndNewSession}
+                      snapYToInterval={(y) => snapYToInterval(y, d.day)}
                     />
                   </Grid.Col>
                 );
@@ -264,23 +290,29 @@ export default function CalendarGrid({
         size="lg"
         padding="md"
       >
-        {newSessionDay && startNewSession && (
+        {newSessionDay && startNewSession && endNewSession && (
           <SessionForm
             initialValues={{
               start_time: yToTime(
-                Math.min(startNewSession, y),
+                Math.min(startNewSession, endNewSession),
                 newSessionDay
               ).toISOString(),
               end_time: yToTime(
-                Math.max(startNewSession, y),
+                Math.max(startNewSession, endNewSession),
                 newSessionDay
               ).toISOString(),
               active_seconds:
                 (new Date(
-                  yToTime(Math.max(startNewSession, y), newSessionDay)
+                  yToTime(
+                    Math.max(startNewSession, endNewSession),
+                    newSessionDay
+                  )
                 ).getTime() -
                   new Date(
-                    yToTime(Math.min(startNewSession, y), newSessionDay)
+                    yToTime(
+                      Math.min(startNewSession, endNewSession),
+                      newSessionDay
+                    )
                   ).getTime()) /
                 1000,
               paused_seconds: 0,

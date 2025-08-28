@@ -14,12 +14,13 @@ import { CalendarSession } from "@/types/workCalendar.types";
 import CalendarEvent from "./CalendarEvent/CalendarEvent";
 import TimeTrackerEvent from "./CalendarEvent/TimeTrackerEvent/TimeTrackerEvent";
 import NewSessionEvent from "./CalendarEvent/NewSessionEvent";
+import { formatDateTime } from "@/utils/formatFunctions";
 
 interface DayColumnProps {
   day: Date;
   y: number;
   yToTime: (y: number, day: Date) => Date;
-  toY: (date: Date) => number;
+  timeToY: (date: Date) => number;
   isFetching: boolean;
   currentTime?: Date;
   sessions: CalendarSession[];
@@ -30,13 +31,15 @@ interface DayColumnProps {
   setStartNewSession: (y: number | null) => void;
   newSessionDay: Date | null;
   setNewSessionDay: (day: Date | null) => void;
+  setEndNewSession: (y: number | null) => void;
+  snapYToInterval: (y: number) => number;
 }
 
 export function DayColumn({
   day,
   y,
   yToTime,
-  toY,
+  timeToY,
   isFetching,
   currentTime,
   sessions,
@@ -47,10 +50,11 @@ export function DayColumn({
   setStartNewSession,
   newSessionDay,
   setNewSessionDay,
+  setEndNewSession,
+  snapYToInterval,
 }: DayColumnProps) {
   const { hovered, ref: hoverRef } = useHover();
   const { locale } = useSettingsStore();
-
   useHotkeys([["escape", () => setStartNewSession(null)]]);
 
   // Clip sessions to the visible day window so cross-midnight sessions
@@ -81,15 +85,22 @@ export function DayColumn({
   const itemsForRender: CalendarSession[] =
     mergeAdjacentSessionsForRender(clippedItems);
 
-  function handleNewSessionClick(y: number) {
+  const snappedY = snapYToInterval(y);
+
+  function handleNewSessionClick(newY: number) {
     if (startNewSession === null) {
-      setStartNewSession(y);
+      setStartNewSession(newY);
       setNewSessionDay(day);
+    } else {
+      setEndNewSession(newY);
     }
   }
 
   return (
-    <Box ref={hoverRef}>
+    <Box
+      ref={hoverRef}
+      onClick={() => handleNewSessionClick(snapYToInterval(y))}
+    >
       <Box
         style={{
           position: "relative",
@@ -127,18 +138,14 @@ export function DayColumn({
         )}
 
         {/* Current time indicator - red line for today */}
-        <TimeTrackerEvent toY={toY} currentTime={currentTime} day={day} />
+        <TimeTrackerEvent toY={timeToY} currentTime={currentTime} day={day} />
 
         {/* New session event */}
         {!isFetching && hovered && startNewSession === null && (
           <Stack
-            onClick={(e) => {
-              e.stopPropagation();
-              handleNewSessionClick(y);
-            }}
             style={{
               position: "absolute",
-              top: y - 2,
+              top: snappedY - 2,
               left: 0,
               right: 0,
               borderTop:
@@ -147,18 +154,15 @@ export function DayColumn({
             }}
           >
             <Text ta="center">
-              {yToTime(y, day).toLocaleTimeString(locale, {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+              {formatDateTime(yToTime(snappedY, day), locale)}
             </Text>
           </Stack>
         )}
 
         {!isFetching && startNewSession !== null && newSessionDay === day && (
           <NewSessionEvent
-            start={startNewSession}
-            y={y}
+            start={snapYToInterval(startNewSession)}
+            y={snappedY}
             yToTime={(y) => yToTime(y, day)}
           />
         )}
@@ -166,7 +170,7 @@ export function DayColumn({
         {isFetching
           ? Array.from({ length: 24 }, (_, i) => (
               <Skeleton
-                key={`line-${i}`} 
+                key={`line-${i}`}
                 height={rasterHeight + i * 3}
                 w="90%"
                 mx="auto"
@@ -186,7 +190,7 @@ export function DayColumn({
                   key={s.id}
                   isNewSession={startNewSession !== null}
                   s={s}
-                  toY={toY}
+                  toY={timeToY}
                   handleSessionClick={handleSessionClick}
                   color={s.color}
                 />

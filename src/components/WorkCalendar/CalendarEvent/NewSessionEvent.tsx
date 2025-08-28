@@ -1,6 +1,7 @@
 "use client";
 
 import { useSettingsStore } from "@/stores/settingsStore";
+import { formatTimeSpan } from "@/utils/formatFunctions";
 
 import { Box, Stack, Text } from "@mantine/core";
 
@@ -41,15 +42,7 @@ export default function NewSessionEvent({
           </Text>
         ) : null}
         <Text ta="center" fw={600}>
-          {yToTime(actualStart).toLocaleTimeString(locale, {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}{" "}
-          -{" "}
-          {yToTime(actualEnd).toLocaleTimeString(locale, {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
+          {formatTimeSpan(yToTime(actualStart), yToTime(actualEnd), locale)}
         </Text>
         {isStartDynamic ? (
           <Text ta="center">

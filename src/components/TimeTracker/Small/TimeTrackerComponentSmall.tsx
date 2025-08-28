@@ -87,7 +87,8 @@ export default function TimeTrackerComponentSmall({
   modifyPausedSeconds,
   setRoundingAmount,
 }: TimeTrackerComponentSmallProps) {
-  const { locale, roundInTimeSections } = useSettingsStore();
+  const { locale, roundInTimeFragments: roundInTimeSections } =
+    useSettingsStore();
 
   return (
     <Stack

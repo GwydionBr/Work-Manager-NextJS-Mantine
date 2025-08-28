@@ -33,13 +33,13 @@ export default function RoundingSettings() {
     roundingAmount,
     roundingMode,
     customRoundingAmount,
-    roundInTimeSections,
-    timeSectionInterval,
+    roundInTimeFragments: roundInTimeSections,
+    timeFragmentInterval: timeSectionInterval,
     setRoundingAmount,
     setRoundingMode,
     setCustomRoundingAmount,
-    setRoundInTimeSections,
-    setTimeSectionInterval,
+    setRoundInTimeFragments: setRoundInTimeSections,
+    setTimeFragmentInterval: setTimeSectionInterval,
   } = useSettingsStore();
 
   const [customAmount, setCustomAmount] = useState(customRoundingAmount);

@@ -85,7 +85,8 @@ export default function TimeTrackerComponentBigMin({
   color,
   backgroundColor,
 }: TimeTrackerComponentBigMinProps) {
-  const { locale, roundInTimeSections } = useSettingsStore();
+  const { locale, roundInTimeFragments: roundInTimeSections } =
+    useSettingsStore();
 
   return (
     <Card

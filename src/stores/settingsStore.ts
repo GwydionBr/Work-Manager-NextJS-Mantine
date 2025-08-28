@@ -27,8 +27,8 @@ interface SettingsState {
   isAsideOpen: boolean;
   isFetching: boolean;
   lastFetch: Date | null;
-  roundInTimeSections: boolean;
-  timeSectionInterval: number;
+  roundInTimeFragments: boolean;
+  timeFragmentInterval: number;
   automaticlyStopOtherTimer: boolean;
   locale: Locale;
 }
@@ -46,9 +46,11 @@ interface SettingsActions {
   setCustomRoundingAmount: (customRoundingAmount: number) => Promise<void>;
   setDefaultGroupColor: (color: string | null) => void;
   setIsAsideOpen: (isAsideOpen: boolean) => void;
-  setRoundInTimeSections: (roundInTimeSections: boolean) => Promise<void>;
-  setTimeSectionInterval: (timeSectionInterval: number) => Promise<void>;
-  setAutomaticlyStopOtherTimer: (automaticlyStopOtherTimer: boolean) => Promise<void>;
+  setRoundInTimeFragments: (roundInTimeFragments: boolean) => Promise<void>;
+  setTimeFragmentInterval: (timeFragmentInterval: number) => Promise<void>;
+  setAutomaticlyStopOtherTimer: (
+    automaticlyStopOtherTimer: boolean
+  ) => Promise<void>;
   setLocale: (locale: Locale) => Promise<void>;
 }
 
@@ -69,8 +71,8 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       isAsideOpen: false,
       isFetching: true,
       lastFetch: null,
-      roundInTimeSections: false,
-      timeSectionInterval: 10,
+      roundInTimeFragments: false,
+      timeFragmentInterval: 10,
       automaticlyStopOtherTimer: false,
       locale: "en-US",
 
@@ -87,8 +89,8 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
             roundingMode: data.rounding_direction,
             customRoundingAmount: data.rounding_custom_amount,
             defaultGroupColor: data.default_group_color,
-            roundInTimeSections: data.round_in_time_sections,
-            timeSectionInterval: data.time_section_interval,
+            roundInTimeFragments: data.round_in_time_sections,
+            timeFragmentInterval: data.time_section_interval,
             automaticlyStopOtherTimer: data.automaticly_stop_other_timer,
             locale: data.locale,
           });
@@ -160,21 +162,23 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       setIsAsideOpen: (isAsideOpen: boolean) => {
         set({ isAsideOpen: isAsideOpen });
       },
-      setRoundInTimeSections: async (roundInTimeSections: boolean) => {
+      setRoundInTimeFragments: async (roundInTimeSections: boolean) => {
         await actions.updateSettings({
           id: get().settingsId ?? "",
           round_in_time_sections: roundInTimeSections,
         });
-        set({ roundInTimeSections: roundInTimeSections });
+        set({ roundInTimeFragments: roundInTimeSections });
       },
-      setTimeSectionInterval: async (timeSectionInterval: number) => {
+      setTimeFragmentInterval: async (timeSectionInterval: number) => {
         await actions.updateSettings({
           id: get().settingsId ?? "",
           time_section_interval: timeSectionInterval,
         });
-        set({ timeSectionInterval: timeSectionInterval });
+        set({ timeFragmentInterval: timeSectionInterval });
       },
-      setAutomaticlyStopOtherTimer: async (automaticlyStopOtherTimer: boolean) => {
+      setAutomaticlyStopOtherTimer: async (
+        automaticlyStopOtherTimer: boolean
+      ) => {
         await actions.updateSettings({
           id: get().settingsId ?? "",
           automaticly_stop_other_timer: automaticlyStopOtherTimer,

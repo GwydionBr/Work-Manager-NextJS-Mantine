@@ -39,8 +39,8 @@ export default function TimeTrackerInstance({
     useTimeTrackerManager();
   const { addTimerSession, addMultipleTimerSessions } = useWorkStore();
   const {
-    timeSectionInterval,
-    roundInTimeSections,
+    timeFragmentInterval: timeSectionInterval,
+    roundInTimeFragments: roundInTimeSections,
     automaticlyStopOtherTimer,
     locale,
   } = useSettingsStore();
