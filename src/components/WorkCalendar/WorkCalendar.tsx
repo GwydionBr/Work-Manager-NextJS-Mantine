@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
-import useSettingsStore from "@/stores/settingsStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
   Grid,
@@ -262,7 +262,7 @@ export default function WorkCalendar() {
     >
       <Stack>
         <Title ta="center" order={1} mt="xs" w="100%" style={{ zIndex: 100 }}>
-          Work Calendar
+          {locale === "de-DE" ? "Arbeitskalender" : "Work Calendar"}
         </Title>
         <Grid
           h={60}
