@@ -18,6 +18,7 @@ import classes from "./FinanceRecurring.module.css";
 import EditCashFlowButton from "../EditCashFlowButton";
 import NewCashFlowButton from "../NewCashFlowButton";
 import { formatDate, formatMoney } from "@/utils/formatFunctions";
+import { FinanceInterval } from "@/types/settings.types";
 
 export default function FinanceRecurring() {
   const { recurringCashFlows } = useFinanceStore();
@@ -54,6 +55,23 @@ export default function FinanceRecurring() {
     return startDate > today; // Start date in the future = future
   });
 
+  function getIntervalLabel(interval: FinanceInterval) {
+    switch (interval) {
+      case "day":
+        return locale === "de-DE" ? "Täglich" : "Daily";
+      case "week":
+        return locale === "de-DE" ? "Wöchentlich" : "Weekly";
+      case "month":
+        return locale === "de-DE" ? "Monatlich" : "Monthly";
+      case "1/4 year":
+        return locale === "de-DE" ? "Vierteljährlich" : "Quarterly";
+      case "1/2 year":
+        return locale === "de-DE" ? "Halbjährlich" : "Half Yearly";
+      case "year":
+        return locale === "de-DE" ? "Jährlich" : "Yearly";
+    }
+  }
+
   const renderTable = (
     cashFlows: typeof recurringCashFlows,
     title: string,
@@ -72,29 +90,33 @@ export default function FinanceRecurring() {
               <Group gap="xs">
                 <Text>{locale === "de-DE" ? "Ausgaben" : "Expense"}:</Text>
                 <Text c="red" fw={700}>
-                  {expenseSum ? expenseSum.toLocaleString(locale, {
-                    style: "currency",
-                    currency: defaultFinanceCurrency,
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 2,
-                  }) : 0}
+                  {expenseSum
+                    ? expenseSum.toLocaleString(locale, {
+                        style: "currency",
+                        currency: defaultFinanceCurrency,
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2,
+                      })
+                    : 0}
                 </Text>
               </Group>
               <Group gap="xs">
                 <Text>{locale === "de-DE" ? "Einnahmen" : "Income"}:</Text>
                 <Text c="green" fw={700}>
-                  {incomeSum ? incomeSum.toLocaleString(locale, {
-                    style: "currency",
-                    currency: defaultFinanceCurrency,
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 2,
-                  }) : 0}
+                  {incomeSum
+                    ? incomeSum.toLocaleString(locale, {
+                        style: "currency",
+                        currency: defaultFinanceCurrency,
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2,
+                      })
+                    : 0}
                 </Text>
               </Group>
             </Group>
             <Divider />
             <Group justify="center">
-              <Text>Total:</Text>
+              <Text>{locale === "de-DE" ? "Gesamt" : "Total"}:</Text>
               <Text c={totalSum && totalSum > 0 ? "green" : "red"} fw={700}>
                 {totalSum ? totalSum : 0}
               </Text>
@@ -106,12 +128,20 @@ export default function FinanceRecurring() {
       <Table striped highlightOnHover>
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>Name</Table.Th>
-            <Table.Th>Amount</Table.Th>
-            <Table.Th>Type</Table.Th>
-            <Table.Th>Interval</Table.Th>
-            {showStartDates && <Table.Th>Start Date</Table.Th>}
-            {showEndDates && <Table.Th>End Date</Table.Th>}
+            <Table.Th>{locale === "de-DE" ? "Name" : "Name"}</Table.Th>
+            <Table.Th>{locale === "de-DE" ? "Betrag" : "Amount"}</Table.Th>
+            <Table.Th>{locale === "de-DE" ? "Typ" : "Type"}</Table.Th>
+            <Table.Th>{locale === "de-DE" ? "Intervall" : "Interval"}</Table.Th>
+            {showStartDates && (
+              <Table.Th>
+                {locale === "de-DE" ? "Startdatum" : "Start Date"}
+              </Table.Th>
+            )}
+            {showEndDates && (
+              <Table.Th>
+                {locale === "de-DE" ? "Enddatum" : "End Date"}
+              </Table.Th>
+            )}
             <Table.Th></Table.Th>
           </Table.Tr>
         </Table.Thead>
@@ -122,20 +152,32 @@ export default function FinanceRecurring() {
               <Table.Td>
                 {formatMoney(cashFlow.amount, cashFlow.currency, locale)}
               </Table.Td>
-              <Table.Td>{cashFlow.type === "expense" ? "Expense" : "Income"}</Table.Td>
-              <Table.Td>{cashFlow.interval}</Table.Td>
+              <Table.Td>
+                {cashFlow.type === "expense"
+                  ? locale === "de-DE"
+                    ? "Ausgabe"
+                    : "Expense"
+                  : locale === "de-DE"
+                    ? "Einnahme"
+                    : "Income"}
+              </Table.Td>
+              <Table.Td>{getIntervalLabel(cashFlow.interval)}</Table.Td>
               {showStartDates && (
                 <Table.Td>
                   {cashFlow.start_date
                     ? formatDate(new Date(cashFlow.start_date), locale)
-                    : "Unlimited"}
+                    : locale === "de-DE"
+                      ? "Unbegrenzt"
+                      : "Unlimited"}
                 </Table.Td>
               )}
               {showEndDates && (
                 <Table.Td>
                   {cashFlow.end_date
                     ? formatDate(new Date(cashFlow.end_date), locale)
-                    : "Unlimited"}
+                    : locale === "de-DE"
+                      ? "Unbegrenzt"
+                      : "Unlimited"}
                 </Table.Td>
               )}
               <Table.Td>
@@ -152,11 +194,15 @@ export default function FinanceRecurring() {
     <Stack gap="xl" align="center" mb="xl">
       <NewCashFlowButton
         isSingle={false}
-        tooltipLabel="Add Recurring Cash Flow"
+        tooltipLabel={
+          locale === "de-DE"
+            ? "Wiederkehrenden Cashflow hinzufügen"
+            : "Add Recurring Cash Flow"
+        }
       />
       {renderTable(
         activeCashFlows,
-        "Active",
+        locale === "de-DE" ? "Aktiv" : "Active",
         activeExpenseSum,
         activeIncomeSum,
         activeTotalSum,
@@ -166,7 +212,7 @@ export default function FinanceRecurring() {
       {futureCashFlows.length > 0 &&
         renderTable(
           futureCashFlows,
-          "Future",
+          locale === "de-DE" ? "Zukünftig" : "Future",
           undefined,
           undefined,
           undefined,
@@ -176,7 +222,7 @@ export default function FinanceRecurring() {
       {completedCashFlows.length > 0 &&
         renderTable(
           completedCashFlows,
-          "Completed",
+          locale === "de-DE" ? "Abgeschlossen" : "Completed",
           undefined,
           undefined,
           undefined,

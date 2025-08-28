@@ -1,5 +1,7 @@
 "use client";
 
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import { Modal, Text, Group, Button, Stack } from "@mantine/core";
 import { IconAlertTriangle } from "@tabler/icons-react";
 
@@ -18,11 +20,16 @@ export default function UpdateRecurringCashFlowsModal({
   onCancel,
   isLoading = false,
 }: UpdateRecurringCashFlowsModalProps) {
+  const { locale } = useSettingsStore();
   return (
     <Modal
       opened={opened}
       onClose={onClose}
-      title="Update Existing Cash Flows"
+      title={
+        locale === "de-DE"
+          ? "Bestehende Cashflows aktualisieren"
+          : "Update Existing Cash Flows"
+      }
       size="md"
       centered
     >
@@ -30,24 +37,24 @@ export default function UpdateRecurringCashFlowsModal({
         <Group gap="sm">
           <IconAlertTriangle size={24} color="orange" />
           <Text size="sm" c="dimmed">
-            You've made changes to a recurring cash flow. Would you like to
-            update all existing single cash flows that were created from this
-            recurring pattern?
+            {locale === "de-DE"
+              ? "Sie haben Änderungen an einem wiederkehrenden Cashflow vorgenommen. Möchten Sie alle bestehenden Einmalzahlungen, die aus diesem Wiederholungsmuster erstellt wurden, aktualisieren?"
+              : "You've made changes to a recurring cash flow. Would you like to update all existing single cash flows that were created from this recurring pattern?"}
           </Text>
         </Group>
 
         <Text size="sm" c="dimmed">
-          This will update the title, amount, currency, and category of all past
-          and current cash flows that were generated from this recurring
-          pattern. Future cash flows will automatically use the new settings.
+          {locale === "de-DE"
+            ? "Dies wird den Titel, den Betrag, die Währung und die Kategorie aller vergangenen und aktuellen Cashflows aktualisieren, die aus diesem Wiederholungsmuster generiert wurden. Zukünftige Cashflows werden automatisch die neuen Einstellungen verwenden."
+            : "This will update the title, amount, currency, and category of all past and current cash flows that were generated from this recurring pattern. Future cash flows will automatically use the new settings."}
         </Text>
 
         <Group justify="flex-end" gap="sm">
           <Button variant="outline" onClick={onCancel} disabled={isLoading}>
-            No, keep existing
+            {locale === "de-DE" ? "Nein, beibehalten" : "No, keep existing"}
           </Button>
           <Button color="blue" onClick={onConfirm} loading={isLoading}>
-            Yes, update all
+            {locale === "de-DE" ? "Ja, aktualisieren" : "Yes, update all"}
           </Button>
         </Group>
       </Stack>

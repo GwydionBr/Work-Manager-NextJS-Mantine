@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
   Center,
@@ -35,6 +36,7 @@ export default function EditCashFlowButton({
 }: {
   cashFlow: Tables<"single_cash_flow"> | Tables<"recurring_cash_flow">;
 }) {
+  const { locale } = useSettingsStore();
   const [opened, { open, close }] = useDisclosure(false);
   const [isLoading, setIsLoading] = useState(false);
   const [type, setType] = useState<CashFlowType>(
@@ -171,7 +173,7 @@ export default function EditCashFlowButton({
       <Drawer
         opened={opened}
         onClose={close}
-        title="Edit Cash Flow"
+        title={locale === "de-DE" ? "Cashflow bearbeiten" : "Edit Cash Flow"}
         size="md"
         padding="md"
       >
@@ -186,7 +188,7 @@ export default function EditCashFlowButton({
                 label: (
                   <Center style={{ gap: 10 }}>
                     <IconPlus size={16} />
-                    <span>Income</span>
+                    <span>{locale === "de-DE" ? "Einnahme" : "Income"}</span>
                   </Center>
                 ),
               },
@@ -195,7 +197,7 @@ export default function EditCashFlowButton({
                 label: (
                   <Center style={{ gap: 10 }}>
                     <IconMinus size={16} />
-                    <span>Expense</span>
+                    <span>{locale === "de-DE" ? "Ausgabe" : "Expense"}</span>
                   </Center>
                 ),
               },
@@ -206,13 +208,19 @@ export default function EditCashFlowButton({
               label: category.title,
               value: category.id,
             }))}
-            label="Category"
-            placeholder="Select a category"
+            label={locale === "de-DE" ? "Kategorie" : "Category"}
+            placeholder={
+              locale === "de-DE" ? "Kategorie auswählen" : "Select a category"
+            }
             value={categoryId}
             onChange={(value) => setCategoryId(value)}
             searchable
             clearable
-            nothingFoundMessage="No categories found"
+            nothingFoundMessage={
+              locale === "de-DE"
+                ? "Keine Kategorien gefunden"
+                : "No categories found"
+            }
             size="sm"
           />
           {isSingleCashFlow(cashFlow) ? (
@@ -238,8 +246,12 @@ export default function EditCashFlowButton({
         opened={deleteModalOpened}
         onClose={closeDeleteModal}
         onDelete={handleDelete}
-        title="Delete Cash Flow"
-        message="Are you sure you want to delete this cash flow? This action cannot be undone."
+        title={locale === "de-DE" ? "Cashflow löschen" : "Delete Cash Flow"}
+        message={
+          locale === "de-DE"
+            ? "Sind Sie sicher, dass Sie diesen Cashflow löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+            : "Are you sure you want to delete this cash flow? This action cannot be undone."
+        }
       />
 
       <UpdateRecurringCashFlowsModal
@@ -250,8 +262,16 @@ export default function EditCashFlowButton({
         isLoading={isLoading}
       />
 
-      <Tooltip label="Edit cash flow">
-        <EditActionIcon aria-label="Edit cash flow" onClick={open} size="sm" />
+      <Tooltip
+        label={locale === "de-DE" ? "Cashflow bearbeiten" : "Edit cash flow"}
+      >
+        <EditActionIcon
+          aria-label={
+            locale === "de-DE" ? "Cashflow bearbeiten" : "Edit cash flow"
+          }
+          onClick={open}
+          size="sm"
+        />
       </Tooltip>
     </>
   );

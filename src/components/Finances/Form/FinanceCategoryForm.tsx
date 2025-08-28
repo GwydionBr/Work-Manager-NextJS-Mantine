@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { TextInput, Stack, Button, Alert, Textarea } from "@mantine/core";
+import { TextInput, Stack, Alert, Textarea } from "@mantine/core";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 import CancelButton from "@/components/UI/Buttons/CancelButton";

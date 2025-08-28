@@ -1,3 +1,5 @@
+"use client";
+
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Card, Text, Badge, Group } from "@mantine/core";

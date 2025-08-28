@@ -1,6 +1,7 @@
 "use client";
 
 import { useDisclosure } from "@mantine/hooks";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Box, Flex, Modal } from "@mantine/core";
 import FinanceForm from "@/components/Finances/Form/FinanceForm";
@@ -16,13 +17,13 @@ export default function NewCashFlowButton({
   tooltipLabel,
 }: NewCashFlowButtonProps) {
   const [opened, { open, close }] = useDisclosure(false);
-
+  const { locale } = useSettingsStore();
   return (
     <Box>
       <Modal
         opened={opened}
         onClose={close}
-        title="Add Cash Flow"
+        title={locale === "de-DE" ? "Cashflow hinzufügen" : "Add Cash Flow"}
         size="md"
         padding="md"
       >
@@ -32,10 +33,15 @@ export default function NewCashFlowButton({
       </Modal>
 
       <AddActionIcon
-        aria-label="Add cash flow"
+        aria-label={
+          locale === "de-DE" ? "Cashflow hinzufügen" : "Add cash flow"
+        }
         onClick={open}
         size="md"
-        tooltipLabel={tooltipLabel || "Add cash flow"}
+        tooltipLabel={
+          tooltipLabel ||
+          (locale === "de-DE" ? "Cashflow hinzufügen" : "Add cash flow")
+        }
       />
     </Box>
   );

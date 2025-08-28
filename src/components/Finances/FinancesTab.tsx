@@ -1,5 +1,8 @@
 "use client";
 
+import { useFinanceStore } from "@/stores/financeStore";
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import { Box, Tabs, Text } from "@mantine/core";
 import {
   IconReload,
@@ -9,15 +12,19 @@ import {
 import FinanceOverview from "./Overview/FinanceOverview";
 import FinanceRecurring from "./Recurring/FinanceRecurring";
 import FinanceSingle from "./Single/FinanceSingle";
-import { useFinanceStore } from "@/stores/financeStore";
 
 export default function FinancesTab() {
+  const { locale } = useSettingsStore();
   const { singleCashFlows, recurringCashFlows } = useFinanceStore();
 
   if (singleCashFlows.length === 0 && recurringCashFlows.length === 0) {
     return (
       <Box>
-        <Text>Please insert some data to see the charts</Text>
+        <Text>
+          {locale === "de-DE"
+            ? "Bitte fügen Sie einige Daten hinzu, um die Diagramme anzuzeigen"
+            : "Please insert some data to see the charts"}
+        </Text>
       </Box>
     );
   }
@@ -29,7 +36,7 @@ export default function FinancesTab() {
           leftSection={<IconMenuDeep color="light-dark(blue, cyan)" />}
           value="Overview"
         >
-          Overview
+          {locale === "de-DE" ? "Übersicht" : "Overview"}
         </Tabs.Tab>
         <Tabs.Tab
           leftSection={
@@ -37,13 +44,13 @@ export default function FinancesTab() {
           }
           value="Single"
         >
-          Single
+          {locale === "de-DE" ? "Einzel" : "Single"}
         </Tabs.Tab>
         <Tabs.Tab
           leftSection={<IconReload color="light-dark(blue, cyan) " />}
           value="Recurring"
         >
-          Recurring
+          {locale === "de-DE" ? "Wiederkehrend" : "Recurring"}
         </Tabs.Tab>
       </Tabs.List>
 

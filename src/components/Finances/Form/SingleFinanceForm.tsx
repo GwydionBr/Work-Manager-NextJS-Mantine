@@ -1,6 +1,7 @@
 "use client";
 
 import { useForm } from "@mantine/form";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { TextInput, NumberInput, Select, Stack } from "@mantine/core";
 
@@ -46,6 +47,7 @@ export default function SingleFinanceForm({
   isLoading,
   cashFlow,
 }: SingleFinanceFormProps) {
+  const { locale } = useSettingsStore();
   const form = useForm({
     initialValues: {
       title: cashFlow?.title ?? "",
@@ -76,18 +78,20 @@ export default function SingleFinanceForm({
           withAsterisk
           allowNegative={false}
           allowLeadingZeros={false}
-          label="Amount"
+          label={locale === "de-DE" ? "Betrag" : "Amount"}
           {...form.getInputProps("amount")}
         />
         <Select
           withAsterisk
-          label="Currency"
-          placeholder="Select currency"
+          label={locale === "de-DE" ? "Währung" : "Currency"}
+          placeholder={
+            locale === "de-DE" ? "Währung auswählen" : "Select currency"
+          }
           data={currencies}
           {...form.getInputProps("currency")}
         />
         <DatePickerInput
-          label="Date"
+          label={locale === "de-DE" ? "Datum" : "Date"}
           withAsterisk
           mb="md"
           {...form.getInputProps("date")}
@@ -98,6 +102,7 @@ export default function SingleFinanceForm({
             onClick={form.onSubmit(handleFormSubmit)}
             loading={isLoading}
             variant="filled"
+            title={locale === "de-DE" ? "Speichern" : "Save"}
           />
         ) : (
           <CreateButton
@@ -105,6 +110,7 @@ export default function SingleFinanceForm({
             onClick={form.onSubmit(handleFormSubmit)}
             loading={isLoading}
             variant="filled"
+            title={locale === "de-DE" ? "Erstellen" : "Create"}
           />
         )}
       </Stack>

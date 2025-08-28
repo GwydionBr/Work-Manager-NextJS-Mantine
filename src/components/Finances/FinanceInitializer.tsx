@@ -10,7 +10,6 @@ import {
   Container,
   ThemeIcon,
   Box,
-  Button,
   Anchor,
 } from "@mantine/core";
 import { IconCash } from "@tabler/icons-react";
@@ -18,6 +17,7 @@ import FinanceForm from "@/components/Finances/Form/FinanceForm";
 import { SettingsTab } from "../Settings/SettingsModal";
 
 export default function FinanceInitializer() {
+  const { locale } = useSettingsStore();
   const { setIsModalOpen, setSelectedTab } = useSettingsStore();
   return (
     <Container size="md" py="xl">
@@ -33,21 +33,25 @@ export default function FinanceInitializer() {
               <IconCash size={40} />
             </ThemeIcon>
             <Title order={2} ta="center" fw={700}>
-              Financial Management
+              {locale === "de-DE" ? "Finanzmanagement" : "Financial Management"}
             </Title>
           </Stack>
 
           <Stack gap="md">
             <Text size="lg" ta="center" c="dimmed" fw={500}>
-              Start tracking your income and expenses to manage your finances
-              effectively
+              {locale === "de-DE"
+                ? "Starten Sie das Verfolgen Ihrer Einnahmen und Ausgaben, um Ihre Finanzen effektiv zu verwalten"
+                : "Start tracking your income and expenses to manage your finances effectively"}
             </Text>
             <Text size="sm" ta="center" c="dimmed">
-              Add your first financial entry to begin monitoring your cash flow.
-              You can track both one-time and recurring transactions.
+              {locale === "de-DE"
+                ? "Fügen Sie Ihre erste finanzielle Eintragung hinzu, um Ihr Cashflow zu verfolgen. Sie können sowohl einmalige als auch wiederkehrende Transaktionen verfolgen."
+                : "Add your first financial entry to begin monitoring your cash flow. You can track both one-time and recurring transactions."}
             </Text>
             <Text size="sm" ta="center" c="dimmed">
-              Want to customize your financial settings? Visit the{" "}
+              {locale === "de-DE"
+                ? "Möchten Sie Ihre finanziellen Einstellungen anpassen? Besuchen Sie die"
+                : "Want to customize your financial settings? Visit the"}
               <Anchor
                 component="button"
                 onClick={() => {
@@ -58,9 +62,13 @@ export default function FinanceInitializer() {
                 fw={500}
                 inline
               >
-                finance settings
+                {locale === "de-DE"
+                  ? "Finanz Einstellungen"
+                  : "Finance Settings"}
               </Anchor>{" "}
-              to configure default currencies and other preferences.
+              {locale === "de-DE"
+                ? "um Standardwährungen und andere Einstellungen zu konfigurieren."
+                : "to configure default currencies and other preferences."}
             </Text>
           </Stack>
 

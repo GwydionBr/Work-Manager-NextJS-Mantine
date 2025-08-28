@@ -20,14 +20,21 @@ export default function FinanceSingle() {
 
   return (
     <Box className={classes.financeSingleContainer} mb="md">
-      <NewCashFlowButton isSingle={true} tooltipLabel="Add Single Cash Flow" />
+      <NewCashFlowButton
+        isSingle={true}
+        tooltipLabel={
+          locale === "de-DE"
+            ? "Einmalzahlung hinzufügen"
+            : "Add Single Cash Flow"
+        }
+      />
       <Table>
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>Date</Table.Th>
-            <Table.Th>Name</Table.Th>
-            <Table.Th>Amount</Table.Th>
-            <Table.Th>Category</Table.Th>
+            <Table.Th>{locale === "de-DE" ? "Datum" : "Date"}</Table.Th>
+            <Table.Th>{locale === "de-DE" ? "Name" : "Name"}</Table.Th>
+            <Table.Th>{locale === "de-DE" ? "Betrag" : "Amount"}</Table.Th>
+            <Table.Th>{locale === "de-DE" ? "Kategorie" : "Category"}</Table.Th>
             <Table.Th></Table.Th>
           </Table.Tr>
         </Table.Thead>

@@ -45,7 +45,8 @@ export default function FinanceForm({
   const [isRecurring, setIsRecurring] = useState<boolean>(!isSingle);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { defaultFinanceCurrency: financeCurrency } = useSettingsStore();
+  const { locale, defaultFinanceCurrency: financeCurrency } =
+    useSettingsStore();
   const { addSingleCashFlow, addRecurringCashFlow, financeCategories } =
     useFinanceStore();
 
@@ -104,7 +105,7 @@ export default function FinanceForm({
             label: (
               <Center style={{ gap: 10 }}>
                 <IconPlus size={16} />
-                <span>Income</span>
+                <Text>{locale === "de-DE" ? "Einnahme" : "Income"}</Text>
               </Center>
             ),
           },
@@ -113,7 +114,7 @@ export default function FinanceForm({
             label: (
               <Center style={{ gap: 10 }}>
                 <IconMinus size={16} />
-                <span>Expense</span>
+                <Text>{locale === "de-DE" ? "Ausgabe" : "Expense"}</Text>
               </Center>
             ),
           },
@@ -121,7 +122,7 @@ export default function FinanceForm({
       />
       <Stack gap="xs">
         <Group justify="center">
-          <Text>Single</Text>
+          <Text>{locale === "de-DE" ? "Einmalig" : "Single"}</Text>
           <IconCircleDashedNumber1 size={16} />
           <Switch
             checked={isRecurring}
@@ -130,20 +131,26 @@ export default function FinanceForm({
             size="md"
           />
           <IconReload size={16} />
-          <Text>Recurring</Text>
+          <Text>{locale === "de-DE" ? "Wiederkehrend" : "Recurring"}</Text>
         </Group>
         <Select
           data={financeCategories.map((category) => ({
             label: category.title,
             value: category.id,
           }))}
-          label="Category"
-          placeholder="Select a category"
+          label={locale === "de-DE" ? "Kategorie" : "Category"}
+          placeholder={
+            locale === "de-DE" ? "Kategorie auswählen" : "Select a category"
+          }
           value={categoryId}
           onChange={(value) => setCategoryId(value)}
           searchable
           clearable
-          nothingFoundMessage="No categories found"
+          nothingFoundMessage={
+            locale === "de-DE"
+              ? "Keine Kategorien gefunden"
+              : "No categories found"
+          }
           size="sm"
         />
       </Stack>
@@ -164,7 +171,7 @@ export default function FinanceForm({
         <Alert
           color="red"
           variant="filled"
-          title="Error"
+          title={locale === "de-DE" ? "Fehler" : "Error"}
           withCloseButton
           onClose={() => setError(null)}
         >

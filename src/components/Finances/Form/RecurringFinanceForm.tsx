@@ -1,4 +1,7 @@
+"use client";
+
 import { useForm } from "@mantine/form";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { TextInput, Select, NumberInput, Group, Stack } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
@@ -56,6 +59,7 @@ export default function RecurringFinanceForm({
   isLoading,
   cashFlow,
 }: RecurringFinanceFormProps) {
+  const { locale } = useSettingsStore();
   const form = useForm({
     initialValues: {
       title: cashFlow?.title ?? "",
@@ -87,37 +91,48 @@ export default function RecurringFinanceForm({
           {...form.getInputProps("title")}
           data-autofocus
         />
-        <TextInput label="Description" {...form.getInputProps("description")} />
+        <TextInput
+          label={locale === "de-DE" ? "Beschreibung" : "Description"}
+          {...form.getInputProps("description")}
+        />
         <NumberInput
           withAsterisk
           allowNegative={false}
           allowLeadingZeros={false}
-          label="Amount"
+          label={locale === "de-DE" ? "Betrag" : "Amount"}
           {...form.getInputProps("amount")}
         />
         <Select
           withAsterisk
-          label="Currency"
-          placeholder="Select currency"
+          label={locale === "de-DE" ? "Währung" : "Currency"}
+          placeholder={
+            locale === "de-DE" ? "Währung auswählen" : "Select currency"
+          }
           data={currencies}
           {...form.getInputProps("currency")}
         />
         <Group grow>
           <DatePickerInput
-            label="Start Date"
+            label={locale === "de-DE" ? "Startdatum" : "Start Date"}
             withAsterisk
             {...form.getInputProps("start_date")}
           />
           <DatePickerInput
-            label="End Date"
+            label={locale === "de-DE" ? "Enddatum" : "End Date"}
             clearable
             {...form.getInputProps("end_date")}
           />
         </Group>
         <Select
           withAsterisk
-          label="Select the repetition interval"
-          placeholder="Select interval"
+          label={
+            locale === "de-DE"
+              ? "Wiederholungsintervall auswählen"
+              : "Select the repetition interval"
+          }
+          placeholder={
+            locale === "de-DE" ? "Intervall auswählen" : "Select interval"
+          }
           data={financeIntervals}
           {...form.getInputProps("interval")}
           mb="md"
@@ -128,6 +143,7 @@ export default function RecurringFinanceForm({
             onClick={form.onSubmit(handleFormSubmit)}
             loading={isLoading}
             variant="filled"
+            title={locale === "de-DE" ? "Speichern" : "Save"}
           />
         ) : (
           <CreateButton
@@ -135,6 +151,7 @@ export default function RecurringFinanceForm({
             onClick={form.onSubmit(handleFormSubmit)}
             loading={isLoading}
             variant="filled"
+            title={locale === "de-DE" ? "Erstellen" : "Create"}
           />
         )}
       </Stack>
