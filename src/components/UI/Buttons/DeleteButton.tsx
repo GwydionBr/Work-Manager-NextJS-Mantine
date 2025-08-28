@@ -1,3 +1,7 @@
+"use client";
+
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import { Button, ButtonProps } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
 import DelayedTooltip from "../DelayedTooltip";
@@ -16,6 +20,8 @@ export default function DeleteActionIcon({
   tooltipLabel,
   ...props
 }: DeleteButtonProps) {
+  const { locale } = useSettingsStore();
+
   return (
     <DelayedTooltip label={tooltipLabel}>
       <Button
@@ -25,7 +31,7 @@ export default function DeleteActionIcon({
         onClick={onClick}
         {...props}
       >
-        Delete
+        {locale === "de-DE" ? "Löschen" : "Delete"}
       </Button>
     </DelayedTooltip>
   );

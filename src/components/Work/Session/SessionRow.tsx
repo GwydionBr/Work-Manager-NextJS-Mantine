@@ -7,9 +7,8 @@ import { useDisclosure, useHover } from "@mantine/hooks";
 import { Card, Group, Stack, Text, Checkbox, Box } from "@mantine/core";
 import { IconClock } from "@tabler/icons-react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
-import PencilActionIcon from "@/components/UI/ActionIcons/PencilActionIcon";
 import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
-import TimerSessionDrawer from "@/components/Work/Session/TimerSessionDrawer";
+import EditSessionButton from "@/components/Work/Session/EditSessionButton";
 
 import {
   formatTimeSpan,
@@ -135,15 +134,16 @@ export default function SessionRow({
                 </Text>
               </Group>
             </Stack>
-            {hovered && !sessionPaid && (
+            {!sessionPaid && (
               <Group>
-                <PencilActionIcon
-                  onClick={() => editDrawerHandler.open()}
-                  aria-label={
-                    locale === "de-DE" ? "Sitzung bearbeiten" : "Edit session"
-                  }
+                <EditSessionButton
+                  hovered={hovered}
+                  timerSession={session}
                 />
                 <DeleteActionIcon
+                  style={{
+                    display: hovered ? "block" : "none",
+                  }}
                   onClick={() => deleteModalHandler.open()}
                   aria-label={
                     locale === "de-DE" ? "Sitzung löschen" : "Delete session"
@@ -171,12 +171,6 @@ export default function SessionRow({
           </Group>
         </Group>
       </Card>
-
-      <TimerSessionDrawer
-        timerSession={session}
-        opened={editDrawerOpened}
-        close={() => editDrawerHandler.close()}
-      />
 
       <ConfirmDeleteModal
         opened={deleteModalOpened}

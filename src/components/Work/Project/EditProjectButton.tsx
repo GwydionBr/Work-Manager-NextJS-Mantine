@@ -10,12 +10,14 @@ import {
   Group,
   Stack,
   Text,
-  Button,
   useDrawersStack,
 } from "@mantine/core";
 import ProjectForm from "@/components/Work/Project/ProjectForm";
 import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
+import CancelButton from "@/components/UI/Buttons/CancelButton";
+import DeleteButton from "@/components/UI/Buttons/DeleteButton";
+import { IconExclamationMark } from "@tabler/icons-react";
 
 import { Currency } from "@/types/settings.types";
 
@@ -72,6 +74,9 @@ export default function EditProjectButton() {
           title={
             <Group gap="xs">
               <DeleteActionIcon
+                tooltipLabel={
+                  locale === "de-DE" ? "Projekt löschen" : "Delete Project"
+                }
                 onClick={() => drawersStack.open("delete-project")}
               />
               <Text fw={600}>
@@ -103,7 +108,12 @@ export default function EditProjectButton() {
         </Drawer>
         <Drawer
           {...drawersStack.register("delete-project")}
-          title={locale === "de-DE" ? "Projekt löschen" : "Delete Project"}
+          title={
+            <Group>
+              <IconExclamationMark size={25} color="red" />
+              <Text>{locale === "de-DE" ? "Projekt löschen" : "Delete Project"}</Text>
+            </Group>
+          }
         >
           <Text>
             {locale === "de-DE"
@@ -111,12 +121,18 @@ export default function EditProjectButton() {
               : "Are you sure you want to delete this project? This action cannot be undone."}
           </Text>
           <Group mt="md" justify="flex-end" gap="sm">
-            <Button onClick={drawersStack.closeAll} variant="outline">
-              {locale === "de-DE" ? "Abbrechen" : "Cancel"}
-            </Button>
-            <Button onClick={handleDelete} color="red">
-              {locale === "de-DE" ? "Löschen" : "Delete"}
-            </Button>
+            <CancelButton
+              onClick={drawersStack.closeAll}
+              color="teal"
+              tooltipLabel={locale === "de-DE" ? "Abbrechen" : "Cancel"}
+            />
+            <DeleteButton
+              onClick={handleDelete}
+              color="red"
+              tooltipLabel={
+                locale === "de-DE" ? "Projekt löschen" : "Delete Project"
+              }
+            />
           </Group>
         </Drawer>
       </Drawer.Stack>

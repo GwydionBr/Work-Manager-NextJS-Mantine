@@ -1,3 +1,8 @@
+"use client";
+
+import { useSettingsStore } from "@/stores/settingsStore";
+
+
 import { Button, ButtonProps } from "@mantine/core";
 import { IconRotate } from "@tabler/icons-react";
 import DelayedTooltip from "../DelayedTooltip";
@@ -20,6 +25,8 @@ export default function UpdateButton({
   type = "button",
   ...props
 }: UpdateButtonProps) {
+  const { locale } = useSettingsStore();
+
   return (
     <DelayedTooltip label={tooltipLabel}>
       <Button
@@ -29,7 +36,7 @@ export default function UpdateButton({
         type={type}
         {...props}
       >
-        {title || "Update"}
+        {title || locale === "de-DE" ? "Speichern" : "Save"}
       </Button>
     </DelayedTooltip>
   );
