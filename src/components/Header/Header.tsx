@@ -1,3 +1,7 @@
+"use client";
+
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import { Text, Title, Stack, Group, Flex, Box } from "@mantine/core";
 
 interface HeaderProps {
@@ -21,6 +25,7 @@ export default function Header({
   rightButton,
   leftButton,
 }: HeaderProps) {
+  const { locale } = useSettingsStore();
   return (
     <Stack align="center" justify="center" py="xl" w="100%">
       <Flex
@@ -47,7 +52,7 @@ export default function Header({
           </Title>
           {rightSalary && (
             <Text c={leftSalary ? "blue" : "red"} fw={leftSalary ? 400 : 700}>
-              {rightSalary} / hour
+              {rightSalary} / {locale === "de-DE" ? "Stunde" : "Hour"}
             </Text>
           )}
           {primaryButton && primaryButton}
@@ -64,11 +69,7 @@ export default function Header({
           {description}
         </Title>
       )}
-      {secondaryButton && (
-        <Box w="100%" style={{ position: "sticky", top: 0, zIndex: 1000, left: 0 }}>
-          {secondaryButton}
-        </Box>
-      )}
+      {secondaryButton && secondaryButton}
     </Stack>
   );
 }

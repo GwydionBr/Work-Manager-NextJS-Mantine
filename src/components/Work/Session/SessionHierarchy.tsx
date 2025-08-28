@@ -9,6 +9,7 @@ import {
   formatTime,
   areEarningsBreakdownEmpty,
 } from "@/utils/sessionHelperFunctions";
+import { formatDate, formatMoney, formatMonth } from "@/utils/formatFunctions";
 
 import type { Tables } from "@/types/db.types";
 import type { EarningsBreakdown, Year } from "@/types/timerSession.types";
@@ -50,12 +51,7 @@ export default function SessionHierarchy({
           {earnings.unpaid.some((e) => e.amount > 0) && (
             <Text size="sm" c="red">
               {earnings.unpaid
-                .map((e) =>
-                  new Intl.NumberFormat(locale, {
-                    style: "currency",
-                    currency: e.currency,
-                  }).format(e.amount)
-                )
+                .map((e) => formatMoney(e.amount, e.currency, locale))
                 .join(" ") + " "}
               {locale === "de-DE" ? "unbezahlt" : "unpaid"}
             </Text>
@@ -63,13 +59,8 @@ export default function SessionHierarchy({
           {earnings.paid.some((e) => e.amount > 0) && (
             <Text size="sm" c="dimmed">
               {earnings.paid
-                .map((e) =>
-                  new Intl.NumberFormat(locale, {
-                    style: "currency",
-                    currency: e.currency,
-                  }).format(e.amount)
-                )
-                .join(" ") + " "} 
+                .map((e) => formatMoney(e.amount, e.currency, locale))
+                .join(" ") + " "}
               {locale === "de-DE" ? "bezahlt" : "paid"}
             </Text>
           )}
@@ -122,12 +113,7 @@ export default function SessionHierarchy({
                         icon={<IconFolder size={18} color="blue" />}
                       >
                         <Group>
-                          {new Date(0, Number(month) - 1).toLocaleDateString(
-                            locale,
-                            {
-                              month: "long",
-                            }
-                          )}
+                          {formatMonth(Number(month), locale)}
                           {!areEarningsBreakdownEmpty(
                             monthData.totalEarnings
                           ) && renderEarnings(monthData.totalEarnings)}
@@ -201,12 +187,9 @@ export default function SessionHierarchy({
                                             }
                                           >
                                             <Group>
-                                              {new Date(day).toLocaleDateString(
-                                                locale,
-                                                {
-                                                  weekday: "short",
-                                                  day: "2-digit",
-                                                }
+                                              {formatDate(
+                                                new Date(day),
+                                                locale
                                               )}
                                               {!areEarningsBreakdownEmpty(
                                                 dayData.totalEarnings

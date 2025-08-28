@@ -78,7 +78,11 @@ export default function ProjectModalForm({
       });
       handleClose();
     } else {
-      setError("Failed to process payout");
+      setError(
+        locale === "de-DE"
+          ? "Fehler beim Auszahlen"
+          : "Failed to process payout"
+      );
       setTimeout(() => {
         setError(null);
       }, 3000);
@@ -91,16 +95,23 @@ export default function ProjectModalForm({
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
       <Stack>
-        <Text>Start Value: {startValueString}</Text>
+        <Text>
+          {locale === "de-DE" ? "Startwert" : "Start Value"}: {startValueString}
+        </Text>
         <Divider />
         <Group justify="center">
           <IconArrowDown />
         </Group>
         <Divider />
-        <NumberInput label="End Value" {...form.getInputProps("endValue")} />
+        <NumberInput
+          label={locale === "de-DE" ? "Endwert" : "End Value"}
+          {...form.getInputProps("endValue")}
+        />
         <Select
-          label="End Currency"
-          placeholder="Select currency"
+          label={locale === "de-DE" ? "Endwährung" : "End Currency"}
+          placeholder={
+            locale === "de-DE" ? "Währung auswählen" : "Select currency"
+          }
           data={currencies}
           value={form.values.endCurrency}
           onChange={(value) =>
@@ -108,10 +119,14 @@ export default function ProjectModalForm({
           }
           error={form.errors.endCurrency}
         />
-        <Button type="submit" loading={isProcessing} leftSection={<IconBrandCashapp />}>
-          Submit
+        <Button
+          type="submit"
+          loading={isProcessing}
+          leftSection={<IconBrandCashapp />}
+        >
+          {locale === "de-DE" ? "Auszahlen" : "Payout"}
         </Button>
-        <Alert title="Error" color="red" hidden={!error}>
+        <Alert title={locale === "de-DE" ? "Fehler" : "Error"} color="red" hidden={!error}>
           {error}
         </Alert>
       </Stack>

@@ -1,11 +1,14 @@
 "use client";
 
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import { Group, Modal, Text } from "@mantine/core";
-import { Currency } from "@/types/settings.types";
+import { IconBrandCashapp } from "@tabler/icons-react";
 import SessionModalForm from "./SessionModalForm";
 import ProjectModalForm from "./ProjectModalForm";
+
 import { Tables } from "@/types/db.types";
-import { IconBrandCashapp } from "@tabler/icons-react";
+import { Currency } from "@/types/settings.types";
 
 
 interface PayoutModalProps {
@@ -29,6 +32,7 @@ export default function PayoutModal({
   payoutCategoryId,
   sessionPayouts,
 }: PayoutModalProps) {
+  const { locale } = useSettingsStore();
   const startValue = Object.values(sessionPayouts ?? {})[0] ?? 0;
   const startCurrency = Object.keys(sessionPayouts ?? {})[0] as Currency;
 
@@ -39,7 +43,7 @@ export default function PayoutModal({
       title={
         <Group gap="xs">
           <IconBrandCashapp size={20} />
-          <Text fw={600}>Payout</Text>
+          <Text fw={600}>{locale === "de-DE" ? "Auszahlung" : "Payout"}</Text>
         </Group>
       }
       styles={{
