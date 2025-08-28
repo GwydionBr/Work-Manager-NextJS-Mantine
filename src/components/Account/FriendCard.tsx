@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useUserStore } from "@/stores/userStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Autocomplete, Button, Stack, Text } from "@mantine/core";
 import { Card } from "@mantine/core";
@@ -9,6 +10,7 @@ import FriendList from "./FriendList";
 import { IconSearch } from "@tabler/icons-react";
 
 export default function FriendCard() {
+  const { locale } = useSettingsStore();
   const { allProfiles, friends, addFriend } = useUserStore();
   const [search, setSearch] = useState("");
   const [isAddable, setIsAddable] = useState(false);
@@ -53,7 +55,11 @@ export default function FriendCard() {
       <Stack gap="md" mt="md">
         <Stack maw={500}>
           <Autocomplete
-            placeholder="Search for a profile"
+            placeholder={
+              locale === "de-DE"
+                ? "Suche nach einem Profil"
+                : "Search for a profile"
+            }
             data={allProfiles?.map((profile) => profile.username) || []}
             value={search}
             onChange={(e) => setSearch(e)}
@@ -68,7 +74,7 @@ export default function FriendCard() {
               onClick={handleAddFriend}
               mx="xl"
             >
-              Add Friend
+              {locale === "de-DE" ? "Freund hinzufügen" : "Add Friend"}
             </Button>
           )}
         </Stack>

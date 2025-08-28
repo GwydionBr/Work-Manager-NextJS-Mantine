@@ -75,7 +75,7 @@ export default function Aside({ toggleAside, isAsideOpen }: AsideProps) {
           duration={200}
           enterDelay={200}
         />
-        <CalendarAside isBig={isAsideOpen} />
+        {/* <CalendarAside isBig={isAsideOpen} /> */}
       </ScrollArea>
     </Stack>
   );

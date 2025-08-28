@@ -1,3 +1,7 @@
+"use client";
+
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import { Avatar, Box, Group, Table, Text } from "@mantine/core";
 
 import { Friend } from "@/stores/userStore";
@@ -21,6 +25,7 @@ export default function FriendsTable({
   checkIconAction,
   xIconAction,
 }: FriendsTableProps) {
+  const { locale } = useSettingsStore();
   const rows = friends.map((friend) => (
     <Table.Tr key={friend.friendshipId}>
       <Table.Td>
@@ -59,8 +64,8 @@ export default function FriendsTable({
         <Table.Thead>
           <Table.Tr>
             <Table.Th></Table.Th>
-            <Table.Th>Username</Table.Th>
-            <Table.Th visibleFrom="sm">Email</Table.Th>
+            <Table.Th>{locale === "de-DE" ? "Benutzername" : "Username"}</Table.Th>
+            <Table.Th visibleFrom="sm">{locale === "de-DE" ? "E-Mail" : "Email"}</Table.Th>
             {(checkIcon || xIcon) && <Table.Th></Table.Th>}
           </Table.Tr>
         </Table.Thead>
@@ -68,7 +73,10 @@ export default function FriendsTable({
       </Table>
       {friends.length === 0 && (
         <Box p="md" ta="center">
-          {emptyMessage || "No friends found"}
+          {emptyMessage ||
+            (locale === "de-DE"
+              ? "Keine Freunde gefunden"
+              : "No friends found")}
         </Box>
       )}
     </Box>

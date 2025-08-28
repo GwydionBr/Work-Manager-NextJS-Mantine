@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useUserStore } from "@/stores/userStore";
 import { useForm } from "@mantine/form";
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import {
   Button,
   Card,
@@ -19,6 +21,7 @@ import PencilActionIcon from "../UI/ActionIcons/PencilActionIcon";
 import CancelButton from "../UI/Buttons/CancelButton";
 
 export default function Profile() {
+  const { locale } = useSettingsStore();
   const {
     allProfiles,
     profile,
@@ -38,14 +41,20 @@ export default function Profile() {
         if (value.length < 3) return null;
 
         if (!/^[a-zA-Z0-9_]+$/.test(value)) {
-          return "Username can only contain letters, numbers, and underscores";
+          return locale === "de-DE"
+            ? "Benutzername kann nur Buchstaben, Zahlen und Unterstriche enthalten"
+            : "Username can only contain letters, numbers, and underscores";
         }
         if (value.length > 20)
-          return "Username must be at most 20 characters long";
+          return locale === "de-DE"
+            ? "Benutzername muss höchstens 20 Zeichen lang sein"
+            : "Username must be at most 20 characters long";
         if (
           allProfiles?.some((p) => p.username === value && p.id !== profile?.id)
         ) {
-          return "Username is already taken";
+          return locale === "de-DE"
+            ? "Benutzername ist bereits vergeben"
+            : "Username is already taken";
         }
         return null;
       },
@@ -65,7 +74,11 @@ export default function Profile() {
   }
 
   if (!profile) {
-    return <div>No Profile found</div>;
+    return (
+      <div>
+        {locale === "de-DE" ? "Kein Profil gefunden" : "No Profile found"}
+      </div>
+    );
   }
 
   const closeForm = () => {
@@ -95,7 +108,7 @@ export default function Profile() {
         <Group justify="space-between" align="center">
           <Stack gap="xs">
             <Text size="sm" c="dimmed">
-              Username
+              {locale === "de-DE" ? "Benutzername" : "Username"}
             </Text>
             <Text size="lg" fw={500}>
               {profile.username}
@@ -109,8 +122,14 @@ export default function Profile() {
             <form onSubmit={form.onSubmit(handleSubmit)}>
               <Stack gap="md">
                 <TextInput
-                  label="New Username"
-                  placeholder="Enter new username (min. 3 characters)"
+                  label={
+                    locale === "de-DE" ? "Neuer Benutzername" : "New Username"
+                  }
+                  placeholder={
+                    locale === "de-DE"
+                      ? "Gib einen neuen Benutzernamen ein (min. 3 Zeichen)"
+                      : "Enter new username (min. 3 characters)"
+                  }
                   {...form.getInputProps("username")}
                   rightSection={
                     isUsernameValid && !isOldUsername ? (
@@ -122,13 +141,15 @@ export default function Profile() {
                   }
                 />
                 <Group justify="flex-end" gap="sm">
-                  <CancelButton onClick={closeForm}/>
+                  <CancelButton onClick={closeForm} />
                   <Button
                     type="submit"
                     disabled={!isUsernameValid || isUpdating || isOldUsername}
                     loading={isUpdating}
                   >
-                    Save Changes
+                    {locale === "de-DE"
+                      ? "Änderungen speichern"
+                      : "Save Changes"}
                   </Button>
                 </Group>
               </Stack>
@@ -138,7 +159,7 @@ export default function Profile() {
 
         <Stack gap="xs">
           <Text size="sm" c="dimmed">
-            Email
+            {locale === "de-DE" ? "E-Mail" : "Email"}
           </Text>
           <Text size="lg">{profile.email}</Text>
         </Stack>
