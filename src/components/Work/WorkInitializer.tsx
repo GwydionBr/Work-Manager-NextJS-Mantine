@@ -96,6 +96,7 @@ export default function WorkInitializer() {
           <Box maw={600} w="100%" mx="auto">
             <ProjectForm
               initialValues={{
+                color: null,
                 title: "",
                 description: "",
                 salary: defaultSalaryAmount,
