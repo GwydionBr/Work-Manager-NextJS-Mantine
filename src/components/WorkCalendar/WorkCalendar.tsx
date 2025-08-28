@@ -2,7 +2,7 @@
 import dayjs from "dayjs";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useHotkeys } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -47,6 +47,7 @@ const zoomLabels = ["1 h", "30 min", "15 min", "10 min", "5 min"];
 const rasterHeight = 60; // px per hour
 
 export default function WorkCalendar() {
+  const [isAddingNewSession, setIsAddingNewSession] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<ViewMode>("week");
   const [referenceDate, setReferenceDate] = useState<Date>(new Date());
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
@@ -70,6 +71,25 @@ export default function WorkCalendar() {
   const { projects: timerProjects, timerSessions, isFetching } = useWorkStore();
   const projects = timerProjects.map((project) => project.project);
   const viewport = useRef<HTMLDivElement>(null);
+
+  useHotkeys([
+    [
+      "Escape",
+      () => {
+        if (isAddingNewSession) {
+          setIsAddingNewSession(false);
+        }
+      },
+    ],
+    [
+      "Enter",
+      () => {
+        if (!isAddingNewSession) {
+          setIsAddingNewSession(true);
+        }
+      },
+    ],
+  ]);
 
   const today = dayjs();
 
@@ -448,6 +468,8 @@ export default function WorkCalendar() {
           </Grid.Col>
         </Grid>
         <CalendarGrid
+          isAddingNewSession={isAddingNewSession}
+          setIsAddingNewSession={setIsAddingNewSession}
           visibleProjects={visibleProjects}
           handleNextAndPrev={handleNextAndPrev}
           isFetching={isFetching}
@@ -460,6 +482,8 @@ export default function WorkCalendar() {
       </Stack>
       {visibleProjects.length > 0 && (
         <CalendarLegend
+          isAddingNewSession={isAddingNewSession}
+          setIsAddingNewSession={setIsAddingNewSession}
           visibleProjects={visibleProjects}
           handleScrollToNow={handleScrollToNow}
         />

@@ -33,6 +33,8 @@ interface DayColumnProps {
   setNewSessionDay: (day: Date | null) => void;
   setEndNewSession: (y: number | null) => void;
   snapYToInterval: (y: number) => number;
+  isAddingNewSession: boolean;
+  setIsAddingNewSession: (isAddingNewSession: boolean) => void;
 }
 
 export function DayColumn({
@@ -52,6 +54,8 @@ export function DayColumn({
   setNewSessionDay,
   setEndNewSession,
   snapYToInterval,
+  isAddingNewSession,
+  setIsAddingNewSession,
 }: DayColumnProps) {
   const { hovered, ref: hoverRef } = useHover();
   const { locale } = useSettingsStore();
@@ -88,6 +92,8 @@ export function DayColumn({
   const snappedY = snapYToInterval(y);
 
   function handleNewSessionClick(newY: number) {
+    if (!isAddingNewSession) return;
+
     if (startNewSession === null) {
       setStartNewSession(newY);
       setNewSessionDay(day);
@@ -141,23 +147,26 @@ export function DayColumn({
         <TimeTrackerEvent toY={timeToY} currentTime={currentTime} day={day} />
 
         {/* New session event */}
-        {!isFetching && hovered && startNewSession === null && (
-          <Stack
-            style={{
-              position: "absolute",
-              top: snappedY - 2,
-              left: 0,
-              right: 0,
-              borderTop:
-                "3px solid light-dark(var(--mantine-color-teal-6), var(--mantine-color-teal-7))",
-              zIndex: 10,
-            }}
-          >
-            <Text ta="center">
-              {formatDateTime(yToTime(snappedY, day), locale)}
-            </Text>
-          </Stack>
-        )}
+        {!isFetching &&
+          isAddingNewSession &&
+          hovered &&
+          startNewSession === null && (
+            <Stack
+              style={{
+                position: "absolute",
+                top: snappedY - 2,
+                left: 0,
+                right: 0,
+                borderTop:
+                  "3px solid light-dark(var(--mantine-color-teal-6), var(--mantine-color-teal-7))",
+                zIndex: 10,
+              }}
+            >
+              <Text ta="center">
+                {formatDateTime(yToTime(snappedY, day), locale)}
+              </Text>
+            </Stack>
+          )}
 
         {!isFetching && startNewSession !== null && newSessionDay === day && (
           <NewSessionEvent

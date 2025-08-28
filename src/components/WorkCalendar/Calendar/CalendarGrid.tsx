@@ -5,7 +5,7 @@ import { useMouse, useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Grid, Stack, Group, Box, Modal } from "@mantine/core";
+import { Grid, Stack, Group, Box, Modal, Text } from "@mantine/core";
 import { DayColumn } from "@/components/WorkCalendar/DayColumn";
 import { TimeColumn } from "@/components/WorkCalendar/TimeColumn";
 import ColumnHeader from "@/components/WorkCalendar/Calendar/ColumnHeader";
@@ -22,12 +22,15 @@ import { CalendarDay, VisibleProject } from "@/types/workCalendar.types";
 import { TablesInsert } from "@/types/db.types";
 import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
 import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
+import { formatDateTime, formatTime } from "@/utils/formatFunctions";
 
 interface CalendarGridProps {
   days: CalendarDay[];
   isFetching: boolean;
   hourMultiplier: number;
   rasterHeight: number;
+  isAddingNewSession: boolean;
+  setIsAddingNewSession: (isAddingNewSession: boolean) => void;
   setReferenceDate: (date: Date) => void;
   handleSessionClick: (sessionId: string) => void;
   handleNextAndPrev: (direction: number) => void;
@@ -42,6 +45,8 @@ export default function CalendarGrid({
   handleSessionClick,
   handleNextAndPrev,
   visibleProjects,
+  isAddingNewSession,
+  setIsAddingNewSession,
 }: CalendarGridProps) {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
   const [startNewSession, setStartNewSession] = useState<number | null>(null);
@@ -51,6 +56,7 @@ export default function CalendarGrid({
   const [submitting, setSubmitting] = useState(false);
   const { addTimerSession } = useWorkStore();
   const {
+    locale,
     defaultSalaryCurrency,
     defaultSalaryAmount,
     defaultProjectHourlyPayment,
@@ -59,6 +65,7 @@ export default function CalendarGrid({
   } = useSettingsStore();
 
   const { ref, x, y } = useMouse();
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
@@ -88,7 +95,6 @@ export default function CalendarGrid({
 
   // yToTime soll die exakte Umkehrfunktion von timeToY sein, ohne Rundungsfehler.
   const yToTime = (y: number, day: Date) => {
-
     const minutes = (y / (rasterHeight * hourMultiplier)) * 60;
     const hours = Math.floor(minutes / 60);
     const mins = Math.round(minutes - hours * 60); // exaktere Minutenberechnung
@@ -235,41 +241,59 @@ export default function CalendarGrid({
                 "4px solid light-dark(var(--mantine-color-teal-6), var(--mantine-color-teal-6))",
             }}
           >
-            <Grid
-              columns={420}
-              gutter={0}
-              align="flex-end"
-              ref={ref}
-              onClick={handleClick}
-            >
-              {days.map((d) => {
-                return (
-                  <Grid.Col
-                    span={Math.floor(420 / days.length)}
-                    key={`day-${getStartOfDay(d.day).toISOString().slice(0, 10)}`}
+            <Box style={{ position: "relative", overflow: "hidden" }}>
+              <Grid
+                columns={420}
+                gutter={0}
+                align="flex-end"
+                ref={ref}
+                onClick={handleClick}
+              >
+                {!isAddingNewSession && (
+                  <Stack
+                    style={{
+                      position: "absolute",
+                      top: y + 20,
+                      left: x,
+                      background: "transparent",
+                      zIndex: 5,
+                      pointerEvents: "none",
+                    }}
                   >
-                    <DayColumn
-                      day={d.day}
-                      y={y}
-                      yToTime={yToTime}
-                      timeToY={timeToY}
-                      isFetching={isFetching}
-                      currentTime={isToday(d.day) ? currentTime : undefined}
-                      sessions={d.sessions}
-                      handleSessionClick={handleSessionClick}
-                      hourMultiplier={hourMultiplier}
-                      rasterHeight={rasterHeight}
-                      startNewSession={startNewSession}
-                      setStartNewSession={setStartNewSession}
-                      newSessionDay={newSessionDay}
-                      setNewSessionDay={setNewSessionDay}
-                      setEndNewSession={setEndNewSession}
-                      snapYToInterval={(y) => snapYToInterval(y, d.day)}
-                    />
-                  </Grid.Col>
-                );
-              })}
-            </Grid>
+                    <Text>{formatDateTime(yToTime(y, new Date()), locale)}</Text>
+                  </Stack>
+                )}
+                {days.map((d) => {
+                  return (
+                    <Grid.Col
+                      span={Math.floor(420 / days.length)}
+                      key={`day-${getStartOfDay(d.day).toISOString().slice(0, 10)}`}
+                    >
+                      <DayColumn
+                        day={d.day}
+                        y={y}
+                        yToTime={yToTime}
+                        timeToY={timeToY}
+                        isFetching={isFetching}
+                        currentTime={isToday(d.day) ? currentTime : undefined}
+                        sessions={d.sessions}
+                        handleSessionClick={handleSessionClick}
+                        hourMultiplier={hourMultiplier}
+                        rasterHeight={rasterHeight}
+                        startNewSession={startNewSession}
+                        setStartNewSession={setStartNewSession}
+                        newSessionDay={newSessionDay}
+                        setNewSessionDay={setNewSessionDay}
+                        setEndNewSession={setEndNewSession}
+                        snapYToInterval={(y) => snapYToInterval(y, d.day)}
+                        isAddingNewSession={isAddingNewSession}
+                        setIsAddingNewSession={setIsAddingNewSession}
+                      />
+                    </Grid.Col>
+                  );
+                })}
+              </Grid>
+            </Box>
           </Stack>
           <Stack w={42} align="center">
             <TimeColumn
@@ -279,6 +303,7 @@ export default function CalendarGrid({
           </Stack>
         </Group>
       </Stack>
+
       <Modal
         opened={modalOpened}
         onClose={() => {

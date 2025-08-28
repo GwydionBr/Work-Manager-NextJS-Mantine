@@ -3,20 +3,25 @@
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Group, ActionIcon } from "@mantine/core";
-import { IconArrowsSort } from "@tabler/icons-react";
+import { IconArrowsSort, IconPlus } from "@tabler/icons-react";
 
 import { VisibleProject } from "@/types/workCalendar.types";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import CalendarLegendButton from "./CalendarLegendButton";
+import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 
 interface CalendarLegendProps {
   visibleProjects: VisibleProject[];
   handleScrollToNow: () => void;
+  isAddingNewSession: boolean;
+  setIsAddingNewSession: (isAddingNewSession: boolean) => void;
 }
 
 export default function CalendarLegend({
   visibleProjects,
   handleScrollToNow,
+  isAddingNewSession,
+  setIsAddingNewSession,
 }: CalendarLegendProps) {
   const { locale } = useSettingsStore();
 
@@ -35,22 +40,19 @@ export default function CalendarLegend({
           "1px solid light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-1))",
       }}
     >
-      <DelayedTooltip
-        label={
-          locale === "de-DE"
-            ? "Springe zur aktuellen Zeit"
-            : "Scroll to current time"
+      <PlusActionIcon
+        tooltipLabel={
+          isAddingNewSession
+            ? locale === "de-DE"
+              ? "Eintragungsmodus deaktivieren (Escape)"
+              : "Disable entry mode (Escape)"
+            : locale === "de-DE"
+              ? "Eintragungsmodus aktivieren (Enter)"
+              : "Enable entry mode (Enter)"
         }
-      >
-        <ActionIcon
-          variant="light"
-          size="lg"
-          radius="md"
-          onClick={handleScrollToNow}
-        >
-          <IconArrowsSort color="var(--mantine-color-teal-text)" />
-        </ActionIcon>
-      </DelayedTooltip>
+        variant={isAddingNewSession ? "filled" : "light"}
+        onClick={() => setIsAddingNewSession(!isAddingNewSession)}
+      />
       <Group justify="center" wrap="wrap" gap="xs" w="100%">
         {visibleProjects.map((p) => (
           <CalendarLegendButton key={p.id} p={p} />
