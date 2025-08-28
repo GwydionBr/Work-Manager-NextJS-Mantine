@@ -50,10 +50,10 @@ export default function WorkInitializer() {
               Need to manage your team members? Visit the{" "}
               <Anchor
                 component="button"
-                onClick={() => {
-                  setIsModalOpen(true);
-                  setSelectedTab(SettingsTab.GROUP);
-                }}
+                // onClick={() => {
+                //   setIsModalOpen(true);
+                //   setSelectedTab(SettingsTab.GROUP);
+                // }}
                 c="blue"
                 fw={500}
                 inline
