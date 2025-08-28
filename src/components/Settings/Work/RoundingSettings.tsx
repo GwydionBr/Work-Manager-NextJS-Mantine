@@ -29,6 +29,7 @@ import classes from "./WorkSettings.module.css";
 
 export default function RoundingSettings() {
   const {
+    locale,
     roundingAmount,
     roundingMode,
     customRoundingAmount,
@@ -64,7 +65,7 @@ export default function RoundingSettings() {
               loading={loading}
               disabled={loading}
             >
-              Save
+              {locale === "de-DE" ? "Speichern" : "Save"}
             </Button>
           )}
           {roundingAmount === "custom" && (
@@ -77,20 +78,24 @@ export default function RoundingSettings() {
                 value={customAmount}
                 onChange={(value) => setCustomAmount(Number(value))}
               />
-              <Text>minutes</Text>
+              <Text>{locale === "de-DE" ? "Minuten" : "minutes"}</Text>
             </Group>
           )}
           <Select
             w={150}
             data={roundingAmounts}
-            label="Rounding amount"
-            placeholder="Select Default Rounding Amount"
+            label={locale === "de-DE" ? "Rundungsbetrag" : "Rounding amount"}
+            placeholder={
+              locale === "de-DE"
+                ? "Rundungsbetrag auswählen"
+                : "Select Default Rounding Amount"
+            }
             value={roundingAmount}
             onChange={(value) => setRoundingAmount(value as RoundingAmount)}
           />
           <Select
             w={125}
-            label="Rounding mode"
+            label={locale === "de-DE" ? "Rundungsmodus" : "Rounding mode"}
             data={roundingModes}
             value={roundingMode}
             onChange={(value) => setRoundingMode(value as RoundingDirection)}
@@ -98,7 +103,11 @@ export default function RoundingSettings() {
         </Group>
       </Collapse>
       <Switch
-        label="Round in time sections"
+        label={
+          locale === "de-DE"
+            ? "Runden in Zeitabschnitten"
+            : "Round in time sections"
+        }
         checked={roundInTimeSections}
         onChange={(event) =>
           setRoundInTimeSections(event.currentTarget.checked)
@@ -109,12 +118,18 @@ export default function RoundingSettings() {
           <Select
             w={200}
             data={roundingInTimeSections}
-            label="Rounding in time fragments"
-            placeholder="Select Default Rounding Amount"
-            value={timeSectionInterval.toString()}
-            onChange={(value) =>
-              setTimeSectionInterval(Number(value))
+            label={
+              locale === "de-DE"
+                ? "Runden in Zeitabschnitten"
+                : "Rounding in time fragments"
             }
+            placeholder={
+              locale === "de-DE"
+                ? "Rundungsbetrag auswählen"
+                : "Select Default Rounding Amount"
+            }
+            value={timeSectionInterval.toString()}
+            onChange={(value) => setTimeSectionInterval(Number(value))}
           />
         </Group>
       </Collapse>

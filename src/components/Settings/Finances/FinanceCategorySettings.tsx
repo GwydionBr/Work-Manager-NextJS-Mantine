@@ -1,6 +1,7 @@
 "use client";
 
 import { useFinanceStore } from "@/stores/financeStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Divider, Grid, Group, Stack, Text } from "@mantine/core";
 import FinanceCategoryForm from "@/components/Finances/Form/FinanceCategoryForm";
@@ -8,13 +9,14 @@ import classes from "./FinanceSettings.module.css";
 
 export default function FinanceCategorySettings() {
   const { financeCategories } = useFinanceStore();
+  const { locale } = useSettingsStore();
 
   return (
     <Grid w="100%">
       <Grid.Col span={6}>
         <Stack align="center" w="100%">
           <Text fw={500} mb="md">
-            All Categories
+            {locale === "de-DE" ? "Alle Kategorien" : "All Categories"}
           </Text>
           <Stack gap="xs" align="flex-start">
             {financeCategories.map((category) => (
@@ -30,7 +32,7 @@ export default function FinanceCategorySettings() {
           <Divider orientation="vertical" className={classes.divider} />
           <Stack align="center" w="90%">
             <Text fw={500} mb="md">
-              Add Category
+              {locale === "de-DE" ? "Kategorie hinzufügen" : "Add Category"}
             </Text>
             <FinanceCategoryForm onClose={() => {}} />
           </Stack>

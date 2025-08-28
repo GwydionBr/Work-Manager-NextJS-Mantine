@@ -10,6 +10,7 @@ import { Currency } from "@/types/settings.types";
 
 export default function WorkDefaultSettings() {
   const {
+    locale,
     defaultSalaryCurrency: salaryCurrency,
     defaultSalaryAmount,
     defaultProjectHourlyPayment,
@@ -40,31 +41,51 @@ export default function WorkDefaultSettings() {
           loading={loading}
           disabled={loading}
         >
-          Save
+          {locale === "de-DE" ? "Speichern" : "Save"}
         </Button>
       )}
       <NumberInput
         w={100}
-        label="Default Salary"
+        label={locale === "de-DE" ? "Standard Gehalt" : "Default Salary"}
         allowNegative={false}
         allowDecimal={false}
         allowLeadingZeros={false}
-        aria-label="Select Default Salary"
-        placeholder="Select Default Salary"
+        aria-label={
+          locale === "de-DE"
+            ? "Standard Gehalt auswählen"
+            : "Select Default Salary"
+        }
+        placeholder={
+          locale === "de-DE"
+            ? "Standard Gehalt auswählen"
+            : "Select Default Salary"
+        }
         value={salaryAmount}
         onChange={(value) => setSalaryAmount(value as number)}
       />
       <Select
         data={currencies}
-        label="Default Salary Currency"
-        aria-label="Select Default Salary Currency"
-        placeholder="Select Salary Currency"
+        label={
+          locale === "de-DE"
+            ? "Standard Gehalt Währung"
+            : "Default Salary Currency"
+        }
+        aria-label={
+          locale === "de-DE"
+            ? "Standard Währung auswählen"
+            : "Select Default Salary Currency"
+        }
+        placeholder={
+          locale === "de-DE"
+            ? "Standard Währung auswählen"
+            : "Select Salary Currency"
+        }
         value={salaryCurrency}
         onChange={(value) => setSalaryCurrency(value as Currency)}
       />
       <Switch
         mt="lg"
-        label="Hourly Payment"
+        label={locale === "de-DE" ? "Stundenlohn" : "Hourly Payment"}
         checked={defaultProjectHourlyPayment}
         onChange={(event) =>
           setDefaultProjectHourlyPayment(event.currentTarget.checked)

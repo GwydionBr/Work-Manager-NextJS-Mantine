@@ -9,6 +9,7 @@ import { Currency } from "@/types/settings.types";
 
 export default function FinanceDefaultSettings() {
   const {
+    locale,
     defaultFinanceCurrency: financeCurrency,
     setDefaultFinanceCurrency: setFinanceCurrency,
   } = useSettingsStore();
@@ -17,8 +18,8 @@ export default function FinanceDefaultSettings() {
     <Group>
       <Select
         data={currencies}
-        label="Default Finance Currency"
-        placeholder="Select Finance Currency"
+        label={locale === "de-DE" ? "Standard Finanzwährung" : "Default Finance Currency"}
+        placeholder={locale === "de-DE" ? "Standard Finanzwährung auswählen" : "Select Finance Currency"}
         value={financeCurrency}
         onChange={(value) => setFinanceCurrency(value as Currency)}
       />

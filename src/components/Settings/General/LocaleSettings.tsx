@@ -29,8 +29,12 @@ export default function LocaleSettings() {
     <Group>
       <Select
         data={locales}
-        label="Locale"
-        placeholder="Select Locale"
+        label={locale === "de-DE" ? "Sprache & Format" : "Language & Format"}
+        placeholder={
+          locale === "de-DE"
+            ? "Sprache & Format auswählen"
+            : "Select Language & Format"
+        }
         value={locale}
         allowDeselect={false}
         onChange={(value) => setLocale(value as Locale)}

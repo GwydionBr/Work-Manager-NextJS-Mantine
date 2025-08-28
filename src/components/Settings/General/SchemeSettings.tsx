@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useColorScheme } from "@mantine/hooks";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
   Group,
@@ -15,12 +15,12 @@ import LightSchemeButton from "@/components/Scheme/LightSchemeButton";
 import SystemSchemeButton from "@/components/Scheme/SystemSchemeButton";
 
 export default function SchemeToggle() {
+  const { locale } = useSettingsStore();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
   const { colorScheme: currentColorScheme, setColorScheme } =
     useMantineColorScheme();
-  const colorScheme = useColorScheme();
 
   if (!mounted) {
     return null; // prevents server/client mismatch
@@ -29,7 +29,7 @@ export default function SchemeToggle() {
   return (
     <Group justify="center">
       <Stack>
-        <Text>Light</Text>
+        <Text>{locale === "de-DE" ? "Hell" : "Light"}</Text>
         <LightSchemeButton
           onClick={() => setColorScheme("light")}
           active={currentColorScheme === "light"}
@@ -37,7 +37,7 @@ export default function SchemeToggle() {
         />
       </Stack>
       <Stack>
-        <Text>Dark</Text>
+        <Text>{locale === "de-DE" ? "Dunkel" : "Dark"}</Text>
         <DarkSchemeButton
           onClick={() => setColorScheme("dark")}
           active={currentColorScheme === "dark"}
@@ -46,7 +46,7 @@ export default function SchemeToggle() {
       </Stack>
       <Space w="xl" />
       <Stack>
-        <Text>System</Text>
+        <Text>{locale === "de-DE" ? "System" : "System"}</Text>
         <SystemSchemeButton
           onClick={() => setColorScheme("auto")}
           active={currentColorScheme === "auto"}

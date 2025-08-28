@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import { Grid } from "@mantine/core";
 import SettingsNavbar from "@/components/Navbar/SettingsNavbar";
 import FinanceCategorySettings from "./FinanceCategorySettings";
@@ -14,6 +16,7 @@ enum FinanceSettingType {
 }
 
 export default function FinanceSettings() {
+  const { locale } = useSettingsStore();
   const [activeSetting, setActiveSetting] = useState<FinanceSettingType>(
     FinanceSettingType.DEFAULT
   );
@@ -24,15 +27,15 @@ export default function FinanceSettings() {
         <SettingsNavbar
           items={[
             {
-              title: "Default",
+              title: locale === "de-DE" ? "Standard" : "Default",
               onClick: () => setActiveSetting(FinanceSettingType.DEFAULT),
             },
             {
-              title: "Categories",
+              title: locale === "de-DE" ? "Kategorien" : "Categories",
               onClick: () => setActiveSetting(FinanceSettingType.CATEGORIES),
             },
             {
-              title: "Rules",
+              title: locale === "de-DE" ? "Regeln" : "Rules",
               onClick: () => setActiveSetting(FinanceSettingType.RULES),
             },
           ]}

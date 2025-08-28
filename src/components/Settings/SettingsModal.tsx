@@ -2,15 +2,13 @@
 
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Modal, Tabs } from "@mantine/core";
+import { Group, Modal, Tabs, Text } from "@mantine/core";
 import DefaultSettings from "./General/GeneralSettings";
 import FinanceSettings from "./Finances/FinanceSettings";
-import GroupSettings from "./Group/GroupSettings";
 import {
   IconCurrencyDollar,
   IconBriefcase,
   IconSettings,
-  IconUsers,
 } from "@tabler/icons-react";
 import WorkSettings from "./Work/WorkSettings";
 
@@ -18,18 +16,25 @@ export enum SettingsTab {
   GENERAL = "general",
   WORK = "work",
   FINANCE = "finance",
-  GROUP = "group",
+  // GROUP = "group",
 }
 
 export default function SettingsModal() {
-  const { selectedTab, setSelectedTab, isModalOpen, setIsModalOpen } =
+  const { locale, selectedTab, setSelectedTab, isModalOpen, setIsModalOpen } =
     useSettingsStore();
 
   return (
     <Modal
       opened={isModalOpen}
       onClose={() => setIsModalOpen(false)}
-      title="Settings"
+      title={
+        <Group gap="xs">
+          <IconSettings size={16} />
+          <Text fw={600}>
+            {locale === "de-DE" ? "Einstellungen" : "Settings"}
+          </Text>
+        </Group>
+      }
       size="80%"
       centered
       radius="lg"
@@ -44,26 +49,26 @@ export default function SettingsModal() {
             value={SettingsTab.GENERAL}
             leftSection={<IconSettings size={16} />}
           >
-            General
+            {locale === "de-DE" ? "Allgemein" : "General"}
           </Tabs.Tab>
           <Tabs.Tab
             value={SettingsTab.WORK}
             leftSection={<IconBriefcase size={16} />}
           >
-            Work
+            {locale === "de-DE" ? "Arbeit" : "Work"}
           </Tabs.Tab>
           <Tabs.Tab
             value={SettingsTab.FINANCE}
             leftSection={<IconCurrencyDollar size={16} />}
           >
-            Finance
+            {locale === "de-DE" ? "Finanzen" : "Finance"}
           </Tabs.Tab>
-          <Tabs.Tab
+          {/* <Tabs.Tab
             value={SettingsTab.GROUP}
             leftSection={<IconUsers size={16} />}
           >
-            Group
-          </Tabs.Tab>
+            {locale === "de-DE" ? "Gruppen" : "Group"}
+          </Tabs.Tab> */}
         </Tabs.List>
         <Tabs.Panel value={SettingsTab.GENERAL}>
           <DefaultSettings />
@@ -74,9 +79,9 @@ export default function SettingsModal() {
         <Tabs.Panel value={SettingsTab.FINANCE}>
           <FinanceSettings />
         </Tabs.Panel>
-        <Tabs.Panel value={SettingsTab.GROUP}>
+        {/* <Tabs.Panel value={SettingsTab.GROUP}>
           <GroupSettings />
-        </Tabs.Panel>
+        </Tabs.Panel> */}
       </Tabs>
     </Modal>
   );

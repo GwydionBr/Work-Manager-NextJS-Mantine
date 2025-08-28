@@ -3,6 +3,7 @@
 import { useForm } from "@mantine/form";
 import { useState } from "react";
 import { useFinanceStore } from "@/stores/financeStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { TextInput, Stack, Button, Alert, Textarea } from "@mantine/core";
 import { z } from "zod";
@@ -29,6 +30,7 @@ export default function FinanceCategoryForm({
   onClose,
   category,
 }: FinanceCategoryFormProps) {
+  const { locale } = useSettingsStore();
   const { addFinanceCategory, updateFinanceCategory } = useFinanceStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,14 +78,20 @@ export default function FinanceCategoryForm({
       <Stack>
         <TextInput
           withAsterisk
-          label="Title"
-          placeholder="Enter category title"
+          label={locale === "de-DE" ? "Name" : "Title"}
+          placeholder={
+            locale === "de-DE" ? "Name eingeben" : "Enter category title"
+          }
           {...form.getInputProps("title")}
           data-autofocus
         />
         <Textarea
-          label="Description"
-          placeholder="Enter category description"
+          label={locale === "de-DE" ? "Beschreibung" : "Description"}
+          placeholder={
+            locale === "de-DE"
+              ? "Beschreibung eingeben"
+              : "Enter category description"
+          }
           {...form.getInputProps("description")}
         />
         {category ? (
@@ -91,14 +99,14 @@ export default function FinanceCategoryForm({
             type="submit"
             onClick={form.onSubmit(handleFormSubmit)}
             loading={isLoading}
-            title="Update"
+            title={locale === "de-DE" ? "Speichern" : "Update"}
           />
         ) : (
           <CreateButton
             type="submit"
             onClick={form.onSubmit(handleFormSubmit)}
             loading={isLoading}
-            title="Create"
+            title={locale === "de-DE" ? "Erstellen" : "Create"}
           />
         )}
         <CancelButton onClick={onClose} />
