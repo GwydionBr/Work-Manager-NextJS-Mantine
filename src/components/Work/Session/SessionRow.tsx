@@ -8,7 +8,7 @@ import { Card, Group, Stack, Text, Checkbox, Box } from "@mantine/core";
 import { IconClock } from "@tabler/icons-react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
-import EditSessionButton from "@/components/Work/Session/EditSessionButton";
+import EditSessionDrawer from "@/components/Work/Session/EditSessionDrawer";
 
 import {
   formatTimeSpan,
@@ -17,6 +17,7 @@ import {
 } from "@/utils/formatFunctions";
 
 import type { Tables } from "@/types/db.types";
+import PencilActionIcon from "@/components/UI/ActionIcons/PencilActionIcon";
 
 interface SessionRowProps {
   session: Tables<"timer_session">;
@@ -134,18 +135,17 @@ export default function SessionRow({
                 </Text>
               </Group>
             </Stack>
-            {!sessionPaid && (
+            {hovered && !sessionPaid && (
               <Group>
-                <EditSessionButton
-                  hovered={hovered}
-                  timerSession={session}
+                <PencilActionIcon
+                  onClick={() => editDrawerHandler.open()}
+                  tooltipLabel={
+                    locale === "de-DE" ? "Sitzung bearbeiten" : "Edit session"
+                  }
                 />
                 <DeleteActionIcon
-                  style={{
-                    display: hovered ? "block" : "none",
-                  }}
                   onClick={() => deleteModalHandler.open()}
-                  aria-label={
+                  tooltipLabel={
                     locale === "de-DE" ? "Sitzung löschen" : "Delete session"
                   }
                 />
@@ -182,6 +182,11 @@ export default function SessionRow({
             ? "Sind Sie sicher, dass Sie diese Sitzung löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
             : "Are you sure you want to delete this session? This action cannot be undone."
         }
+      />
+      <EditSessionDrawer
+        timerSession={session}
+        opened={editDrawerOpened}
+        onClose={() => editDrawerHandler.close()}
       />
     </Box>
   );

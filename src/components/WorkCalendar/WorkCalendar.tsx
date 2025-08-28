@@ -22,7 +22,7 @@ import { IconMinus, IconPlus } from "@tabler/icons-react";
 import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
 import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
 import CalendarGrid from "./Calendar/CalendarGrid";
-import TimerSessionDrawer from "@/components/Work/Session/EditSessionButton";
+import EditSessionDrawer from "@/components/Work/Session/EditSessionDrawer";
 import CalendarLegend from "./Calendar/CalendarLegend";
 
 import { getStartOfDay } from "./calendarUtils";
@@ -465,10 +465,10 @@ export default function WorkCalendar() {
         />
       )}
       {selectedSession && (
-        <TimerSessionDrawer
+        <EditSessionDrawer
           timerSession={selectedSession}
           opened={drawerOpened}
-          close={close}
+          onClose={close}
         />
       )}
     </ScrollArea>

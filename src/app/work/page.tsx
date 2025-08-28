@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSessionFiltering } from "@/hooks/useSessionFiltering";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Box, Collapse, Group, Loader, Stack, Text } from "@mantine/core";
 import NewSessionButton from "@/components/Work/Session/NewSessionButton";
-import EditProjectButton from "@/components/Work/Project/EditProjectButton";
+import EditProjectDrawer from "@/components/Work/Project/EditProjectDrawer";
 import Header from "@/components/Header/Header";
 
 import { formatMoney } from "@/utils/formatFunctions";
@@ -17,6 +18,7 @@ import BulkSelectionControls from "@/components/Work/Session/BulkSelectionContro
 import { groupSessions } from "@/utils/sessionHelperFunctions";
 import WorkAnalysis from "@/components/Work/Analysis/WorkAnalysis";
 import AnalysisActionIcon from "@/components/UI/ActionIcons/AnalysisActionIcon";
+import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
 
 export default function WorkPage() {
   const { activeProjectId, isFetching } = useWorkStore();
@@ -26,7 +28,10 @@ export default function WorkPage() {
   );
   const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
   const [analysisOpened, setAnalysisOpened] = useState(false);
-
+  const [
+    editProjectOpened,
+    { open: openEditProject, close: closeEditProject },
+  ] = useDisclosure(false);
   // Use the custom hook for filtering logic
   const {
     timePresets,
@@ -109,7 +114,12 @@ export default function WorkPage() {
                 tooltipLabel="Analyse"
               />
             )}
-            <EditProjectButton />
+            <EditActionIcon
+              onClick={openEditProject}
+              tooltipLabel={
+                locale === "de-DE" ? "Projekt bearbeiten" : "Edit Project"
+              }
+            />
           </Group>
         }
         leftButton={
@@ -179,6 +189,10 @@ export default function WorkPage() {
             : "Add as Session to see it here"}
         </Text>
       )}
+      <EditProjectDrawer
+        opened={editProjectOpened}
+        onClose={closeEditProject}
+      />
     </Stack>
   );
 }

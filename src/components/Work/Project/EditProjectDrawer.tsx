@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -21,7 +21,15 @@ import { IconExclamationMark } from "@tabler/icons-react";
 
 import { Currency } from "@/types/settings.types";
 
-export default function EditProjectButton() {
+interface EditProjectDrawerProps {
+  opened: boolean;
+  onClose: () => void;
+}
+
+export default function EditProjectDrawer({
+  opened,
+  onClose,
+}: EditProjectDrawerProps) {
   const { locale } = useSettingsStore();
   const { activeProjectId, updateProject, deleteProject } = useWorkStore();
   const activeProject = useWorkStore((state) =>
@@ -29,6 +37,19 @@ export default function EditProjectButton() {
   );
   const [submitting, setSubmitting] = useState(false);
   const drawersStack = useDrawersStack(["edit-project", "delete-project"]);
+
+  useEffect(() => {
+    if (opened) {
+      drawersStack.open("edit-project");
+    } else {
+      drawersStack.closeAll();
+    }
+  }, [opened]);
+
+  function handleClose() {
+    drawersStack.closeAll();
+    onClose();
+  }
 
   async function handleSubmit(values: {
     color: string | null;
@@ -48,7 +69,7 @@ export default function EditProjectButton() {
       ...values,
     });
     if (success) {
-      drawersStack.closeAll();
+      handleClose();
     }
     setSubmitting(false);
   }
@@ -57,7 +78,7 @@ export default function EditProjectButton() {
     if (activeProject) {
       const result = await deleteProject(activeProject.project.id);
       if (result) {
-        drawersStack.closeAll();
+        handleClose();
       }
     }
   }
@@ -71,6 +92,7 @@ export default function EditProjectButton() {
       <Drawer.Stack>
         <Drawer
           {...drawersStack.register("edit-project")}
+          onClose={handleClose}
           title={
             <Group gap="xs">
               <DeleteActionIcon
@@ -100,7 +122,7 @@ export default function EditProjectButton() {
                   activeProject.project.cash_flow_category_id,
               }}
               onSubmit={handleSubmit}
-              onCancel={drawersStack.closeAll}
+              onCancel={handleClose}
               newProject={false}
               submitting={submitting}
             />
@@ -108,6 +130,7 @@ export default function EditProjectButton() {
         </Drawer>
         <Drawer
           {...drawersStack.register("delete-project")}
+          onClose={handleClose}
           title={
             <Group>
               <IconExclamationMark size={25} color="red" />
@@ -122,7 +145,7 @@ export default function EditProjectButton() {
           </Text>
           <Group mt="md" justify="flex-end" gap="sm">
             <CancelButton
-              onClick={drawersStack.closeAll}
+              onClick={handleClose}
               color="teal"
               tooltipLabel={locale === "de-DE" ? "Abbrechen" : "Cancel"}
             />

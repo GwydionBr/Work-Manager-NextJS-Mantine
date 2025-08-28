@@ -1,20 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import {
-  Drawer,
-  Flex,
-  Group,
-  Text,
-  useDrawersStack,
-  Box,
-} from "@mantine/core";
+import { Drawer, Flex, Group, Text, useDrawersStack, Box } from "@mantine/core";
 import { IconExclamationMark } from "@tabler/icons-react";
 import SessionForm from "@/components/Work/Session/SessionForm";
-import PencilActionIcon from "@/components/UI/ActionIcons/PencilActionIcon";
 
 import { Currency } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
@@ -24,12 +16,14 @@ import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 
 interface TimerSessionModalProps {
   timerSession: Tables<"timer_session">;
-  hovered: boolean;
+  opened: boolean;
+  onClose: () => void;
 }
 
-export default function TimerSessionDrawer({
+export default function EditSessionDrawer({
   timerSession,
-  hovered,
+  opened,
+  onClose,
 }: TimerSessionModalProps) {
   const { locale } = useSettingsStore();
   const { updateTimerSession, projects, deleteTimerSession } = useWorkStore();
@@ -37,10 +31,25 @@ export default function TimerSessionDrawer({
 
   const drawerStack = useDrawersStack(["edit-session", "delete-session"]);
 
+  // Sync external opened state with internal drawer stack
+  useEffect(() => {
+    if (opened) {
+      drawerStack.open("edit-session");
+    } else {
+      drawerStack.closeAll();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [opened]);
+
   // Find the project for this session
   const project = projects.find(
     (p) => p.project.id === timerSession.project_id
   )?.project;
+
+  function handleClose() {
+    drawerStack.closeAll();
+    onClose();
+  }
 
   async function handleSubmit(values: {
     project_id?: string;
@@ -77,9 +86,15 @@ export default function TimerSessionDrawer({
 
     const success = await updateTimerSession(newSession);
     if (success) {
-      drawerStack.closeAll();
+      handleClose();
     }
     setSubmitting(false);
+  }
+  async function handleDelete() {
+    const success = await deleteTimerSession(timerSession.id);
+    if (success) {
+      handleClose();
+    }
   }
 
   return (
@@ -87,6 +102,7 @@ export default function TimerSessionDrawer({
       <Drawer.Stack>
         <Drawer
           {...drawerStack.register("edit-session")}
+          onClose={handleClose}
           title={
             <Group>
               <DeleteActionIcon
@@ -122,7 +138,7 @@ export default function TimerSessionDrawer({
                 memo: timerSession.memo || undefined,
               }}
               onSubmit={handleSubmit}
-              onCancel={drawerStack.closeAll}
+              onCancel={handleClose}
               newSession={false}
               project={project}
               submitting={submitting}
@@ -131,10 +147,13 @@ export default function TimerSessionDrawer({
         </Drawer>
         <Drawer
           {...drawerStack.register("delete-session")}
+          onClose={handleClose}
           title={
             <Group>
               <IconExclamationMark size={25} color="red" />
-              <Text>{locale === "de-DE" ? "Sitzung löschen" : "Delete Session"}</Text>
+              <Text>
+                {locale === "de-DE" ? "Sitzung löschen" : "Delete Session"}
+              </Text>
             </Group>
           }
         >
@@ -144,12 +163,9 @@ export default function TimerSessionDrawer({
               : "Are you sure you want to delete this session? This action cannot be undone."}
           </Text>
           <Group mt="md" justify="flex-end" gap="sm">
-            <CancelButton
-              onClick={drawerStack.closeAll}
-              color="teal"
-            />
+            <CancelButton onClick={handleClose} color="teal" />
             <DeleteButton
-              onClick={() => deleteTimerSession(timerSession.id)}
+              onClick={handleDelete}
               tooltipLabel={
                 locale === "de-DE" ? "Sitzung löschen" : "Delete Session"
               }
@@ -157,17 +173,6 @@ export default function TimerSessionDrawer({
           </Group>
         </Drawer>
       </Drawer.Stack>
-
-      <PencilActionIcon
-        style={{
-          display: hovered ? "block" : "none",
-        }}
-        onClick={() => drawerStack.open("edit-session")}
-        aria-label={locale === "de-DE" ? "Sitzung bearbeiten" : "Edit session"}
-        tooltipLabel={
-          locale === "de-DE" ? "Sitzung bearbeiten" : "Edit session"
-        }
-      />
     </Box>
   );
 }
