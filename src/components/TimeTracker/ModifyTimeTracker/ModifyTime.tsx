@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { TimerState } from "@/types/timeTracker.types";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
   Stack,
@@ -47,6 +48,7 @@ export default function ModifyTime({
   storedActiveSeconds,
   storedPausedSeconds,
 }: ModifyTimeProps) {
+  const { locale } = useSettingsStore();
   const [activeTimeInput, setActiveTimeInput] = useState("");
   const [pausedTimeInput, setPausedTimeInput] = useState("");
   const [timeUnit, setTimeUnit] = useState<"seconds" | "minutes" | "hours">(
@@ -121,7 +123,7 @@ export default function ModifyTime({
         <Group justify="space-between" mb="md">
           <Title order={4} c="dimmed">
             <IconClock size={18} style={{ marginRight: "8px" }} />
-            Current Times
+            {locale === "de-DE" ? "Aktuelle Zeiten" : "Current Times"}
           </Title>
         </Group>
 
@@ -155,7 +157,7 @@ export default function ModifyTime({
       <Card withBorder shadow="sm" radius="md" p="lg">
         <Title order={4} mb="md" c="dimmed">
           <IconClock size={18} style={{ marginRight: "8px" }} />
-          Quick Adjustments
+          {locale === "de-DE" ? "Schnelle Anpassungen" : "Quick Adjustments"}
         </Title>
 
         <Stack gap="md">
@@ -164,7 +166,7 @@ export default function ModifyTime({
             <Group mb="xs" gap="xs">
               <IconPlayerPlay size={16} color="var(--mantine-color-blue-6)" />
               <Text size="sm" fw={600} c="blue.7">
-                Active Time
+                {locale === "de-DE" ? "Aktive Zeit" : "Active Time"}
               </Text>
             </Group>
             <Group gap="xs" justify="center">
@@ -219,7 +221,7 @@ export default function ModifyTime({
                 color="var(--mantine-color-orange-6)"
               />
               <Text size="sm" fw={600} c="orange.7">
-                Paused Time
+                {locale === "de-DE" ? "Pausierte Zeit" : "Paused Time"}
               </Text>
             </Group>
             <Group gap="xs" justify="center">
@@ -270,20 +272,20 @@ export default function ModifyTime({
       <Card withBorder shadow="sm" radius="md" p="lg">
         <Title order={4} mb="md" c="dimmed">
           <IconSettings size={18} style={{ marginRight: "8px" }} />
-          Custom Adjustments
+          {locale === "de-DE" ? "Benutzerdefinierte Anpassungen" : "Custom Adjustments"}
         </Title>
 
         <Stack gap="md">
           <Select
-            label="Time Unit"
+            label={locale === "de-DE" ? "Zeit-Einheit" : "Time Unit"}
             value={timeUnit}
             onChange={(value) =>
               setTimeUnit(value as "seconds" | "minutes" | "hours")
             }
             data={[
-              { value: "seconds", label: "Seconds" },
-              { value: "minutes", label: "Minutes" },
-              { value: "hours", label: "Hours" },
+              { value: "seconds", label: locale === "de-DE" ? "Sekunden" : "Seconds" },
+              { value: "minutes", label: locale === "de-DE" ? "Minuten" : "Minutes" },
+              { value: "hours", label: locale === "de-DE" ? "Stunden" : "Hours" },
             ]}
             styles={{
               label: {
@@ -296,7 +298,7 @@ export default function ModifyTime({
           <Box>
             <Group gap="xs" align="end">
               <TextInput
-                label="Change Active Time"
+                label={locale === "de-DE" ? "Aktive Zeit ändern" : "Change Active Time"}
                 placeholder={`Value in ${timeUnit === "seconds" ? "seconds" : timeUnit === "minutes" ? "minutes" : "hours"}`}
                 value={activeTimeInput}
                 onChange={(event) =>
@@ -324,7 +326,7 @@ export default function ModifyTime({
                 disabled={!activeTimeInput}
                 leftSection={<IconPlus size={16} />}
               >
-                Apply
+                {locale === "de-DE" ? "Anwenden" : "Apply"}
               </Button>
             </Group>
           </Box>
@@ -332,7 +334,7 @@ export default function ModifyTime({
           <Box>
             <Group gap="xs" align="end">
               <TextInput
-                label="Change Paused Time"
+                label={locale === "de-DE" ? "Pausierte Zeit ändern" : "Change Paused Time"}
                 placeholder={`Value in ${timeUnit === "seconds" ? "seconds" : timeUnit === "minutes" ? "minutes" : "hours"}`}
                 value={pausedTimeInput}
                 onChange={(event) =>
@@ -360,7 +362,7 @@ export default function ModifyTime({
                 disabled={!pausedTimeInput}
                 leftSection={<IconPlus size={16} />}
               >
-                Apply
+                {locale === "de-DE" ? "Anwenden" : "Apply"}
               </Button>
             </Group>
           </Box>
@@ -389,7 +391,9 @@ export default function ModifyTime({
             size={12}
             style={{ marginRight: "4px", verticalAlign: "middle" }}
           />
-          Note: Negative values reduce time. Time cannot fall below 0.
+          {locale === "de-DE"
+            ? "Hinweis: Negative Werte reduzieren die Zeit. Die Zeit kann nicht unter 0 fallen."
+            : "Note: Negative values reduce time. Time cannot fall below 0."}
         </Text>
       </Paper>
     </Stack>

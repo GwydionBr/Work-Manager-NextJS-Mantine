@@ -85,7 +85,7 @@ export default function TimeTrackerComponentBigMin({
   color,
   backgroundColor,
 }: TimeTrackerComponentBigMinProps) {
-  const { roundInTimeSections } = useSettingsStore();
+  const { locale, roundInTimeSections } = useSettingsStore();
 
   return (
     <Card
@@ -138,7 +138,7 @@ export default function TimeTrackerComponentBigMin({
         >
           <Stack gap="xs" align="center">
             <Text size="xs" c="dimmed">
-              Active
+              {locale === "de-DE" ? "Aktiv" : "Active"}
             </Text>
             {!roundInTimeSections ? (
               <Stack>
@@ -176,7 +176,7 @@ export default function TimeTrackerComponentBigMin({
           >
             <Stack>
               <Text size="xs" c="dimmed">
-                Paused
+                {locale === "de-DE" ? "Pausiert" : "Paused"}
               </Text>
               <Text size="xs" fw={state === "paused" ? 700 : 400}>
                 {pausedTime}

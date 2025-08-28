@@ -87,7 +87,7 @@ export default function TimeTrackerComponentSmall({
   modifyPausedSeconds,
   setRoundingAmount,
 }: TimeTrackerComponentSmallProps) {
-  const { roundInTimeSections } = useSettingsStore();
+  const { locale, roundInTimeSections } = useSettingsStore();
 
   return (
     <Stack
@@ -144,7 +144,7 @@ export default function TimeTrackerComponentSmall({
             }}
           >
             <Text fz={11} c="dimmed" ta="center">
-              Active
+              {locale === "de-DE" ? "Aktiv" : "Active"}
             </Text>
             <Text fz={11} fw={state === "running" ? 700 : 400} ta="center">
               {activeTime}
@@ -170,7 +170,7 @@ export default function TimeTrackerComponentSmall({
               }}
             >
               <Text fz={11} c="dimmed" ta="center">
-                Paused
+                {locale === "de-DE" ? "Pausiert" : "Paused"}
               </Text>
               <Text fz={11} fw={state === "paused" ? 700 : 400} ta="center">
                 {pausedTime}
@@ -191,7 +191,7 @@ export default function TimeTrackerComponentSmall({
             in={state === "running" || state === "paused"}
             transitionDuration={400}
           >
-            <Stack gap="xs" align="center" justify="center">
+            <Stack gap="xs" align="center" justify="center" pb="xs">
               <StopActionIcon stopTimer={submitTimer} disabled={isSubmitting} />
               <CancelActionIcon
                 cancelTimer={cancelTimer}

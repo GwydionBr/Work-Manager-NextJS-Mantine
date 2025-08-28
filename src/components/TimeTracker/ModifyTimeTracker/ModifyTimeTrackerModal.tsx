@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Text, Modal, Box, Group, Tabs } from "@mantine/core";
 import { IconSettings } from "@tabler/icons-react";
@@ -42,6 +43,7 @@ export default function ModifyTimeTrackerModal({
   roundingMode,
   roundingInterval,
 }: ModifyTimeTrackerModalProps) {
+  const { locale } = useSettingsStore();
   const [opened, setOpened] = useState(false);
 
   return (
@@ -49,7 +51,7 @@ export default function ModifyTimeTrackerModal({
       <MoreActionIcon
         onClick={() => setOpened(true)}
         aria-label="Modify Time Tracker"
-        tooltipLabel="Modify Time Tracker"
+        tooltipLabel={locale === "de-DE" ? "Zeiterfassung anpassen" : "Modify Time Tracker"}
       />
       <Modal
         opened={opened}
@@ -59,7 +61,7 @@ export default function ModifyTimeTrackerModal({
         title={
           <Group gap="xs">
             <IconSettings size={20} />
-            <Text fw={600}>Modify Time Tracker</Text>
+            <Text fw={600}>{locale === "de-DE" ? "Zeiterfassung anpassen" : "Modify Time Tracker"}</Text>
           </Group>
         }
         size="lg"
@@ -77,8 +79,8 @@ export default function ModifyTimeTrackerModal({
       >
         <Tabs defaultValue="time" variant="pills">
           <Tabs.List grow mb="md">
-            <Tabs.Tab value="time">Time</Tabs.Tab>
-            <Tabs.Tab value="rounding">Rounding</Tabs.Tab>
+            <Tabs.Tab value="time">{locale === "de-DE" ? "Zeit" : "Time"}</Tabs.Tab>
+            <Tabs.Tab value="rounding">{locale === "de-DE" ? "Rundung" : "Rounding"}</Tabs.Tab>
           </Tabs.List>
           <Tabs.Panel value="time">
             <ModifyTime

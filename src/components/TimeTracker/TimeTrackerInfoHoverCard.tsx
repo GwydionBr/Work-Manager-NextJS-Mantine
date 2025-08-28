@@ -51,11 +51,11 @@ export default function TimeTrackerInfoHoverCard({
   const getRoundingModeLabel = (mode: RoundingDirection) => {
     switch (mode) {
       case "up":
-        return "Round Up";
+        return locale === "de-DE" ? "Aufrunden" : "Round Up";
       case "down":
-        return "Round Down";
+        return locale === "de-DE" ? "Abrunden" : "Round Down";
       case "nearest":
-        return "Round Nearest";
+        return locale === "de-DE" ? "Am nächsten" : "Round Nearest";
       default:
         return mode;
     }
@@ -79,7 +79,7 @@ export default function TimeTrackerInfoHoverCard({
           <Group>
             <IconBuilding size={16} color="var(--mantine-color-blue-6)" />
             <Text size="sm" fw={600} c="blue">
-              Project Details
+              {locale === "de-DE" ? "Projekt-Details" : "Project Details"}
             </Text>
           </Group>
 
@@ -94,7 +94,7 @@ export default function TimeTrackerInfoHoverCard({
             <Group gap="xs">
               {getCurrencyIcon()}
               <Text size="sm" c="dimmed">
-                Salary
+                {locale === "de-DE" ? "Gehalt" : "Salary"}
               </Text>
             </Group>
             <Text size="sm" fw={600}>
@@ -105,7 +105,7 @@ export default function TimeTrackerInfoHoverCard({
           {/* Payment Type */}
           <Group justify="space-between" align="center">
             <Text size="sm" c="dimmed">
-              Payment Type
+              {locale === "de-DE" ? "Zahlungsart" : "Payment Type"}
             </Text>
             <Badge
               color={hourlyPayment ? "green" : "blue"}
@@ -115,7 +115,13 @@ export default function TimeTrackerInfoHoverCard({
                 hourlyPayment ? <IconCheck size={12} /> : <IconX size={12} />
               }
             >
-              {hourlyPayment ? "Hourly" : "Fixed"}
+              {hourlyPayment
+                ? locale === "de-DE"
+                  ? "Stündlich"
+                  : "Hourly"
+                : locale === "de-DE"
+                  ? "Fest"
+                  : "Fixed"}
             </Badge>
           </Group>
 
@@ -125,13 +131,13 @@ export default function TimeTrackerInfoHoverCard({
           <Group>
             <IconSettings size={16} color="var(--mantine-color-orange-6)" />
             <Text size="sm" fw={600} c="orange">
-              Rounding Settings
+              {locale === "de-DE" ? "Rundungs-Einstellungen" : "Rounding Settings"}
             </Text>
           </Group>
 
           <Group justify="space-between" align="center">
             <Text size="sm" c="dimmed">
-              Mode
+              {locale === "de-DE" ? "Modus" : "Mode"}
             </Text>
             <Badge color="orange" variant="light" size="sm">
               {getRoundingModeLabel(roundingMode)}
@@ -142,7 +148,7 @@ export default function TimeTrackerInfoHoverCard({
             <Group gap="xs">
               <IconClock size={16} />
               <Text size="sm" c="dimmed">
-                Interval
+                {locale === "de-DE" ? "Intervall" : "Interval"}
               </Text>
             </Group>
             <Text size="sm" fw={600}>

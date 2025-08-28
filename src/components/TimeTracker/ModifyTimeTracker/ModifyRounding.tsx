@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
   Stack,
@@ -42,7 +43,7 @@ export default function ModifyRounding({
   roundingMode,
   roundingInterval,
 }: ModifyRoundingProps) {
-
+  const { locale } = useSettingsStore();
   const [selectedRoundingAmount, setSelectedRoundingAmount] =
     useState<RoundingAmount>("min");
   const [selectedRoundingMode, setSelectedRoundingMode] =
@@ -158,14 +159,16 @@ export default function ModifyRounding({
         <Group justify="space-between" mb="md">
           <Title order={4} c="dimmed">
             <IconSettings size={18} style={{ marginRight: "8px" }} />
-            Current Rounding Settings
+            {locale === "de-DE"
+              ? "Aktuelle Rundungs-Einstellungen"
+              : "Current Rounding Settings"}
           </Title>
         </Group>
 
         <Group gap="xl" justify="center">
           <Box>
             <Text size="sm" c="dimmed" mb="xs">
-              Current Rounding
+              {locale === "de-DE" ? "Aktuelle Rundung" : "Current Rounding"}
             </Text>
             <Text fw={600}>
               {
@@ -181,7 +184,7 @@ export default function ModifyRounding({
 
           <Box>
             <Text size="sm" c="dimmed" mb="xs">
-              Current Mode
+              {locale === "de-DE" ? "Aktueller Modus" : "Current Mode"}
             </Text>
             <Text fw={600}>
               {roundingModes.find((r) => r.value === roundingMode)?.label}
@@ -194,13 +197,15 @@ export default function ModifyRounding({
       <Card withBorder shadow="sm" radius="md" p="lg">
         <Title order={4} mb="md" c="dimmed">
           <IconSettings size={18} style={{ marginRight: "8px" }} />
-          Rounding Configuration
+          {locale === "de-DE"
+            ? "Rundungs-Einstellungen"
+            : "Rounding Configuration"}
         </Title>
 
         <Stack gap="md">
           <Group gap="md" align="end">
             <Select
-              label="Rounding Amount"
+              label={locale === "de-DE" ? "Rundungs-Betrag" : "Rounding Amount"}
               value={selectedRoundingAmount}
               onChange={(value) =>
                 setSelectedRoundingAmount(value as RoundingAmount)
@@ -211,7 +216,11 @@ export default function ModifyRounding({
 
             {selectedRoundingAmount === "custom" && (
               <NumberInput
-                label="Custom Amount (minutes)"
+                label={
+                  locale === "de-DE"
+                    ? "Benutzerdefinierter Betrag (Minuten)"
+                    : "Custom Amount (minutes)"
+                }
                 value={customAmount}
                 onChange={(value) => setCustomAmount(Number(value))}
                 min={1}
@@ -222,7 +231,7 @@ export default function ModifyRounding({
           </Group>
 
           <Select
-            label="Rounding Mode"
+            label={locale === "de-DE" ? "Rundungs-Modus" : "Rounding Mode"}
             value={selectedRoundingMode}
             onChange={(value) =>
               setSelectedRoundingMode(value as RoundingDirection)
@@ -238,7 +247,9 @@ export default function ModifyRounding({
               disabled={loading}
               leftSection={<IconSettings size={16} />}
             >
-              Apply Rounding Settings
+              {locale === "de-DE"
+                ? "Rundungs-Einstellungen anwenden"
+                : "Apply Rounding Settings"}
             </Button>
           )}
         </Stack>
@@ -248,14 +259,14 @@ export default function ModifyRounding({
       <Card withBorder shadow="sm" radius="md" p="lg">
         <Title order={4} mb="md" c="dimmed">
           <IconClock size={18} style={{ marginRight: "8px" }} />
-          Rounding Preview
+          {locale === "de-DE" ? "Rundungs-Vorschau" : "Rounding Preview"}
         </Title>
 
         <Stack gap="md">
           <Group gap="xl" justify="center">
             <Box>
               <Text size="sm" c="dimmed" mb="xs">
-                Current Active Time
+                {locale === "de-DE" ? "Aktive Zeit" : "Current Active Time"}
               </Text>
               <Text fw={600} c="blue.7">
                 {formatTime(activeSeconds)}
@@ -264,7 +275,9 @@ export default function ModifyRounding({
 
             <Box>
               <Text size="sm" c="dimmed" mb="xs">
-                Rounded Active Time
+                {locale === "de-DE"
+                  ? "Gerundete aktive Zeit"
+                  : "Rounded Active Time"}
               </Text>
               <Text fw={600} c="green.7">
                 {formatTime(previewRoundedSeconds)}
@@ -280,7 +293,9 @@ export default function ModifyRounding({
               radius="md"
             >
               <Text size="sm">
-                Time will be adjusted by{" "}
+                {locale === "de-DE"
+                  ? "Zeit wird angepasst um"
+                  : "Time will be adjusted by"}
                 {formatTime(Math.abs(previewRoundedSeconds - activeSeconds))}(
                 {previewRoundedSeconds > activeSeconds ? "+" : "-"})
               </Text>
@@ -300,8 +315,9 @@ export default function ModifyRounding({
             size={12}
             style={{ marginRight: "4px", verticalAlign: "middle" }}
           />
-          Note: Rounding settings affect how time is calculated and saved. The
-          rounding changes are kept for this time tracker only.
+          {locale === "de-DE"
+            ? "Hinweis: Rundungs-Einstellungen beeinflussen, wie die Zeit berechnet und gespeichert wird. Die Rundungsänderungen werden nur für diesen Zeitrechner beibehalten."
+            : "Note: Rounding settings affect how time is calculated and saved. The rounding changes are kept for this time tracker only."}
         </Text>
       </Paper>
     </Stack>
