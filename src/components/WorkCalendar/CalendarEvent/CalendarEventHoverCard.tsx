@@ -8,7 +8,7 @@ import {
   formatMoney,
   formatTime,
   formatTimeSpan,
-} from "@/utils/workHelperFunctions";
+} from "@/utils/formatFunctions";
 
 interface CalendarEventHoverCardProps {
   s: CalendarSession;
@@ -42,7 +42,7 @@ export default function CalendarEventHoverCard({
         </Text>
         {earnings > 0 && (
           <Text ta="center" size="xs" fw={500}>
-            {formatMoney(earnings, s.currency)}
+            {formatMoney(earnings, s.currency, locale)}
           </Text>
         )}
         {s.memo && (

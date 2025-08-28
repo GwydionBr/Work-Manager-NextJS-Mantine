@@ -18,10 +18,6 @@ export default function NewSessionEvent({
   const actualStart = Math.min(start, y);
   const actualEnd = Math.max(start, y);
   const isStartDynamic = start > y;
-  const activeMiliseconds =
-    new Date(yToTime(actualEnd)).getTime() -
-    new Date(yToTime(actualStart)).getTime();
-  const activeSeconds = activeMiliseconds / 1000;
 
   return (
     <Box>

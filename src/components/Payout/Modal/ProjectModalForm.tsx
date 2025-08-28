@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useFinanceStore } from "@/stores/financeStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
 
@@ -19,7 +20,7 @@ import {
 } from "@mantine/core";
 import { IconArrowDown, IconBrandCashapp } from "@tabler/icons-react";
 import { currencies } from "@/constants/settings";
-import { formatMoney } from "@/utils/workHelperFunctions";
+import { formatMoney } from "@/utils/formatFunctions";
 import { Tables } from "@/types/db.types";
 
 interface ProjectModalFormProps {
@@ -54,6 +55,7 @@ export default function ProjectModalForm({
 
   const { payoutProjectSalary, updateProject } = useWorkStore();
   const { addExistingSingleCashFlow } = useFinanceStore();
+  const { locale } = useSettingsStore();
 
   async function onSubmit(values: z.infer<typeof schema>) {
     setIsProcessing(true);
@@ -84,7 +86,7 @@ export default function ProjectModalForm({
     setIsProcessing(false);
   }
 
-  const startValueString = formatMoney(startValue ?? 0, startCurrency);
+  const startValueString = formatMoney(startValue ?? 0, startCurrency, locale);
 
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>

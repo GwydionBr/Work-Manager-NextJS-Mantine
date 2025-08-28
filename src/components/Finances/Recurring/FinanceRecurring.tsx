@@ -17,6 +17,7 @@ import {
 import classes from "./FinanceRecurring.module.css";
 import EditCashFlowButton from "../EditCashFlowButton";
 import NewCashFlowButton from "../NewCashFlowButton";
+import { formatDate, formatMoney } from "@/utils/formatFunctions";
 
 export default function FinanceRecurring() {
   const { recurringCashFlows } = useFinanceStore();
@@ -119,26 +120,21 @@ export default function FinanceRecurring() {
             <Table.Tr key={cashFlow.id}>
               <Table.Td>{cashFlow.title}</Table.Td>
               <Table.Td>
-                {cashFlow.amount.toLocaleString(locale, {
-                  style: "currency",
-                  currency: cashFlow.currency,
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 2,
-                })}
+                {formatMoney(cashFlow.amount, cashFlow.currency, locale)}
               </Table.Td>
               <Table.Td>{cashFlow.type === "expense" ? "Expense" : "Income"}</Table.Td>
               <Table.Td>{cashFlow.interval}</Table.Td>
               {showStartDates && (
                 <Table.Td>
                   {cashFlow.start_date
-                    ? new Date(cashFlow.start_date).toLocaleDateString(locale)
+                    ? formatDate(new Date(cashFlow.start_date), locale)
                     : "Unlimited"}
                 </Table.Td>
               )}
               {showEndDates && (
                 <Table.Td>
                   {cashFlow.end_date
-                    ? new Date(cashFlow.end_date).toLocaleDateString(locale)
+                    ? formatDate(new Date(cashFlow.end_date), locale)
                     : "Unlimited"}
                 </Table.Td>
               )}

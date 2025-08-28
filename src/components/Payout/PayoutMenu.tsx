@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useDisclosure } from "@mantine/hooks";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Box, Menu, Button } from "@mantine/core";
 import ProjectPayoutMenu from "./ProjectPayoutMenu";
@@ -29,6 +30,7 @@ export default function PayoutMenu({
   isOverview = false,
   projects,
 }: PayoutMenuProps) {
+  const { locale } = useSettingsStore();
   const [openedModal, { open: openModal, close: closeModal }] =
     useDisclosure(false);
   const [openedMenu, { open: openMenu, close: closeMenu }] =
@@ -145,9 +147,14 @@ export default function PayoutMenu({
             onClick={() => {
               openMenu();
             }}
-            // loading={isProcessing}
           >
-            {unpaidSessions.length === 0 ? "All Paid" : "Payout"}
+            {unpaidSessions.length === 0
+              ? locale === "de-DE"
+                ? "Alles ausgezahlt"
+                : "All Paid"
+              : locale === "de-DE"
+                ? "Auszahlung"
+                : "Payout"}
           </Button>
         </Menu.Target>
         <Menu.Dropdown>

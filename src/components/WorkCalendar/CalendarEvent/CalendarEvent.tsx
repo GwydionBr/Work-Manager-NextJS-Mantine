@@ -3,7 +3,7 @@
 import { alpha, Card, HoverCard, Stack, Text } from "@mantine/core";
 
 import { CalendarSession } from "@/types/workCalendar.types";
-import { formatTime } from "@/utils/workHelperFunctions";
+import { formatTime } from "@/utils/formatFunctions";
 import CalendarEventHoverCard from "./CalendarEventHoverCard";
 
 interface CalendarEventProps {

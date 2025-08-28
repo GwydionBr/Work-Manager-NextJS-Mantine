@@ -11,7 +11,11 @@ import PencilActionIcon from "@/components/UI/ActionIcons/PencilActionIcon";
 import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
 import TimerSessionDrawer from "@/components/Work/Session/TimerSessionDrawer";
 
-import * as helper from "@/utils/workHelperFunctions";
+import {
+  formatTimeSpan,
+  formatTime,
+  formatMoney,
+} from "@/utils/formatFunctions";
 
 import type { Tables } from "@/types/db.types";
 
@@ -103,7 +107,7 @@ export default function SessionRow({
               <Group>
                 <IconClock size={14} color="gray" />
                 <Text>
-                  {helper.formatTimeSpan(
+                  {formatTimeSpan(
                     new Date(session.start_time),
                     new Date(session.end_time),
                     locale
@@ -123,11 +127,11 @@ export default function SessionRow({
               <Group>
                 <Text size="sm" c="teal">
                   {locale === "de-DE" ? "Aktiv" : "Active"}:{" "}
-                  {helper.formatTime(session.active_seconds)}
+                  {formatTime(session.active_seconds)}
                 </Text>
                 <Text size="sm" c="dimmed">
                   {locale === "de-DE" ? "Pausiert" : "Paused"}:{" "}
-                  {helper.formatTime(session.paused_seconds)}
+                  {formatTime(session.paused_seconds)}
                 </Text>
               </Group>
             </Stack>
@@ -135,7 +139,9 @@ export default function SessionRow({
               <Group>
                 <PencilActionIcon
                   onClick={() => editDrawerHandler.open()}
-                  aria-label={locale === "de-DE" ? "Sitzung bearbeiten" : "Edit session"}
+                  aria-label={
+                    locale === "de-DE" ? "Sitzung bearbeiten" : "Edit session"
+                  }
                 />
                 <DeleteActionIcon
                   onClick={() => deleteModalHandler.open()}
@@ -159,7 +165,7 @@ export default function SessionRow({
               }}
             >
               {session.hourly_payment
-                ? helper.formatMoney(earnings, session.currency)
+                ? formatMoney(earnings, session.currency, locale)
                 : ""}
             </Text>
           </Group>

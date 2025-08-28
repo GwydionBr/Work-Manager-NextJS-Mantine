@@ -20,7 +20,7 @@ import { enUS, de } from "date-fns/locale";
 import { Tables } from "@/types/db.types";
 
 import classes from "./Finances.module.css";
-import { formatMoney } from "@/utils/workHelperFunctions";
+import { formatMoney } from "@/utils/formatFunctions";
 
 interface FinanceSectionProps {
   title: string;
@@ -29,7 +29,7 @@ interface FinanceSectionProps {
 }
 
 export default function FinanceSection({
-  title,  
+  title,
   cashFlows,
   isFetching,
 }: FinanceSectionProps) {
@@ -84,12 +84,7 @@ export default function FinanceSection({
                   </Grid.Col>
                   <Grid.Col span={6}>
                     <Text p="xs" ta="right">
-                      {cashFlow.amount.toLocaleString(locale, {
-                        style: "currency",
-                        currency: cashFlow.currency,
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 2,
-                      })}
+                      {formatMoney(cashFlow.amount, cashFlow.currency, locale)}
                     </Text>
                   </Grid.Col>
                 </Grid>

@@ -5,7 +5,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Box, Flex, Modal } from "@mantine/core";
+import { Box, Modal } from "@mantine/core";
 import SessionForm from "@/components/Work/Session/SessionForm";
 import AddActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 

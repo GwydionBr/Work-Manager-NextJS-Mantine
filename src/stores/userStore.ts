@@ -1,7 +1,7 @@
 "use client";
 
 import * as actions from "@/actions";
-import { Tables, TablesInsert, Enums, TablesUpdate } from "@/types/db.types";
+import { Tables, TablesUpdate } from "@/types/db.types";
 import { redirect } from "next/navigation";
 import { create } from "zustand";
 

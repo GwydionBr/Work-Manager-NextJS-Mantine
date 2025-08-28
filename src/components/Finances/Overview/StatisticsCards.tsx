@@ -3,6 +3,7 @@ import StatisticCard from "./StatisticCard";
 import { ChartStats } from "@/hooks/useFinanceChartData";
 import { FinanceInterval } from "@/types/settings.types";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { formatDate, formatMoney } from "@/utils/formatFunctions";
 
 /**
  * Props for the StatisticsCards component
@@ -47,14 +48,8 @@ export default function StatisticsCards({
       <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
         <StatisticCard
           type="totalIncome"
-          value={stats.totalIncome.toLocaleString(locale, {
-            style: "currency",
-            currency: defaultFinanceCurrency,
-          })}
-          subtitle={`Ø ${stats.averageIncome.toLocaleString(locale, {
-            style: "currency",
-            currency: defaultFinanceCurrency,
-          })} ${locale === "de-DE" ? "pro" : "per"} ${getIntervalString()}`}
+          value={formatMoney(stats.totalIncome, defaultFinanceCurrency, locale)}
+          subtitle={`Ø ${formatMoney(stats.averageIncome, defaultFinanceCurrency, locale)} ${locale === "de-DE" ? "pro" : "per"} ${getIntervalString()}`}
           color="teal"
         />
       </Grid.Col>
@@ -63,14 +58,12 @@ export default function StatisticsCards({
       <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
         <StatisticCard
           type="totalExpense"
-          value={stats.totalExpense.toLocaleString(locale, {
-            style: "currency",
-            currency: defaultFinanceCurrency,
-          })}
-          subtitle={`Ø ${stats.averageExpense.toLocaleString(locale, {
-            style: "currency",
-            currency: defaultFinanceCurrency,
-          })} ${locale === "de-DE" ? "pro" : "per"} ${getIntervalString()}`}
+          value={formatMoney(
+            stats.totalExpense,
+            defaultFinanceCurrency,
+            locale
+          )}
+          subtitle={`Ø ${formatMoney(stats.averageExpense, defaultFinanceCurrency, locale)} ${locale === "de-DE" ? "pro" : "per"} ${getIntervalString()}`}
           color="red"
         />
       </Grid.Col>
@@ -79,10 +72,7 @@ export default function StatisticsCards({
       <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
         <StatisticCard
           type="net"
-          value={stats.netAmount.toLocaleString(locale, {
-            style: "currency",
-            currency: defaultFinanceCurrency,
-          })}
+          value={formatMoney(stats.netAmount, defaultFinanceCurrency, locale)}
           color={stats.netAmount >= 0 ? "green" : "red"}
           badge={
             stats.netAmount >= 0
@@ -113,14 +103,12 @@ export default function StatisticsCards({
           type="bestPeriod"
           value={
             stats.bestMonth
-              ? new Date(stats.bestMonth).toLocaleDateString(locale, {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })
+              ? formatDate(new Date(stats.bestMonth), locale)
               : "-"
           }
-          subtitle={locale === "de-DE" ? "Höchster Nettobetrag" : "Highest Net Value"}
+          subtitle={
+            locale === "de-DE" ? "Höchster Nettobetrag" : "Highest Net Value"
+          }
           color="green"
         />
       </Grid.Col>
@@ -131,17 +119,11 @@ export default function StatisticsCards({
           type="worstPeriod"
           value={
             stats.worstMonth
-              ? new Date(stats.worstMonth).toLocaleDateString(locale, {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })
+              ? formatDate(new Date(stats.worstMonth), locale)
               : "-"
           }
           subtitle={
-            locale === "de-DE"
-              ? "Niedrigster Nettobetrag"
-              : "Lowest Net Value"
+            locale === "de-DE" ? "Niedrigster Nettobetrag" : "Lowest Net Value"
           }
           color="red"
         />

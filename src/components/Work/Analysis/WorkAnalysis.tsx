@@ -8,7 +8,7 @@ import { Stack, Paper, Text, Box, Card } from "@mantine/core";
 import WorkChartControls, { ChartType } from "./WorkChartControls";
 import AnalysisChart from "../../Analysis/AnalysisChart";
 import WorkStatisticsCards from "./WorkStatisticsCards";
-import { formatDate, formatTime } from "@/utils/workHelperFunctions";
+import { formatDate, formatTime } from "@/utils/formatFunctions";
 import {
   getStartOfMonth,
   getEndOfMonth,
@@ -60,9 +60,9 @@ export default function WorkAnalysis({
 
   // Create formatter functions with current settings
   const formatCurrencyWithSettings = (amount: number) =>
-    formatCurrency(amount, project?.currency ?? "USD");
+    formatCurrency(amount, project?.currency ?? "USD", locale);
   const formatDateWithInterval = (dateString: string) =>
-    formatDate(new Date(dateString));
+    formatDate(new Date(dateString), locale);
   const formatTimeWithSettings = (seconds: number) => formatTime(seconds);
 
   return (

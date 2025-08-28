@@ -13,10 +13,8 @@ import { alpha, Box, Transition } from "@mantine/core";
 import TimeTrackerComponentBig from "./Big/TimeTrackerComponentBig";
 import TimeTrackerComponentSmall from "./Small/TimeTrackerComponentSmall";
 
-import {
-  formatTimeSpan,
-  getTimeSectionSessions,
-} from "@/utils/workHelperFunctions";
+import { getTimeSectionSessions } from "@/utils/workHelperFunctions";
+import { formatTimeSpan } from "@/utils/formatFunctions";
 
 import { TimerState } from "@/types/timeTracker.types";
 
@@ -235,7 +233,9 @@ export default function TimeTrackerInstance({
               projectTitle={timer.projectTitle}
               color={timer.color}
               backgroundColor={
-                timer.color ? alpha(timer.color, 0.1) : "var(--mantine-color-body)"
+                timer.color
+                  ? alpha(timer.color, 0.1)
+                  : "var(--mantine-color-body)"
               }
               removeTimer={() => removeTimer(timer.id)}
               moneyEarned={moneyEarned}
@@ -280,7 +280,9 @@ export default function TimeTrackerInstance({
             <TimeTrackerComponentSmall
               color={timer.color}
               backgroundColor={
-                timer.color ? alpha(timer.color, 0.1) : "var(--mantine-color-body)"
+                timer.color
+                  ? alpha(timer.color, 0.1)
+                  : "var(--mantine-color-body)"
               }
               roundedActiveTime={roundedActiveTime}
               state={state}

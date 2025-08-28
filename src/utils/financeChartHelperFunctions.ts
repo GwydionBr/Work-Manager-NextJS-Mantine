@@ -1,4 +1,4 @@
-import { FinanceInterval } from "@/types/settings.types";
+import { Currency, FinanceInterval, Locale } from "@/types/settings.types";
 import {
   format,
   parseISO,
@@ -28,13 +28,17 @@ import { de } from "date-fns/locale";
 /**
  * Format currency amounts according to user's locale and currency preference
  */
-export function formatCurrency(amount: number, currency: string = "EUR") {
-  return new Intl.NumberFormat("de-DE", {
+export function formatCurrency(
+  amount: number,
+  currency: Currency,
+  locale: Locale
+) {
+  return amount.toLocaleString(locale, {
     style: "currency",
     currency,
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(amount);
+  });
 }
 
 /**

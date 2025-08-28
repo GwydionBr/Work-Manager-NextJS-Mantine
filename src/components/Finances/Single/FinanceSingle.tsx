@@ -3,11 +3,12 @@
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Box, Table, alpha, Group, Text } from "@mantine/core";
-
-import classes from "./FinanceSingle.module.css";
+import { Box, Table, alpha } from "@mantine/core";
 import EditCashFlowButton from "../EditCashFlowButton";
 import NewCashFlowButton from "../NewCashFlowButton";
+
+import classes from "./FinanceSingle.module.css";
+import { formatDate, formatMoney } from "@/utils/formatFunctions";
 
 export default function FinanceSingle() {
   const { singleCashFlows, financeCategories } = useFinanceStore();
@@ -42,20 +43,11 @@ export default function FinanceSingle() {
                 }
               >
                 <Table.Td>
-                  {new Date(cashFlow.date).toLocaleDateString(locale, {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                  {formatDate(new Date(cashFlow.date), locale)}
                 </Table.Td>
                 <Table.Td>{cashFlow.title}</Table.Td>
                 <Table.Td>
-                  {cashFlow.amount.toLocaleString(locale, {
-                    style: "currency",
-                    currency: cashFlow.currency,
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 2,
-                  })}
+                  {formatMoney(cashFlow.amount, cashFlow.currency, locale)}
                 </Table.Td>
                 <Table.Td>
                   {

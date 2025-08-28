@@ -1,12 +1,6 @@
-import {
-  RoundingAmount,
-  RoundingDirection,
-  Currency,
-} from "@/types/settings.types";
-import { shortCurrencies } from "@/constants/settings";
+import { RoundingAmount, RoundingDirection } from "@/types/settings.types";
 import { Tables, TablesInsert } from "@/types/db.types";
 import { TimerState } from "@/types/timeTracker.types";
-import { Locale } from "@/types/settings.types";
 
 export function getStatusColor(state: TimerState) {
   switch (state) {
@@ -56,63 +50,6 @@ export function getRoundedSeconds(
     default:
       return seconds;
   }
-}
-
-export function getCurrencySymbol(currency: Currency): string {
-  return shortCurrencies.find((c) => c.value === currency)?.label ?? "$";
-}
-
-export function formatTime(seconds: number): string {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.ceil((seconds % 3600) / 60);
-
-  if (hours === 0) {
-    return `${minutes} min`;
-  }
-
-  return `${hours}h - ${minutes}min`;
-}
-
-export function formatTimeSpan(start: Date, end: Date, locale: Locale): string {
-  return `${formatDateTime(start, locale)} - ${formatDateTime(end, locale)}`;
-}
-
-export function formatDateTime(date: Date, locale: Locale) {
-  return date.toLocaleString(locale, {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-export function formatMoney(amount: number, currency: Currency): string {
-  const hasDecimals = amount % 1 !== 0;
-  const formattedAmount = hasDecimals ? amount.toFixed(2) : amount.toString();
-  if (currency === "USD") {
-    return `$${formattedAmount}`;
-  }
-  return `${formattedAmount} ${getCurrencySymbol(currency)}`;
-}
-
-export function formatEarningsAmount(amount: number, currency: Currency) {
-  if (currency === "USD") {
-    return ` $${amount.toFixed(2)}`;
-  }
-
-  return `${amount.toFixed(2)}${getCurrencySymbol(currency)}`;
-}
-
-export function formatDate(date: Date) {
-  return date.toLocaleDateString("en-US", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-  });
-}
-
-export function formatMonth(month: number) {
-  return new Date(2023, month - 1, 1).toLocaleString("en-US", {
-    month: "long",
-  });
 }
 
 export function getWeekNumber(date: Date) {

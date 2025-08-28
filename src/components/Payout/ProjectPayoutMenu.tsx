@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
@@ -15,7 +13,7 @@ import {
 } from "@mantine/core";
 import { IconBrandCashapp, IconAlertCircle } from "@tabler/icons-react";
 
-import * as helper from "@/utils/workHelperFunctions";
+import * as helper from "@/utils/formatFunctions";
 import type { Tables } from "@/types/db.types";
 
 interface ProjectPayoutMenuProps {
@@ -39,44 +37,36 @@ export default function ProjectPayoutMenu({
   setUseCustomAmount,
   setPayoutAmount,
 }: ProjectPayoutMenuProps) {
-  const [isProcessing, setIsProcessing] = useState(false);
-  const { payoutProjectSalary } = useWorkStore();
   const { locale } = useSettingsStore();
 
   const handleProjectSalaryPayout = async () => {
     closeMenu();
     openModal();
-    // const amount = useCustomAmount ? payoutAmount : availablePayout;
-    // if (amount <= 0 || amount > availablePayout) return;
-
-    // setIsProcessing(true);
-    // try {
-    //   const success = await payoutProjectSalary(project.id, amount);
-    //   if (success) {
-    //     // Reset form
-    //     setPayoutAmount(0);
-    //     setUseCustomAmount(false);
-    //   }
-    // } finally {
-    //   setIsProcessing(false);
-    // }
   };
   return (
     <Stack p="md" gap="md">
       <Text size="sm" fw={500}>
-        {locale === "de-DE" ? "Projektgehalt auszahlen" : "Project Salary Payout"}
+        {locale === "de-DE"
+          ? "Projektgehalt auszahlen"
+          : "Project Salary Payout"}
       </Text>
 
       <Stack gap="xs">
         <Text size="sm" c="dimmed">
-          Total Salary: {helper.formatMoney(project.salary, project.currency)}
+          {locale === "de-DE" ? "Gesamtgehalt" : "Total Salary"}:{" "}
+          {helper.formatMoney(project.salary, project.currency, locale)}
         </Text>
         <Text size="sm" c="dimmed">
-          Already Paid:{" "}
-          {helper.formatMoney(project.total_payout || 0, project.currency)}
+          {locale === "de-DE" ? "Bereits ausgezahlt" : "Already Paid"}:{" "}
+          {helper.formatMoney(
+            project.total_payout || 0,
+            project.currency,
+            locale
+          )}
         </Text>
         <Text size="sm" fw={500} c="teal">
-          Available: {helper.formatMoney(availablePayout, project.currency)}
+          {locale === "de-DE" ? "Verfügbar" : "Available"}:{" "}
+          {helper.formatMoney(availablePayout, project.currency, locale)}
         </Text>
       </Stack>
 
@@ -85,7 +75,11 @@ export default function ProjectPayoutMenu({
           <Divider />
 
           <Switch
-            label={locale === "de-DE" ? "Benutzerdefiniertes Betrag" : "Custom Amount"}
+            label={
+              locale === "de-DE"
+                ? "Benutzerdefinierter Betrag"
+                : "Custom Amount"
+            }
             checked={useCustomAmount}
             onChange={(event) =>
               setUseCustomAmount(event.currentTarget.checked)
@@ -96,7 +90,9 @@ export default function ProjectPayoutMenu({
             <NumberInput
               allowLeadingZeros={false}
               label={locale === "de-DE" ? "Auszahlungsbetrag" : "Payout Amount"}
-              placeholder={locale === "de-DE" ? "Betrag eingeben" : "Enter amount"}
+              placeholder={
+                locale === "de-DE" ? "Betrag eingeben" : "Enter amount"
+              }
               min={0}
               max={availablePayout}
               step={0.01}
@@ -115,13 +111,12 @@ export default function ProjectPayoutMenu({
               {locale === "de-DE"
                 ? "Wird den vollen verfügbaren Betrag auszahlen:"
                 : "Will payout full available amount:"}{" "}
-              {helper.formatMoney(availablePayout, project.currency)}
+              {helper.formatMoney(availablePayout, project.currency, locale)}
             </Text>
           )}
 
           <Button
             onClick={handleProjectSalaryPayout}
-            loading={isProcessing}
             disabled={
               useCustomAmount
                 ? payoutAmount <= 0 || payoutAmount > availablePayout
@@ -131,9 +126,7 @@ export default function ProjectPayoutMenu({
             color="teal"
             leftSection={<IconBrandCashapp size={16} />}
           >
-            {isProcessing
-              ? locale === "de-DE" ? "Verarbeiten..." : "Processing..."
-              : `Payout ${useCustomAmount ? helper.formatMoney(payoutAmount, project.currency) : helper.formatMoney(availablePayout, project.currency)}`}
+            {`Payout ${useCustomAmount ? helper.formatMoney(payoutAmount, project.currency, locale) : helper.formatMoney(availablePayout, project.currency, locale)}`}
           </Button>
         </>
       ) : (

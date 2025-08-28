@@ -5,7 +5,7 @@ import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Box, Card, Group, HoverCard, Stack, Text } from "@mantine/core";
 import { CalendarDay, VisibleProject } from "@/types/workCalendar.types";
-import { formatMoney, formatTime } from "@/utils/workHelperFunctions";
+import { formatDate, formatMoney, formatTime } from "@/utils/formatFunctions";
 import { useMemo } from "react";
 import { calculateSessionTimeForDay } from "../calendarUtils";
 
@@ -70,11 +70,7 @@ export default function ColumnHeader({
           {day && (
             <Stack gap={4}>
               <Text fw={600}>
-                {day.day.toLocaleDateString(locale, {
-                  weekday: "short",
-                  day: "2-digit",
-                  month: "short",
-                })}
+                {formatDate(day.day, locale)}
               </Text>
               <Text size="xs" c="dimmed" fw={500} ta="center">
                 {formatTime(totalTime)}
@@ -110,7 +106,7 @@ export default function ColumnHeader({
                     </Text>
                     {earnings > 0 && (
                       <Text size="xs" c="dimmed" fw={500}>
-                        {formatMoney(earnings, p.currency)}
+                        {formatMoney(earnings, p.currency, locale)}
                       </Text>
                     )}
                   </Stack>

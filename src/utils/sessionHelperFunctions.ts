@@ -1,5 +1,7 @@
 import type { Tables } from "@/types/db.types";
-import * as helper from "@/utils/workHelperFunctions";
+import { formatMoney } from "@/utils/formatFunctions";
+import { getWeekNumber } from "@/utils/workHelperFunctions";
+import { Locale } from "@/types/settings.types";
 import type {
   Earnings,
   EarningsBreakdown,
@@ -8,7 +10,7 @@ import type {
 
 export function groupSessions(
   sessions: Tables<"timer_session">[],
-  locale: string
+  locale: Locale
 ): { year: number; data: Year }[] {
   const groupedSessions: Record<number, Year> = sessions.reduce(
     (acc, session) => {
@@ -20,7 +22,7 @@ export function groupSessions(
       const year = startTime.getFullYear();
       // Use numeric month (1-12) as stable key to avoid locale parsing issues
       const month = startTime.getMonth() + 1;
-      const week = helper.getWeekNumber(startTime);
+      const week = getWeekNumber(startTime);
       // Use ISO date (YYYY-MM-DD) as stable key to avoid Invalid Date parsing
       const day = startTime.toISOString().slice(0, 10);
       // Calculate earnings for all sessions (both paid and unpaid)
@@ -153,10 +155,10 @@ export function addEarnings(
   return updatedEarnings;
 }
 
-export function formatEarnings(earnings: Earnings[]): string {
+export function formatEarnings(earnings: Earnings[], locale: Locale): string {
   return earnings
     .map((e) => {
-      return helper.formatMoney(e.amount, e.currency);
+      return formatMoney(e.amount, e.currency, locale);
     })
     .join(", ");
 }

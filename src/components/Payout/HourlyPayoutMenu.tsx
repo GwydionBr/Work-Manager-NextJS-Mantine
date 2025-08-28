@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useWorkStore } from "@/stores/workManagerStore";
-import { useFinanceStore } from "@/stores/financeStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
   Button,
@@ -15,7 +13,7 @@ import {
 } from "@mantine/core";
 import { IconBrandCashapp, IconAlertCircle } from "@tabler/icons-react";
 
-import * as helper from "@/utils/workHelperFunctions";
+import * as helper from "@/utils/formatFunctions";
 
 import type { Tables } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
@@ -46,44 +44,34 @@ export default function HourlyPayoutMenu({
   handleSelectAll,
   handleSessionToggle,
 }: HourlyPayoutMenuProps) {
-  const [isProcessing, setIsProcessing] = useState(false);
-  const { payoutSessions } = useWorkStore();
-  const { fetchFinanceData } = useFinanceStore();
+  const { locale } = useSettingsStore();
 
   const handleSessionPayout = async () => {
     closeMenu();
     openModal();
-    // if (selectedUnpaidSessions.length === 0) return;
-
-    // setIsProcessing(true);
-    // try {
-    //   const success = await payoutSessions(selectedUnpaidSessions);
-    //   if (success) {
-    //     // Refresh finance data to show new income entries
-    //     await fetchFinanceData();
-    //     // Clear selected sessions
-    //     onSessionsChange([]);
-    //   }
-    // } finally {
-    //   setIsProcessing(false);
-    // }
   };
   return (
     <Stack p="md" gap="md">
       <Text size="sm" fw={500}>
         {isOverview
-          ? "Select Sessions for Payout (All Projects)"
-          : "Select Sessions for Payout"}
+          ? locale === "de-DE"
+            ? "Sitzungen für Auszahlung auswählen (Alle Projekte)"
+            : "Select Sessions for Payout (All Projects)"
+          : locale === "de-DE"
+            ? "Sitzungen für Auszahlung auswählen"
+            : "Select Sessions for Payout"}
       </Text>
 
       {unpaidSessions.length === 0 ? (
         <Alert icon={<IconAlertCircle size={16} />} color="blue">
-          All sessions are already paid
+          {locale === "de-DE"
+            ? "Alle Sitzungen sind bereits ausgezahlt"
+            : "All sessions are already paid"}
         </Alert>
       ) : (
         <>
           <Checkbox
-            label={`Select All (${unpaidSessions.length} unpaid sessions)`}
+            label={`${locale === "de-DE" ? "Alle auswählen" : "Select All"} (${unpaidSessions.length} ${locale === "de-DE" ? "unbezahlte Sitzungen" : "unpaid sessions"})`}
             checked={
               selectedUnpaidSessions.length === unpaidSessions.length &&
               unpaidSessions.length > 0
@@ -118,7 +106,10 @@ export default function HourlyPayoutMenu({
                     <Group justify="space-between" w="100%">
                       <Stack gap={5}>
                         <Text size="sm" truncate>
-                          {helper.formatDate(new Date(session.start_time))}
+                          {helper.formatDate(
+                            new Date(session.start_time),
+                            locale
+                          )}
                         </Text>
                         {isOverview && sessionProject && (
                           <Text size="xs" c="dimmed" ml="xs">
@@ -128,7 +119,11 @@ export default function HourlyPayoutMenu({
                       </Stack>
                       <Text size="sm" c="dimmed">
                         {session.hourly_payment
-                          ? helper.formatMoney(earnings, session.currency)
+                          ? helper.formatMoney(
+                              earnings,
+                              session.currency,
+                              locale
+                            )
                           : "No payment"}
                       </Text>
                     </Group>
@@ -145,18 +140,18 @@ export default function HourlyPayoutMenu({
               <Divider />
               <Stack gap="xs">
                 <Text size="sm" fw={500}>
-                  Payout Summary:
+                  {locale === "de-DE" ? "Auszahlungssumme" : "Payout Summary"}:
                 </Text>
                 {Object.entries(sessionPayouts).map(([currency, amount]) => (
                   <Text key={currency} size="sm">
-                    {helper.formatMoney(amount, currency as Currency)}
+                    {helper.formatMoney(amount, currency as Currency, locale)}
                   </Text>
                 ))}
                 <Text size="sm" fw={500} c="teal">
-                  Total:{" "}
+                  {locale === "de-DE" ? "Gesamt" : "Total"}:{" "}
                   {Object.entries(sessionPayouts)
                     .map(([currency, amount]) =>
-                      helper.formatMoney(amount, currency as Currency)
+                      helper.formatMoney(amount, currency as Currency, locale)
                     )
                     .join(", ")}
                 </Text>
@@ -164,15 +159,12 @@ export default function HourlyPayoutMenu({
 
               <Button
                 onClick={handleSessionPayout}
-                loading={isProcessing}
                 disabled={selectedUnpaidSessions.length === 0}
                 fullWidth
                 color="teal"
                 leftSection={<IconBrandCashapp size={16} />}
               >
-                {isProcessing
-                  ? "Processing..."
-                  : `Payout ${selectedUnpaidSessions.length} Session${selectedUnpaidSessions.length > 1 ? "s" : ""}`}
+                {`${locale === "de-DE" ? "Zahle" : "Payout"} ${selectedUnpaidSessions.length} ${locale === "de-DE" ? "Sitzung" : "Session"}${selectedUnpaidSessions.length > 1 ? (locale === "de-DE" ? "en aus" : "s") : locale === "de-DE" ? " aus" : ""}`}
               </Button>
             </>
           )}

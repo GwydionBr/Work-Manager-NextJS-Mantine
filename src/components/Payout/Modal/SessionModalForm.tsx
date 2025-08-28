@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useFinanceStore } from "@/stores/financeStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 import { useForm, zodResolver } from "@mantine/form";
 
 import { z } from "zod";
@@ -20,7 +21,7 @@ import {
 } from "@mantine/core";
 import { IconArrowDown, IconBrandCashapp } from "@tabler/icons-react";
 import { currencies } from "@/constants/settings";
-import { formatMoney } from "@/utils/workHelperFunctions";
+import { formatMoney } from "@/utils/formatFunctions";
 
 interface SessionModalFormProps {
   sessionIds: string[];
@@ -54,6 +55,7 @@ export default function SessionModalForm({
 
   const { payoutSessions } = useWorkStore();
   const { addExistingSingleCashFlow } = useFinanceStore();
+  const { locale } = useSettingsStore();
 
   async function onSubmit(values: z.infer<typeof schema>) {
     setIsProcessing(true);
@@ -80,7 +82,7 @@ export default function SessionModalForm({
     setIsProcessing(false);
   }
 
-  const startValueString = formatMoney(startValue ?? 0, startCurrency);
+  const startValueString = formatMoney(startValue ?? 0, startCurrency, locale);
 
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
@@ -102,7 +104,11 @@ export default function SessionModalForm({
           }
           error={form.errors.endCurrency}
         />
-        <Button type="submit" loading={isProcessing} leftSection={<IconBrandCashapp />}>
+        <Button
+          type="submit"
+          loading={isProcessing}
+          leftSection={<IconBrandCashapp />}
+        >
           Submit
         </Button>
         <Alert title="Error" color="red" hidden={!error}>

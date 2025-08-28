@@ -6,7 +6,7 @@ import { Grid } from "@mantine/core";
 import WorkStatisticCard from "./WorkStatisticCard";
 import { WorkChartStats } from "@/hooks/useWorkChartData";
 import { FinanceInterval } from "@/types/settings.types";
-import { formatTime } from "@/utils/workHelperFunctions";
+import { formatTime } from "@/utils/formatFunctions"; 
 
 /**
  * Props for the WorkStatisticsCards component
@@ -46,8 +46,9 @@ export default function WorkStatisticsCards({
         return locale === "de-DE" ? "Halbjahr" : "Half Year";
       case "year":
         return locale === "de-DE" ? "Jahr" : "Year";
+      default:
+        return interval;
     }
-    return interval;
   };
 
   return (
