@@ -13,7 +13,6 @@ import {
   useDrawersStack,
 } from "@mantine/core";
 import ProjectForm from "@/components/Work/Project/ProjectForm";
-import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
@@ -159,15 +158,6 @@ export default function EditProjectDrawer({
           </Group>
         </Drawer>
       </Drawer.Stack>
-
-      <EditActionIcon
-        aria-label={locale === "de-DE" ? "Projekt bearbeiten" : "Edit project"}
-        onClick={() => drawersStack.open("edit-project")}
-        size="md"
-        tooltipLabel={
-          locale === "de-DE" ? "Projekt bearbeiten" : "Edit project"
-        }
-      />
     </Box>
   );
 }

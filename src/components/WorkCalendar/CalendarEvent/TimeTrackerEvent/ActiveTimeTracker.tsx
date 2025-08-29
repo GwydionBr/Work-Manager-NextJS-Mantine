@@ -8,6 +8,7 @@ interface ActiveTimeTrackerProps {
   top: number;
   bottom: number;
   timer: TimerData;
+  isYesterday: boolean | null;
   color: string;
   backgroundColor: string;
   title: string;
@@ -19,6 +20,7 @@ export default function ActiveTimeTracker({
   top,
   bottom,
   timer,
+  isYesterday,
   color,
   backgroundColor,
   title,
@@ -68,6 +70,19 @@ export default function ActiveTimeTracker({
           )}
         </Stack>
       </Box>
+      {/* {isYesterday === false && (
+        <Box
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: "100%",
+            height: 4,
+            background: "red",
+            zIndex: 16,
+          }}
+        />
+      )} */}
       <Box
         style={{
           position: "absolute",

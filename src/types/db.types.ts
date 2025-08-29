@@ -39,6 +39,50 @@ export type Database = {
   };
   public: {
     Tables: {
+      appointment: {
+        Row: {
+          created_at: string;
+          description: string | null;
+          end_date: string | null;
+          id: string;
+          reminder: string | null;
+          start_date: string;
+          timer_project_id: string | null;
+          title: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          description?: string | null;
+          end_date?: string | null;
+          id?: string;
+          reminder?: string | null;
+          start_date?: string;
+          timer_project_id?: string | null;
+          title?: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string | null;
+          end_date?: string | null;
+          id?: string;
+          reminder?: string | null;
+          start_date?: string;
+          timer_project_id?: string | null;
+          title?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "appointment_timer_project_id_fkey";
+            columns: ["timer_project_id"];
+            isOneToOne: false;
+            referencedRelation: "timer_project";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       finance_category: {
         Row: {
           created_at: string;
@@ -902,6 +946,7 @@ export type Database = {
           real_start_time: string | null;
           salary: number;
           start_time: string;
+          time_fragments_interval: number | null;
           true_end_time: string;
           user_id: string;
         };
@@ -920,6 +965,7 @@ export type Database = {
           real_start_time?: string | null;
           salary: number;
           start_time: string;
+          time_fragments_interval?: number | null;
           true_end_time: string;
           user_id?: string;
         };
@@ -938,6 +984,7 @@ export type Database = {
           real_start_time?: string | null;
           salary?: number;
           start_time?: string;
+          time_fragments_interval?: number | null;
           true_end_time?: string;
           user_id?: string;
         };

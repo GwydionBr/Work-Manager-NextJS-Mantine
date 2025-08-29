@@ -37,6 +37,7 @@ export default function TimeTrackerEvent({
 
         return (
           <ActiveTimeTracker
+            isYesterday={true}
             realHeight={height}
             height={height}
             top={top}
@@ -86,6 +87,7 @@ export default function TimeTrackerEvent({
 
   return (
     <ActiveTimeTracker
+      isYesterday={top < 5 ? false : null}
       realHeight={realHeight}
       height={height}
       top={top}

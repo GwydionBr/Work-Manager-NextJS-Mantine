@@ -16,7 +16,7 @@ import PauseActionIcon from "../TimeTrackerActionIcons/PauseActionIcon";
 import ResumeActionIcon from "../TimeTrackerActionIcons/ResumeActionIcon";
 import StopActionIcon from "../TimeTrackerActionIcons/StopActionIcon";
 import CancelActionIcon from "../TimeTrackerActionIcons/CancelActionIcon";
-import TimeTrackerInfoHoverCard from "../TimeTrackerInfoHoverCard";
+import TimeTrackerInfoHoverCard from "../TimeTrackerInfoHoverCard"; 
 import ModifyTimeTrackerModal from "../ModifyTimeTracker/ModifyTimeTrackerModal";
 
 import { TimerState } from "@/types/timeTracker.types";
@@ -98,8 +98,8 @@ export default function TimeTrackerComponentSmall({
       gap="xs"
       bg={backgroundColor}
       style={{
-        borderTop: color ? `2px solid ${color}` : "none",
-        borderBottom: color ? `2px solid ${color}` : "none",
+        borderTop: `2px solid ${color ?? "teal"}`,
+        borderBottom: `2px solid ${color ?? "teal"}`,
       }}
     >
       <Collapse in={showSmall} transitionDuration={400}>

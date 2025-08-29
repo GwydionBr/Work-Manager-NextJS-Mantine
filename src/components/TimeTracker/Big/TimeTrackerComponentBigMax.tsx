@@ -112,7 +112,7 @@ export default function TimeTrackerComponentBigMax({
       withBorder
       w={270}
       bg={backgroundColor}
-      style={{ border: color ? `2px solid ${color}` : "none" }}
+      style={{ border: `2px solid ${color ?? "teal"}` }}
     >
       <LoadingOverlay visible={isSubmitting} overlayProps={{ blur: 2 }} />
       <Stack gap="md" align="center">
