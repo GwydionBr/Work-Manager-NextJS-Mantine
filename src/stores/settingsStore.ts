@@ -34,6 +34,7 @@ interface SettingsState {
 }
 
 interface SettingsActions {
+  resetStore: () => void;
   fetchSettings: () => Promise<void>;
   setSelectedTab: (tab: SettingsTab) => void;
   setIsModalOpen: (isModalOpen: boolean) => void;
@@ -76,6 +77,27 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       automaticlyStopOtherTimer: false,
       locale: "en-US",
 
+      resetStore: () =>
+        set({
+          isModalOpen: false,
+          selectedTab: SettingsTab.GENERAL,
+          settingsId: null,
+          defaultSalaryCurrency: "USD",
+          defaultSalaryAmount: 0,
+          defaultFinanceCurrency: "USD",
+          defaultProjectHourlyPayment: true,
+          roundingAmount: "s",
+          roundingMode: "up",
+          customRoundingAmount: 0,
+          defaultGroupColor: null,
+          isAsideOpen: false,
+          isFetching: true,
+          lastFetch: null,
+          roundInTimeFragments: false,
+          timeFragmentInterval: 10,
+          automaticlyStopOtherTimer: false,
+          locale: "en-US",
+        }),
       fetchSettings: async () => {
         const { data } = await actions.getSettings();
         if (data) {

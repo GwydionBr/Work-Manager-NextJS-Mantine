@@ -17,6 +17,7 @@ interface FinanceStoreState {
 }
 
 interface FinanceStoreActions {
+  resetStore: () => void;
   fetchFinanceData: () => Promise<void>;
   addSingleCashFlow: (
     singleCashFlow: TablesInsert<"single_cash_flow">
@@ -29,7 +30,7 @@ interface FinanceStoreActions {
   ) => Promise<boolean>;
   updateSingleCashFlow: (
     singleCashFlow: TablesUpdate<"single_cash_flow">
-  ) => Promise<boolean>;  
+  ) => Promise<boolean>;
   updateRecurringCashFlow: (
     recurringCashFlow: TablesUpdate<"recurring_cash_flow">
   ) => Promise<boolean>;
@@ -58,6 +59,16 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
     isFetching: true,
     lastFetch: null,
 
+    resetStore: () =>
+      set({
+        singleCashFlows: [],
+        futureSingleCashFlows: [],
+        recurringCashFlows: [],
+        financeCategories: [],
+        financeRules: [],
+        isFetching: true,
+        lastFetch: null,
+      }),
     async fetchFinanceData() {
       const [singleCashFlows, recurringCashFlows, financeCategories] =
         await Promise.all([

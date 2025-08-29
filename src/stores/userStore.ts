@@ -5,6 +5,42 @@ import { Tables, TablesUpdate } from "@/types/db.types";
 import { redirect } from "next/navigation";
 import { create } from "zustand";
 
+// Import store instances to reset them
+import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
+import { useWorkStore } from "@/stores/workManagerStore";
+import { useSettingsStore } from "@/stores/settingsStore";
+import { useFinanceStore } from "@/stores/financeStore";
+import { useGroupStore } from "@/stores/groupStore";
+import { useTaskStore } from "@/stores/taskStore";
+import { useCalendarStore } from "@/stores/calendarStore";
+
+// Function to reset all stores to their initial state
+function resetAllStores() {
+  // Reset time tracker manager store
+  useTimeTrackerManager.getState().resetStore();
+
+  // Reset work manager store
+  useWorkStore.getState().resetStore();
+
+  // Reset settings store
+  useSettingsStore.getState().resetStore();
+
+  // Reset finance store
+  useFinanceStore.getState().resetStore();
+
+  // Reset group store
+  useGroupStore.getState().resetStore();
+
+  // Reset task store
+  useTaskStore.getState().resetStore();
+
+  // Reset user store (this one)
+  useUserStore.getState().resetStore();
+
+  // Reset calendar store
+  useCalendarStore.getState().resetStore();
+}
+
 export interface Friend {
   friendshipId: string;
   createdAt: string;
@@ -23,6 +59,7 @@ interface UserState {
 }
 
 interface UserActions {
+  resetStore: () => void;
   fetchUserData: () => Promise<void>;
   logout: () => Promise<boolean>;
   updateProfile: (profile: TablesUpdate<"profiles">) => Promise<boolean>;
@@ -42,6 +79,19 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
   declinedFriends: [],
   lastFetch: null,
 
+  resetStore: () =>
+    set({
+      allProfiles: null,
+      profile: null,
+      isFetching: true,
+      friends: [],
+      requestedFriends: [],
+      pendingFriends: [],
+      declinedFriends: [],
+      lastFetch: null,
+    }),
+
+  // Fetch user data
   fetchUserData: async () => {
     set({ isFetching: true });
     const profileResponse = await actions.getProfile();
@@ -73,8 +123,7 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
     const response = await actions.logout();
 
     if (response.success) {
-      localStorage.removeItem("time-tracker-storage");
-      localStorage.removeItem("settings");
+      resetAllStores();
       redirect("/");
     }
     return false;

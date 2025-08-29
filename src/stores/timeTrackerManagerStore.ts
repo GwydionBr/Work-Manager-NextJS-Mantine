@@ -30,6 +30,7 @@ export interface TimerData {
 }
 
 interface TimeTrackerManagerState {
+  resetStore: () => void;
   timers: Record<string, TimerData>;
   isTimerRunning: boolean;
 
@@ -53,6 +54,11 @@ export const useTimeTrackerManager = create(
       timers: {} as Record<string, TimerData>,
       isTimerRunning: false,
 
+      resetStore: () =>
+        set({
+          timers: {} as Record<string, TimerData>,
+          isTimerRunning: false,
+        }),
       addTimer: (timerData) => {
         const currentTimers = get().timers;
         const timerCount = Object.keys(currentTimers).length;

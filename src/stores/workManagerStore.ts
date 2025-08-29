@@ -13,7 +13,6 @@ import {
 } from "@/utils/treeHelperFunctions";
 import { filterOutExistingSessionFragments } from "@/utils/workHelperFunctions";
 
-
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { TimerProject, ProjectTreeItem } from "@/types/work.types";
 import { Currency } from "@/types/settings.types";
@@ -30,6 +29,7 @@ interface WorkStoreState {
 }
 
 interface WorkStoreActions {
+  resetStore: () => void;
   fetchWorkData: () => Promise<void>;
   updateStore: (
     updatedProjects: TimerProject[],
@@ -102,6 +102,16 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
       isFetching: true,
       lastFetch: null,
 
+      resetStore: () =>
+        set({
+          projectTree: [],
+          projects: [],
+          folders: [],
+          activeProjectId: null,
+          timerSessions: [],
+          isFetching: true,
+          lastFetch: null,
+        }),
       async fetchWorkData() {
         const {
           updateStore,
@@ -145,7 +155,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
 
       updateStore(
         updatedProjects: TimerProject[],
-          updatedSessions: Tables<"timer_session">[]
+        updatedSessions: Tables<"timer_session">[]
       ) {
         set({ projects: updatedProjects, timerSessions: updatedSessions });
         const { activeProjectId } = get();
@@ -278,10 +288,8 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           };
         }
 
-        const { newSessionsToAdd, alreadyExistingSessions } = filterOutExistingSessionFragments(
-          project.sessions,
-          sessions
-        );
+        const { newSessionsToAdd, alreadyExistingSessions } =
+          filterOutExistingSessionFragments(project.sessions, sessions);
 
         if (newSessionsToAdd.length === 0) {
           return {

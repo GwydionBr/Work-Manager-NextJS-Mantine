@@ -41,6 +41,7 @@ interface GroupState {
 }
 
 interface GroupActions {
+  resetStore: () => void;
   fetchGroupData: () => Promise<void>;
   addGroup: (
     group: TablesInsert<"group">,
@@ -94,6 +95,16 @@ export const useGroupStore = create<GroupState & GroupActions>()(
     selectedDate: null,
     isDateChanged: false,
 
+    resetStore: () =>
+      set({
+        groups: [],
+        groupRequests: [],
+        activeGroupId: null,
+        isFetching: true,
+        lastFetch: null,
+        selectedDate: null,
+        isDateChanged: false,
+      }),
     fetchGroupData: async () => {
       const activeGroup = get().activeGroupId;
       set({ selectedDate: new Date() });

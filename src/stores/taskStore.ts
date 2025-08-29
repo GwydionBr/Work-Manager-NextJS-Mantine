@@ -12,6 +12,7 @@ interface TaskState {
 }
 
 interface TaskActions {
+  resetStore: () => void;
   fetchTasksData: () => Promise<void>;
   createTask: (task: TablesInsert<"task">) => Promise<void>;
   updateTask: (task: TablesUpdate<"task">) => Promise<void>;
@@ -24,6 +25,12 @@ export const useTaskStore = create<TaskState & TaskActions>()((set, get) => ({
   isFetching: true,
   lastFetch: null,
 
+  resetStore: () =>
+    set({
+      tasks: [],
+      isFetching: true,
+      lastFetch: null,
+    }),
   async fetchTasksData() {
     set({ isFetching: true });
     const tasks = await actions.getAllTasks();
