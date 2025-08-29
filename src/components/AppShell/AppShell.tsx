@@ -1,5 +1,8 @@
 "use client";
 
+import "dayjs/locale/de";
+import "dayjs/locale/en";
+
 import { useEffect } from "react";
 import { useDisclosure, useHotkeys } from "@mantine/hooks";
 import { usePathname } from "next/navigation";
@@ -13,6 +16,7 @@ import { useTaskStore } from "@/stores/taskStore";
 import classes from "./AppShell.module.css";
 
 import { AppShell, Burger, Group } from "@mantine/core";
+import { DatesProvider } from "@mantine/dates";
 import Navbar from "@/components/Navbar/Navbar";
 import Aside from "./Aside";
 
@@ -23,6 +27,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { fetchWorkData, lastFetch: lastWorkFetch } = useWorkStore();
   const { fetchTasksData, lastFetch: lastTaskFetch } = useTaskStore();
   const {
+    locale,
     isAsideOpen,
     setIsAsideOpen,
     fetchSettings,
@@ -97,38 +102,46 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AppShell
-      className={classes.appShell}
-      disabled={isHome || isAuth}
-      navbar={{
-        width: 65,
-        breakpoint: "sm",
-        collapsed: { mobile: !isBurgerOpen },
-      }}
-      aside={{
-        width: isAsideOpen ? 300 : 50,
-        breakpoint: "md",
-        collapsed: { desktop: isHome || isAuth, mobile: true },
+    <DatesProvider
+      settings={{
+        locale: locale === "de-DE" ? "de" : "en",
+        firstDayOfWeek: locale === "de-DE" ? 1 : 0,
+        weekendDays: locale === "de-DE" ? [0, 6] : [0],
       }}
     >
-      <AppShell.Header hiddenFrom="sm">
-        <Group h="100%" px="md">
-          <Burger
-            opened={isBurgerOpen}
-            onClick={toggleBurger}
-            hiddenFrom="sm"
-            size="sm"
-          />
-          WM Logo
-        </Group>
-      </AppShell.Header>
-      <AppShell.Navbar>
-        <Navbar />
-      </AppShell.Navbar>
-      <AppShell.Main className={classes.main}>{children}</AppShell.Main>
-      <AppShell.Aside className={classes.aside}>
-        <Aside toggleAside={toggleAside} isAsideOpen={isAsideOpen} />
-      </AppShell.Aside>
-    </AppShell>
+      <AppShell
+        className={classes.appShell}
+        disabled={isHome || isAuth}
+        navbar={{
+          width: 65,
+          breakpoint: "sm",
+          collapsed: { mobile: !isBurgerOpen },
+        }}
+        aside={{
+          width: isAsideOpen ? 300 : 50,
+          breakpoint: "md",
+          collapsed: { desktop: isHome || isAuth, mobile: true },
+        }}
+      >
+        <AppShell.Header hiddenFrom="sm">
+          <Group h="100%" px="md">
+            <Burger
+              opened={isBurgerOpen}
+              onClick={toggleBurger}
+              hiddenFrom="sm"
+              size="sm"
+            />
+            WM Logo
+          </Group>
+        </AppShell.Header>
+        <AppShell.Navbar>
+          <Navbar />
+        </AppShell.Navbar>
+        <AppShell.Main className={classes.main}>{children}</AppShell.Main>
+        <AppShell.Aside className={classes.aside}>
+          <Aside toggleAside={toggleAside} isAsideOpen={isAsideOpen} />
+        </AppShell.Aside>
+      </AppShell>
+    </DatesProvider>
   );
 }

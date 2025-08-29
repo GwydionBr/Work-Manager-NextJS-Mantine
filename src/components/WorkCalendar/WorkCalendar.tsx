@@ -279,6 +279,7 @@ export default function WorkCalendar() {
       h="100vh"
       type="never"
       scrollHideDelay={100}
+      scrollbars="y"
     >
       <Stack>
         <Title ta="center" order={1} mt="xs" w="100%" style={{ zIndex: 100 }}>
