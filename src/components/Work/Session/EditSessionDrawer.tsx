@@ -82,6 +82,7 @@ export default function EditSessionDrawer({
         : project?.currency || timerSession.currency,
       payout_id: null,
       memo: values.memo || null,
+      time_fragments_interval: timerSession.time_fragments_interval,
     };
 
     const success = await updateTimerSession(newSession);

@@ -17,7 +17,7 @@ import {
   SegmentedControl,
   Grid,
 } from "@mantine/core";
-import { DatePickerInput } from "@mantine/dates";
+import LocaleDatePickerInput from "@/components/UI/Locale/LocaleDatePickerInput";
 import {
   IconChartArea,
   IconChartBar,
@@ -303,10 +303,23 @@ export default function ChartControls({
                   value={navigationMode}
                   onChange={handleNavigationModeChange}
                   data={[
-                    { value: "month", label: locale === "de-DE" ? "Monat" : "Month" },
-                    { value: "quarter", label: locale === "de-DE" ? "Quartal" : "Quarter" },
-                    { value: "year", label: locale === "de-DE" ? "Jahr" : "Year" },
-                    { value: "custom", label: locale === "de-DE" ? "Benutzerdefiniert" : "Custom" },
+                    {
+                      value: "month",
+                      label: locale === "de-DE" ? "Monat" : "Month",
+                    },
+                    {
+                      value: "quarter",
+                      label: locale === "de-DE" ? "Quartal" : "Quarter",
+                    },
+                    {
+                      value: "year",
+                      label: locale === "de-DE" ? "Jahr" : "Year",
+                    },
+                    {
+                      value: "custom",
+                      label:
+                        locale === "de-DE" ? "Benutzerdefiniert" : "Custom",
+                    },
                   ]}
                   size="xs"
                 />
@@ -316,7 +329,9 @@ export default function ChartControls({
               <Group justify="space-between" align="flex-end">
                 <Group>
                   <Select
-                    label={locale === "de-DE" ? "Zeitintervall" : "Time Interval"}
+                    label={
+                      locale === "de-DE" ? "Zeitintervall" : "Time Interval"
+                    }
                     value={interval}
                     onChange={(value) => setInterval(value as FinanceInterval)}
                     data={financeIntervals}
@@ -372,9 +387,13 @@ export default function ChartControls({
               {/* Custom Date Range Controls */}
               {navigationMode === "custom" && (
                 <Group>
-                  <DatePickerInput
+                  <LocaleDatePickerInput
                     label={locale === "de-DE" ? "Von Datum" : "From Date"}
-                    placeholder={locale === "de-DE" ? "Startdatum auswählen" : "Select start date"}
+                    placeholder={
+                      locale === "de-DE"
+                        ? "Startdatum auswählen"
+                        : "Select start date"
+                    }
                     value={dateRange.from}
                     onChange={(value: string | null) =>
                       setDateRange({
@@ -384,9 +403,13 @@ export default function ChartControls({
                     }
                     w={150}
                   />
-                  <DatePickerInput
+                  <LocaleDatePickerInput
                     label={locale === "de-DE" ? "Bis Datum" : "To Date"}
-                    placeholder={locale === "de-DE" ? "Enddatum auswählen" : "Select end date"}
+                    placeholder={
+                      locale === "de-DE"
+                        ? "Enddatum auswählen"
+                        : "Select end date"
+                    }
                     value={dateRange.to}
                     onChange={(value: string | null) =>
                       setDateRange({

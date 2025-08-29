@@ -17,7 +17,7 @@ import {
   SegmentedControl,
   Grid,
 } from "@mantine/core";
-import { DatePickerInput } from "@mantine/dates";
+import LocaleDatePickerInput from "@/components/UI/Locale/LocaleDatePickerInput";
 import {
   IconChartArea,
   IconChartBar,
@@ -388,7 +388,7 @@ export default function WorkChartControls({
               {/* Custom Date Range Controls */}
               {navigationMode === "custom" && (
                 <Group>
-                  <DatePickerInput
+                  <LocaleDatePickerInput
                     label={locale === "de-DE" ? "Erster Tag" : "From Date"}
                     placeholder="Select start date"
                     value={dateRange.from}
@@ -400,7 +400,7 @@ export default function WorkChartControls({
                     }
                     w={150}
                   />
-                  <DatePickerInput
+                  <LocaleDatePickerInput
                     label={locale === "de-DE" ? "Letzter Tag" : "To Date"}
                     placeholder="Select end date"
                     value={dateRange.to}

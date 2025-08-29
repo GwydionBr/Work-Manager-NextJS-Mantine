@@ -9,6 +9,7 @@ export default function LocaleDatePickerInput({
   value,
   onChange,
   error,
+  ...props
 }: DatePickerInputProps) {
   const { locale } = useSettingsStore();
 
@@ -19,6 +20,7 @@ export default function LocaleDatePickerInput({
       value={value}
       onChange={onChange}
       error={error}
+      {...props}
     />
   );
 }

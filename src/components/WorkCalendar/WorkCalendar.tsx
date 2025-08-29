@@ -17,13 +17,14 @@ import {
   Loader,
   Center,
 } from "@mantine/core";
-import { DatePickerInput } from "@mantine/dates";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
 import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
 import CalendarGrid from "./Calendar/CalendarGrid";
 import EditSessionDrawer from "@/components/Work/Session/EditSessionDrawer";
 import CalendarLegend from "./Calendar/CalendarLegend";
+import LocaleDatePickerInput from "../UI/Locale/LocaleDatePickerInput";
+import { DatePickerInput } from "@mantine/dates";
 
 import { getStartOfDay } from "./calendarUtils";
 import {
@@ -351,9 +352,8 @@ export default function WorkCalendar() {
               <Group gap="xs" justify="center">
                 <PrevActionIcon onClick={() => handleNextAndPrev(-1)} />
                 {viewMode === "day" ? (
-                  <DatePickerInput
+                  <LocaleDatePickerInput
                     value={referenceDate}
-                    locale={locale}
                     onChange={(value) => {
                       if (value) {
                         setReferenceDate(new Date(value));
@@ -366,9 +366,8 @@ export default function WorkCalendar() {
                     type="range"
                     value={dateRange}
                     valueFormat={
-                      locale === "de-DE" ? "D MMM, YYYY" : "MMM D, YYYY"
+                      locale === "de-DE" ? "DD. MMMM YYYY" : "MMM DD, YYYY"
                     }
-                    locale={locale}
                     onChange={(value) => {
                       const [start, end] = value;
                       const s = start ? new Date(start) : null;
