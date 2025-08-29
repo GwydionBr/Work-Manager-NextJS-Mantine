@@ -4,16 +4,16 @@ import { useForm } from "@mantine/form";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { TextInput, NumberInput, Select, Stack } from "@mantine/core";
+import UpdateButton from "@/components/UI/Buttons/UpdateButton";
+import CreateButton from "@/components/UI/Buttons/CreateButton";
+import LocaleDatePickerInput from "@/components/UI/Locale/LocaleDatePickerInput";
 
 import { z } from "zod";
-import { DatePickerInput } from "@mantine/dates";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { currencies } from "@/constants/settings";
 
 import { Currency } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
-import UpdateButton from "@/components/UI/Buttons/UpdateButton";
-import CreateButton from "@/components/UI/Buttons/CreateButton";
 
 const schema = z.object({
   title: z.string().min(2, "Name must be at least 2 characters"),
@@ -90,7 +90,7 @@ export default function SingleFinanceForm({
           data={currencies}
           {...form.getInputProps("currency")}
         />
-        <DatePickerInput
+        <LocaleDatePickerInput
           label={locale === "de-DE" ? "Datum" : "Date"}
           withAsterisk
           mb="md"

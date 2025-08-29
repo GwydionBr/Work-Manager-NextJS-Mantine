@@ -6,7 +6,6 @@ import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { NumberInput, Select, Stack, Textarea } from "@mantine/core";
-import { DateTimePicker } from "@mantine/dates";
 import { IconPlayerPlay, IconPlayerPause } from "@tabler/icons-react";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
@@ -18,6 +17,7 @@ import { Tables } from "@/types/db.types";
 import UpdateButton from "@/components/UI/Buttons/UpdateButton";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
+import LocaleDateTimePicker from "@/components/UI/Locale/LocaleDateTimePicker";
 
 interface NewSession {
   project_id?: string;
@@ -280,13 +280,13 @@ export default function SessionForm({
           icon={<IconPlayerPause size={18} />}
           color="orange"
         />
-        <DateTimePicker
+        <LocaleDateTimePicker
           label={locale === "de-DE" ? "Startzeit" : "Start Time"}
           value={form.values.start_time}
           onChange={handleStartTimeChange}
           error={form.errors.start_time}
         />
-        <DateTimePicker
+        <LocaleDateTimePicker
           label={locale === "de-DE" ? "Endzeit" : "End Time"}
           value={form.values.end_time}
           onChange={handleEndTimeChange}

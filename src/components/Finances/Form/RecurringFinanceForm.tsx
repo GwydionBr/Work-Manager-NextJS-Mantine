@@ -4,7 +4,9 @@ import { useForm } from "@mantine/form";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { TextInput, Select, NumberInput, Group, Stack } from "@mantine/core";
-import { DatePickerInput } from "@mantine/dates";
+import UpdateButton from "@/components/UI/Buttons/UpdateButton";
+import CreateButton from "@/components/UI/Buttons/CreateButton";
+import LocaleDatePickerInput from "@/components/UI/Locale/LocaleDatePickerInput";
 
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
@@ -12,8 +14,6 @@ import { currencies, financeIntervals } from "@/constants/settings";
 
 import { Currency, FinanceInterval } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
-import UpdateButton from "@/components/UI/Buttons/UpdateButton";
-import CreateButton from "@/components/UI/Buttons/CreateButton";
 
 const schema = z.object({
   title: z.string().min(2, "Name must be at least 2 characters"),
@@ -112,12 +112,12 @@ export default function RecurringFinanceForm({
           {...form.getInputProps("currency")}
         />
         <Group grow>
-          <DatePickerInput
+          <LocaleDatePickerInput
             label={locale === "de-DE" ? "Startdatum" : "Start Date"}
             withAsterisk
             {...form.getInputProps("start_date")}
           />
-          <DatePickerInput
+          <LocaleDatePickerInput
             label={locale === "de-DE" ? "Enddatum" : "End Date"}
             clearable
             {...form.getInputProps("end_date")}
