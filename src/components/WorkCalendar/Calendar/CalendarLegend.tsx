@@ -60,8 +60,8 @@ export default function CalendarLegend({
           ))}
         </Group>
       ) : (
-        <Text>
-          {locale === "de-DE" ? "Keine Projekte gefunden" : "No projects found"}
+        <Text size="sm" c="dimmed">
+          {locale === "de-DE" ? "Keine Einträge gefunden" : "No entries found"}
         </Text>
       )}
       <DelayedTooltip

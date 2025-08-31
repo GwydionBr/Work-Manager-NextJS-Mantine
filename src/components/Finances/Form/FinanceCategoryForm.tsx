@@ -99,14 +99,12 @@ export default function FinanceCategoryForm({
             type="submit"
             onClick={form.onSubmit(handleFormSubmit)}
             loading={isLoading}
-            title={locale === "de-DE" ? "Speichern" : "Update"}
           />
         ) : (
           <CreateButton
             type="submit"
             onClick={form.onSubmit(handleFormSubmit)}
             loading={isLoading}
-            title={locale === "de-DE" ? "Erstellen" : "Create"}
           />
         )}
         <CancelButton onClick={onClose} />
