@@ -642,6 +642,7 @@ export type Database = {
           rounding_amount: Database["public"]["Enums"]["roundingAmount"];
           rounding_custom_amount: number;
           rounding_direction: Database["public"]["Enums"]["roundingDirection"];
+          show_calendar_time: boolean;
           time_section_interval: number;
           updated_at: string;
           user_id: string;
@@ -661,6 +662,7 @@ export type Database = {
           rounding_amount?: Database["public"]["Enums"]["roundingAmount"];
           rounding_custom_amount?: number;
           rounding_direction?: Database["public"]["Enums"]["roundingDirection"];
+          show_calendar_time?: boolean;
           time_section_interval?: number;
           updated_at?: string;
           user_id?: string;
@@ -680,6 +682,7 @@ export type Database = {
           rounding_amount?: Database["public"]["Enums"]["roundingAmount"];
           rounding_custom_amount?: number;
           rounding_direction?: Database["public"]["Enums"]["roundingDirection"];
+          show_calendar_time?: boolean;
           time_section_interval?: number;
           updated_at?: string;
           user_id?: string;

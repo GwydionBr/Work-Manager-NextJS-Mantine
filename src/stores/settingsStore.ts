@@ -20,6 +20,7 @@ interface SettingsState {
   defaultSalaryAmount: number;
   defaultFinanceCurrency: Currency;
   defaultProjectHourlyPayment: boolean;
+  showCalendarTime: boolean;
   roundingAmount: RoundingAmount;
   roundingMode: RoundingDirection;
   customRoundingAmount: number;
@@ -53,6 +54,7 @@ interface SettingsActions {
     automaticlyStopOtherTimer: boolean
   ) => Promise<void>;
   setLocale: (locale: Locale) => Promise<void>;
+  setShowCalendarTime: (showCalendarTime: boolean) => Promise<void>;
 }
 
 export const useSettingsStore = create<SettingsState & SettingsActions>()(
@@ -69,6 +71,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       customRoundingAmount: 0,
       defaultSalaryAmount: 0,
       defaultGroupColor: null,
+      showCalendarTime: true,
       isAsideOpen: false,
       isFetching: true,
       lastFetch: null,
@@ -90,6 +93,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
           roundingMode: "up",
           customRoundingAmount: 0,
           defaultGroupColor: null,
+          showCalendarTime: true,
           isAsideOpen: false,
           isFetching: true,
           lastFetch: null,
@@ -107,6 +111,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
             defaultSalaryAmount: data.default_salary_amount,
             defaultFinanceCurrency: data.default_finance_currency,
             defaultProjectHourlyPayment: data.default_project_hourly_payment,
+            showCalendarTime: data.show_calendar_time,
             roundingAmount: data.rounding_amount,
             roundingMode: data.rounding_direction,
             customRoundingAmount: data.rounding_custom_amount,
@@ -145,6 +150,13 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
           default_project_hourly_payment: projectHourlyPayment,
         });
         set({ defaultProjectHourlyPayment: projectHourlyPayment });
+      },
+      setShowCalendarTime: async (showCalendarTime: boolean) => {
+        await actions.updateSettings({
+          id: get().settingsId ?? "",
+          show_calendar_time: showCalendarTime,
+        });
+        set({ showCalendarTime: showCalendarTime });
       },
       setRoundingAmount: async (roundingAmount: RoundingAmount) => {
         await actions.updateSettings({

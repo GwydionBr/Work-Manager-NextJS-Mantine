@@ -62,6 +62,7 @@ export default function CalendarGrid({
     defaultProjectHourlyPayment,
     roundInTimeFragments,
     timeFragmentInterval,
+    showCalendarTime,
   } = useSettingsStore();
 
   const { ref, x, y } = useMouse();
@@ -253,7 +254,7 @@ export default function CalendarGrid({
                 ref={ref}
                 onClick={handleClick}
               >
-                {!isAddingNewSession && hovered && (
+                {!isAddingNewSession && hovered && showCalendarTime && (
                   <Stack
                     style={{
                       position: "absolute",

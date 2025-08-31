@@ -9,13 +9,16 @@ import {
   IconCurrencyDollar,
   IconBriefcase,
   IconSettings,
+  IconCalendar,
 } from "@tabler/icons-react";
 import WorkSettings from "./Work/WorkSettings";
+import CalendarSettings from "./Calendar/CalendarSettings";
 
 export enum SettingsTab {
   GENERAL = "general",
   WORK = "work",
   FINANCE = "finance",
+  CALENDAR = "calendar",
   // GROUP = "group",
 }
 
@@ -63,6 +66,12 @@ export default function SettingsModal() {
           >
             {locale === "de-DE" ? "Finanzen" : "Finance"}
           </Tabs.Tab>
+          <Tabs.Tab
+            value={SettingsTab.CALENDAR}
+            leftSection={<IconCalendar size={16} />}
+          >
+            {locale === "de-DE" ? "Kalender" : "Calendar"}
+          </Tabs.Tab>
           {/* <Tabs.Tab
             value={SettingsTab.GROUP}
             leftSection={<IconUsers size={16} />}
@@ -78,6 +87,9 @@ export default function SettingsModal() {
         </Tabs.Panel>
         <Tabs.Panel value={SettingsTab.FINANCE}>
           <FinanceSettings />
+        </Tabs.Panel>
+        <Tabs.Panel value={SettingsTab.CALENDAR}>
+          <CalendarSettings />
         </Tabs.Panel>
         {/* <Tabs.Panel value={SettingsTab.GROUP}>
           <GroupSettings />
