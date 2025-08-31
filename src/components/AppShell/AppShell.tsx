@@ -20,6 +20,15 @@ import { DatesProvider } from "@mantine/dates";
 import Navbar from "@/components/Navbar/Navbar";
 import Aside from "./Aside";
 
+enum FetchPriority {
+  Settings = "settings",
+  Finance = "finance",
+  Tasks = "tasks",
+  Work = "work",
+  Group = "group",
+  User = "user",
+}
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { fetchGroupData, lastFetch: lastGroupFetch } = useGroupStore();
   const { fetchUserData, lastFetch: lastUserFetch } = useUserStore();
@@ -58,32 +67,69 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     };
 
     const fetchData = async () => {
+      let priorityFetch = FetchPriority.Settings;
       // Prioritized fetching based on current route
       if (shouldFetch(lastSettingsFetch)) {
+        console.log("fetching settings data priority");
         await fetchSettings();
       }
       if (pathname.startsWith("/finances") && shouldFetch(lastFinanceFetch)) {
+        priorityFetch = FetchPriority.Finance;
         await fetchFinanceData();
       } else if (pathname.startsWith("/tasks") && shouldFetch(lastTaskFetch)) {
+        priorityFetch = FetchPriority.Tasks;
         await fetchTasksData();
       } else if (pathname.startsWith("/work") && shouldFetch(lastWorkFetch)) {
+        priorityFetch = FetchPriority.Work;
         await fetchWorkData();
       } else if (pathname.startsWith("/group") && shouldFetch(lastGroupFetch)) {
+        priorityFetch = FetchPriority.Group;
         await fetchGroupData();
       } else if (
         pathname.startsWith("/account") &&
         shouldFetch(lastUserFetch)
       ) {
+        priorityFetch = FetchPriority.User;
         await fetchUserData();
       }
 
       // Background fetching for other data
       const backgroundFetch = () => {
-        if (shouldFetch(lastUserFetch)) fetchUserData();
-        if (shouldFetch(lastFinanceFetch)) fetchFinanceData();
-        if (shouldFetch(lastWorkFetch)) fetchWorkData();
-        if (shouldFetch(lastGroupFetch)) fetchGroupData();
-        if (shouldFetch(lastTaskFetch)) fetchTasksData();
+        if (
+          priorityFetch !== FetchPriority.User &&
+          shouldFetch(lastUserFetch)
+        ) {
+          console.log("fetching user data background");
+          fetchUserData();
+        }
+        if (
+          priorityFetch !== FetchPriority.Finance &&
+          shouldFetch(lastFinanceFetch)
+        ) {
+          console.log("fetching finance data background");
+          fetchFinanceData();
+        }
+        if (
+          priorityFetch !== FetchPriority.Work &&
+          shouldFetch(lastWorkFetch)
+        ) {
+          console.log("fetching work data background");
+          fetchWorkData();
+        }
+        if (
+          priorityFetch !== FetchPriority.Group &&
+          shouldFetch(lastGroupFetch)
+        ) {
+          console.log("fetching group data background");
+          fetchGroupData();
+        }
+        if (
+          priorityFetch !== FetchPriority.Tasks &&
+          shouldFetch(lastTaskFetch)
+        ) {
+          console.log("fetching tasks data background");
+          fetchTasksData();
+        }
       };
 
       backgroundFetch();

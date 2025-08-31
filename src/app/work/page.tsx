@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSessionFiltering } from "@/hooks/useSessionFiltering";
@@ -21,10 +21,23 @@ import AnalysisActionIcon from "@/components/UI/ActionIcons/AnalysisActionIcon";
 import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
 
 export default function WorkPage() {
-  const { activeProjectId, isFetching } = useWorkStore();
+  const {
+    activeProjectId,
+    lastActiveProjectId,
+    isFetching,
+    setActiveProjectId,
+  } = useWorkStore();
   const { locale } = useSettingsStore();
   const activeProject = useWorkStore((state) =>
-    state.projects.find((p) => p.project.id === activeProjectId)
+    state.projects.find((p) => {
+      if (activeProjectId) {
+        return p.project.id === activeProjectId;
+      }
+      if (lastActiveProjectId) {
+        return p.project.id === lastActiveProjectId;
+      }
+      return false;
+    })
   );
   const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
   const [analysisOpened, setAnalysisOpened] = useState(false);
@@ -48,6 +61,10 @@ export default function WorkPage() {
     undefined,
     false
   );
+
+  if (!activeProjectId && lastActiveProjectId) {
+    setActiveProjectId(lastActiveProjectId);
+  }
 
   if (!activeProject || isFetching) {
     return (

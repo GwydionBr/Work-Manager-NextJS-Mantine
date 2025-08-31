@@ -827,7 +827,7 @@ export type Database = {
         Row: {
           cash_flow_category_id: string | null;
           color: string | null;
-          created_at: string | null;
+          created_at: string;
           currency: Database["public"]["Enums"]["currency"];
           description: string | null;
           folder_id: string | null;
@@ -844,7 +844,7 @@ export type Database = {
         Insert: {
           cash_flow_category_id?: string | null;
           color?: string | null;
-          created_at?: string | null;
+          created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           description?: string | null;
           folder_id?: string | null;
@@ -861,7 +861,7 @@ export type Database = {
         Update: {
           cash_flow_category_id?: string | null;
           color?: string | null;
-          created_at?: string | null;
+          created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           description?: string | null;
           folder_id?: string | null;

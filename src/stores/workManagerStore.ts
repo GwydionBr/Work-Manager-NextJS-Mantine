@@ -23,6 +23,7 @@ interface WorkStoreState {
   projects: TimerProject[];
   folders: Tables<"timer_project_folder">[];
   activeProjectId: string | null;
+  lastActiveProjectId: string | null;
   timerSessions: Tables<"timer_session">[];
   isFetching: boolean;
   lastFetch: Date | null;
@@ -98,6 +99,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
       projects: [],
       folders: [],
       activeProjectId: null,
+      lastActiveProjectId: null,
       timerSessions: [],
       isFetching: true,
       lastFetch: null,
@@ -108,13 +110,14 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           projects: [],
           folders: [],
           activeProjectId: null,
+          lastActiveProjectId: null,
           timerSessions: [],
           isFetching: true,
           lastFetch: null,
         }),
+
       async fetchWorkData() {
         const {
-          updateStore,
           createProjectTree,
           activeProjectId: storedActiveId,
         } = get();
@@ -128,29 +131,40 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           return;
         }
 
-        const projectsData = projects.data.map((project) => ({
-          project,
-          sessions: timerSessions.data.filter(
-            (session) => session.project_id === project.id
-          ),
-        }));
+        const projectsData = projects.data
+          .map((project) => ({
+            project,
+            sessions: timerSessions.data.filter(
+              (session) => session.project_id === project.id
+            ),
+          }))
+          .sort(
+            (a, b) =>
+              new Date(a.project.created_at).getTime() -
+              new Date(b.project.created_at).getTime()
+          );
 
-        const stillValidId = projects.data.find((p) => p.id === storedActiveId)
-          ? storedActiveId
-          : (projects.data[0]?.id ?? null);
-
-        createProjectTree(projects.data, folders.data);
-        updateStore(projectsData, timerSessions.data);
+        const stillValidId =
+          storedActiveId &&
+          projectsData.find((p) => p.project.id === storedActiveId)
+            ? storedActiveId
+            : (projectsData[0]?.project.id ?? null);
+        console.log("set fetching ID", stillValidId);
         set({
           folders: folders.data,
-          isFetching: false,
-          lastFetch: new Date(),
           activeProjectId: stillValidId,
+          projects: projectsData,
+          timerSessions: timerSessions.data,
         });
+        createProjectTree(projects.data, folders.data);
+        set({ isFetching: false, lastFetch: new Date() });
       },
 
       setActiveProjectId(id) {
         set({ activeProjectId: id });
+        if (id) {
+          set({ lastActiveProjectId: id });
+        }
       },
 
       updateStore(

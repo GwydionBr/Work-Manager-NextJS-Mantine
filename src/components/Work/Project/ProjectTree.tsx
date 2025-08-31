@@ -25,6 +25,7 @@ export default function ProjectTree() {
     moveProject,
     moveFolder,
     activeProjectId,
+    lastActiveProjectId,
   } = useWorkStore();
 
   const router = useRouter();
@@ -55,7 +56,7 @@ export default function ProjectTree() {
         indent={24}
         rowHeight={30}
         paddingTop={10}
-        selection={activeProjectId ?? undefined}
+        selection={activeProjectId ?? lastActiveProjectId ?? undefined}
         onDelete={(nodes) => {
           console.log(nodes.nodes.map((node) => node.data.name));
         }}
