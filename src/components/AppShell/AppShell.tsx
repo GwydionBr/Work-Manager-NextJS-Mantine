@@ -12,6 +12,7 @@ import { useUserStore } from "@/stores/userStore";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useTaskStore } from "@/stores/taskStore";
+import { useCalendarStore } from "@/stores/calendarStore";
 
 import classes from "./AppShell.module.css";
 
@@ -27,12 +28,15 @@ enum FetchPriority {
   Work = "work",
   Group = "group",
   User = "user",
+  Calendar = "calendar",
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { fetchGroupData, lastFetch: lastGroupFetch } = useGroupStore();
   const { fetchUserData, lastFetch: lastUserFetch } = useUserStore();
   const { fetchFinanceData, lastFetch: lastFinanceFetch } = useFinanceStore();
+  const { fetchCalendarData, lastFetch: lastCalendarFetch } =
+    useCalendarStore();
   const {
     fetchWorkData,
     lastFetch: lastWorkFetch,
@@ -82,6 +86,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       } else if (pathname.startsWith("/tasks") && shouldFetch(lastTaskFetch)) {
         priorityFetch = FetchPriority.Tasks;
         await fetchTasksData();
+      } else if (
+        pathname.startsWith("/workCalendar") &&
+        shouldFetch(lastCalendarFetch)
+      ) {
+        priorityFetch = FetchPriority.Calendar;
+        await fetchCalendarData();
+        await fetchWorkData();
       } else if (pathname.startsWith("/work") && shouldFetch(lastWorkFetch)) {
         priorityFetch = FetchPriority.Work;
         await fetchWorkData();
@@ -112,6 +123,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         }
         if (
           priorityFetch !== FetchPriority.Work &&
+          priorityFetch !== FetchPriority.Calendar &&
           shouldFetch(lastWorkFetch)
         ) {
           fetchWorkData();

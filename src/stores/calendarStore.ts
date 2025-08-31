@@ -11,6 +11,8 @@ interface CalendarStoreState {
   eventIsHovered: boolean;
   eventIsSelected: boolean;
   entryMode: boolean;
+  isFetching: boolean;
+  lastFetch: Date | null;
 }
 
 interface CalendarStoreActions {
@@ -37,6 +39,8 @@ export const useCalendarStore = create<
   eventIsHovered: false,
   eventIsSelected: false,
   entryMode: false,
+  isFetching: true,
+  lastFetch: null,
   resetStore: () =>
     set({
       activeTimer: null,
@@ -44,11 +48,17 @@ export const useCalendarStore = create<
       eventIsHovered: false,
       eventIsSelected: false,
       entryMode: false,
+      isFetching: true,
+      lastFetch: null,
     }),
   fetchCalendarData: async () => {
+    set({ isFetching: true });
     const appointments = await actions.getAllAppointments();
     if (appointments.success) {
       set({ appointments: appointments.data });
+      set({ isFetching: false, lastFetch: new Date() });
+    } else {
+      set({ isFetching: false });
     }
   },
   createAppointment: async (appointment) => {

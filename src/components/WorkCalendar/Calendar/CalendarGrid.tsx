@@ -307,6 +307,7 @@ export default function CalendarGrid({
                         isFetching={isFetching}
                         currentTime={isToday(d.day) ? currentTime : undefined}
                         sessions={d.sessions}
+                        appointments={d.appointments}
                         handleSessionClick={handleSessionClick}
                         hourMultiplier={hourMultiplier}
                         rasterHeight={rasterHeight}

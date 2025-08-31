@@ -2,27 +2,22 @@
 
 import { alpha, Card, HoverCard, Stack, Text } from "@mantine/core";
 
-import { CalendarSession } from "@/types/workCalendar.types";
+import { CalendarAppointment } from "@/types/workCalendar.types";
 import { formatTime } from "@/utils/formatFunctions";
-import CalendarEventHoverCard from "./CalendarEventHoverCard";
 
-interface CalendarEventProps {
-  isNewSession?: boolean;
-  s: CalendarSession;
+interface CalendarAppointmentEventProps {
+  a: CalendarAppointment;
   toY: (date: Date) => number;
   color: string;
-  handleSessionClick: (sessionId: string) => void;
 }
 
-export default function CalendarEvent({
-  isNewSession,
-  s,
+export default function CalendarAppointmentEvent({
+  a,
   color,
   toY,
-  handleSessionClick,
-}: CalendarEventProps) {
-  const start = new Date(s.start_time);
-  const end = new Date(s.end_time);
+}: CalendarAppointmentEventProps) {
+  const start = new Date(a.start_date);
+  const end = new Date(a.end_date);
   const top = toY(start);
   const bottom = toY(end);
   const height = bottom - top;
@@ -33,7 +28,6 @@ export default function CalendarEvent({
       openDelay={200}
       closeDelay={100}
       position="right"
-      disabled={isNewSession}
     >
       <HoverCard.Target>
         <Card
@@ -52,17 +46,12 @@ export default function CalendarEvent({
             borderLeft: `6px solid ${color}`,
             zIndex: 13,
           }}
-          onClick={() => {
-            if (!isNewSession) {
-              handleSessionClick(s.id);
-            }
-          }}
+
         >
           <Stack h="100%" pl={6} pt={4} gap={0} bg={backgroundColor}>
-            <Text size="xs">{formatTime(s.active_seconds)}</Text>
-            {s.memo && (
+            {a.description && (
               <Text size="xs" c="dimmed">
-                {s.memo}
+                {a.description}
               </Text>
             )}
             <Text
@@ -74,14 +63,11 @@ export default function CalendarEvent({
                 textOverflow: "ellipsis",
               }}
             >
-              {s.projectTitle}
+              {a.projectTitle}
             </Text>
           </Stack>
         </Card>
       </HoverCard.Target>
-      <HoverCard.Dropdown p={0}>
-        <CalendarEventHoverCard s={s} color={color} />
-      </HoverCard.Dropdown>
     </HoverCard>
   );
 }

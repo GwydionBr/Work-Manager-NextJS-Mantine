@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDisclosure, useHotkeys } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
+import { useCalendarStore } from "@/stores/calendarStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
@@ -40,6 +41,7 @@ import {
   ViewMode,
   CalendarDay,
   VisibleProject,
+  CalendarAppointment,
 } from "@/types/workCalendar.types";
 import { Tables } from "@/types/db.types";
 
@@ -67,9 +69,12 @@ export default function WorkCalendar() {
   });
   const [selectedSession, setSelectedSession] =
     useState<Tables<"timer_session"> | null>(null);
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<Tables<"appointment"> | null>(null);
   const [drawerOpened, { open, close }] = useDisclosure(false);
   const { locale } = useSettingsStore();
   const { projects: timerProjects, timerSessions, isFetching } = useWorkStore();
+  const { appointments } = useCalendarStore();
   const projects = timerProjects.map((project) => project.project);
   const viewport = useRef<HTMLDivElement>(null);
 
@@ -132,12 +137,25 @@ export default function WorkCalendar() {
     return map;
   }, [timerSessions, days, projects]);
 
+  const appointmentsByDay = useMemo(() => {
+    return appointments.map((a) => ({
+      ...a,
+      projectTitle:
+        projects.find((p) => p.id === a.timer_project_id)?.title ?? "",
+      color:
+        projects.find((p) => p.id === a.timer_project_id)?.color ??
+        "var(--mantine-color-teal-6)",
+    }));
+  }, [appointments, days, projects]);
+
   const calendarDays: CalendarDay[] = useMemo(() => {
     return days.map((d) => ({
       day: d,
-      sessions: sessionsByDay.get(d.toISOString().slice(0, 10)) ?? [],
+      sessions: sessionsByDay.get(d.toISOString()) ?? [],
+      appointments:
+        appointmentsByDay.filter((a) => a.start_date === d.toISOString()) ?? [],
     }));
-  }, [days, sessionsByDay]);
+  }, [days, sessionsByDay, appointmentsByDay]);
 
   // Projects visible in the current view (based on sessions overlapping the visible days)
   const visibleProjects: VisibleProject[] = useMemo(() => {

@@ -6,6 +6,7 @@ export type ViewMode = "day" | "week";
 export type CalendarDay = {
   day: Date;
   sessions: CalendarSession[];
+  appointments: CalendarAppointment[];
 };
 
 export type VisibleProject = {
@@ -27,6 +28,19 @@ export type CalendarSession = Pick<
   | "active_seconds"
   | "currency"
   | "salary"
+> & {
+  projectTitle: string;
+  color: string;
+};
+
+export type CalendarAppointment = Pick<
+  Tables<"appointment">,
+  | "id"
+  | "title"
+  | "description"
+  | "start_date"
+  | "end_date"
+  | "timer_project_id"
 > & {
   projectTitle: string;
   color: string;

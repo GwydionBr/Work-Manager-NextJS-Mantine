@@ -10,10 +10,14 @@ import {
   getEndOfDay,
   mergeAdjacentSessionsForRender,
 } from "./calendarUtils";
-import { CalendarSession } from "@/types/workCalendar.types";
-import CalendarEvent from "./CalendarEvent/CalendarEvent";
+import {
+  CalendarSession,
+  CalendarAppointment,
+} from "@/types/workCalendar.types";
+import CalendarSessionEvent from "./CalendarEvent/CalendarSessionEvent";
 import TimeTrackerEvent from "./CalendarEvent/TimeTrackerEvent/TimeTrackerEvent";
 import NewSessionEvent from "./CalendarEvent/NewSessionEvent";
+import CalendarAppointmentEvent from "./CalendarEvent/CalendarAppointmentEvent";
 import { formatDateTime } from "@/utils/formatFunctions";
 
 interface DayColumnProps {
@@ -24,6 +28,7 @@ interface DayColumnProps {
   isFetching: boolean;
   currentTime?: Date;
   sessions: CalendarSession[];
+  appointments: CalendarAppointment[];
   handleSessionClick: (sessionId: string) => void;
   hourMultiplier: number;
   rasterHeight: number;
@@ -45,6 +50,7 @@ export function DayColumn({
   isFetching,
   currentTime,
   sessions,
+  appointments,
   handleSessionClick,
   hourMultiplier,
   rasterHeight,
@@ -83,6 +89,18 @@ export function DayColumn({
       color: s.color,
       currency: s.currency,
       salary: s.salary,
+    };
+  });
+
+  const clippedAppointments: CalendarAppointment[] = appointments.map((a) => {
+    const aStart = new Date(a.start_date);
+    const aEnd = new Date(a.end_date);
+    const start = aStart < dayStart ? dayStart : aStart;
+    const end = aEnd > dayEnd ? dayEnd : aEnd;
+    return {
+      ...a,
+      start_date: start.toISOString(),
+      end_date: end.toISOString(),
     };
   });
   // Merge touching/overlapping sessions for the same project+memo to reduce clutter
@@ -176,26 +194,28 @@ export function DayColumn({
           />
         )}
 
-        {isFetching
-          ? Array.from({ length: 24 }, (_, i) => (
-              <Skeleton
-                key={`line-${i}`}
-                height={rasterHeight + i * 3}
-                w="90%"
-                mx="auto"
-                style={{
-                  position: "absolute",
-                  top: i * (rasterHeight + i * 3 + 30),
-                  border:
-                    "1px solid light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-4))",
-                  borderLeft:
-                    "6px solid light-dark(var(--mantine-color-gray-5), var(--mantine-color-gray-6))",
-                }}
-              />
-            ))
-          : itemsForRender.map((s) => {
+        {isFetching ? (
+          Array.from({ length: 24 }, (_, i) => (
+            <Skeleton
+              key={`line-${i}`}
+              height={rasterHeight + i * 3}
+              w="90%"
+              mx="auto"
+              style={{
+                position: "absolute",
+                top: i * (rasterHeight + i * 3 + 30),
+                border:
+                  "1px solid light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-4))",
+                borderLeft:
+                  "6px solid light-dark(var(--mantine-color-gray-5), var(--mantine-color-gray-6))",
+              }}
+            />
+          ))
+        ) : (
+          <Box>
+            {itemsForRender.map((s) => {
               return (
-                <CalendarEvent
+                <CalendarSessionEvent
                   key={s.id}
                   isNewSession={startNewSession !== null}
                   s={s}
@@ -205,6 +225,18 @@ export function DayColumn({
                 />
               );
             })}
+            {clippedAppointments.map((a) => {
+              return (
+                <CalendarAppointmentEvent
+                  key={a.id}
+                  a={a}
+                  toY={timeToY}
+                  color={a.color}
+                />
+              );
+            })}
+          </Box>
+        )}
       </Box>
     </Box>
   );
