@@ -149,10 +149,10 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           projectsData.find((p) => p.project.id === storedActiveId)
             ? storedActiveId
             : (projectsData[0]?.project.id ?? null);
-        console.log("set fetching ID", stillValidId);
         set({
           folders: folders.data,
           activeProjectId: stillValidId,
+          lastActiveProjectId: stillValidId,
           projects: projectsData,
           timerSessions: timerSessions.data,
         });

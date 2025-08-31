@@ -33,7 +33,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { fetchGroupData, lastFetch: lastGroupFetch } = useGroupStore();
   const { fetchUserData, lastFetch: lastUserFetch } = useUserStore();
   const { fetchFinanceData, lastFetch: lastFinanceFetch } = useFinanceStore();
-  const { fetchWorkData, lastFetch: lastWorkFetch } = useWorkStore();
+  const { fetchWorkData, lastFetch: lastWorkFetch, setActiveProjectId } = useWorkStore();
   const { fetchTasksData, lastFetch: lastTaskFetch } = useTaskStore();
   const {
     locale,
@@ -141,6 +141,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (isHome || isAuth) return;
     fetchAllData();
+    if (pathname !== "/work") {
+      setActiveProjectId(null);
+    }
   }, [pathname, isHome, isAuth]);
 
   function toggleAside() {

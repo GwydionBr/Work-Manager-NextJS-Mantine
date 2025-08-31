@@ -62,9 +62,11 @@ export default function WorkPage() {
     false
   );
 
-  if (!activeProjectId && lastActiveProjectId) {
-    setActiveProjectId(lastActiveProjectId);
-  }
+  useEffect(() => {
+    if (!activeProjectId && lastActiveProjectId) {
+      setActiveProjectId(lastActiveProjectId);
+    }
+  }, [activeProjectId, lastActiveProjectId, setActiveProjectId]);
 
   if (!activeProject || isFetching) {
     return (
