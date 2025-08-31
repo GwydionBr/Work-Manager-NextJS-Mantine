@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useMouse, useDisclosure } from "@mantine/hooks";
+import { useMouse, useDisclosure, useHover } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -65,6 +65,7 @@ export default function CalendarGrid({
   } = useSettingsStore();
 
   const { ref, x, y } = useMouse();
+  const { hovered, ref: hoverRef } = useHover();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -241,7 +242,10 @@ export default function CalendarGrid({
                 "4px solid light-dark(var(--mantine-color-teal-6), var(--mantine-color-teal-6))",
             }}
           >
-            <Box style={{ position: "relative", overflow: "hidden" }}>
+            <Box
+              ref={hoverRef}
+              style={{ position: "relative", overflow: "hidden" }}
+            >
               <Grid
                 columns={420}
                 gutter={0}
@@ -249,7 +253,7 @@ export default function CalendarGrid({
                 ref={ref}
                 onClick={handleClick}
               >
-                {!isAddingNewSession && (
+                {!isAddingNewSession && hovered && (
                   <Stack
                     style={{
                       position: "absolute",
@@ -260,7 +264,9 @@ export default function CalendarGrid({
                       pointerEvents: "none",
                     }}
                   >
-                    <Text>{formatDateTime(yToTime(y, new Date()), locale)}</Text>
+                    <Text>
+                      {formatDateTime(yToTime(y, new Date()), locale)}
+                    </Text>
                   </Stack>
                 )}
                 {days.map((d) => {

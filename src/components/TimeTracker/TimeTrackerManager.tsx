@@ -171,18 +171,6 @@ export default function TimerManager({
 
   return (
     <Stack align="center" gap="md" mb="md">
-      {errorMessage && (
-        <Alert
-          color="red"
-          variant="filled"
-          title="Error"
-          withCloseButton
-          onClose={() => setErrorMessage(null)}
-        >
-          <Text>{errorMessage}</Text>
-        </Alert>
-      )}
-
       <PlusActionIcon
         onClick={() => {
           if (!activeProject) return;
@@ -205,6 +193,17 @@ export default function TimerManager({
         getStatusColor={() => getStatusColor(mainTimerStatus)}
       />
 
+      {errorMessage && (
+        <Alert
+          color="red"
+          variant="filled"
+          title="Error"
+          withCloseButton
+          onClose={() => setErrorMessage(null)}
+        >
+          <Text>{errorMessage}</Text>
+        </Alert>
+      )}
       {timers
         .sort((a, b) => b.createdAt - a.createdAt)
         .map((timer) => (
