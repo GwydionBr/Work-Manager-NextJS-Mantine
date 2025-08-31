@@ -23,6 +23,13 @@ export { createTask } from "./tasks/createTask";
 export { updateTask } from "./tasks/updateTask";
 export { deleteTask } from "./tasks/deleteTask";
 
+// Calendar Actions
+
+export { getAllAppointments } from "./calendar/getAllAppointments";
+export { createAppointment } from "./calendar/createAppointment";
+export { updateAppointment } from "./calendar/updateAppointment";
+export { deleteAppointment } from "./calendar/deleteAppointment";
+
 // Payout Actions
 
 export { payoutSessions } from "./payout/sessionPayout";

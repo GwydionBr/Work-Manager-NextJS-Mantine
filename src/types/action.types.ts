@@ -21,7 +21,8 @@ export type TableNames =
   | "finance_rule_timer_project"
   | "timer_project_folder"
   | "payout"
-  | "task";
+  | "task"
+  | "appointment";
 
 
 // Response after an error occurs
