@@ -151,11 +151,14 @@ export default function WorkCalendar() {
   const calendarDays: CalendarDay[] = useMemo(() => {
     return days.map((d) => ({
       day: d,
-      sessions: sessionsByDay.get(d.toISOString()) ?? [],
+      sessions: sessionsByDay.get(d.toISOString().slice(0, 10)) ?? [],
       appointments:
-        appointmentsByDay.filter((a) => a.start_date === d.toISOString()) ?? [],
+        appointmentsByDay.filter(
+          (a) => a.start_date.slice(0, 10) === d.toISOString().slice(0, 10)
+        ) ?? [],
     }));
   }, [days, sessionsByDay, appointmentsByDay]);
+  console.log("calendarDays", calendarDays);
 
   // Projects visible in the current view (based on sessions overlapping the visible days)
   const visibleProjects: VisibleProject[] = useMemo(() => {

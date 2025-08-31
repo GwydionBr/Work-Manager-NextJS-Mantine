@@ -226,6 +226,7 @@ export function DayColumn({
               );
             })}
             {clippedAppointments.map((a) => {
+              console.log("a", a);
               return (
                 <CalendarAppointmentEvent
                   key={a.id}
