@@ -35,7 +35,7 @@ interface WorkStoreActions {
     updatedProjects: TimerProject[],
     updatedSessions: Tables<"timer_session">[]
   ) => void;
-  setActiveProjectId: (id: string) => void;
+  setActiveProjectId: (id: string | null) => void;
   addProject: (project: TablesInsert<"timer_project">) => Promise<boolean>;
   addTimerSession: (session: TablesInsert<"timer_session">) => Promise<boolean>;
   addMultipleTimerSessions: (
@@ -149,7 +149,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         });
       },
 
-      setActiveProjectId(id: string) {
+      setActiveProjectId(id) {
         set({ activeProjectId: id });
       },
 

@@ -32,7 +32,7 @@ export default function ProjectNavbar({
   isNavbarMinimized: boolean;
   setIsNavbarMinimized: (value: boolean) => void;
 }) {
-  const { isFetching } = useWorkStore();
+  const { isFetching, setActiveProjectId } = useWorkStore();
 
   const { locale, setSelectedTab, setIsModalOpen } = useSettingsStore();
   const router = useRouter();
@@ -147,6 +147,7 @@ export default function ProjectNavbar({
             onClick={() => {
               if (!isFetching) {
                 router.push("/work/overview");
+                setActiveProjectId(null);
               }
             }}
           >
