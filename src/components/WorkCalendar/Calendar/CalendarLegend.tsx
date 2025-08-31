@@ -2,7 +2,7 @@
 
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Group, ActionIcon } from "@mantine/core";
+import { Group, ActionIcon, Text } from "@mantine/core";
 import { IconArrowsSort, IconPlus } from "@tabler/icons-react";
 
 import { VisibleProject } from "@/types/workCalendar.types";
@@ -53,11 +53,17 @@ export default function CalendarLegend({
         variant={isAddingNewSession ? "filled" : "light"}
         onClick={() => setIsAddingNewSession(!isAddingNewSession)}
       />
-      <Group justify="center" wrap="wrap" gap="xs" w="100%">
-        {visibleProjects.map((p) => (
-          <CalendarLegendButton key={p.id} p={p} />
-        ))}
-      </Group>
+      {visibleProjects.length > 0 ? (
+        <Group justify="center" wrap="wrap" gap="xs" w="100%">
+          {visibleProjects.map((p) => (
+            <CalendarLegendButton key={p.id} p={p} />
+          ))}
+        </Group>
+      ) : (
+        <Text>
+          {locale === "de-DE" ? "Keine Projekte gefunden" : "No projects found"}
+        </Text>
+      )}
       <DelayedTooltip
         label={
           locale === "de-DE"

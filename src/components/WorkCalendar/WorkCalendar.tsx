@@ -480,14 +480,12 @@ export default function WorkCalendar() {
           rasterHeight={rasterHeight}
         />
       </Stack>
-      {visibleProjects.length > 0 && (
-        <CalendarLegend
-          isAddingNewSession={isAddingNewSession}
-          setIsAddingNewSession={setIsAddingNewSession}
-          visibleProjects={visibleProjects}
-          handleScrollToNow={handleScrollToNow}
-        />
-      )}
+      <CalendarLegend
+        isAddingNewSession={isAddingNewSession}
+        setIsAddingNewSession={setIsAddingNewSession}
+        visibleProjects={visibleProjects}
+        handleScrollToNow={handleScrollToNow}
+      />
       {selectedSession && (
         <EditSessionDrawer
           timerSession={selectedSession}
