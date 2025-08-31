@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useMouse, useDisclosure, useHover } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
+import { useCalendarStore } from "@/stores/calendarStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Grid, Stack, Group, Box, Modal, Text } from "@mantine/core";
@@ -22,7 +23,8 @@ import { CalendarDay, VisibleProject } from "@/types/workCalendar.types";
 import { TablesInsert } from "@/types/db.types";
 import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
 import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
-import { formatDateTime, formatTime } from "@/utils/formatFunctions";
+import { formatDateTime } from "@/utils/formatFunctions";
+import AppointmentForm from "@/components/Appointments/AppointmentForm";
 
 interface CalendarGridProps {
   days: CalendarDay[];
@@ -41,11 +43,11 @@ export default function CalendarGrid({
   isFetching,
   hourMultiplier,
   rasterHeight,
+  visibleProjects,
+  isAddingNewSession,
   setReferenceDate,
   handleSessionClick,
   handleNextAndPrev,
-  visibleProjects,
-  isAddingNewSession,
   setIsAddingNewSession,
 }: CalendarGridProps) {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
@@ -55,6 +57,7 @@ export default function CalendarGrid({
   const [modalOpened, { open, close }] = useDisclosure(false);
   const [submitting, setSubmitting] = useState(false);
   const { addTimerSession } = useWorkStore();
+  const { createAppointment } = useCalendarStore();
   const {
     locale,
     defaultSalaryCurrency,
@@ -128,7 +131,27 @@ export default function CalendarGrid({
     return Math.round(timeToY(snapped));
   }
 
-  async function handleSubmit(values: {
+  async function handleSubmitAppointment(values: TablesInsert<"appointment">) {
+    setSubmitting(true);
+
+    console.log("values", values);
+    const newAppointment: TablesInsert<"appointment"> = {
+      ...values,
+      description: values.description || null,
+      timer_project_id: values.timer_project_id || null,
+    };
+
+    const success = await createAppointment(newAppointment);
+    console.log("success", success);
+    if (success) {
+      close();
+      setStartNewSession(null);
+      setNewSessionDay(null);
+    }
+    setSubmitting(false);
+  }
+
+  async function handleSubmitTimerSession(values: {
     project_id?: string;
     start_time: string;
     end_time: string;
@@ -318,50 +341,85 @@ export default function CalendarGrid({
           setStartNewSession(null);
           setNewSessionDay(null);
         }}
-        title="Add Session"
+        title={
+          yToTime(
+            Math.min(startNewSession || 0, endNewSession || 0),
+            newSessionDay || new Date()
+          ) > new Date()
+            ? locale === "de-DE"
+              ? "Neue Sitzung"
+              : "New Work Session"
+            : locale === "de-DE"
+              ? "Neuer Termin"
+              : "New Appointment"
+        }
         size="lg"
         padding="md"
       >
-        {newSessionDay && startNewSession && endNewSession && (
-          <SessionForm
-            initialValues={{
-              start_time: yToTime(
-                Math.min(startNewSession, endNewSession),
-                newSessionDay
-              ).toISOString(),
-              end_time: yToTime(
-                Math.max(startNewSession, endNewSession),
-                newSessionDay
-              ).toISOString(),
-              active_seconds:
-                (new Date(
-                  yToTime(
-                    Math.max(startNewSession, endNewSession),
-                    newSessionDay
-                  )
-                ).getTime() -
-                  new Date(
+        {newSessionDay &&
+          startNewSession &&
+          endNewSession &&
+          (yToTime(Math.min(startNewSession, endNewSession), newSessionDay) >
+          new Date() ? (
+            <AppointmentForm
+              onCancel={() => {
+                close();
+                setStartNewSession(null);
+                setNewSessionDay(null);
+              }}
+              newAppointment={true}
+              initialValues={{
+                start_date: yToTime(
+                  startNewSession,
+                  newSessionDay
+                ).toISOString(),
+                end_date: yToTime(endNewSession, newSessionDay).toISOString(),
+                title: "",
+                timer_project_id: null,
+              }}
+              onSubmit={handleSubmitAppointment}
+              submitting={submitting}
+            />
+          ) : (
+            <SessionForm
+              initialValues={{
+                start_time: yToTime(
+                  Math.min(startNewSession, endNewSession),
+                  newSessionDay
+                ).toISOString(),
+                end_time: yToTime(
+                  Math.max(startNewSession, endNewSession),
+                  newSessionDay
+                ).toISOString(),
+                active_seconds:
+                  (new Date(
                     yToTime(
-                      Math.min(startNewSession, endNewSession),
+                      Math.max(startNewSession, endNewSession),
                       newSessionDay
                     )
-                  ).getTime()) /
-                1000,
-              paused_seconds: 0,
-              currency: defaultSalaryCurrency,
-              salary: defaultSalaryAmount,
-              hourly_payment: defaultProjectHourlyPayment,
-            }}
-            onSubmit={handleSubmit}
-            onCancel={() => {
-              close();
-              setStartNewSession(null);
-              setNewSessionDay(null);
-            }}
-            newSession
-            submitting={submitting}
-          />
-        )}
+                  ).getTime() -
+                    new Date(
+                      yToTime(
+                        Math.min(startNewSession, endNewSession),
+                        newSessionDay
+                      )
+                    ).getTime()) /
+                  1000,
+                paused_seconds: 0,
+                currency: defaultSalaryCurrency,
+                salary: defaultSalaryAmount,
+                hourly_payment: defaultProjectHourlyPayment,
+              }}
+              onSubmit={handleSubmitTimerSession}
+              onCancel={() => {
+                close();
+                setStartNewSession(null);
+                setNewSessionDay(null);
+              }}
+              newSession
+              submitting={submitting}
+            />
+          ))}
       </Modal>
     </Box>
   );

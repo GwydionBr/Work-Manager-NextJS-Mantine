@@ -25,10 +25,10 @@ export { deleteTask } from "./tasks/deleteTask";
 
 // Calendar Actions
 
-export { getAllAppointments } from "./calendar/getAllAppointments";
-export { createAppointment } from "./calendar/createAppointment";
-export { updateAppointment } from "./calendar/updateAppointment";
-export { deleteAppointment } from "./calendar/deleteAppointment";
+export { getAllAppointments } from "./appointments/getAllAppointments";
+export { createAppointment } from "./appointments/createAppointment";
+export { updateAppointment } from "./appointments/updateAppointment";
+export { deleteAppointment } from "./appointments/deleteAppointment";
 
 // Payout Actions
 

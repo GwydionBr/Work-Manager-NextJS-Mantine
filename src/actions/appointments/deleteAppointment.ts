@@ -1,3 +1,5 @@
+"use server";
+
 import { createClient } from "@/utils/supabase/server";
 import { SimpleResponse } from "@/types/action.types";
 

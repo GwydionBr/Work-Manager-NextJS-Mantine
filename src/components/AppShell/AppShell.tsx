@@ -33,7 +33,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { fetchGroupData, lastFetch: lastGroupFetch } = useGroupStore();
   const { fetchUserData, lastFetch: lastUserFetch } = useUserStore();
   const { fetchFinanceData, lastFetch: lastFinanceFetch } = useFinanceStore();
-  const { fetchWorkData, lastFetch: lastWorkFetch, setActiveProjectId } = useWorkStore();
+  const {
+    fetchWorkData,
+    lastFetch: lastWorkFetch,
+    setActiveProjectId,
+  } = useWorkStore();
   const { fetchTasksData, lastFetch: lastTaskFetch } = useTaskStore();
   const {
     locale,
@@ -70,7 +74,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       let priorityFetch = FetchPriority.Settings;
       // Prioritized fetching based on current route
       if (shouldFetch(lastSettingsFetch)) {
-        console.log("fetching settings data priority");
         await fetchSettings();
       }
       if (pathname.startsWith("/finances") && shouldFetch(lastFinanceFetch)) {
@@ -99,35 +102,30 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           priorityFetch !== FetchPriority.User &&
           shouldFetch(lastUserFetch)
         ) {
-          console.log("fetching user data background");
           fetchUserData();
         }
         if (
           priorityFetch !== FetchPriority.Finance &&
           shouldFetch(lastFinanceFetch)
         ) {
-          console.log("fetching finance data background");
           fetchFinanceData();
         }
         if (
           priorityFetch !== FetchPriority.Work &&
           shouldFetch(lastWorkFetch)
         ) {
-          console.log("fetching work data background");
           fetchWorkData();
         }
         if (
           priorityFetch !== FetchPriority.Group &&
           shouldFetch(lastGroupFetch)
         ) {
-          console.log("fetching group data background");
           fetchGroupData();
         }
         if (
           priorityFetch !== FetchPriority.Tasks &&
           shouldFetch(lastTaskFetch)
         ) {
-          console.log("fetching tasks data background");
           fetchTasksData();
         }
       };

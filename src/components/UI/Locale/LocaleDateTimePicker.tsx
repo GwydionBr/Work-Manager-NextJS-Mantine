@@ -9,6 +9,7 @@ export default function LocaleDateTimePicker({
   value,
   onChange,
   error,
+  ...props
 }: DateTimePickerProps) {
   const { locale } = useSettingsStore();
 
@@ -24,6 +25,7 @@ export default function LocaleDateTimePicker({
       value={value}
       onChange={onChange}
       error={error}
+      {...props}
     />
   );
 }

@@ -83,7 +83,7 @@ export default function WorkCalendar() {
       },
     ],
     [
-      "Enter",
+      "mod + Enter",
       () => {
         if (!isAddingNewSession) {
           setIsAddingNewSession(true);

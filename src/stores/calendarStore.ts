@@ -54,6 +54,7 @@ export const useCalendarStore = create<
   createAppointment: async (appointment) => {
     const { appointments } = get();
     const response = await actions.createAppointment(appointment);
+    console.log("response", response);
     if (response.success) {
       const newAppointments = [...appointments, response.data];
       set({ appointments: newAppointments });

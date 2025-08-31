@@ -1,3 +1,5 @@
+"use server";
+
 import { createClient } from "@/utils/supabase/server";
 import { ApiResponseSingle } from "@/types/action.types";
 import { TablesUpdate } from "@/types/db.types";
