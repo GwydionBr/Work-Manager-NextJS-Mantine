@@ -84,6 +84,7 @@ export default function TimerManager({
       roundedActiveTime: "00:00",
       pausedTime: "00:00",
       forceEndTimer: false,
+      createdAt: new Date().getTime(),
     });
 
     if (!result.success) {
@@ -122,6 +123,7 @@ export default function TimerManager({
         roundedActiveTime: "00:00",
         pausedTime: "00:00",
         forceEndTimer: false,
+        createdAt: new Date().getTime(),
       });
 
       if (!result.success) {
@@ -203,16 +205,18 @@ export default function TimerManager({
         getStatusColor={() => getStatusColor(mainTimerStatus)}
       />
 
-      {timers.map((timer) => (
-        <TimeTrackerInstance
-          key={timer.id}
-          timer={timer}
-          isBig={isBig}
-          isTimeTrackerMinimized={isTimeTrackerMinimized}
-          setIsTimeTrackerMinimized={setIsTimeTrackerMinimized}
-          forceEndTimer={timer.forceEndTimer}
-        />
-      ))}
+      {timers
+        .sort((a, b) => b.createdAt - a.createdAt)
+        .map((timer) => (
+          <TimeTrackerInstance
+            key={timer.id}
+            timer={timer}
+            isBig={isBig}
+            isTimeTrackerMinimized={isTimeTrackerMinimized}
+            setIsTimeTrackerMinimized={setIsTimeTrackerMinimized}
+            forceEndTimer={timer.forceEndTimer}
+          />
+        ))}
     </Stack>
   );
 }

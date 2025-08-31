@@ -27,6 +27,7 @@ export interface TimerData {
   pausedTime: string;
   forceEndTimer: boolean;
   color: string | null;
+  createdAt: number;
 }
 
 interface TimeTrackerManagerState {
