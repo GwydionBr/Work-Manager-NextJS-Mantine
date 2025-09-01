@@ -29,8 +29,6 @@ import { DatePickerInput } from "@mantine/dates";
 
 import { getStartOfDay } from "./calendarUtils";
 import {
-  startOfWeek,
-  endOfWeek,
   addDays,
   isSameDay,
   differenceInCalendarDays,
@@ -43,55 +41,54 @@ import {
   VisibleProject,
   CalendarAppointment,
 } from "@/types/workCalendar.types";
-import { Tables } from "@/types/db.types";
 
 const zoomLevel = [1, 2, 4, 6, 12]; // multiplier for hour height
 const zoomLabels = ["1 h", "30 min", "15 min", "10 min", "5 min"];
-const rasterHeight = 60; // px per hour
 
 export default function WorkCalendar() {
-  const [isAddingNewSession, setIsAddingNewSession] = useState<boolean>(false);
-  const [viewMode, setViewMode] = useState<ViewMode>("week");
-  const [referenceDate, setReferenceDate] = useState<Date>(new Date());
-  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
-    startOfWeek(new Date(), { weekStartsOn: 1 }),
-    endOfWeek(new Date(), { weekStartsOn: 1 }),
-  ]);
-  const [currentDateRange, setCurrentDateRange] = useState<[Date, Date]>([
-    startOfWeek(new Date(), { weekStartsOn: 1 }),
-    endOfWeek(new Date(), { weekStartsOn: 1 }),
-  ]);
+  const {
+    appointments,
+    viewMode,
+    setViewMode,
+    rasterHeight,
+    addingMode,
+    setAddingMode,
+    referenceDate,
+    setReferenceDate,
+    selectedSession,
+    setSelectedSession,
+    dateRange,
+    setDateRange,
+    currentDateRange,
+    setCurrentDateRange,
+  } = useCalendarStore();
+  const { locale } = useSettingsStore();
+  const { projects: timerProjects, timerSessions, isFetching } = useWorkStore();
+  const projects = timerProjects.map((project) => project.project);
+
   const [zoomIndex, setZoomIndex] = useState(1);
   const [viewportTop, setViewportTop] = useState({
     old: 0,
     new: 0,
     isSmooth: false,
   });
-  const [selectedSession, setSelectedSession] =
-    useState<Tables<"timer_session"> | null>(null);
-  const [selectedAppointment, setSelectedAppointment] =
-    useState<Tables<"appointment"> | null>(null);
   const [drawerOpened, { open, close }] = useDisclosure(false);
-  const { locale } = useSettingsStore();
-  const { projects: timerProjects, timerSessions, isFetching } = useWorkStore();
-  const { appointments } = useCalendarStore();
-  const projects = timerProjects.map((project) => project.project);
   const viewport = useRef<HTMLDivElement>(null);
 
   useHotkeys([
     [
       "Escape",
       () => {
-        if (isAddingNewSession) {
-          setIsAddingNewSession(false);
+        if (addingMode) {
+          setAddingMode(false);
         }
       },
     ],
     [
       "mod + Enter",
       () => {
-        if (!isAddingNewSession) {
-          setIsAddingNewSession(true);
+        if (!addingMode) {
+          setAddingMode(true);
         }
       },
     ],
@@ -138,24 +135,36 @@ export default function WorkCalendar() {
   }, [timerSessions, days, projects]);
 
   const appointmentsByDay = useMemo(() => {
-    return appointments.map((a) => ({
-      ...a,
-      projectTitle:
-        projects.find((p) => p.id === a.timer_project_id)?.title ?? "",
-      color:
-        projects.find((p) => p.id === a.timer_project_id)?.color ??
-        "var(--mantine-color-teal-6)",
-    }));
+    const map = new Map<string, CalendarAppointment[]>();
+    days.forEach((d) => {
+      map.set(d.toISOString().slice(0, 10), []);
+    });
+    appointments.forEach((a) => {
+      const start = new Date(a.start_date);
+      const end = new Date(a.end_date);
+      const day = a.start_date.slice(0, 10);
+      days.forEach((d) => {
+        const dayStart = getStartOfDay(d);
+        const dayEnd = addDays(dayStart, 1);
+        const overlaps = start < dayEnd && end > dayStart;
+        const project = projects.find((p) => p.id === a.timer_project_id);
+        if (overlaps) {
+          map.get(day)?.push({
+            ...a,
+            projectTitle: project?.title ?? "",
+            color: project?.color ?? "var(--mantine-color-teal-6)",
+          });
+        }
+      });
+    });
+    return map;
   }, [appointments, days, projects]);
 
   const calendarDays: CalendarDay[] = useMemo(() => {
     return days.map((d) => ({
       day: d,
       sessions: sessionsByDay.get(d.toISOString().slice(0, 10)) ?? [],
-      appointments:
-        appointmentsByDay.filter(
-          (a) => a.start_date.slice(0, 10) === d.toISOString().slice(0, 10)
-        ) ?? [],
+      appointments: appointmentsByDay.get(d.toISOString().slice(0, 10)) ?? [],
     }));
   }, [days, sessionsByDay, appointmentsByDay]);
   console.log("calendarDays", calendarDays);
@@ -387,7 +396,7 @@ export default function WorkCalendar() {
                     type="range"
                     value={dateRange}
                     valueFormat={
-                      locale === "de-DE" ? "DD. MMMM YYYY" : "MMM DD, YYYY"
+                      locale === "de-DE" ? "DD. MMM YYYY" : "MMM DD, YYYY"
                     }
                     onChange={(value) => {
                       const [start, end] = value;
@@ -489,8 +498,6 @@ export default function WorkCalendar() {
           </Grid.Col>
         </Grid>
         <CalendarGrid
-          isAddingNewSession={isAddingNewSession}
-          setIsAddingNewSession={setIsAddingNewSession}
           visibleProjects={visibleProjects}
           handleNextAndPrev={handleNextAndPrev}
           isFetching={isFetching}
@@ -502,8 +509,6 @@ export default function WorkCalendar() {
         />
       </Stack>
       <CalendarLegend
-        isAddingNewSession={isAddingNewSession}
-        setIsAddingNewSession={setIsAddingNewSession}
         visibleProjects={visibleProjects}
         handleScrollToNow={handleScrollToNow}
       />

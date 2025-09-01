@@ -17,6 +17,14 @@ export type VisibleProject = {
   currency: Currency;
 };
 
+export enum ZoomLevel {
+  Hour = 1,
+  ThirtyMinutes = 2,
+  FifteenMinutes = 4,
+  TenMinutes = 6,
+  FiveMinutes = 12,
+}
+
 export type CalendarSession = Pick<
   Tables<"timer_session">,
   | "id"

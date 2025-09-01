@@ -1,6 +1,7 @@
 "use client";
 
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useCalendarStore } from "@/stores/calendarStore";
 
 import { Group, ActionIcon, Text } from "@mantine/core";
 import { IconArrowsSort, IconPlus } from "@tabler/icons-react";
@@ -13,17 +14,14 @@ import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 interface CalendarLegendProps {
   visibleProjects: VisibleProject[];
   handleScrollToNow: () => void;
-  isAddingNewSession: boolean;
-  setIsAddingNewSession: (isAddingNewSession: boolean) => void;
 }
 
 export default function CalendarLegend({
   visibleProjects,
   handleScrollToNow,
-  isAddingNewSession,
-  setIsAddingNewSession,
 }: CalendarLegendProps) {
   const { locale } = useSettingsStore();
+  const { addingMode, setAddingMode } = useCalendarStore();
 
   return (
     <Group
@@ -42,7 +40,7 @@ export default function CalendarLegend({
     >
       <PlusActionIcon
         tooltipLabel={
-          isAddingNewSession
+          addingMode
             ? locale === "de-DE"
               ? "Eintragungsmodus deaktivieren (Escape)"
               : "Disable entry mode (Escape)"
@@ -50,8 +48,8 @@ export default function CalendarLegend({
               ? "Eintragungsmodus aktivieren (Enter)"
               : "Enable entry mode (Enter)"
         }
-        variant={isAddingNewSession ? "filled" : "light"}
-        onClick={() => setIsAddingNewSession(!isAddingNewSession)}
+        variant={addingMode ? "filled" : "light"}
+        onClick={() => setAddingMode(!addingMode)}
       />
       {visibleProjects.length > 0 ? (
         <Group justify="center" wrap="wrap" gap="xs" w="100%">

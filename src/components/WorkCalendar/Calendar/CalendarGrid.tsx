@@ -31,8 +31,6 @@ interface CalendarGridProps {
   isFetching: boolean;
   hourMultiplier: number;
   rasterHeight: number;
-  isAddingNewSession: boolean;
-  setIsAddingNewSession: (isAddingNewSession: boolean) => void;
   setReferenceDate: (date: Date) => void;
   handleSessionClick: (sessionId: string) => void;
   handleNextAndPrev: (direction: number) => void;
@@ -44,11 +42,9 @@ export default function CalendarGrid({
   hourMultiplier,
   rasterHeight,
   visibleProjects,
-  isAddingNewSession,
   setReferenceDate,
   handleSessionClick,
   handleNextAndPrev,
-  setIsAddingNewSession,
 }: CalendarGridProps) {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
   const [startNewSession, setStartNewSession] = useState<number | null>(null);
@@ -57,7 +53,7 @@ export default function CalendarGrid({
   const [modalOpened, { open, close }] = useDisclosure(false);
   const [submitting, setSubmitting] = useState(false);
   const { addTimerSession } = useWorkStore();
-  const { createAppointment } = useCalendarStore();
+  const { createAppointment, addingMode } = useCalendarStore();
   const {
     locale,
     defaultSalaryCurrency,
@@ -277,7 +273,7 @@ export default function CalendarGrid({
                 ref={ref}
                 onClick={handleClick}
               >
-                {!isAddingNewSession && hovered && showCalendarTime && (
+                {!addingMode && hovered && showCalendarTime && (
                   <Stack
                     style={{
                       position: "absolute",
@@ -317,8 +313,6 @@ export default function CalendarGrid({
                         setNewSessionDay={setNewSessionDay}
                         setEndNewSession={setEndNewSession}
                         snapYToInterval={(y) => snapYToInterval(y, d.day)}
-                        isAddingNewSession={isAddingNewSession}
-                        setIsAddingNewSession={setIsAddingNewSession}
                       />
                     </Grid.Col>
                   );

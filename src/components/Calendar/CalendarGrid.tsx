@@ -1,3 +1,7 @@
+"use client";
+
+import { useCalendarStore } from "@/stores/calendarStore";
+
 import { Box, Stack } from "@mantine/core";
 import CalendarCell from "./CalendarCell";
 
@@ -18,6 +22,7 @@ export default function CalendarGrid({
   entries,
   onDateSelect,
 }: CalendarGridProps) {
+  const { viewMode } = useCalendarStore();
   const daysInMonth = new Date(
     currentDate.getFullYear(),
     currentDate.getMonth() + 1,

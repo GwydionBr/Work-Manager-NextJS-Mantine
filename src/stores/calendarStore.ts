@@ -4,13 +4,31 @@ import { create } from "zustand";
 import { TimerData } from "@/stores/timeTrackerManagerStore";
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import * as actions from "@/actions";
+import { ViewMode, ZoomLevel } from "@/types/workCalendar.types";
+import {
+  startOfWeek,
+  endOfWeek,
+  addDays,
+  isSameDay,
+  differenceInCalendarDays,
+} from "date-fns";
 
 interface CalendarStoreState {
   activeTimer: TimerData | null;
   appointments: Tables<"appointment">[];
+  selectedSession: Tables<"timer_session"> | null;
+  dateRange: [Date | null, Date | null];
+  currentDateRange: [Date, Date];
+  referenceDate: Date;
+  newEventStartY: number | null;
+  newEventEndY: number | null;
+  newEventDay: Date | null;
+  viewMode: ViewMode;
+  zoomLevel: ZoomLevel;
+  rasterHeight: number;
   eventIsHovered: boolean;
   eventIsSelected: boolean;
-  entryMode: boolean;
+  addingMode: boolean;
   isFetching: boolean;
   lastFetch: Date | null;
 }
@@ -25,10 +43,19 @@ interface CalendarStoreActions {
     appointment: TablesUpdate<"appointment">
   ) => Promise<boolean>;
   deleteAppointment: (id: string) => Promise<boolean>;
+  setViewMode: (viewMode: ViewMode) => void;
+  setZoomLevel: (zoomLevel: ZoomLevel) => void;
+  setSelectedSession: (selectedSession: Tables<"timer_session"> | null) => void;
+  setDateRange: (dateRange: [Date | null, Date | null]) => void;
+  setCurrentDateRange: (currentDateRange: [Date, Date]) => void;
+  setReferenceDate: (referenceDate: Date) => void;
+  setNewEventStartY: (newEventStartY: number | null) => void;
+  setNewEventEndY: (newEventEndY: number | null) => void;
+  setNewEventDay: (newEventDay: Date | null) => void;
   setActiveTimer: (timer: TimerData | null) => void;
   setEventIsHovered: (isHovered: boolean) => void;
   setEventIsSelected: (isSelected: boolean) => void;
-  setEntryMode: (isEntryMode: boolean) => void;
+  setAddingMode: (isAddingMode: boolean) => void;
 }
 
 export const useCalendarStore = create<
@@ -36,18 +63,50 @@ export const useCalendarStore = create<
 >((set, get) => ({
   activeTimer: null,
   appointments: [],
+  viewMode: "week",
+  zoomLevel: ZoomLevel.ThirtyMinutes,
+  rasterHeight: 60,
   eventIsHovered: false,
   eventIsSelected: false,
-  entryMode: false,
+  addingMode: false,
+  selectedSession: null,
+  dateRange: [
+    startOfWeek(new Date(), { weekStartsOn: 1 }),
+    endOfWeek(new Date(), { weekStartsOn: 1 }),
+  ],
+  currentDateRange: [
+    startOfWeek(new Date(), { weekStartsOn: 1 }),
+    endOfWeek(new Date(), { weekStartsOn: 1 }),
+  ],
+  referenceDate: new Date(),
+  newEventStartY: null,
+  newEventEndY: null,
+  newEventDay: null,
   isFetching: true,
   lastFetch: null,
   resetStore: () =>
     set({
       activeTimer: null,
       appointments: [],
+      viewMode: "week",
+      zoomLevel: ZoomLevel.ThirtyMinutes,
+      rasterHeight: 60,
       eventIsHovered: false,
       eventIsSelected: false,
-      entryMode: false,
+      addingMode: false,
+      selectedSession: null,
+      dateRange: [
+        startOfWeek(new Date(), { weekStartsOn: 1 }),
+        endOfWeek(new Date(), { weekStartsOn: 1 }),
+      ],
+      currentDateRange: [
+        startOfWeek(new Date(), { weekStartsOn: 1 }),
+        endOfWeek(new Date(), { weekStartsOn: 1 }),
+      ],
+      referenceDate: new Date(),
+      newEventStartY: null,
+      newEventEndY: null,
+      newEventDay: null,
       isFetching: true,
       lastFetch: null,
     }),
@@ -98,5 +157,19 @@ export const useCalendarStore = create<
   setEventIsHovered: (isHovered: boolean) => set({ eventIsHovered: isHovered }),
   setEventIsSelected: (isSelected: boolean) =>
     set({ eventIsSelected: isSelected }),
-  setEntryMode: (isEntryMode: boolean) => set({ entryMode: isEntryMode }),
+  setAddingMode: (isAddingMode: boolean) => set({ addingMode: isAddingMode }),
+  setSelectedSession: (selectedSession: Tables<"timer_session"> | null) =>
+    set({ selectedSession }),
+  setDateRange: (dateRange: [Date | null, Date | null]) => set({ dateRange }),
+  setCurrentDateRange: (currentDateRange: [Date, Date]) =>
+    set({ currentDateRange }),
+  setReferenceDate: (referenceDate: Date) => set({ referenceDate }),
+  setNewEventStartY: (newEventStartY: number | null) =>
+    set({ newEventStartY: newEventStartY }),
+  setNewEventEndY: (newEventEndY: number | null) =>
+    set({ newEventEndY: newEventEndY }),
+  setNewEventDay: (newEventDay: Date | null) =>
+    set({ newEventDay: newEventDay }),
+  setViewMode: (viewMode: ViewMode) => set({ viewMode }),
+  setZoomLevel: (zoomLevel: ZoomLevel) => set({ zoomLevel }),
 }));

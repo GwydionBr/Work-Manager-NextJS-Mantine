@@ -2,6 +2,7 @@
 
 import { useHover, useHotkeys } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useCalendarStore } from "@/stores/calendarStore";
 
 import { Box, Skeleton, Stack, Text } from "@mantine/core";
 
@@ -38,8 +39,6 @@ interface DayColumnProps {
   setNewSessionDay: (day: Date | null) => void;
   setEndNewSession: (y: number | null) => void;
   snapYToInterval: (y: number) => number;
-  isAddingNewSession: boolean;
-  setIsAddingNewSession: (isAddingNewSession: boolean) => void;
 }
 
 export function DayColumn({
@@ -60,11 +59,10 @@ export function DayColumn({
   setNewSessionDay,
   setEndNewSession,
   snapYToInterval,
-  isAddingNewSession,
-  setIsAddingNewSession,
 }: DayColumnProps) {
   const { hovered, ref: hoverRef } = useHover();
   const { locale } = useSettingsStore();
+  const { addingMode, setAddingMode } = useCalendarStore();
   useHotkeys([["escape", () => setStartNewSession(null)]]);
 
   // Clip sessions to the visible day window so cross-midnight sessions
@@ -110,7 +108,7 @@ export function DayColumn({
   const snappedY = snapYToInterval(y);
 
   function handleNewSessionClick(newY: number) {
-    if (!isAddingNewSession) return;
+    if (!addingMode) return;
 
     if (startNewSession === null) {
       setStartNewSession(newY);
@@ -166,7 +164,7 @@ export function DayColumn({
 
         {/* New session event */}
         {!isFetching &&
-          isAddingNewSession &&
+          addingMode &&
           hovered &&
           startNewSession === null && (
             <Stack
