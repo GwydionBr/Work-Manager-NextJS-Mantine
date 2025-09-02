@@ -42,7 +42,8 @@ export default function WorkPage() {
     })
   );
   const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
-  const [analysisOpened, setAnalysisOpened] = useState(false);
+  const [analysisOpened, { open: openAnalysis, close: closeAnalysis }] =
+    useDisclosure(false);
   const [
     editProjectOpened,
     { open: openEditProject, close: closeEditProject },
@@ -139,122 +140,124 @@ export default function WorkPage() {
   };
 
   return (
-    <Stack align="center" w="100%" px="xl" gap="xs">
-      <Header
-        headerTitle={activeProject.project.title}
-        leftSalary={
-          activeProject.project.hourly_payment
-            ? undefined
-            : activeProject.project.salary === 0
-              ? "Hobby"
-              : salary
-        }
-        rightSalary={
-          activeProject.project.salary === 0 ? undefined : hourlySalary
-        }
-        description={activeProject.project.description ?? undefined}
-        rightButton={
-          <Group>
-            {activeProject.sessions.length > 0 && (
-              <AnalysisActionIcon
-                onClick={() => setAnalysisOpened((state) => !state)}
-                tooltipLabel="Analyse"
+    <Stack align="center" w="100%" px="xl">
+      <Collapse in={!analysisOpened} transitionDuration={300} w="100%">
+        <Header
+          headerTitle={activeProject.project.title}
+          leftSalary={
+            activeProject.project.hourly_payment
+              ? undefined
+              : activeProject.project.salary === 0
+                ? "Hobby"
+                : salary
+          }
+          rightSalary={
+            activeProject.project.salary === 0 ? undefined : hourlySalary
+          }
+          description={activeProject.project.description ?? undefined}
+          rightButton={
+            <Group>
+              {activeProject.sessions.length > 0 && (
+                <AnalysisActionIcon
+                  onClick={openAnalysis}
+                  tooltipLabel="Analyse"
+                />
+              )}
+              <EditActionIcon
+                onClick={openEditProject}
+                tooltipLabel={
+                  locale === "de-DE" ? "Projekt bearbeiten" : "Edit Project"
+                }
               />
-            )}
-            <EditActionIcon
-              onClick={openEditProject}
-              tooltipLabel={
-                locale === "de-DE" ? "Projekt bearbeiten" : "Edit Project"
-              }
+            </Group>
+          }
+        />
+        <Stack
+          style={{ position: "sticky", top: 0, zIndex: 10, left: 0 }}
+          bg="var(--mantine-color-body)"
+          w="100%"
+          gap="xs"
+        >
+          <Group justify="space-between" p="xs">
+            <FilterActionIcon
+              onClick={handleFilterToggle}
+              tooltipLabel={locale === "de-DE" ? "Filter" : "Filter"}
+              filled={filterOpened}
+            />
+            <NewSessionButton />
+            <PayoutActionIcon
+              onClick={handlePayoutToggle}
+              tooltipLabel={locale === "de-DE" ? "Auszahlung" : "Payout"}
             />
           </Group>
-        }
-      />
-      <Stack
-        style={{ position: "sticky", top: 0, zIndex: 10, left: 0 }}
-        bg="var(--mantine-color-body)"
-        w="100%"
-        gap="xs"
-      >
-        <Group justify="space-between" p="xs">
-          <FilterActionIcon
-            onClick={handleFilterToggle}
-            tooltipLabel={locale === "de-DE" ? "Filter" : "Filter"}
-            filled={filterOpened}
-          />
-          <NewSessionButton />
-          <PayoutActionIcon
-            onClick={handlePayoutToggle}
-            tooltipLabel={locale === "de-DE" ? "Auszahlung" : "Payout"}
-          />
-        </Group>
-        {/* Bulk Selection Controls */}
-        {activeProject.project.hourly_payment && (
-          <Collapse in={filterOpened}>
-            <BulkSelectionControls
-              unpaidSessions={unpaidSessions}
-              selectedSessions={selectedSessions}
-              onSessionsChange={setSelectedSessions}
-              isOverview={false}
-              timePresets={timePresets}
-              selectedTimePreset={selectedTimePreset}
-              timeFilterDays={timeFilterDays}
-              onTimePresetChange={handleTimePresetChange}
-              onCustomDaysChange={handleCustomDaysChange}
-              onSetDaysForPreset={handleSetDaysForPreset}
-            />
-          </Collapse>
-        )}
-        <Collapse in={payoutOpened}>
-          <Group justify="flex-end">
-            <PayoutCard
-              opened={payoutOpened}
-              sessions={unpaidSessions}
-              project={activeProject.project}
-              selectedSessions={selectedSessions}
-              onSessionsChange={setSelectedSessions}
-            />
-          </Group>
-        </Collapse>
-      </Stack>
-      {activeProject?.sessions.length > 0 ? (
-        <Box w="100%">
-          <Collapse in={analysisOpened} transitionDuration={500}>
-            <WorkAnalysis
-              sessions={activeProject.sessions}
-              isOverview={false}
-              project={activeProject.project}
-            />
-          </Collapse>
-
-          {/* Session Hierarchy */}
-          {filteredSessions.length > 0 ? (
-            <SessionHierarchy
-              groupedSessions={groupSessions(filteredSessions, locale)}
-              selectedSessions={selectedSessions}
-              onSessionToggle={handleSessionToggle}
-              project={activeProject.project}
-              isOverview={false}
-            />
-          ) : (
-            <Text size="lg" c="gray" ta="center">
-              {locale === "de-DE"
-                ? "Keine Sitzungen im ausgewählten Zeitraum"
-                : "No Sessions in the time period"}
-            </Text>
+          {/* Bulk Selection Controls */}
+          {activeProject.project.hourly_payment && (
+            <Collapse in={filterOpened}>
+              <BulkSelectionControls
+                unpaidSessions={unpaidSessions}
+                selectedSessions={selectedSessions}
+                onSessionsChange={setSelectedSessions}
+                isOverview={false}
+                timePresets={timePresets}
+                selectedTimePreset={selectedTimePreset}
+                timeFilterDays={timeFilterDays}
+                onTimePresetChange={handleTimePresetChange}
+                onCustomDaysChange={handleCustomDaysChange}
+                onSetDaysForPreset={handleSetDaysForPreset}
+              />
+            </Collapse>
           )}
-        </Box>
-      ) : (
-        <Text size="lg" c="gray" ta="center">
-          {locale === "de-DE"
-            ? "Fügen Sie eine Sitzung hinzu, um sie hier zu sehen"
-            : "Add as Session to see it here"}
-        </Text>
-      )}
-      <EditProjectDrawer
-        opened={editProjectOpened}
-        onClose={closeEditProject}
-      />
+          <Collapse in={payoutOpened}>
+            <Group justify="flex-end">
+              <PayoutCard
+                opened={payoutOpened}
+                sessions={unpaidSessions}
+                project={activeProject.project}
+                selectedSessions={selectedSessions}
+                onSessionsChange={setSelectedSessions}
+              />
+            </Group>
+          </Collapse>
+        </Stack>
+        {activeProject?.sessions.length > 0 ? (
+          <Box w="100%">
+            {/* Session Hierarchy */}
+            {filteredSessions.length > 0 ? (
+              <SessionHierarchy
+                groupedSessions={groupSessions(filteredSessions, locale)}
+                selectedSessions={selectedSessions}
+                onSessionToggle={handleSessionToggle}
+                project={activeProject.project}
+                isOverview={false}
+              />
+            ) : (
+              <Text size="lg" c="gray" ta="center">
+                {locale === "de-DE"
+                  ? "Keine Sitzungen im ausgewählten Zeitraum"
+                  : "No Sessions in the time period"}
+              </Text>
+            )}
+          </Box>
+        ) : (
+          <Text size="lg" c="gray" ta="center">
+            {locale === "de-DE"
+              ? "Fügen Sie eine Sitzung hinzu, um sie hier zu sehen"
+              : "Add as Session to see it here"}
+          </Text>
+        )}
+        <EditProjectDrawer
+          opened={editProjectOpened}
+          onClose={closeEditProject}
+        />
+      </Collapse>
+      <Collapse in={analysisOpened} w="100%">
+        <WorkAnalysis
+          sessions={activeProject.sessions}
+          isOverview={false}
+          project={activeProject.project}
+          onClose={() => closeAnalysis()}
+        />
+      </Collapse>
     </Stack>
   );
 }

@@ -20,6 +20,7 @@ import { Tables } from "@/types/db.types";
 
 interface WorkAnalysisProps {
   isOverview?: boolean;
+  onClose: () => void;
   sessions: Tables<"timer_session">[];
   project?: Tables<"timer_project">;
 }
@@ -28,6 +29,7 @@ export default function WorkAnalysis({
   sessions,
   project,
   isOverview,
+  onClose,
 }: WorkAnalysisProps) {
   const { locale } = useSettingsStore();
   // Chart configuration state
@@ -66,9 +68,10 @@ export default function WorkAnalysis({
   const formatTimeWithSettings = (seconds: number) => formatTime(seconds);
 
   return (
-    <Card withBorder mb="xl" radius="xl">
+    <Card withBorder radius="xl" mih="97vh">
       <Stack mb="xl">
         <WorkChartControls
+          onClose={onClose}
           interval={interval}
           setInterval={setInterval}
           chartType={chartType}

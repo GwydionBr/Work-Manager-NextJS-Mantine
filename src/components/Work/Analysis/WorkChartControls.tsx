@@ -43,6 +43,7 @@ import {
 } from "@/utils/financeChartHelperFunctions";
 import React from "react";
 import FilterActionIcon from "@/components/UI/ActionIcons/FilterActionIcon";
+import ListActionIcon from "@/components/UI/ActionIcons/ListActionIcon";
 
 /**
  * Available chart visualization types
@@ -66,6 +67,7 @@ interface WorkChartControlsProps {
   setShowSalary: (showSalary: boolean) => void;
   dateRange: DateRange;
   setDateRange: (dateRange: DateRange) => void;
+  onClose: () => void;
 }
 
 /**
@@ -87,6 +89,7 @@ export default function WorkChartControls({
   setShowSalary,
   dateRange,
   setDateRange,
+  onClose,
 }: WorkChartControlsProps) {
   const { locale } = useSettingsStore();
   const [filterOpen, { toggle }] = useDisclosure(false);
@@ -255,7 +258,9 @@ export default function WorkChartControls({
 
   return (
     <Grid w="100%" columns={12}>
-      <Grid.Col span={1}></Grid.Col>
+      <Grid.Col span={1} style={{ display: "flex", justifyContent: "flex-start" }} pl="md">
+        <FilterActionIcon onClick={toggle} />
+      </Grid.Col>
       <Grid.Col span={10}>
         <Group align="center" w="100%" justify="center">
           {/* Navigation Controls */}
@@ -286,8 +291,8 @@ export default function WorkChartControls({
           </Group>
         </Group>
       </Grid.Col>
-      <Grid.Col span={1}>
-        <FilterActionIcon onClick={toggle} />
+      <Grid.Col span={1} style={{ display: "flex", justifyContent: "flex-end" }} pr="md">
+        <ListActionIcon onClick={onClose} variant="subtle" />
       </Grid.Col>
 
       <Grid.Col span={12}>
@@ -376,7 +381,9 @@ export default function WorkChartControls({
 
                 <Group>
                   <Switch
-                    label={locale === "de-DE" ? "Gehalt anzeigen" : "Show Salary"}
+                    label={
+                      locale === "de-DE" ? "Gehalt anzeigen" : "Show Salary"
+                    }
                     checked={showSalary}
                     onChange={(event) =>
                       setShowSalary(event.currentTarget.checked)
