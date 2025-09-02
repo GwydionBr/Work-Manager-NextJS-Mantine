@@ -3,13 +3,14 @@
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useCalendarStore } from "@/stores/calendarStore";
 
-import { Group, ActionIcon, Text } from "@mantine/core";
-import { IconArrowsSort, IconPlus } from "@tabler/icons-react";
-
-import { VisibleProject } from "@/types/workCalendar.types";
+import { Group, ActionIcon, Text, Kbd, Stack } from "@mantine/core";
+import { IconArrowsSort } from "@tabler/icons-react";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import CalendarLegendButton from "./CalendarLegendButton";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
+import Shortcut from "@/components/UI/Shortcut";
+
+import { VisibleProject } from "@/types/workCalendar.types";
 
 interface CalendarLegendProps {
   visibleProjects: VisibleProject[];
@@ -40,13 +41,29 @@ export default function CalendarLegend({
     >
       <PlusActionIcon
         tooltipLabel={
-          addingMode
-            ? locale === "de-DE"
-              ? "Eintragungsmodus deaktivieren (Escape)"
-              : "Disable entry mode (Escape)"
-            : locale === "de-DE"
-              ? "Eintragungsmodus aktivieren (Enter)"
-              : "Enable entry mode (Enter)"
+          addingMode ? (
+            locale === "de-DE" ? (
+              <Stack align="center">
+                <Text>Einfüge-Modus deaktivieren</Text>
+                <Shortcut keys={["Esc"]} />
+              </Stack>
+            ) : (
+              <Stack align="center">
+                <Text>Disable entry mode</Text>
+                <Shortcut keys={["Esc"]} />
+              </Stack>
+            )
+          ) : locale === "de-DE" ? (
+            <Stack align="center">
+              <Text>Einfüge-Modus aktivieren</Text>
+                <Shortcut keys={["mod", "Enter"]} />
+            </Stack>
+          ) : (
+            <Stack align="center">
+              <Text>Enable adding mode</Text>
+                <Shortcut keys={["mod", "Enter"]} />
+            </Stack>
+          )
         }
         variant={addingMode ? "filled" : "light"}
         onClick={() => setAddingMode(!addingMode)}

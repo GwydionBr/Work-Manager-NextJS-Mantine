@@ -8,7 +8,6 @@ import {
   Group,
   ScrollArea,
   Stack,
-  Tooltip,
   Text,
   Kbd,
 } from "@mantine/core";
@@ -19,6 +18,7 @@ import TimeTrackerManager from "../TimeTracker/TimeTrackerManager";
 import classes from "./AppShell.module.css";
 import TransitionDivider from "../UI/TransitionDivider";
 import DelayedTooltip from "../UI/DelayedTooltip";
+import Shortcut from "../UI/Shortcut";
 
 interface AsideProps {
   toggleAside: () => void;
@@ -48,17 +48,15 @@ export default function Aside({ toggleAside, isAsideOpen }: AsideProps) {
         <Group pl="xs" justify="flex-start">
           <DelayedTooltip
             label={
-              <Stack>
-                <Text>Toggle aside</Text>
-                <Group>
-                  <Kbd>⌘</Kbd> + <Kbd>B</Kbd>
-                </Group>
+              <Stack align="center">
+                <Text>Toggle Sidebar</Text>
+                <Shortcut keys={["mod", "B"]} />
               </Stack>
             }
           >
             <ActionIcon
               onClick={toggleAside}
-              aria-label="Toggle aside"
+              aria-label="Toggle Sidebar"
               variant="transparent"
             >
               <IconArrowBarLeft

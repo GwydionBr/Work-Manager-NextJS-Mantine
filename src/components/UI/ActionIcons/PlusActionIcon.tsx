@@ -4,7 +4,7 @@ import DelayedTooltip from "../DelayedTooltip";
 
 interface PlusActionIconProps extends ActionIconProps {
   onClick: () => void;
-  tooltipLabel?: string;
+  tooltipLabel?: string | React.ReactNode;
   iconSize?: number;
   iconColor?: string;
 }
