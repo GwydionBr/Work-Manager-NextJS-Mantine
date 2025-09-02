@@ -313,16 +313,13 @@ export default function WorkCalendar() {
       scrollbars="y"
     >
       <Stack>
-        <Title ta="center" order={1} mt="xs" w="100%" style={{ zIndex: 100 }}>
-          {locale === "de-DE" ? "Arbeitskalender" : "Work Calendar"}
-        </Title>
         <Grid
-          h={60}
+          h={65}
+          pt="md"
           columns={12}
           align="center"
           justify="center"
           w="100%"
-          pt="xs"
           style={{
             position: "sticky",
             top: 0,
