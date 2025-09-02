@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useSessionFiltering } from "@/hooks/useSessionFiltering";
@@ -13,11 +14,17 @@ import { groupSessions } from "@/utils/sessionHelperFunctions";
 import BulkSelectionControls from "@/components/Work/Session/BulkSelectionControls";
 import WorkAnalysis from "@/components/Work/Analysis/WorkAnalysis";
 import AnalysisActionIcon from "@/components/UI/ActionIcons/AnalysisActionIcon";
+import FilterActionIcon from "@/components/UI/ActionIcons/FilterActionIcon";
+import NewSessionButton from "@/components/Work/Session/NewSessionButton";
 
 export default function WorkOverviewPage() {
   const { projects: timerProjects, folders, timerSessions } = useWorkStore();
   const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
   const [analysisOpened, setAnalysisOpened] = useState(false);
+  const [
+    filterOpened,
+    { open: openFilter, close: closeFilter, toggle: toggleFilter },
+  ] = useDisclosure(false);
   const { locale } = useSettingsStore();
   const projects = timerProjects.map((project) => project.project);
 
@@ -68,31 +75,52 @@ export default function WorkOverviewPage() {
           </Group>
         }
       />
+      <Stack
+        style={{ position: "sticky", top: 0, zIndex: 10, left: 0 }}
+        bg="var(--mantine-color-body)"
+        w="100%"
+      >
+        <Group justify="space-between" p="xs">
+          <FilterActionIcon
+            onClick={toggleFilter}
+            tooltipLabel={locale === "de-DE" ? "Filter" : "Filter"}
+            filled={filterOpened}
+          />
+          <NewSessionButton />
+          <FilterActionIcon
+            onClick={toggleFilter}
+            tooltipLabel={locale === "de-DE" ? "Filter" : "Filter"}
+            filled={filterOpened}
+          />
+        </Group>
+        {/* Bulk Selection Controls */}
+        <BulkSelectionControls
+          isFilterOpen={filterOpened}
+          unpaidSessions={unpaidSessions}
+          selectedSessions={selectedSessions}
+          onSessionsChange={setSelectedSessions}
+          isOverview={true}
+          folders={folders}
+          projects={projects}
+          timePresets={timePresets}
+          selectedTimePreset={selectedTimePreset}
+          timeFilterDays={timeFilterDays}
+          onTimePresetChange={handleTimePresetChange}
+          onCustomDaysChange={handleCustomDaysChange}
+          onSetDaysForPreset={handleSetDaysForPreset}
+          filterState={filterState}
+          onProjectFilterChange={handleProjectFilterChange}
+          onFolderFilterChange={handleFolderFilterChange}
+          onCategoryFilterChange={handleCategoryFilterChange}
+          onFilterLogicChange={handleFilterLogicChange}
+          onClearAllFilters={clearAllFilters}
+        />
+      </Stack>
       {timerSessions.length > 0 ? (
         <Box w="100%">
           <Collapse in={analysisOpened} transitionDuration={500}>
             <WorkAnalysis sessions={filteredSessions} isOverview={true} />
           </Collapse>
-          <BulkSelectionControls
-            unpaidSessions={unpaidSessions}
-            selectedSessions={selectedSessions}
-            onSessionsChange={setSelectedSessions}
-            isOverview={true}
-            folders={folders}
-            projects={projects}
-            timePresets={timePresets}
-            selectedTimePreset={selectedTimePreset}
-            timeFilterDays={timeFilterDays}
-            onTimePresetChange={handleTimePresetChange}
-            onCustomDaysChange={handleCustomDaysChange}
-            onSetDaysForPreset={handleSetDaysForPreset}
-            filterState={filterState}
-            onProjectFilterChange={handleProjectFilterChange}
-            onFolderFilterChange={handleFolderFilterChange}
-            onCategoryFilterChange={handleCategoryFilterChange}
-            onFilterLogicChange={handleFilterLogicChange}
-            onClearAllFilters={clearAllFilters}
-          />
           {/* Session Hierarchy */}
           {filteredSessions.length > 0 ? (
             <SessionHierarchy
