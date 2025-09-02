@@ -19,6 +19,7 @@ import { groupSessions } from "@/utils/sessionHelperFunctions";
 import WorkAnalysis from "@/components/Work/Analysis/WorkAnalysis";
 import AnalysisActionIcon from "@/components/UI/ActionIcons/AnalysisActionIcon";
 import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
+import FilterActionIcon from "@/components/UI/ActionIcons/FilterActionIcon";
 
 export default function WorkPage() {
   const {
@@ -44,6 +45,10 @@ export default function WorkPage() {
   const [
     editProjectOpened,
     { open: openEditProject, close: closeEditProject },
+  ] = useDisclosure(false);
+  const [
+    filterOpened,
+    { open: openFilter, close: closeFilter, toggle: toggleFilter },
   ] = useDisclosure(false);
   // Use the custom hook for filtering logic
   const {
@@ -150,17 +155,43 @@ export default function WorkPage() {
           />
         }
       />
+      <Stack
+        style={{ position: "sticky", top: 0, zIndex: 10, left: 0 }}
+        bg="var(--mantine-color-body)"
+        w="100%"
+      >
+        <Group justify="space-between" p="xs">
+          <FilterActionIcon
+            onClick={toggleFilter}
+            tooltipLabel={locale === "de-DE" ? "Filter" : "Filter"}
+            filled={filterOpened}
+          />
+          <NewSessionButton />
+          <FilterActionIcon
+            onClick={toggleFilter}
+            tooltipLabel={locale === "de-DE" ? "Filter" : "Filter"}
+            filled={filterOpened}
+          />
+        </Group>
+        {/* Bulk Selection Controls */}
+        {activeProject.project.hourly_payment && (
+          <BulkSelectionControls
+            isFilterOpen={filterOpened}
+            unpaidSessions={unpaidSessions}
+            selectedSessions={selectedSessions}
+            onSessionsChange={setSelectedSessions}
+            isOverview={false}
+            timePresets={timePresets}
+            selectedTimePreset={selectedTimePreset}
+            timeFilterDays={timeFilterDays}
+            onTimePresetChange={handleTimePresetChange}
+            onCustomDaysChange={handleCustomDaysChange}
+            onSetDaysForPreset={handleSetDaysForPreset}
+          />
+        )}
+      </Stack>
       {activeProject?.sessions.length > 0 ? (
         <Box w="100%">
-          <Group
-            justify="center"
-            w="100%"
-            p="xs"
-            bg="var(--mantine-color-body)"
-            style={{ position: "sticky", top: 0, zIndex: 10, left: 0 }}
-          >
-            <NewSessionButton />
-          </Group>
           <Collapse in={analysisOpened} transitionDuration={500}>
             <WorkAnalysis
               sessions={activeProject.sessions}
@@ -168,21 +199,6 @@ export default function WorkPage() {
               project={activeProject.project}
             />
           </Collapse>
-          {/* Bulk Selection Controls */}
-          {activeProject.project.hourly_payment && (
-            <BulkSelectionControls
-              unpaidSessions={unpaidSessions}
-              selectedSessions={selectedSessions}
-              onSessionsChange={setSelectedSessions}
-              isOverview={false}
-              timePresets={timePresets}
-              selectedTimePreset={selectedTimePreset}
-              timeFilterDays={timeFilterDays}
-              onTimePresetChange={handleTimePresetChange}
-              onCustomDaysChange={handleCustomDaysChange}
-              onSetDaysForPreset={handleSetDaysForPreset}
-            />
-          )}
 
           {/* Session Hierarchy */}
           {filteredSessions.length > 0 ? (

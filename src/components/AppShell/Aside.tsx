@@ -3,14 +3,22 @@
 import { useState, useEffect } from "react";
 import { useGroupStore } from "@/stores/groupStore";
 
-import { ActionIcon, Group, ScrollArea, Stack } from "@mantine/core";
+import {
+  ActionIcon,
+  Group,
+  ScrollArea,
+  Stack,
+  Tooltip,
+  Text,
+  Kbd,
+} from "@mantine/core";
 import { IconArrowBarLeft } from "@tabler/icons-react";
 import NotificationAside from "../Notification/NotificationAside";
 import TimeTrackerManager from "../TimeTracker/TimeTrackerManager";
-import CalendarAside from "../Calendar/CalendarAside/CalendarAside";
 
 import classes from "./AppShell.module.css";
 import TransitionDivider from "../UI/TransitionDivider";
+import DelayedTooltip from "../UI/DelayedTooltip";
 
 interface AsideProps {
   toggleAside: () => void;
@@ -38,16 +46,27 @@ export default function Aside({ toggleAside, isAsideOpen }: AsideProps) {
     <Stack py="md" h="100%" align="center">
       <Stack align="flex-start" w="100%" gap="lg">
         <Group pl="xs" justify="flex-start">
-          <ActionIcon
-            onClick={toggleAside}
-            aria-label="Toggle aside"
-            variant="transparent"
+          <DelayedTooltip
+            label={
+              <Stack>
+                <Text>Toggle aside</Text>
+                <Group>
+                  <Kbd>⌘</Kbd> + <Kbd>B</Kbd>
+                </Group>
+              </Stack>
+            }
           >
-            <IconArrowBarLeft
-              className={classes.icon}
-              style={{ transform: isAsideOpen ? "rotate(180deg)" : "none" }}
-            />
-          </ActionIcon>
+            <ActionIcon
+              onClick={toggleAside}
+              aria-label="Toggle aside"
+              variant="transparent"
+            >
+              <IconArrowBarLeft
+                className={classes.icon}
+                style={{ transform: isAsideOpen ? "rotate(180deg)" : "none" }}
+              />
+            </ActionIcon>
+          </DelayedTooltip>
         </Group>
         <Group pl="xs">
           <NotificationAside

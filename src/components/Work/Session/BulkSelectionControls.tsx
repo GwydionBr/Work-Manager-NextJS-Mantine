@@ -29,6 +29,7 @@ import type { FilterLogic } from "@/hooks/useSessionFiltering";
 const Radius = 20;
 
 interface BulkSelectionControlsProps {
+  isFilterOpen: boolean;
   unpaidSessions: Tables<"timer_session">[];
   selectedSessions: string[];
   onSessionsChange: (sessions: string[]) => void;
@@ -60,6 +61,7 @@ interface BulkSelectionControlsProps {
  * Allows users to select multiple sessions by various criteria (project, folder, time period)
  */
 export default function BulkSelectionControls({
+  isFilterOpen,
   unpaidSessions,
   selectedSessions,
   onSessionsChange,
@@ -81,7 +83,6 @@ export default function BulkSelectionControls({
 }: BulkSelectionControlsProps) {
   const { locale } = useSettingsStore();
   const { financeCategories } = useFinanceStore();
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // Toggle between selecting all sessions or none
   const handleSelectAll = () => {
@@ -154,14 +155,13 @@ export default function BulkSelectionControls({
     1;
 
   return (
-    <Stack
-      mb="md"
-      p="md"
-      bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
-      style={{ borderRadius: Radius }}
-    >
-      <Stack gap="xs" style={{ flex: 1 }}>
-        <Group justify="space-between">
+    <Collapse in={isFilterOpen}>
+      <Stack
+        p="md"
+        bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
+        style={{ borderRadius: Radius }}
+      >
+        <Stack gap="xs" style={{ flex: 1 }}>
           <Group>
             <Checkbox
               label={`${locale === "de-DE" ? "Alle auswählen" : "Select All"} (${unpaidSessions.length} ${locale === "de-DE" ? "unbezahlte Sitzungen" : "unpaid sessions"})`}
@@ -194,26 +194,7 @@ export default function BulkSelectionControls({
               )}
             </Stack>
           </Group>
-          <Tooltip
-            label={locale === "de-DE" ? "Sitzungen filtern" : "Filter Sessions"}
-            openDelay={500}
-          >
-            <Indicator
-              size={10}
-              color="red"
-              offset={4}
-              position="top-end"
-              disabled={!hasActiveFilters}
-            >
-              <FilterActionIcon
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
-                filled={hasActiveFilters}
-              />
-            </Indicator>
-          </Tooltip>
-        </Group>
 
-        <Collapse in={isFilterOpen}>
           {/* Time Period Filtering - now available in both modes */}
           <Divider my="xs" />
           <Stack gap="xs">
@@ -433,8 +414,8 @@ export default function BulkSelectionControls({
               </Stack>
             </>
           )}
-        </Collapse>
+        </Stack>
       </Stack>
-    </Stack>
+    </Collapse>
   );
 }
