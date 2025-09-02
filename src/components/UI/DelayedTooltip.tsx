@@ -8,7 +8,7 @@ interface DelayedTooltipProps extends TooltipProps {
 export default function DelayedTooltip({
   children,
   label = "",
-  openDelay = 1000,
+  openDelay = 1200,
   closeDelay = 200,
   ...props
 }: DelayedTooltipProps) {

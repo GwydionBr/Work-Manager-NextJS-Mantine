@@ -111,6 +111,24 @@ export default function WorkPage() {
     locale
   );
 
+  const handlePayoutToggle = () => {
+    if (!payoutOpened) {
+      openPayout();
+      closeFilter();
+    } else {
+      closePayout();
+    }
+  };
+
+  const handleFilterToggle = () => {
+    if (!filterOpened) {
+      openFilter();
+      closePayout();
+    } else {
+      closeFilter();
+    }
+  };
+
   const handleSessionToggle = (sessionId: string) => {
     if (!activeProject.project.hourly_payment) return;
     setSelectedSessions(
@@ -160,13 +178,13 @@ export default function WorkPage() {
       >
         <Group justify="space-between" p="xs">
           <FilterActionIcon
-            onClick={toggleFilter}
+            onClick={handleFilterToggle}
             tooltipLabel={locale === "de-DE" ? "Filter" : "Filter"}
             filled={filterOpened}
           />
           <NewSessionButton />
           <PayoutActionIcon
-            onClick={togglePayout}
+            onClick={handlePayoutToggle}
             tooltipLabel={locale === "de-DE" ? "Auszahlung" : "Payout"}
           />
         </Group>
@@ -187,7 +205,7 @@ export default function WorkPage() {
             />
           </Collapse>
         )}
-        <Collapse in={payoutOpened} transitionDuration={500}>
+        <Collapse in={payoutOpened}>
           <Group justify="flex-end">
             <PayoutCard
               opened={payoutOpened}
