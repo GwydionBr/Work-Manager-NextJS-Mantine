@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -15,21 +14,16 @@ import {
   Slider,
   Badge,
   Collapse,
-  Indicator,
-  Tooltip,
   MultiSelect,
   Switch,
+  Card,
 } from "@mantine/core";
-import FilterActionIcon from "@/components/UI/ActionIcons/FilterActionIcon";
 
 import type { Tables } from "@/types/db.types";
 import type { TimePreset } from "@/types/timerSession.types";
 import type { FilterLogic } from "@/hooks/useSessionFiltering";
 
-const Radius = 20;
-
 interface BulkSelectionControlsProps {
-  isFilterOpen: boolean;
   unpaidSessions: Tables<"timer_session">[];
   selectedSessions: string[];
   onSessionsChange: (sessions: string[]) => void;
@@ -61,7 +55,6 @@ interface BulkSelectionControlsProps {
  * Allows users to select multiple sessions by various criteria (project, folder, time period)
  */
 export default function BulkSelectionControls({
-  isFilterOpen,
   unpaidSessions,
   selectedSessions,
   onSessionsChange,
@@ -155,267 +148,263 @@ export default function BulkSelectionControls({
     1;
 
   return (
-    <Collapse in={isFilterOpen}>
-      <Stack
-        p="md"
-        bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
-        style={{ borderRadius: Radius }}
-      >
-        <Stack gap="xs" style={{ flex: 1 }}>
-          <Group>
-            <Checkbox
-              label={`${locale === "de-DE" ? "Alle auswählen" : "Select All"} (${unpaidSessions.length} ${locale === "de-DE" ? "unbezahlte Sitzungen" : "unpaid sessions"})`}
-              checked={
-                selectedSessions.length === unpaidSessions.length &&
-                unpaidSessions.length > 0
-              }
-              indeterminate={
-                selectedSessions.length > 0 &&
-                selectedSessions.length < unpaidSessions.length
-              }
-              onChange={handleSelectAll}
-              disabled={unpaidSessions.length === 0}
-            />
-            <Stack gap="xs" align="flex-end">
-              {unpaidSessions.length > 0 && selectedSessions.length > 0 && (
-                <Text size="sm" c="dimmed">
-                  {selectedSessions.length}{" "}
-                  {locale === "de-DE" ? "Sitzung" : "session"}
-                  {selectedSessions.length > 1 ? "en" : ""}{" "}
-                  {locale === "de-DE" ? "ausgewählt" : "selected"}
-                </Text>
-              )}
-              {unpaidSessions.length === 0 && (
-                <Text size="sm" c="dimmed">
-                  {locale === "de-DE"
-                    ? "Alle Sitzungen bezahlt"
-                    : "All sessions paid"}
-                </Text>
-              )}
-            </Stack>
-          </Group>
-
-          {/* Time Period Filtering - now available in both modes */}
-          <Divider my="xs" />
-          <Stack gap="xs">
-            <Text size="sm" fw={500}>
-              {locale === "de-DE"
-                ? "Sitzungen nach Zeitrahmen filtern"
-                : "Select Sessions by Time Period"}
-            </Text>
-            <Group gap="md" align="flex-end">
-              <Select
-                label={locale === "de-DE" ? "Zeitrahmen" : "Time Period"}
-                placeholder={
-                  locale === "de-DE"
-                    ? "Zeitrahmen auswählen"
-                    : "Select a time period"
-                }
-                data={timePresets.map((preset) => ({
-                  value: preset.value,
-                  label: preset.label,
-                }))}
-                value={selectedTimePreset}
-                onChange={handleTimePresetChange}
-                clearable
-                style={{ flex: 1 }}
-              />
-              {selectedTimePreset && !isOverview && (
-                <Button size="sm" onClick={handleSelectAll} variant="light">
-                  {selectedSessions.length === unpaidSessions.length
-                    ? `${locale === "de-DE" ? "Alle Sitzungen abwählen" : "Deselect all Sessions"}`
-                    : `${locale === "de-DE" ? "Alle unbezahlten Sitzungen auswählen" : "Select ${unpaidSessions.length} Unpaid Sessions"}`}
-                </Button>
-              )}
-            </Group>
-            {selectedTimePreset === "custom" && (
-              <Stack gap="xs">
-                <Text size="sm">
-                  {locale === "de-DE"
-                    ? "Benutzerdefinierte Tage"
-                    : "Custom Days"}
-                  : {timeFilterDays}
-                </Text>
-                <Slider
-                  value={timeFilterDays}
-                  onChange={handleCustomDaysChange}
-                  min={1}
-                  max={365}
-                  mb="xl"
-                  step={1}
-                  marks={[
-                    { value: 1, label: "1" },
-                    { value: 7, label: "7" },
-                    { value: 30, label: "30" },
-                    { value: 90, label: "90" },
-                    { value: 365, label: "365" },
-                  ]}
-                />
-              </Stack>
+    <Card
+      withBorder
+      radius="md"
+      p="md"
+      mb="md"
+      shadow="md"
+      maw={700}
+      bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
+    >
+      <Stack gap="xs" style={{ flex: 1 }}>
+        <Group>
+          <Checkbox
+            label={`${locale === "de-DE" ? "Alle auswählen" : "Select All"} (${unpaidSessions.length} ${locale === "de-DE" ? "unbezahlte Sitzungen" : "unpaid sessions"})`}
+            checked={
+              selectedSessions.length === unpaidSessions.length &&
+              unpaidSessions.length > 0
+            }
+            indeterminate={
+              selectedSessions.length > 0 &&
+              selectedSessions.length < unpaidSessions.length
+            }
+            onChange={handleSelectAll}
+            disabled={unpaidSessions.length === 0}
+          />
+          <Stack gap="xs" align="flex-end">
+            {unpaidSessions.length > 0 && selectedSessions.length > 0 && (
+              <Text size="sm" c="dimmed">
+                {selectedSessions.length}{" "}
+                {locale === "de-DE" ? "Sitzung" : "session"}
+                {selectedSessions.length > 1 ? "en" : ""}{" "}
+                {locale === "de-DE" ? "ausgewählt" : "selected"}
+              </Text>
             )}
-            <Collapse in={selectedTimePreset !== null && !isOverview}>
-              <Badge
-                color={unpaidSessions.length > 0 ? "blue" : "red"}
-                variant="light"
-              >
-                {unpaidSessions.length}{" "}
+            {unpaidSessions.length === 0 && (
+              <Text size="sm" c="dimmed">
                 {locale === "de-DE"
-                  ? "unbezahlte Sitzungen"
-                  : "unpaid sessions"}
-                {locale === "de-DE" ? "in letzten" : "in last"} {timeFilterDays}{" "}
-                {locale === "de-DE" ? "Tagen" : "days"}
-              </Badge>
-            </Collapse>
+                  ? "Alle Sitzungen bezahlt"
+                  : "All sessions paid"}
+              </Text>
+            )}
           </Stack>
+        </Group>
 
-          {/* Project-based filtering for overview mode */}
-          {isOverview && projects && projects.length > 0 && (
-            <>
-              <Divider my="xs" />
-              <Stack gap="xs">
-                <Text size="sm" fw={500}>
-                  {locale === "de-DE"
-                    ? "Sitzungen nach Projektkriterien filtern"
-                    : "Filter Sessions by Project Criteria"}
-                </Text>
+        {/* Time Period Filtering - now available in both modes */}
+        <Divider my="xs" />
+        <Stack gap="xs">
+          <Text size="sm" fw={500}>
+            {locale === "de-DE"
+              ? "Sitzungen nach Zeitrahmen filtern"
+              : "Select Sessions by Time Period"}
+          </Text>
+          <Group gap="md" align="flex-end">
+            <Select
+              label={locale === "de-DE" ? "Zeitrahmen" : "Time Period"}
+              placeholder={
+                locale === "de-DE"
+                  ? "Zeitrahmen auswählen"
+                  : "Select a time period"
+              }
+              data={timePresets.map((preset) => ({
+                value: preset.value,
+                label: preset.label,
+              }))}
+              value={selectedTimePreset}
+              onChange={handleTimePresetChange}
+              clearable
+              style={{ flex: 1 }}
+            />
+            {selectedTimePreset && !isOverview && (
+              <Button size="sm" onClick={handleSelectAll} variant="light">
+                {selectedSessions.length === unpaidSessions.length
+                  ? `${locale === "de-DE" ? "Alle Sitzungen abwählen" : "Deselect all Sessions"}`
+                  : `${locale === "de-DE" ? "Alle unbezahlten Sitzungen auswählen" : "Select ${unpaidSessions.length} Unpaid Sessions"}`}
+              </Button>
+            )}
+          </Group>
+          {selectedTimePreset === "custom" && (
+            <Stack gap="xs">
+              <Text size="sm">
+                {locale === "de-DE" ? "Benutzerdefinierte Tage" : "Custom Days"}
+                : {timeFilterDays}
+              </Text>
+              <Slider
+                value={timeFilterDays}
+                onChange={handleCustomDaysChange}
+                min={1}
+                max={365}
+                mb="xl"
+                step={1}
+                marks={[
+                  { value: 1, label: "1" },
+                  { value: 7, label: "7" },
+                  { value: 30, label: "30" },
+                  { value: 90, label: "90" },
+                  { value: 365, label: "365" },
+                ]}
+              />
+            </Stack>
+          )}
+          <Collapse in={selectedTimePreset !== null && !isOverview}>
+            <Badge
+              color={unpaidSessions.length > 0 ? "blue" : "red"}
+              variant="light"
+            >
+              {unpaidSessions.length}{" "}
+              {locale === "de-DE" ? "unbezahlte Sitzungen" : "unpaid sessions"}
+              {locale === "de-DE" ? "in letzten" : "in last"} {timeFilterDays}{" "}
+              {locale === "de-DE" ? "Tagen" : "days"}
+            </Badge>
+          </Collapse>
+        </Stack>
 
-                {/* Filter Controls */}
-                <Group gap="md" align="flex-end">
-                  <MultiSelect
+        {/* Project-based filtering for overview mode */}
+        {isOverview && projects && projects.length > 0 && (
+          <>
+            <Divider my="xs" />
+            <Stack gap="xs">
+              <Text size="sm" fw={500}>
+                {locale === "de-DE"
+                  ? "Sitzungen nach Projektkriterien filtern"
+                  : "Filter Sessions by Project Criteria"}
+              </Text>
+
+              {/* Filter Controls */}
+              <Group gap="md" align="flex-end">
+                <MultiSelect
+                  label={
+                    locale === "de-DE"
+                      ? "Nach Ordner filtern"
+                      : "Filter by Folders"
+                  }
+                  placeholder={
+                    locale === "de-DE" ? "Ordner auswählen" : "Choose folders"
+                  }
+                  data={getFolders()}
+                  value={filterState?.selectedFolders || []}
+                  onChange={onFolderFilterChange}
+                  clearable
+                  style={{ flex: 1 }}
+                />
+                <MultiSelect
+                  label={
+                    locale === "de-DE"
+                      ? "Nach Projekt filtern"
+                      : "Filter by Projects"
+                  }
+                  placeholder={
+                    locale === "de-DE" ? "Projekt auswählen" : "Choose projects"
+                  }
+                  data={getProjects()}
+                  value={filterState?.selectedProjects || []}
+                  onChange={onProjectFilterChange}
+                  clearable
+                  style={{ flex: 1 }}
+                />
+                <MultiSelect
+                  label={
+                    locale === "de-DE"
+                      ? "Nach Kategorie filtern"
+                      : "Filter by Categories"
+                  }
+                  placeholder={
+                    locale === "de-DE"
+                      ? "Kategorie auswählen"
+                      : "Choose categories"
+                  }
+                  data={getCashFlowCategories()}
+                  value={filterState?.selectedCategories || []}
+                  onChange={onCategoryFilterChange}
+                  clearable
+                  style={{ flex: 1 }}
+                />
+              </Group>
+
+              {/* Elegant AND/OR Logic Selection - only show when multiple filters are active */}
+              <Collapse in={hasMultipleFilters || false}>
+                <Group gap="xs" align="center">
+                  <Switch
+                    size="sm"
+                    checked={filterState?.filterLogic === "AND"}
+                    onChange={(event) =>
+                      onFilterLogicChange?.(
+                        event.currentTarget.checked ? "AND" : "OR"
+                      )
+                    }
                     label={
-                      locale === "de-DE"
-                        ? "Nach Ordner filtern"
-                        : "Filter by Folders"
+                      <Text size="sm">
+                        {filterState?.filterLogic === "AND"
+                          ? locale === "de-DE"
+                            ? "Alle Filter müssen zutreffen (UND)"
+                            : "All filters must match (AND)"
+                          : locale === "de-DE"
+                            ? "Ein Filter kann zutreffen (ODER)"
+                            : "Any filter can match (OR)"}
+                      </Text>
                     }
-                    placeholder={
-                      locale === "de-DE" ? "Ordner auswählen" : "Choose folders"
-                    }
-                    data={getFolders()}
-                    value={filterState?.selectedFolders || []}
-                    onChange={onFolderFilterChange}
-                    clearable
-                    style={{ flex: 1 }}
                   />
-                  <MultiSelect
-                    label={
-                      locale === "de-DE"
-                        ? "Nach Projekt filtern"
-                        : "Filter by Projects"
-                    }
-                    placeholder={
-                      locale === "de-DE"
-                        ? "Projekt auswählen"
-                        : "Choose projects"
-                    }
-                    data={getProjects()}
-                    value={filterState?.selectedProjects || []}
-                    onChange={onProjectFilterChange}
-                    clearable
-                    style={{ flex: 1 }}
-                  />
-                  <MultiSelect
-                    label={
-                      locale === "de-DE"
-                        ? "Nach Kategorie filtern"
-                        : "Filter by Categories"
-                    }
-                    placeholder={
-                      locale === "de-DE"
-                        ? "Kategorie auswählen"
-                        : "Choose categories"
-                    }
-                    data={getCashFlowCategories()}
-                    value={filterState?.selectedCategories || []}
-                    onChange={onCategoryFilterChange}
-                    clearable
-                    style={{ flex: 1 }}
-                  />
+                  <Text size="xs" c="dimmed">
+                    {filterState?.filterLogic === "AND"
+                      ? locale === "de-DE"
+                        ? "Sitzungen müssen allen ausgewählten Kriterien entsprechen"
+                        : "Sessions must belong to ALL selected criteria"
+                      : locale === "de-DE"
+                        ? "Sitzungen können einem der ausgewählten Kriterien entsprechen"
+                        : "Sessions can belong to ANY selected criteria"}
+                  </Text>
                 </Group>
+              </Collapse>
+              <Collapse in={hasActiveFilters || false}>
+                <Stack align="center">
+                  <Badge
+                    mt="md"
+                    color={unpaidSessions.length > 0 ? "blue" : "red"}
+                    variant="light"
+                  >
+                    {unpaidSessions.length}{" "}
+                    {locale === "de-DE"
+                      ? "unbezahlte Sitzungen"
+                      : "unpaid sessions"}
+                    {locale === "de-DE" ? "in letzten" : "in last"}{" "}
+                    {timeFilterDays} {locale === "de-DE" ? "Tagen" : "days"}
+                  </Badge>
+                </Stack>
+              </Collapse>
 
-                {/* Elegant AND/OR Logic Selection - only show when multiple filters are active */}
-                <Collapse in={hasMultipleFilters || false}>
-                  <Group gap="xs" align="center">
-                    <Switch
-                      size="sm"
-                      checked={filterState?.filterLogic === "AND"}
-                      onChange={(event) =>
-                        onFilterLogicChange?.(
-                          event.currentTarget.checked ? "AND" : "OR"
-                        )
-                      }
-                      label={
-                        <Text size="sm">
-                          {filterState?.filterLogic === "AND"
-                            ? locale === "de-DE"
-                              ? "Alle Filter müssen zutreffen (UND)"
-                              : "All filters must match (AND)"
-                            : locale === "de-DE"
-                              ? "Ein Filter kann zutreffen (ODER)"
-                              : "Any filter can match (OR)"}
-                        </Text>
-                      }
-                    />
-                    <Text size="xs" c="dimmed">
-                      {filterState?.filterLogic === "AND"
-                        ? locale === "de-DE"
-                          ? "Sitzungen müssen allen ausgewählten Kriterien entsprechen"
-                          : "Sessions must belong to ALL selected criteria"
-                        : locale === "de-DE"
-                          ? "Sitzungen können einem der ausgewählten Kriterien entsprechen"
-                          : "Sessions can belong to ANY selected criteria"}
-                    </Text>
-                  </Group>
-                </Collapse>
-                <Collapse in={hasActiveFilters || false}>
-                  <Stack align="center">
-                    <Badge
-                      mt="md"
-                      color={unpaidSessions.length > 0 ? "blue" : "red"}
-                      variant="light"
-                    >
-                      {unpaidSessions.length}{" "}
-                      {locale === "de-DE"
-                        ? "unbezahlte Sitzungen"
-                        : "unpaid sessions"}
-                      {locale === "de-DE" ? "in letzten" : "in last"}{" "}
-                      {timeFilterDays} {locale === "de-DE" ? "Tagen" : "days"}
-                    </Badge>
-                  </Stack>
-                </Collapse>
-
-                {/* Clear Filters Button */}
-                <Collapse in={hasActiveFilters || false}>
-                  <Stack align="center">
-                    <Stack mt="md" w="90%">
-                      {isOverview && (
-                        <Button
-                          size="sm"
-                          onClick={handleSelectAll}
-                          variant="light"
-                        >
-                          {selectedSessions.length === unpaidSessions.length
-                            ? `${locale === "de-DE" ? "Alle Sitzungen abwählen" : "Deselect all Sessions"}`
-                            : `${locale === "de-DE" ? "Alle unbezahlten Sitzungen auswählen" : "Select ${unpaidSessions.length} Unpaid Sessions"}`}
-                        </Button>
-                      )}
+              {/* Clear Filters Button */}
+              <Collapse in={hasActiveFilters || false}>
+                <Stack align="center">
+                  <Stack mt="md" w="90%">
+                    {isOverview && (
                       <Button
                         size="sm"
+                        onClick={handleSelectAll}
                         variant="light"
-                        color="red"
-                        onClick={onClearAllFilters}
                       >
-                        {locale === "de-DE"
-                          ? "Alle Filter löschen"
-                          : "Clear All Filters"}
+                        {selectedSessions.length === unpaidSessions.length
+                          ? `${locale === "de-DE" ? "Alle Sitzungen abwählen" : "Deselect all Sessions"}`
+                          : `${locale === "de-DE" ? "Alle unbezahlten Sitzungen auswählen" : "Select ${unpaidSessions.length} Unpaid Sessions"}`}
                       </Button>
-                    </Stack>
+                    )}
+                    <Button
+                      size="sm"
+                      variant="light"
+                      color="red"
+                      onClick={onClearAllFilters}
+                    >
+                      {locale === "de-DE"
+                        ? "Alle Filter löschen"
+                        : "Clear All Filters"}
+                    </Button>
                   </Stack>
-                </Collapse>
-              </Stack>
-            </>
-          )}
-        </Stack>
+                </Stack>
+              </Collapse>
+            </Stack>
+          </>
+        )}
       </Stack>
-    </Collapse>
+    </Card>
   );
 }

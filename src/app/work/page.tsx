@@ -12,7 +12,7 @@ import EditProjectDrawer from "@/components/Work/Project/EditProjectDrawer";
 import Header from "@/components/Header/Header";
 
 import { formatMoney } from "@/utils/formatFunctions";
-import PayoutMenu from "@/components/Payout/PayoutMenu";
+import PayoutCard from "@/components/Payout/PayoutCard";
 import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
 import BulkSelectionControls from "@/components/Work/Session/BulkSelectionControls";
 import { groupSessions } from "@/utils/sessionHelperFunctions";
@@ -20,6 +20,7 @@ import WorkAnalysis from "@/components/Work/Analysis/WorkAnalysis";
 import AnalysisActionIcon from "@/components/UI/ActionIcons/AnalysisActionIcon";
 import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
 import FilterActionIcon from "@/components/UI/ActionIcons/FilterActionIcon";
+import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
 
 export default function WorkPage() {
   const {
@@ -49,6 +50,10 @@ export default function WorkPage() {
   const [
     filterOpened,
     { open: openFilter, close: closeFilter, toggle: toggleFilter },
+  ] = useDisclosure(false);
+  const [
+    payoutOpened,
+    { open: openPayout, close: closePayout, toggle: togglePayout },
   ] = useDisclosure(false);
   // Use the custom hook for filtering logic
   const {
@@ -116,7 +121,7 @@ export default function WorkPage() {
   };
 
   return (
-    <Stack align="center" w="100%" px="xl">
+    <Stack align="center" w="100%" px="xl" gap="xs">
       <Header
         headerTitle={activeProject.project.title}
         leftSalary={
@@ -146,19 +151,12 @@ export default function WorkPage() {
             />
           </Group>
         }
-        leftButton={
-          <PayoutMenu
-            sessions={unpaidSessions}
-            project={activeProject.project}
-            selectedSessions={selectedSessions}
-            onSessionsChange={setSelectedSessions}
-          />
-        }
       />
       <Stack
         style={{ position: "sticky", top: 0, zIndex: 10, left: 0 }}
         bg="var(--mantine-color-body)"
         w="100%"
+        gap="xs"
       >
         <Group justify="space-between" p="xs">
           <FilterActionIcon
@@ -167,28 +165,39 @@ export default function WorkPage() {
             filled={filterOpened}
           />
           <NewSessionButton />
-          <FilterActionIcon
-            onClick={toggleFilter}
-            tooltipLabel={locale === "de-DE" ? "Filter" : "Filter"}
-            filled={filterOpened}
+          <PayoutActionIcon
+            onClick={togglePayout}
+            tooltipLabel={locale === "de-DE" ? "Auszahlung" : "Payout"}
           />
         </Group>
         {/* Bulk Selection Controls */}
         {activeProject.project.hourly_payment && (
-          <BulkSelectionControls
-            isFilterOpen={filterOpened}
-            unpaidSessions={unpaidSessions}
-            selectedSessions={selectedSessions}
-            onSessionsChange={setSelectedSessions}
-            isOverview={false}
-            timePresets={timePresets}
-            selectedTimePreset={selectedTimePreset}
-            timeFilterDays={timeFilterDays}
-            onTimePresetChange={handleTimePresetChange}
-            onCustomDaysChange={handleCustomDaysChange}
-            onSetDaysForPreset={handleSetDaysForPreset}
-          />
+          <Collapse in={filterOpened}>
+            <BulkSelectionControls
+              unpaidSessions={unpaidSessions}
+              selectedSessions={selectedSessions}
+              onSessionsChange={setSelectedSessions}
+              isOverview={false}
+              timePresets={timePresets}
+              selectedTimePreset={selectedTimePreset}
+              timeFilterDays={timeFilterDays}
+              onTimePresetChange={handleTimePresetChange}
+              onCustomDaysChange={handleCustomDaysChange}
+              onSetDaysForPreset={handleSetDaysForPreset}
+            />
+          </Collapse>
         )}
+        <Collapse in={payoutOpened} transitionDuration={500}>
+          <Group justify="flex-end">
+            <PayoutCard
+              opened={payoutOpened}
+              sessions={unpaidSessions}
+              project={activeProject.project}
+              selectedSessions={selectedSessions}
+              onSessionsChange={setSelectedSessions}
+            />
+          </Group>
+        </Collapse>
       </Stack>
       {activeProject?.sessions.length > 0 ? (
         <Box w="100%">

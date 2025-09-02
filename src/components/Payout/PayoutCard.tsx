@@ -4,32 +4,33 @@ import { useState, useEffect } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Box, Menu, Button } from "@mantine/core";
+import { Box, Collapse, Card } from "@mantine/core";
 import ProjectPayoutMenu from "./ProjectPayoutMenu";
 import HourlyPayoutMenu from "./HourlyPayoutMenu";
 import PayoutModal from "./Modal/PayoutModal";
-import { IconBrandCashapp } from "@tabler/icons-react";
 
 import type { Tables } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
 
-interface PayoutMenuProps {
+interface PayoutCardProps {
   sessions: Tables<"timer_session">[];
   project?: Tables<"timer_project">;
   selectedSessions: string[];
   onSessionsChange: (sessions: string[]) => void;
   isOverview?: boolean;
   projects?: Tables<"timer_project">[];
+  opened: boolean;
 }
 
-export default function PayoutMenu({
+export default function PayoutCard({
   sessions,
   project,
   selectedSessions,
   onSessionsChange,
   isOverview = false,
   projects,
-}: PayoutMenuProps) {
+  opened,
+}: PayoutCardProps) {
   const { locale } = useSettingsStore();
   const [openedModal, { open: openModal, close: closeModal }] =
     useDisclosure(false);
@@ -129,63 +130,43 @@ export default function PayoutMenu({
 
   return (
     <Box>
-      <Menu
-        opened={openedMenu}
-        onClose={closeMenu}
-        trigger="click-hover"
-        width={350}
-        position="bottom-start"
-        transitionProps={{ transition: "pop-top-left", duration: 250 }}
+      <Card
+        withBorder
+        radius="md"
+        p="md"
+        mb="md"
+        shadow="md"
+        w="100%"
+        maw={700}
+        bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
       >
-        <Menu.Target>
-          <Button
-            variant="light"
-            size="md"
-            color="teal"
-            disabled={unpaidSessions.length === 0}
-            leftSection={<IconBrandCashapp size={20} />}
-            onClick={() => {
-              openMenu();
-            }}
-          >
-            {unpaidSessions.length === 0
-              ? locale === "de-DE"
-                ? "Alles ausgezahlt"
-                : "All Paid"
-              : locale === "de-DE"
-                ? "Auszahlung"
-                : "Payout"}
-          </Button>
-        </Menu.Target>
-        <Menu.Dropdown>
-          {project && !project.hourly_payment ? (
-            <ProjectPayoutMenu
-              project={project}
-              closeMenu={closeMenu}
-              openModal={openModal}
-              availablePayout={availablePayout}
-              useCustomAmount={useCustomAmount}
-              payoutAmount={payoutAmount}
-              setUseCustomAmount={setUseCustomAmount}
-              setPayoutAmount={setPayoutAmount}
-            />
-          ) : (
-            <HourlyPayoutMenu
-              opened={openedMenu}
-              closeMenu={closeMenu}
-              onSessionsChange={onSessionsChange}
-              openModal={openModal}
-              isOverview={isOverview}
-              unpaidSessions={unpaidSessions}
-              selectedUnpaidSessions={selectedUnpaidSessions}
-              handleSelectAll={handleSelectAll}
-              handleSessionToggle={handleSessionToggle}
-              sessionPayouts={sessionPayouts}
-              projects={projects || []}
-            />
-          )}
-        </Menu.Dropdown>
-      </Menu>
+        {project && !project.hourly_payment ? (
+          <ProjectPayoutMenu
+            project={project}
+            closeMenu={closeMenu}
+            openModal={openModal}
+            availablePayout={availablePayout}
+            useCustomAmount={useCustomAmount}
+            payoutAmount={payoutAmount}
+            setUseCustomAmount={setUseCustomAmount}
+            setPayoutAmount={setPayoutAmount}
+          />
+        ) : (
+          <HourlyPayoutMenu
+            opened={openedMenu}
+            closeMenu={closeMenu}
+            onSessionsChange={onSessionsChange}
+            openModal={openModal}
+            isOverview={isOverview}
+            unpaidSessions={unpaidSessions}
+            selectedUnpaidSessions={selectedUnpaidSessions}
+            handleSelectAll={handleSelectAll}
+            handleSessionToggle={handleSessionToggle}
+            sessionPayouts={sessionPayouts}
+            projects={projects || []}
+          />
+        )}
+      </Card>
       <PayoutModal
         opened={openedModal}
         handleClose={closeModal}

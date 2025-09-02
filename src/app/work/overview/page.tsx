@@ -8,7 +8,7 @@ import { useSessionFiltering } from "@/hooks/useSessionFiltering";
 
 import { Box, Collapse, Group, Stack, Text } from "@mantine/core";
 import Header from "@/components/Header/Header";
-import PayoutMenu from "@/components/Payout/PayoutMenu";
+import PayoutMenu from "@/components/Payout/PayoutCard";
 import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
 import { groupSessions } from "@/utils/sessionHelperFunctions";
 import BulkSelectionControls from "@/components/Work/Session/BulkSelectionControls";
@@ -16,6 +16,8 @@ import WorkAnalysis from "@/components/Work/Analysis/WorkAnalysis";
 import AnalysisActionIcon from "@/components/UI/ActionIcons/AnalysisActionIcon";
 import FilterActionIcon from "@/components/UI/ActionIcons/FilterActionIcon";
 import NewSessionButton from "@/components/Work/Session/NewSessionButton";
+import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
+import PayoutCard from "@/components/Payout/PayoutCard";
 
 export default function WorkOverviewPage() {
   const { projects: timerProjects, folders, timerSessions } = useWorkStore();
@@ -24,6 +26,10 @@ export default function WorkOverviewPage() {
   const [
     filterOpened,
     { open: openFilter, close: closeFilter, toggle: toggleFilter },
+  ] = useDisclosure(false);
+  const [
+    payoutOpened,
+    { open: openPayout, close: closePayout, toggle: togglePayout },
   ] = useDisclosure(false);
   const { locale } = useSettingsStore();
   const projects = timerProjects.map((project) => project.project);
@@ -58,15 +64,6 @@ export default function WorkOverviewPage() {
     <Stack align="center" w="100%" px="xl">
       <Header
         headerTitle={locale === "de-DE" ? "Übersicht" : "Work Overview"}
-        leftButton={
-          <PayoutMenu
-            sessions={unpaidSessions}
-            projects={projects}
-            selectedSessions={selectedSessions}
-            onSessionsChange={setSelectedSessions}
-            isOverview={true}
-          />
-        }
         rightButton={
           <Group>
             <AnalysisActionIcon
@@ -87,34 +84,45 @@ export default function WorkOverviewPage() {
             filled={filterOpened}
           />
           <NewSessionButton />
-          <FilterActionIcon
-            onClick={toggleFilter}
-            tooltipLabel={locale === "de-DE" ? "Filter" : "Filter"}
-            filled={filterOpened}
+          <PayoutActionIcon
+            onClick={togglePayout}
+            tooltipLabel={locale === "de-DE" ? "Auszahlung" : "Payout"}
           />
         </Group>
         {/* Bulk Selection Controls */}
-        <BulkSelectionControls
-          isFilterOpen={filterOpened}
-          unpaidSessions={unpaidSessions}
-          selectedSessions={selectedSessions}
-          onSessionsChange={setSelectedSessions}
-          isOverview={true}
-          folders={folders}
-          projects={projects}
-          timePresets={timePresets}
-          selectedTimePreset={selectedTimePreset}
-          timeFilterDays={timeFilterDays}
-          onTimePresetChange={handleTimePresetChange}
-          onCustomDaysChange={handleCustomDaysChange}
-          onSetDaysForPreset={handleSetDaysForPreset}
-          filterState={filterState}
-          onProjectFilterChange={handleProjectFilterChange}
-          onFolderFilterChange={handleFolderFilterChange}
-          onCategoryFilterChange={handleCategoryFilterChange}
-          onFilterLogicChange={handleFilterLogicChange}
-          onClearAllFilters={clearAllFilters}
-        />
+        <Collapse in={filterOpened}>
+          <BulkSelectionControls
+            unpaidSessions={unpaidSessions}
+            selectedSessions={selectedSessions}
+            onSessionsChange={setSelectedSessions}
+            isOverview={true}
+            folders={folders}
+            projects={projects}
+            timePresets={timePresets}
+            selectedTimePreset={selectedTimePreset}
+            timeFilterDays={timeFilterDays}
+            onTimePresetChange={handleTimePresetChange}
+            onCustomDaysChange={handleCustomDaysChange}
+            onSetDaysForPreset={handleSetDaysForPreset}
+            filterState={filterState}
+            onProjectFilterChange={handleProjectFilterChange}
+            onFolderFilterChange={handleFolderFilterChange}
+            onCategoryFilterChange={handleCategoryFilterChange}
+            onFilterLogicChange={handleFilterLogicChange}
+            onClearAllFilters={clearAllFilters}
+          />
+        </Collapse>
+        <Collapse in={payoutOpened} transitionDuration={500}>
+          <Group justify="flex-end">
+            <PayoutCard
+              opened={payoutOpened}
+              sessions={unpaidSessions}
+              projects={projects}
+              selectedSessions={selectedSessions}
+              onSessionsChange={setSelectedSessions}
+            />
+          </Group>
+        </Collapse>
       </Stack>
       {timerSessions.length > 0 ? (
         <Box w="100%">
