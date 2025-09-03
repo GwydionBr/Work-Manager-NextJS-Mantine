@@ -6,18 +6,18 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import { Card } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 
-interface ProjectFilterProps {
+interface SessionFilterProps {
   timeSpan: [Date | null, Date | null];
   onTimeSpanChange: (timeSpan: [Date | null, Date | null]) => void;
 }
 
-export default function ProjectFilter({
+export default function SessionFilter({
   timeSpan,
   onTimeSpanChange,
-}: ProjectFilterProps) {
+}: SessionFilterProps) {
   const { locale } = useSettingsStore();
   const today = dayjs();
-  
+
   return (
     <Card withBorder p="md" radius="md" maw={700} mx="auto">
       <DatePickerInput

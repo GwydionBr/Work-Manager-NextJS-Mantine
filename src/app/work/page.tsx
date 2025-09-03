@@ -16,7 +16,7 @@ import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
 import FilterActionIcon from "@/components/UI/ActionIcons/FilterActionIcon";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
 import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
-import SessionFilter from "@/components/Work/Session/SessionFilter";
+import ProjectFilter from "@/components/Work/Project/ProjectFilter";
 
 import { formatMoney } from "@/utils/formatFunctions";
 import PayoutCard from "@/components/Payout/PayoutCard";
@@ -56,11 +56,9 @@ export default function WorkPage() {
   const [payoutOpened, { open: openPayout, close: closePayout }] =
     useDisclosure(false);
   // Use the custom hook for filtering logic
-  const {
-    timeFilteredSessions,
-  } = useProjectFiltering(
+  const { timeFilteredSessions } = useProjectFiltering(
     activeProject?.sessions ?? [],
-    filterTimeSpan,
+    filterTimeSpan
   );
 
   useEffect(() => {
@@ -172,7 +170,9 @@ export default function WorkPage() {
             <FilterActionIcon
               onClick={handleFilterToggle}
               tooltipLabel={locale === "de-DE" ? "Filter" : "Filter"}
-              filled={filterOpened}
+              activeFilter={
+                filterTimeSpan[0] && filterTimeSpan[1] ? true : false
+              }
             />
             <NewSessionButton />
             <PayoutActionIcon
@@ -183,7 +183,7 @@ export default function WorkPage() {
           {/* Bulk Selection Controls */}
           {activeProject.project.hourly_payment && (
             <Collapse in={filterOpened}>
-              <SessionFilter
+              <ProjectFilter
                 timeSpan={filterTimeSpan}
                 onTimeSpanChange={setFilterTimeSpan}
               />
