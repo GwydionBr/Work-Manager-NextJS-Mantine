@@ -2,13 +2,14 @@
 
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { DatePickerInput, DatePickerInputProps } from "@mantine/dates";
+import { DatePickerInput, DatePickerInputProps, DatePickerProps } from "@mantine/dates";
 
 export default function LocaleDatePickerInput({
   label,
   value,
   onChange,
   error,
+  allowSingleDateInRange,
   ...props
 }: DatePickerInputProps) {
   const { locale } = useSettingsStore();
@@ -20,6 +21,7 @@ export default function LocaleDatePickerInput({
       value={value}
       onChange={onChange}
       error={error}
+      allowSingleDateInRange={allowSingleDateInRange}
       {...props}
     />
   );

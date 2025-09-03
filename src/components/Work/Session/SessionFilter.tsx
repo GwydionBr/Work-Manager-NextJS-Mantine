@@ -1,0 +1,92 @@
+"use client";
+import dayjs from "dayjs";
+
+import { useSettingsStore } from "@/stores/settingsStore";
+
+import { Card, Stack, Text } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
+
+interface SessionFilterProps {
+  timeSpan: [Date | null, Date | null];
+  onTimeSpanChange: (timeSpan: [Date | null, Date | null]) => void;
+}
+
+export default function SessionFilter({
+  timeSpan,
+  onTimeSpanChange,
+}: SessionFilterProps) {
+  const { locale } = useSettingsStore();
+  const today = dayjs();
+  return (
+    <Card withBorder p="md" radius="md" maw={700} mx="auto">
+      <DatePickerInput
+        clearable
+        type="range"
+        maxDate={today.add(1, "day").toDate()}
+        placeholder={
+          locale === "de-DE"
+            ? "Datum auswählen um nach zeitraum zu filtern"
+            : "Select date to filter by time period"
+        }
+        allowSingleDateInRange
+        valueFormat={locale === "de-DE" ? "DD. MMM YYYY" : "MMM DD, YYYY"}
+        value={timeSpan}
+        onChange={(value) => {
+          onTimeSpanChange(value as [Date | null, Date | null]);
+        }}
+        presets={[
+          {
+            value: [
+              today.subtract(2, "day").format("YYYY-MM-DD"),
+              today.format("YYYY-MM-DD"),
+            ],
+            label: locale === "de-DE" ? "Letzte 2 Tage" : "Last 2 days",
+          },
+          {
+            value: [
+              today.subtract(7, "day").format("YYYY-MM-DD"),
+              today.format("YYYY-MM-DD"),
+            ],
+            label: locale === "de-DE" ? "Letzte 7 Tage" : "Last 7 days",
+          },
+          {
+            value: [
+              today.startOf("week").add(1, "day").format("YYYY-MM-DD"),
+              today.endOf("week").add(1, "day").format("YYYY-MM-DD"),
+            ],
+            label: locale === "de-DE" ? "Diese Woche" : "This week",
+          },
+          {
+            value: [
+              today
+                .startOf("week")
+                .subtract(1, "week")
+                .add(1, "day")
+                .format("YYYY-MM-DD"),
+              today
+                .endOf("week")
+                .subtract(1, "week")
+                .add(1, "day")
+                .format("YYYY-MM-DD"),
+            ],
+            label: locale === "de-DE" ? "Letzte Woche" : "Last week",
+          },
+          {
+            value: [
+              today.startOf("month").format("YYYY-MM-DD"),
+              today.endOf("month").format("YYYY-MM-DD"),
+            ],
+            label: locale === "de-DE" ? "Dieser Monat" : "This month",
+          },
+          {
+            value: [
+              today.subtract(1, "month").startOf("month").format("YYYY-MM-DD"),
+              today.subtract(1, "month").endOf("month").format("YYYY-MM-DD"),
+            ],
+            label: locale === "de-DE" ? "Letzter Monat" : "Last month",
+          },
+        ]}
+      />
+    </Card>
+  );
+}

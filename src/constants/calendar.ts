@@ -1,0 +1,2 @@
+export const GERMAN_CALENDAR_FORMAT = "DD. MMM YYYY";
+export const ENGLISH_CALENDAR_FORMAT = "MMM DD, YYYY";

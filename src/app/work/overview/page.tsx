@@ -11,7 +11,7 @@ import Header from "@/components/Header/Header";
 import PayoutMenu from "@/components/Payout/PayoutCard";
 import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
 import { groupSessions } from "@/utils/sessionHelperFunctions";
-import BulkSelectionControls from "@/components/Work/Session/BulkSelectionControls";
+import SessionFilter from "@/components/Work/Session/BulkSelectionControl";
 import WorkAnalysis from "@/components/Work/Analysis/WorkAnalysis";
 import AnalysisActionIcon from "@/components/UI/ActionIcons/AnalysisActionIcon";
 import FilterActionIcon from "@/components/UI/ActionIcons/FilterActionIcon";
@@ -77,20 +77,20 @@ export default function WorkOverviewPage() {
         bg="var(--mantine-color-body)"
         w="100%"
       >
-        <Group justify="space-between" p="xs">
-          <FilterActionIcon
+        <Group justify="center" p="xs">
+          {/* <FilterActionIcon
             onClick={toggleFilter}
             tooltipLabel={locale === "de-DE" ? "Filter" : "Filter"}
             filled={filterOpened}
-          />
+          /> */}
           <NewSessionButton />
-          <PayoutActionIcon
+          {/* <PayoutActionIcon
             onClick={togglePayout}
             tooltipLabel={locale === "de-DE" ? "Auszahlung" : "Payout"}
-          />
+          /> */}
         </Group>
         {/* Bulk Selection Controls */}
-        <Collapse in={filterOpened}>
+        {/* <Collapse in={filterOpened}>
           <BulkSelectionControls
             unpaidSessions={unpaidSessions}
             selectedSessions={selectedSessions}
@@ -122,13 +122,13 @@ export default function WorkOverviewPage() {
               onSessionsChange={setSelectedSessions}
             />
           </Group>
-        </Collapse>
+        </Collapse> */}
       </Stack>
       {timerSessions.length > 0 ? (
         <Box w="100%">
-          <Collapse in={analysisOpened} transitionDuration={500}>
+          {/* <Collapse in={analysisOpened} transitionDuration={500}>
             <WorkAnalysis sessions={filteredSessions} isOverview={true} />
-          </Collapse>
+          </Collapse> */}
           {/* Session Hierarchy */}
           {filteredSessions.length > 0 ? (
             <SessionHierarchy

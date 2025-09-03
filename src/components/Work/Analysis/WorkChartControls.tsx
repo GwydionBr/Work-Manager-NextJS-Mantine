@@ -258,7 +258,7 @@ export default function WorkChartControls({
 
   return (
     <Grid w="100%" columns={12}>
-      <Grid.Col span={1} style={{ display: "flex", justifyContent: "flex-start" }} pl="md">
+      <Grid.Col span={1} style={{ display: "flex", justifyContent: "flex-start" }} pl="xl">
         <FilterActionIcon onClick={toggle} />
       </Grid.Col>
       <Grid.Col span={10}>
@@ -291,7 +291,7 @@ export default function WorkChartControls({
           </Group>
         </Group>
       </Grid.Col>
-      <Grid.Col span={1} style={{ display: "flex", justifyContent: "flex-end" }} pr="md">
+      <Grid.Col span={1} style={{ display: "flex", justifyContent: "flex-end" }} pr="xl">
         <ListActionIcon onClick={onClose} variant="subtle" />
       </Grid.Col>
 

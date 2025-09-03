@@ -10,17 +10,17 @@ import { Box, Collapse, Group, Loader, Stack, Text } from "@mantine/core";
 import NewSessionButton from "@/components/Work/Session/NewSessionButton";
 import EditProjectDrawer from "@/components/Work/Project/EditProjectDrawer";
 import Header from "@/components/Header/Header";
-
-import { formatMoney } from "@/utils/formatFunctions";
-import PayoutCard from "@/components/Payout/PayoutCard";
-import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
-import BulkSelectionControls from "@/components/Work/Session/BulkSelectionControls";
-import { groupSessions } from "@/utils/sessionHelperFunctions";
 import WorkAnalysis from "@/components/Work/Analysis/WorkAnalysis";
 import AnalysisActionIcon from "@/components/UI/ActionIcons/AnalysisActionIcon";
 import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
 import FilterActionIcon from "@/components/UI/ActionIcons/FilterActionIcon";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
+import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
+import SessionFilter from "@/components/Work/Session/SessionFilter";
+
+import { formatMoney } from "@/utils/formatFunctions";
+import PayoutCard from "@/components/Payout/PayoutCard";
+import { groupSessions } from "@/utils/sessionHelperFunctions";
 
 export default function WorkPage() {
   const {
@@ -41,6 +41,9 @@ export default function WorkPage() {
       return false;
     })
   );
+  const [filterTimeSpan, setFilterTimeSpan] = useState<
+    [Date | null, Date | null]
+  >([null, null]);
   const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
   const [analysisOpened, { open: openAnalysis, close: closeAnalysis }] =
     useDisclosure(false);
@@ -48,26 +51,17 @@ export default function WorkPage() {
     editProjectOpened,
     { open: openEditProject, close: closeEditProject },
   ] = useDisclosure(false);
-  const [
-    filterOpened,
-    { open: openFilter, close: closeFilter, toggle: toggleFilter },
-  ] = useDisclosure(false);
-  const [
-    payoutOpened,
-    { open: openPayout, close: closePayout, toggle: togglePayout },
-  ] = useDisclosure(false);
+  const [filterOpened, { open: openFilter, close: closeFilter }] =
+    useDisclosure(false);
+  const [payoutOpened, { open: openPayout, close: closePayout }] =
+    useDisclosure(false);
   // Use the custom hook for filtering logic
   const {
-    timePresets,
-    selectedTimePreset,
-    timeFilterDays,
     filteredSessions,
     unpaidSessions,
-    handleTimePresetChange,
-    handleCustomDaysChange,
-    handleSetDaysForPreset,
   } = useSessionFiltering(
     activeProject?.sessions ?? [],
+    filterTimeSpan,
     undefined,
     undefined,
     false
@@ -193,17 +187,9 @@ export default function WorkPage() {
           {/* Bulk Selection Controls */}
           {activeProject.project.hourly_payment && (
             <Collapse in={filterOpened}>
-              <BulkSelectionControls
-                unpaidSessions={unpaidSessions}
-                selectedSessions={selectedSessions}
-                onSessionsChange={setSelectedSessions}
-                isOverview={false}
-                timePresets={timePresets}
-                selectedTimePreset={selectedTimePreset}
-                timeFilterDays={timeFilterDays}
-                onTimePresetChange={handleTimePresetChange}
-                onCustomDaysChange={handleCustomDaysChange}
-                onSetDaysForPreset={handleSetDaysForPreset}
+              <SessionFilter
+                timeSpan={filterTimeSpan}
+                onTimeSpanChange={setFilterTimeSpan}
               />
             </Collapse>
           )}

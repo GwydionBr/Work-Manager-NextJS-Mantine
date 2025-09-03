@@ -23,19 +23,15 @@ import type { Tables } from "@/types/db.types";
 import type { TimePreset } from "@/types/timerSession.types";
 import type { FilterLogic } from "@/hooks/useSessionFiltering";
 
-interface BulkSelectionControlsProps {
+interface SessionFilterProps {
   unpaidSessions: Tables<"timer_session">[];
   selectedSessions: string[];
-  onSessionsChange: (sessions: string[]) => void;
   projects?: Tables<"timer_project">[];
   folders?: Tables<"timer_project_folder">[];
   isOverview: boolean;
   timePresets: TimePreset[];
   selectedTimePreset: string | null;
   timeFilterDays: number;
-  onTimePresetChange: (preset: string | null) => void;
-  onCustomDaysChange: (days: number) => void;
-  onSetDaysForPreset?: (days: number) => void;
   // New filter props
   filterState?: {
     selectedProjects: string[];
@@ -43,6 +39,10 @@ interface BulkSelectionControlsProps {
     selectedCategories: string[];
     filterLogic: FilterLogic;
   };
+  onSessionsChange: (sessions: string[]) => void;
+  onTimePresetChange: (preset: string | null) => void;
+  onCustomDaysChange: (days: number) => void;
+  onSetDaysForPreset?: (days: number) => void;
   onProjectFilterChange?: (projectIds: string[]) => void;
   onFolderFilterChange?: (folderIds: string[]) => void;
   onCategoryFilterChange?: (categoryIds: string[]) => void;
@@ -54,26 +54,26 @@ interface BulkSelectionControlsProps {
  * Bulk selection controls for timer sessions with filtering capabilities
  * Allows users to select multiple sessions by various criteria (project, folder, time period)
  */
-export default function BulkSelectionControls({
+export default function SessionFilter({
   unpaidSessions,
   selectedSessions,
-  onSessionsChange,
   projects,
   folders,
   isOverview,
   timePresets,
   selectedTimePreset,
   timeFilterDays,
+  filterState,
+  onSessionsChange,
   onTimePresetChange,
   onCustomDaysChange,
   onSetDaysForPreset,
-  filterState,
   onProjectFilterChange,
   onFolderFilterChange,
   onCategoryFilterChange,
   onFilterLogicChange,
   onClearAllFilters,
-}: BulkSelectionControlsProps) {
+}: SessionFilterProps) {
   const { locale } = useSettingsStore();
   const { financeCategories } = useFinanceStore();
 
