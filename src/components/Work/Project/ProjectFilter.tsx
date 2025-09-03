@@ -4,17 +4,20 @@ import dayjs from "dayjs";
 import { useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Button, Card, Stack, Text } from "@mantine/core";
+import { Button, Card, Stack } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import PayoutModal from "@/components/Payout/Modal/PayoutModal";
 import { Currency } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
+import { IconBrandCashapp } from "@tabler/icons-react";
+import { formatMoney } from "@/utils/formatFunctions";
 
 interface ProjectFilterProps {
   timeSpan: [Date | null, Date | null];
   onTimeSpanChange: (timeSpan: [Date | null, Date | null]) => void;
   sessions: Tables<"timer_session">[];
   project: Tables<"timer_project">;
+  openPayout: () => void;
 }
 
 export default function ProjectFilter({
@@ -22,6 +25,7 @@ export default function ProjectFilter({
   onTimeSpanChange,
   sessions,
   project,
+  openPayout,
 }: ProjectFilterProps) {
   const { locale } = useSettingsStore();
   const [openedModal, { open: openModal, close: closeModal }] =
@@ -35,8 +39,16 @@ export default function ProjectFilter({
     0
   );
 
+  function handlePayoutClick() {
+    if (!project.hourly_payment) {
+      openPayout();
+    } else if (sessionPayout > 0) {
+      openModal();
+    }
+  }
+
   return (
-    <Card withBorder p="md" radius="md" maw={700}>
+    <Card withBorder p="md" radius="md" maw={320}>
       <Stack>
         <DatePickerInput
           maw={300}
@@ -115,7 +127,9 @@ export default function ProjectFilter({
             },
           ]}
         />
-        <Button onClick={openModal}>Payout </Button>
+        <Button onClick={handlePayoutClick} leftSection={<IconBrandCashapp />}>
+          Payout{" "} {formatMoney(sessionPayout, project.currency, locale)}
+        </Button>
       </Stack>
       <PayoutModal
         opened={openedModal}

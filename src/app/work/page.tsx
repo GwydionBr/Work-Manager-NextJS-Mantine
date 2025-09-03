@@ -23,6 +23,9 @@ import PayoutCard from "@/components/Payout/PayoutCard";
 import { groupSessions } from "@/utils/sessionHelperFunctions";
 
 export default function WorkPage() {
+  const [oldActiveProjectId, setOldActiveProjectId] = useState<string | null>(
+    null
+  );
   const {
     activeProjectId,
     lastActiveProjectId,
@@ -60,6 +63,16 @@ export default function WorkPage() {
     activeProject?.sessions ?? [],
     filterTimeSpan
   );
+
+  useEffect(() => {
+    if (oldActiveProjectId !== activeProjectId) {
+      setFilterTimeSpan([null, null]);
+      closeFilter();
+      closePayout();
+      closeAnalysis();
+      setOldActiveProjectId(activeProjectId);
+    }
+  }, [activeProjectId, oldActiveProjectId]);
 
   useEffect(() => {
     if (!activeProjectId && lastActiveProjectId) {
@@ -127,6 +140,14 @@ export default function WorkPage() {
     );
   };
 
+  const isPayoutAvailable = activeProject.project.hourly_payment
+    ? timeFilteredSessions.reduce(
+        (acc, session) =>
+          acc + session.salary * (session.active_seconds / 3600),
+        0
+      ) > 0
+    : activeProject.project.salary > activeProject.project.total_payout;
+
   return (
     <Stack align="center" w="100%" px="xl">
       <Collapse in={!analysisOpened} transitionDuration={300} w="100%">
@@ -178,6 +199,7 @@ export default function WorkPage() {
             <PayoutActionIcon
               onClick={handlePayoutToggle}
               tooltipLabel={locale === "de-DE" ? "Auszahlung" : "Payout"}
+              disabled={!isPayoutAvailable}
             />
           </Group>
           <Collapse in={filterOpened}>
@@ -186,6 +208,7 @@ export default function WorkPage() {
               onTimeSpanChange={setFilterTimeSpan}
               sessions={timeFilteredSessions}
               project={activeProject.project}
+              openPayout={handlePayoutToggle}
             />
           </Collapse>
           <Collapse in={payoutOpened}>
