@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
-import { useSessionFiltering } from "@/hooks/useSessionFiltering";
+import { useProjectFiltering } from "@/hooks/useProjectFiltering";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Box, Collapse, Group, Loader, Stack, Text } from "@mantine/core";
@@ -57,14 +57,10 @@ export default function WorkPage() {
     useDisclosure(false);
   // Use the custom hook for filtering logic
   const {
-    filteredSessions,
-    unpaidSessions,
-  } = useSessionFiltering(
+    timeFilteredSessions,
+  } = useProjectFiltering(
     activeProject?.sessions ?? [],
     filterTimeSpan,
-    undefined,
-    undefined,
-    false
   );
 
   useEffect(() => {
@@ -197,7 +193,7 @@ export default function WorkPage() {
             <Group justify="flex-end">
               <PayoutCard
                 opened={payoutOpened}
-                sessions={unpaidSessions}
+                sessions={timeFilteredSessions}
                 project={activeProject.project}
                 selectedSessions={selectedSessions}
                 onSessionsChange={setSelectedSessions}
@@ -208,9 +204,9 @@ export default function WorkPage() {
         {activeProject?.sessions.length > 0 ? (
           <Box w="100%">
             {/* Session Hierarchy */}
-            {filteredSessions.length > 0 ? (
+            {timeFilteredSessions.length > 0 ? (
               <SessionHierarchy
-                groupedSessions={groupSessions(filteredSessions, locale)}
+                groupedSessions={groupSessions(timeFilteredSessions, locale)}
                 selectedSessions={selectedSessions}
                 onSessionToggle={handleSessionToggle}
                 project={activeProject.project}

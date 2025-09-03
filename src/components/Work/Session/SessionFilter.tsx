@@ -3,20 +3,21 @@ import dayjs from "dayjs";
 
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Card, Stack, Text } from "@mantine/core";
+import { Card } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 
-interface SessionFilterProps {
+interface ProjectFilterProps {
   timeSpan: [Date | null, Date | null];
   onTimeSpanChange: (timeSpan: [Date | null, Date | null]) => void;
 }
 
-export default function SessionFilter({
+export default function ProjectFilter({
   timeSpan,
   onTimeSpanChange,
-}: SessionFilterProps) {
+}: ProjectFilterProps) {
   const { locale } = useSettingsStore();
   const today = dayjs();
+  
   return (
     <Card withBorder p="md" radius="md" maw={700} mx="auto">
       <DatePickerInput
