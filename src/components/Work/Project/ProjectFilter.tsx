@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Button, Card, Stack } from "@mantine/core";
+import { Button, Card, Divider, Text, Stack } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import PayoutModal from "@/components/Payout/Modal/PayoutModal";
 import { Currency } from "@/types/settings.types";
@@ -127,8 +127,14 @@ export default function ProjectFilter({
             },
           ]}
         />
+        <Stack gap={5} mt="md">
+          <Text size="xs" c="dimmed" fw={500}>
+            {locale === "de-DE" ? "Schnellaktionen" : "Quick Actions"}
+          </Text>
+          <Divider />
+        </Stack>
         <Button onClick={handlePayoutClick} leftSection={<IconBrandCashapp />}>
-          Payout{" "} {formatMoney(sessionPayout, project.currency, locale)}
+          Payout {formatMoney(sessionPayout, project.currency, locale)}
         </Button>
       </Stack>
       <PayoutModal
