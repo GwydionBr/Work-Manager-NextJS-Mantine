@@ -180,15 +180,14 @@ export default function WorkPage() {
               tooltipLabel={locale === "de-DE" ? "Auszahlung" : "Payout"}
             />
           </Group>
-          {/* Bulk Selection Controls */}
-          {activeProject.project.hourly_payment && (
-            <Collapse in={filterOpened}>
-              <ProjectFilter
-                timeSpan={filterTimeSpan}
-                onTimeSpanChange={setFilterTimeSpan}
-              />
-            </Collapse>
-          )}
+          <Collapse in={filterOpened}>
+            <ProjectFilter
+              timeSpan={filterTimeSpan}
+              onTimeSpanChange={setFilterTimeSpan}
+              sessions={timeFilteredSessions}
+              project={activeProject.project}
+            />
+          </Collapse>
           <Collapse in={payoutOpened}>
             <Group justify="flex-end">
               <PayoutCard
