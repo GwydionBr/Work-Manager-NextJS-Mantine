@@ -36,21 +36,15 @@ export default function WorkOverviewPage() {
 
   // Use the custom hook for filtering logic with all new filter functionality
   const {
-    timePresets,
-    selectedTimePreset,
-    timeFilterDays,
     filteredSessions,
     unpaidSessions,
     filterState,
-    handleTimePresetChange,
-    handleCustomDaysChange,
-    handleSetDaysForPreset,
     handleProjectFilterChange,
     handleFolderFilterChange,
     handleCategoryFilterChange,
     handleFilterLogicChange,
     clearAllFilters,
-  } = useSessionFiltering(timerSessions, projects, folders, true);
+  } = useSessionFiltering(timerSessions, [null, null], projects, folders, true);
 
   const handleSessionToggle = (sessionId: string) => {
     setSelectedSessions(
