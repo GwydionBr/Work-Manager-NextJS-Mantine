@@ -215,17 +215,11 @@ export default function WorkPage() {
           </Collapse>
           <Collapse in={payoutOpened}>
             <Group justify="flex-end">
-              {
-                activeProject.project.hourly_payment ? (
-                  <NewHourlyPayoutCard
-                    project={activeProject}
-                  />
-                ) : (
-                  <NewProjectPayoutCard
-                    project={activeProject.project}
-                  />
-                )
-              }
+              {activeProject.project.hourly_payment ? (
+                <NewHourlyPayoutCard project={activeProject} />
+              ) : (
+                <NewProjectPayoutCard project={activeProject.project} />
+              )}
             </Group>
           </Collapse>
         </Stack>

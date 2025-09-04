@@ -54,7 +54,6 @@ export function useSessionFiltering(
     if (!timeSpan[0] || !timeSpan[1]) {
       return sessions;
     }
-    console.log("timeSpan", timeSpan);
 
     let startDate = startOfDay(new Date(timeSpan[0]));
     let endDate = endOfDay(new Date(timeSpan[1]));

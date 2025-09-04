@@ -83,7 +83,7 @@ export default function NewHourlyPayoutCard({
             currency={project.project.currency}
             timeSpan={[
               today.startOf("month").toDate(),
-              today.endOf("month").toDate(),
+              today.toDate(),
             ]}
             handleClick={handlePayoutClick}
           />
