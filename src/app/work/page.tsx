@@ -21,6 +21,8 @@ import ProjectFilter from "@/components/Work/Project/ProjectFilter";
 import { formatMoney } from "@/utils/formatFunctions";
 import PayoutCard from "@/components/Payout/PayoutCard";
 import { groupSessions } from "@/utils/sessionHelperFunctions";
+import NewHourlyPayoutCard from "@/components/Payout/NewHourlyPayoutCard";
+import NewProjectPayoutCard from "@/components/Payout/NewProjectPayoutCard";
 
 export default function WorkPage() {
   const [oldActiveProjectId, setOldActiveProjectId] = useState<string | null>(
@@ -213,13 +215,17 @@ export default function WorkPage() {
           </Collapse>
           <Collapse in={payoutOpened}>
             <Group justify="flex-end">
-              <PayoutCard
-                opened={payoutOpened}
-                sessions={timeFilteredSessions}
-                project={activeProject.project}
-                selectedSessions={selectedSessions}
-                onSessionsChange={setSelectedSessions}
-              />
+              {
+                activeProject.project.hourly_payment ? (
+                  <NewHourlyPayoutCard
+                    project={activeProject}
+                  />
+                ) : (
+                  <NewProjectPayoutCard
+                    project={activeProject.project}
+                  />
+                )
+              }
             </Group>
           </Collapse>
         </Stack>

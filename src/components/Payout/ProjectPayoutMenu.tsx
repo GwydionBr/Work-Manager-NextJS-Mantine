@@ -21,7 +21,6 @@ interface ProjectPayoutMenuProps {
   availablePayout: number;
   useCustomAmount: boolean;
   payoutAmount: number;
-  closeMenu: () => void;
   openModal: () => void;
   setUseCustomAmount: (value: boolean) => void;
   setPayoutAmount: (value: number) => void;
@@ -32,7 +31,6 @@ export default function ProjectPayoutMenu({
   availablePayout,
   useCustomAmount,
   payoutAmount,
-  closeMenu,
   openModal,
   setUseCustomAmount,
   setPayoutAmount,
@@ -40,7 +38,6 @@ export default function ProjectPayoutMenu({
   const { locale } = useSettingsStore();
 
   const handleProjectSalaryPayout = async () => {
-    closeMenu();
     openModal();
   };
   return (

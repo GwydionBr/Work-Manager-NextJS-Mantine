@@ -19,27 +19,21 @@ import type { Tables } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
 
 interface HourlyPayoutMenuProps {
-  opened: boolean;
   isOverview?: boolean;
   unpaidSessions: Tables<"timer_session">[];
   selectedUnpaidSessions: string[];
   sessionPayouts: Record<string, number>;
   projects: Tables<"timer_project">[];
-  closeMenu: () => void;
-  onSessionsChange: (sessions: string[]) => void;
   openModal: () => void;
   handleSelectAll: () => void;
   handleSessionToggle: (sessionId: string) => void;
 }
 export default function HourlyPayoutMenu({
-  opened,
   isOverview,
   unpaidSessions,
   selectedUnpaidSessions,
   sessionPayouts,
   projects,
-  closeMenu,
-  onSessionsChange,
   openModal,
   handleSelectAll,
   handleSessionToggle,
@@ -47,7 +41,6 @@ export default function HourlyPayoutMenu({
   const { locale } = useSettingsStore();
 
   const handleSessionPayout = async () => {
-    closeMenu();
     openModal();
   };
   return (

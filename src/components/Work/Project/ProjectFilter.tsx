@@ -48,7 +48,7 @@ export default function ProjectFilter({
   }
 
   return (
-    <Card withBorder p="md" radius="md" maw={320}>
+    <Card withBorder shadow="md" p="md" radius="md" maw={320}>
       <Stack>
         <DatePickerInput
           maw={300}
