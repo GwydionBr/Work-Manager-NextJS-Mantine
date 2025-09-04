@@ -141,8 +141,7 @@ export default function PayoutCard({
         {project && !project.hourly_payment ? (
           <ProjectPayoutMenu
             project={project}
-            closeMenu={closeMenu}
-            openModal={openModal} 
+            openModal={openModal}
             availablePayout={availablePayout}
             useCustomAmount={useCustomAmount}
             payoutAmount={payoutAmount}
@@ -151,7 +150,6 @@ export default function PayoutCard({
           />
         ) : (
           <HourlyPayoutMenu
-            closeMenu={closeMenu}
             openModal={openModal}
             isOverview={isOverview}
             unpaidSessions={unpaidSessions}
