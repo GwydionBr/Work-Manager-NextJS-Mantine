@@ -74,13 +74,6 @@ export default function ProjectFilter({
           presets={[
             {
               value: [
-                today.subtract(2, "day").format("YYYY-MM-DD"),
-                today.format("YYYY-MM-DD"),
-              ],
-              label: locale === "de-DE" ? "Letzte 2 Tage" : "Last 2 days",
-            },
-            {
-              value: [
                 today.subtract(7, "day").format("YYYY-MM-DD"),
                 today.format("YYYY-MM-DD"),
               ],
@@ -89,7 +82,7 @@ export default function ProjectFilter({
             {
               value: [
                 today.startOf("week").add(1, "day").format("YYYY-MM-DD"),
-                today.endOf("week").add(1, "day").format("YYYY-MM-DD"),
+                today.format("YYYY-MM-DD"),
               ],
               label: locale === "de-DE" ? "Diese Woche" : "This week",
             },
@@ -106,12 +99,12 @@ export default function ProjectFilter({
                   .add(1, "day")
                   .format("YYYY-MM-DD"),
               ],
-              label: locale === "de-DE" ? "Letzte Woche" : "Last week",
+              label: locale === "de-DE" ? "Vergangene Woche" : "Previous week",
             },
             {
               value: [
                 today.startOf("month").format("YYYY-MM-DD"),
-                today.endOf("month").format("YYYY-MM-DD"),
+                today.format("YYYY-MM-DD"),
               ],
               label: locale === "de-DE" ? "Dieser Monat" : "This month",
             },
@@ -123,7 +116,18 @@ export default function ProjectFilter({
                   .format("YYYY-MM-DD"),
                 today.subtract(1, "month").endOf("month").format("YYYY-MM-DD"),
               ],
-              label: locale === "de-DE" ? "Letzter Monat" : "Last month",
+              label:
+                locale === "de-DE" ? "Vergangener Monat" : "Previous month",
+            },
+            {
+              value: [
+                today
+                  .subtract(2, "month")
+                  .startOf("month")
+                  .format("YYYY-MM-DD"),
+                today.format("YYYY-MM-DD"),
+              ],
+              label: locale === "de-DE" ? "Letzten 3 Monate" : "Last 3 months",
             },
           ]}
         />
