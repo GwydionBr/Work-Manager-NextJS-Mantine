@@ -16,6 +16,7 @@ interface PayoutModalProps {
   handleClose: () => void;
   sessionIds?: string[];
   project?: Tables<"timer_project">;
+  projectTitle?: string;
   payoutAmount?: number;
   payoutCurrency?: Currency;    
   payoutCategoryId: string | null;
@@ -27,6 +28,7 @@ export default function PayoutModal({
   handleClose,
   sessionIds,
   project,
+  projectTitle,
   payoutAmount,
   payoutCurrency,
   payoutCategoryId,
@@ -66,6 +68,7 @@ export default function PayoutModal({
           startValue={startValue}
           categoryId={payoutCategoryId}
           startCurrency={startCurrency}
+          projectTitle={projectTitle ?? ""}
         />
       ) : project && payoutAmount && payoutCurrency ? (
         <ProjectModalForm

@@ -6,6 +6,7 @@ import { Currency } from "@/types/settings.types";
 
 interface PayoutSessionsProps {
   date: Date;
+  title: string;
   sessionIds: string[];
   startValue: number;
   startCurrency: Currency;
@@ -16,6 +17,7 @@ interface PayoutSessionsProps {
 
 export async function payoutSessions({
   date,
+  title,
   sessionIds,
   startValue,
   startCurrency,
@@ -28,7 +30,7 @@ export async function payoutSessions({
   const { data: cashFlow, error: cashFlowError } = await supabase
     .from("single_cash_flow")
     .insert({
-      title: `SessionPayout ${date.toLocaleDateString()}`,
+      title: title,
       category_id: categoryId,
       type: "income",
       amount: endValue ?? startValue,
@@ -51,7 +53,7 @@ export async function payoutSessions({
       end_value: endValue,
       end_currency: endCurrency,
       timer_project_id: null,
-      title: `Session Payout ${date.toLocaleDateString()}`,
+      title: title,
     })
     .select()
     .single();

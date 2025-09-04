@@ -55,6 +55,7 @@ interface WorkStoreActions {
   payoutSessions: (
     sessionIds: string[],
     startValue: number,
+    title: string,
     startCurrency: Currency,
     categoryId: string | null,
     endValue: number | null,
@@ -117,10 +118,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         }),
 
       async fetchWorkData() {
-        const {
-          createProjectTree,
-          activeProjectId: storedActiveId,
-        } = get();
+        const { createProjectTree, activeProjectId: storedActiveId } = get();
         const [projects, timerSessions, folders] = await Promise.all([
           actions.getAllProjects(),
           actions.getAllSessions(),
@@ -377,6 +375,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
       async payoutSessions(
         sessionIds,
         startValue,
+        title,
         startCurrency,
         categoryId,
         endValue,
@@ -387,6 +386,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           date: new Date(),
           sessionIds,
           startValue,
+          title,
           startCurrency,
           categoryId,
           endValue,

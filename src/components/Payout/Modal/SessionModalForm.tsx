@@ -21,7 +21,7 @@ import {
 } from "@mantine/core";
 import { IconArrowDown, IconBrandCashapp } from "@tabler/icons-react";
 import { currencies } from "@/constants/settings";
-import { formatMoney } from "@/utils/formatFunctions";
+import { formatDate, formatMoney } from "@/utils/formatFunctions";
 
 interface SessionModalFormProps {
   sessionIds: string[];
@@ -29,6 +29,7 @@ interface SessionModalFormProps {
   startValue: number;
   startCurrency: Currency;
   categoryId: string | null;
+  projectTitle: string;
 }
 
 const schema = z.object({
@@ -42,6 +43,7 @@ export default function SessionModalForm({
   startValue,
   startCurrency,
   categoryId,
+  projectTitle,
 }: SessionModalFormProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,27 +61,64 @@ export default function SessionModalForm({
 
   async function onSubmit(values: z.infer<typeof schema>) {
     setIsProcessing(true);
-    const payoutResult = await payoutSessions(
-      sessionIds,
-      startValue,
-      startCurrency,
-      categoryId,
-      values.endValue !== startValue ? values.endValue : null,
-      values.endCurrency !== startCurrency
-        ? (values.endCurrency as Currency)
-        : null
-    );
+    setError(null);
 
-    if (payoutResult.success) {
-      addExistingSingleCashFlow(payoutResult.data.cashFlow);
-      handleClose();
-    } else {
-      setError(payoutResult.error);
+    try {
+      // Create a timeout promise that rejects after 30 seconds
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          reject(
+            new Error(
+              locale === "de-DE"
+                ? "Die Auszahlung dauert zu lange. Bitte versuchen Sie es erneut."
+                : "Payout is taking too long. Please try again."
+            )
+          );
+        }, 15000); // 15 seconds timeout
+      });
+
+      // Race between the payout operation and the timeout
+      const title = `Payout (${projectTitle}) ${formatDate(new Date(), locale)}`;
+      const payoutResult = await Promise.race([
+        payoutSessions(
+          sessionIds,
+          startValue,
+          title,
+          startCurrency,
+          categoryId,
+          values.endValue !== startValue ? values.endValue : null,
+          values.endCurrency !== startCurrency
+            ? (values.endCurrency as Currency)
+            : null
+        ),
+        timeoutPromise,
+      ]);
+
+      if (payoutResult.success) {
+        addExistingSingleCashFlow(payoutResult.data.cashFlow);
+        handleClose();
+      } else {
+        setError(payoutResult.error);
+        setTimeout(() => {
+          setError(null);
+        }, 3000);
+      }
+    } catch (error) {
+      // Handle timeout or other errors
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : locale === "de-DE"
+            ? "Ein unbekannter Fehler ist aufgetreten."
+            : "An unknown error occurred.";
+
+      setError(errorMessage);
       setTimeout(() => {
         setError(null);
-      }, 3000);
+      }, 5000); // Show timeout errors longer
+    } finally {
+      setIsProcessing(false);
     }
-    setIsProcessing(false);
   }
 
   const startValueString = formatMoney(startValue ?? 0, startCurrency, locale);

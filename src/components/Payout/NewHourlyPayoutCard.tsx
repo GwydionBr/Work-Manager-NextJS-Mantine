@@ -106,6 +106,7 @@ export default function NewHourlyPayoutCard({
         sessionPayouts={sessionPayouts}
         sessionIds={selectedSessionIds}
         payoutCategoryId={project.project.cash_flow_category_id}
+        projectTitle={project.project.title}
       />
     </Card>
   );
