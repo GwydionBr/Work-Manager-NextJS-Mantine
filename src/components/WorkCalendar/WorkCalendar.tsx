@@ -13,7 +13,6 @@ import {
   ScrollArea,
   SegmentedControl,
   Stack,
-  Title,
   ActionIcon,
   Loader,
   Center,
@@ -28,11 +27,7 @@ import LocaleDatePickerInput from "../UI/Locale/LocaleDatePickerInput";
 import { DatePickerInput } from "@mantine/dates";
 
 import { getStartOfDay } from "./calendarUtils";
-import {
-  addDays,
-  isSameDay,
-  differenceInCalendarDays,
-} from "date-fns";
+import { addDays, isSameDay, differenceInCalendarDays } from "date-fns";
 
 import {
   CalendarSession,
@@ -253,12 +248,7 @@ export default function WorkCalendar() {
 
   useEffect(() => {
     if (!isFetching) {
-      const currentTime = getCurrentTime();
-      setViewportTop((prev) => ({
-        old: prev.old,
-        new: currentTime * rasterHeight * zoomLevel[zoomIndex] + 50,
-        isSmooth: true,
-      }));
+      handleScrollToNow();
     }
   }, [isFetching]);
 
@@ -279,12 +269,12 @@ export default function WorkCalendar() {
   function handleZoomChange(oldIndex: number, newIndex: number) {
     if (viewport.current) {
       const currentTimeTop =
-        (viewport.current.scrollTop - 100) /
+        (viewport.current.scrollTop - 50) /
         (rasterHeight * zoomLevel[oldIndex]);
 
       const roundedTimeTop = Math.round(currentTimeTop * 100) / 100;
 
-      const newTop = roundedTimeTop * rasterHeight * zoomLevel[newIndex] + 100;
+      const newTop = roundedTimeTop * rasterHeight * zoomLevel[newIndex] + 50;
 
       setViewportTop((prev) => ({
         old: prev.new,
@@ -298,7 +288,7 @@ export default function WorkCalendar() {
     if (viewport.current) {
       const currentTime = getCurrentTime();
       viewport.current.scrollTo({
-        top: currentTime * rasterHeight * zoomLevel[zoomIndex] + 50,
+        top: currentTime * rasterHeight * zoomLevel[zoomIndex],
         behavior: "smooth",
       });
     }
