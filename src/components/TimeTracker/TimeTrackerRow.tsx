@@ -1,3 +1,7 @@
+"use client";
+
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import {
   Paper,
   Text,
@@ -33,6 +37,7 @@ export default function TimeTrackerRow({
   color,
   ...props
 }: TimeTrackerRowProps) {
+  const { locale } = useSettingsStore();
   return (
     <Paper
       w={200}
@@ -65,7 +70,7 @@ export default function TimeTrackerRow({
                   border: "none",
                   background: "transparent",
                   padding: 0,
-                  fontSize: "var(--mantine-font-size-sm)",
+                  fontSize: "var(--mantine-font-size-xs)",
                   fontWeight: 400,
                   textAlign: "center",
                   color: "inherit",
@@ -79,7 +84,9 @@ export default function TimeTrackerRow({
                   },
                 },
               }}
-              placeholder="Add memo..."
+              placeholder={
+                locale === "de-DE" ? "Memo hinzufügen..." : "Add memo..."
+              }
             />
           ) : (
             <Group>

@@ -34,10 +34,11 @@ export default function TimeTrackerInstance({
   setIsTimeTrackerMinimized,
 }: TimeTrackerInstanceProps) {
   const [isClient, setIsClient] = useState(false);
-  const [memo, setMemo] = useState<string>("");
+  const [memo, setMemo] = useState<string>(timer.memo ?? "");
   const { updateTimer, removeTimer, setForceEndTimer, getAllTimers } =
     useTimeTrackerManager();
-  const { addTimerSession, addMultipleTimerSessions } = useWorkStore();
+  const { addTimerSession, addMultipleTimerSessions, projects } =
+    useWorkStore();
   const {
     timeFragmentInterval: timeSectionInterval,
     roundInTimeFragments: roundInTimeSections,
@@ -47,6 +48,8 @@ export default function TimeTrackerInstance({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showSmall, setShowSmall] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const project = projects.find((p) => p.project.id === timer.projectId);
 
   // Funktion zum Beenden aller anderen laufenden Timer
   const stopOtherRunningTimers = useCallback(() => {
@@ -110,7 +113,7 @@ export default function TimeTrackerInstance({
     storedPausedSeconds: timer.storedPausedSeconds,
     timeSectionInterval: timeSectionInterval,
     roundInTimeSections: roundInTimeSections,
-    color: timer.color,
+    memo: timer.memo,
   });
 
   // Sync Hook state mit Store
@@ -126,8 +129,11 @@ export default function TimeTrackerInstance({
       tempStartTime,
       storedActiveSeconds,
       storedPausedSeconds,
+      memo,
+      projectTitle: project?.project.title ?? timer.projectTitle,
     });
   }, [
+    project,
     state,
     activeTime,
     pausedTime,
@@ -140,6 +146,7 @@ export default function TimeTrackerInstance({
     tempStartTime,
     storedActiveSeconds,
     storedPausedSeconds,
+    memo,
   ]);
 
   // Erweiterte startTimer Funktion, die andere Timer beendet
@@ -231,10 +238,10 @@ export default function TimeTrackerInstance({
           <div style={styles}>
             <TimeTrackerComponentBig
               projectTitle={timer.projectTitle}
-              color={timer.color}
+              color={project?.project.color ?? null}
               backgroundColor={
-                timer.color
-                  ? alpha(timer.color, 0.1)
+                project?.project.color
+                  ? alpha(project.project.color, 0.1)
                   : "var(--mantine-color-body)"
               }
               removeTimer={() => removeTimer(timer.id)}
@@ -278,10 +285,10 @@ export default function TimeTrackerInstance({
         {(styles) => (
           <div style={styles}>
             <TimeTrackerComponentSmall
-              color={timer.color}
+              color={project?.project.color ?? null}
               backgroundColor={
-                timer.color
-                  ? alpha(timer.color, 0.1)
+                project?.project.color
+                  ? alpha(project.project.color, 0.1)
                   : "var(--mantine-color-body)"
               }
               roundedActiveTime={roundedActiveTime}

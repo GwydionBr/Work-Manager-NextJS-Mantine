@@ -22,7 +22,6 @@ interface TimeTrackerState {
   salary: number;
   hourlyPayment: boolean;
   userId: string;
-  color: string | null;
   roundingInterval: number;
   roundingMode: RoundingDirection;
   timeSectionInterval: number;
@@ -38,6 +37,7 @@ interface TimeTrackerState {
   tempStartTime: number | null;
   storedActiveSeconds: number;
   storedPausedSeconds: number;
+  memo: string | null;
 }
 
 export function useTimeTracker(initialState: TimeTrackerState) {
@@ -182,7 +182,7 @@ export function useTimeTracker(initialState: TimeTrackerState) {
       salary: number,
       hourlyPayment: boolean,
       userId: string,
-      color: string | null
+      memo: string | null
     ) => {
       if (state.state !== TimerState.Stopped) return;
 
@@ -194,7 +194,7 @@ export function useTimeTracker(initialState: TimeTrackerState) {
         salary,
         hourlyPayment,
         userId,
-        color,
+        memo,
       }));
     },
     [state.state]
@@ -256,6 +256,7 @@ export function useTimeTracker(initialState: TimeTrackerState) {
       tempStartTime: null,
       storedActiveSeconds: 0,
       storedPausedSeconds: 0,
+      memo: null,
     }));
   }, []);
 
@@ -326,6 +327,7 @@ export function useTimeTracker(initialState: TimeTrackerState) {
       paused_seconds: state.pausedSeconds,
       salary: state.salary,
       currency: state.currency,
+      memo: state.memo,
     };
 
     return newTimerSession;
@@ -340,6 +342,7 @@ export function useTimeTracker(initialState: TimeTrackerState) {
     state.startTime,
     state.activeSeconds,
     state.pausedSeconds,
+    state.memo,
   ]);
 
   return {

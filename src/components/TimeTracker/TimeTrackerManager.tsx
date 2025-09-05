@@ -32,9 +32,9 @@ export default function TimerManager({
 }: TimerManagerProps) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isClient, setIsClient] = useState(false);
-  const { getAllTimers, addTimer, timers: timerData } = useTimeTrackerManager();
+  const { getAllTimers, addTimer, timers: timerData, isTimerRunning } = useTimeTrackerManager();
   const { activeProjectId } = useWorkStore();
-  const { roundingAmount, roundingMode, customRoundingAmount } =
+  const { roundingAmount, roundingMode, customRoundingAmount, locale } =
     useSettingsStore();
   const activeProject = useWorkStore((state) =>
     state.projects.find((p) => p.project.id === activeProjectId)
@@ -56,8 +56,7 @@ export default function TimerManager({
     currency: Currency,
     salary: number,
     hourlyPayment: boolean,
-    userId: string,
-    color: string | null
+    userId: string
   ) => {
     const result = addTimer({
       projectId: projectId,
@@ -70,7 +69,6 @@ export default function TimerManager({
         roundingAmount,
         customRoundingAmount
       ),
-      color: color,
       roundingMode: roundingMode,
       state: TimerState.Stopped,
       activeSeconds: 0,
@@ -85,10 +83,19 @@ export default function TimerManager({
       pausedTime: "00:00",
       forceEndTimer: false,
       createdAt: new Date().getTime(),
+      memo: null,
     });
 
     if (!result.success) {
-      setErrorMessage(result.error || "Failed to add timer");
+      setErrorMessage(
+        result.error
+          ? locale === "de-DE"
+            ? result.error.german
+            : result.error.english
+          : locale === "de-DE"
+            ? "Timer konnte nicht hinzugefügt werden"
+            : "Failed to add timer"
+      );
       setTimeout(() => {
         setErrorMessage(null);
       }, 5000);
@@ -109,7 +116,6 @@ export default function TimerManager({
           roundingAmount,
           customRoundingAmount
         ),
-        color: activeProject.project.color,
         roundingMode: roundingMode,
         state: TimerState.Stopped,
         activeSeconds: 0,
@@ -124,10 +130,19 @@ export default function TimerManager({
         pausedTime: "00:00",
         forceEndTimer: false,
         createdAt: new Date().getTime(),
+        memo: null,
       });
 
       if (!result.success) {
-        setErrorMessage(result.error || "Failed to add timer");
+        setErrorMessage(
+          result.error
+            ? locale === "de-DE"
+              ? result.error.german
+              : result.error.english
+            : locale === "de-DE"
+              ? "Timer konnte nicht hinzugefügt werden"
+              : "Failed to add timer"
+        );
         setTimeout(() => {
           setErrorMessage(null);
         }, 5000);
@@ -160,7 +175,7 @@ export default function TimerManager({
         <PlusActionIcon onClick={() => {}} />
         <TimeTrackerActionIcon
           action={() => {}}
-          label="hide Timer"
+          label={locale === "de-DE" ? "Timer verkleinern" : "Minimize Timer"}
           indicatorLabel="0"
           state={TimerState.Stopped}
           getStatusColor={() => getStatusColor(TimerState.Stopped)}
@@ -180,14 +195,21 @@ export default function TimerManager({
             activeProject.project.currency,
             activeProject.project.salary,
             activeProject.project.hourly_payment,
-            activeProject.project.user_id,
-            activeProject.project.color
+            activeProject.project.user_id
           );
         }}
       />
       <TimeTrackerActionIcon
         action={() => setIsTimeTrackerMinimized(!isTimeTrackerMinimized)}
-        label={isTimeTrackerMinimized ? "show Timer" : "hide Timer"}
+        label={
+          isTimeTrackerMinimized
+            ? locale === "de-DE"
+              ? "Timer vergrößern"
+              : "Expand Timer"
+            : locale === "de-DE"
+              ? "Timer verkleinern"
+              : "Minimize Timer"
+        }
         indicatorLabel={activeTimerCount.toString()}
         state={mainTimerStatus}
         getStatusColor={() => getStatusColor(mainTimerStatus)}
@@ -197,7 +219,7 @@ export default function TimerManager({
         <Alert
           color="red"
           variant="filled"
-          title="Error"
+          title={locale === "de-DE" ? "Fehler" : "Error"}
           withCloseButton
           onClose={() => setErrorMessage(null)}
         >

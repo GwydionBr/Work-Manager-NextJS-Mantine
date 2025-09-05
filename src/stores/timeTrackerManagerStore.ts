@@ -26,8 +26,8 @@ export interface TimerData {
   roundedActiveTime: string;
   pausedTime: string;
   forceEndTimer: boolean;
-  color: string | null;
   createdAt: number;
+  memo: string | null;
 }
 
 interface TimeTrackerManagerState {
@@ -39,7 +39,7 @@ interface TimeTrackerManagerState {
   addTimer: (timerData: Omit<TimerData, "id">) => {
     success: boolean;
     timerId?: string;
-    error?: string;
+    error?: { german: string; english: string };
   };
   removeTimer: (timerId: string) => void;
   updateTimer: (timerId: string, updates: Partial<TimerData>) => void;
@@ -69,7 +69,10 @@ export const useTimeTrackerManager = create(
           return {
             success: false,
             error:
-              "Maximum 3 time trackers allowed. Please stop or remove an existing timer first.",
+              {
+                german: "Es können maximal 3 Timer gleichzeitig laufen. Bitte stoppen oder entfernen Sie einen bestehenden Timer.",
+                english: "Maximum 3 time trackers allowed. Please stop or remove an existing timer first.",
+              },
           };
         }
 
@@ -81,7 +84,10 @@ export const useTimeTrackerManager = create(
         if (existingTimerForProject) {
           return {
             success: false,
-            error: `A time tracker for project "${timerData.projectTitle}" already exists.`,
+            error: {
+              german: `Ein Timer für das Projekt "${timerData.projectTitle}" existiert bereits.`,
+              english: `A time tracker for project "${timerData.projectTitle}" already exists.`,
+            },
           };
         }
 
