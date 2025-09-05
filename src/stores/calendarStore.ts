@@ -1,17 +1,13 @@
 "use client";
 
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
+
 import { TimerData } from "@/stores/timeTrackerManagerStore";
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import * as actions from "@/actions";
-import { ViewMode, ZoomLevel } from "@/types/workCalendar.types";
-import {
-  startOfWeek,
-  endOfWeek,
-  addDays,
-  isSameDay,
-  differenceInCalendarDays,
-} from "date-fns";
+import { ViewMode } from "@/types/workCalendar.types";
+import { startOfWeek, endOfWeek } from "date-fns";
 
 interface CalendarStoreState {
   activeTimer: TimerData | null;
@@ -24,7 +20,7 @@ interface CalendarStoreState {
   newEventEndY: number | null;
   newEventDay: Date | null;
   viewMode: ViewMode;
-  zoomLevel: ZoomLevel;
+  zoomIndex: number;
   rasterHeight: number;
   eventIsHovered: boolean;
   eventIsSelected: boolean;
@@ -44,7 +40,7 @@ interface CalendarStoreActions {
   ) => Promise<boolean>;
   deleteAppointment: (id: string) => Promise<boolean>;
   setViewMode: (viewMode: ViewMode) => void;
-  setZoomLevel: (zoomLevel: ZoomLevel) => void;
+  changeZoomIndex: (delta: number) => void;
   setSelectedSession: (selectedSession: Tables<"timer_session"> | null) => void;
   setDateRange: (dateRange: [Date | null, Date | null]) => void;
   setCurrentDateRange: (currentDateRange: [Date, Date]) => void;
@@ -60,36 +56,13 @@ interface CalendarStoreActions {
 
 export const useCalendarStore = create<
   CalendarStoreState & CalendarStoreActions
->((set, get) => ({
-  activeTimer: null,
-  appointments: [],
-  viewMode: "week",
-  zoomLevel: ZoomLevel.ThirtyMinutes,
-  rasterHeight: 60,
-  eventIsHovered: false,
-  eventIsSelected: false,
-  addingMode: false,
-  selectedSession: null,
-  dateRange: [
-    startOfWeek(new Date(), { weekStartsOn: 1 }),
-    endOfWeek(new Date(), { weekStartsOn: 1 }),
-  ],
-  currentDateRange: [
-    startOfWeek(new Date(), { weekStartsOn: 1 }),
-    endOfWeek(new Date(), { weekStartsOn: 1 }),
-  ],
-  referenceDate: new Date(),
-  newEventStartY: null,
-  newEventEndY: null,
-  newEventDay: null,
-  isFetching: true,
-  lastFetch: null,
-  resetStore: () =>
-    set({
+>()(
+  persist(
+    (set, get) => ({
       activeTimer: null,
       appointments: [],
       viewMode: "week",
-      zoomLevel: ZoomLevel.ThirtyMinutes,
+      zoomIndex: 1,
       rasterHeight: 60,
       eventIsHovered: false,
       eventIsSelected: false,
@@ -109,67 +82,106 @@ export const useCalendarStore = create<
       newEventDay: null,
       isFetching: true,
       lastFetch: null,
+      resetStore: () =>
+        set({
+          activeTimer: null,
+          appointments: [],
+          viewMode: "week",
+          zoomIndex: 1,
+          rasterHeight: 60,
+          eventIsHovered: false,
+          eventIsSelected: false,
+          addingMode: false,
+          selectedSession: null,
+          dateRange: [
+            startOfWeek(new Date(), { weekStartsOn: 1 }),
+            endOfWeek(new Date(), { weekStartsOn: 1 }),
+          ],
+          currentDateRange: [
+            startOfWeek(new Date(), { weekStartsOn: 1 }),
+            endOfWeek(new Date(), { weekStartsOn: 1 }),
+          ],
+          referenceDate: new Date(),
+          newEventStartY: null,
+          newEventEndY: null,
+          newEventDay: null,
+          isFetching: true,
+          lastFetch: null,
+        }),
+      fetchCalendarData: async () => {
+        set({ isFetching: true });
+        const appointments = await actions.getAllAppointments();
+        if (appointments.success) {
+          set({ appointments: appointments.data });
+          set({ isFetching: false, lastFetch: new Date() });
+        } else {
+          set({ isFetching: false });
+        }
+      },
+      createAppointment: async (appointment) => {
+        const { appointments } = get();
+        const response = await actions.createAppointment(appointment);
+        console.log("response", response);
+        if (response.success) {
+          const newAppointments = [...appointments, response.data];
+          set({ appointments: newAppointments });
+          return true;
+        }
+        return false;
+      },
+      updateAppointment: async (appointment) => {
+        const { appointments } = get();
+        const response = await actions.updateAppointment(appointment);
+        if (response.success) {
+          const newAppointments = appointments.map((a) =>
+            a.id === appointment.id ? response.data : a
+          );
+          set({ appointments: newAppointments });
+          return true;
+        }
+        return false;
+      },
+      deleteAppointment: async (id) => {
+        const { appointments } = get();
+        const response = await actions.deleteAppointment(id);
+        if (response.success) {
+          const newAppointments = appointments.filter((a) => a.id !== id);
+          set({ appointments: newAppointments });
+          return true;
+        }
+        return false;
+      },
+      setActiveTimer: (timer: TimerData | null) => set({ activeTimer: timer }),
+      setEventIsHovered: (isHovered: boolean) =>
+        set({ eventIsHovered: isHovered }),
+      setEventIsSelected: (isSelected: boolean) =>
+        set({ eventIsSelected: isSelected }),
+      setAddingMode: (isAddingMode: boolean) =>
+        set({ addingMode: isAddingMode }),
+      setSelectedSession: (selectedSession: Tables<"timer_session"> | null) =>
+        set({ selectedSession }),
+      setDateRange: (dateRange: [Date | null, Date | null]) =>
+        set({ dateRange }),
+      setCurrentDateRange: (currentDateRange: [Date, Date]) =>
+        set({ currentDateRange }),
+      setReferenceDate: (referenceDate: Date) => set({ referenceDate }),
+      setNewEventStartY: (newEventStartY: number | null) =>
+        set({ newEventStartY: newEventStartY }),
+      setNewEventEndY: (newEventEndY: number | null) =>
+        set({ newEventEndY: newEventEndY }),
+      setNewEventDay: (newEventDay: Date | null) =>
+        set({ newEventDay: newEventDay }),
+      setViewMode: (viewMode: ViewMode) => set({ viewMode }),
+      changeZoomIndex: (delta: number) =>
+        set((state) => ({
+          zoomIndex: Math.max(0, Math.min(state.zoomIndex + delta, 4)),
+        })),
     }),
-  fetchCalendarData: async () => {
-    set({ isFetching: true });
-    const appointments = await actions.getAllAppointments();
-    if (appointments.success) {
-      set({ appointments: appointments.data });
-      set({ isFetching: false, lastFetch: new Date() });
-    } else {
-      set({ isFetching: false });
+    {
+      name: "calendar-store",
+      partialize: (state) => ({
+        zoomIndex: state.zoomIndex,
+      }),
     }
-  },
-  createAppointment: async (appointment) => {
-    const { appointments } = get();
-    const response = await actions.createAppointment(appointment);
-    console.log("response", response);
-    if (response.success) {
-      const newAppointments = [...appointments, response.data];
-      set({ appointments: newAppointments });
-      return true;
-    }
-    return false;
-  },
-  updateAppointment: async (appointment) => {
-    const { appointments } = get();
-    const response = await actions.updateAppointment(appointment);
-    if (response.success) {
-      const newAppointments = appointments.map((a) =>
-        a.id === appointment.id ? response.data : a
-      );
-      set({ appointments: newAppointments });
-      return true;
-    }
-    return false;
-  },
-  deleteAppointment: async (id) => {
-    const { appointments } = get();
-    const response = await actions.deleteAppointment(id);
-    if (response.success) {
-      const newAppointments = appointments.filter((a) => a.id !== id);
-      set({ appointments: newAppointments });
-      return true;
-    }
-    return false;
-  },
-  setActiveTimer: (timer: TimerData | null) => set({ activeTimer: timer }),
-  setEventIsHovered: (isHovered: boolean) => set({ eventIsHovered: isHovered }),
-  setEventIsSelected: (isSelected: boolean) =>
-    set({ eventIsSelected: isSelected }),
-  setAddingMode: (isAddingMode: boolean) => set({ addingMode: isAddingMode }),
-  setSelectedSession: (selectedSession: Tables<"timer_session"> | null) =>
-    set({ selectedSession }),
-  setDateRange: (dateRange: [Date | null, Date | null]) => set({ dateRange }),
-  setCurrentDateRange: (currentDateRange: [Date, Date]) =>
-    set({ currentDateRange }),
-  setReferenceDate: (referenceDate: Date) => set({ referenceDate }),
-  setNewEventStartY: (newEventStartY: number | null) =>
-    set({ newEventStartY: newEventStartY }),
-  setNewEventEndY: (newEventEndY: number | null) =>
-    set({ newEventEndY: newEventEndY }),
-  setNewEventDay: (newEventDay: Date | null) =>
-    set({ newEventDay: newEventDay }),
-  setViewMode: (viewMode: ViewMode) => set({ viewMode }),
-  setZoomLevel: (zoomLevel: ZoomLevel) => set({ zoomLevel }),
-}));
+  )
+);

@@ -56,12 +56,13 @@ export default function WorkCalendar() {
     setDateRange,
     currentDateRange,
     setCurrentDateRange,
+    zoomIndex,
+    changeZoomIndex,
   } = useCalendarStore();
   const { locale } = useSettingsStore();
   const { projects: timerProjects, timerSessions, isFetching } = useWorkStore();
   const projects = timerProjects.map((project) => project.project);
 
-  const [zoomIndex, setZoomIndex] = useState(1);
   const [viewportTop, setViewportTop] = useState({
     old: 0,
     new: 0,
@@ -327,7 +328,7 @@ export default function WorkCalendar() {
                   radius="md"
                   onClick={() => {
                     const currentZoomIndex = zoomIndex;
-                    setZoomIndex((prev) => prev - 1);
+                    changeZoomIndex(-1);
                     handleZoomChange(currentZoomIndex, currentZoomIndex - 1);
                   }}
                   disabled={zoomIndex === 0}
@@ -350,7 +351,7 @@ export default function WorkCalendar() {
                   radius="md"
                   onClick={() => {
                     const currentZoomIndex = zoomIndex;
-                    setZoomIndex((prev) => prev + 1);
+                    changeZoomIndex(1);
                     handleZoomChange(currentZoomIndex, currentZoomIndex + 1);
                   }}
                   disabled={zoomIndex === 4}
