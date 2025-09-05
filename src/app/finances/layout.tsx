@@ -1,6 +1,7 @@
 "use client";
 
 import { useFinanceStore } from "@/stores/financeStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Box } from "@mantine/core";
 import FinanceNavbar from "@/components/Navbar/FinanceNavbar";
@@ -13,6 +14,8 @@ export default function FinanceLayout({
 }) {
   const { isFetching, singleCashFlows, recurringCashFlows } = useFinanceStore();
 
+  const { isNavbarOpen } = useSettingsStore();
+
   if (
     !isFetching &&
     singleCashFlows.length === 0 &&
@@ -24,7 +27,12 @@ export default function FinanceLayout({
   return (
     <Box>
       <FinanceNavbar />
-      <Box ml="250px">{children}</Box>
+      <Box
+        ml={isNavbarOpen ? 250 : 60}
+        style={{ transition: "margin 0.4s ease-in-out" }}
+      >
+        {children}
+      </Box>
     </Box>
   );
 }
