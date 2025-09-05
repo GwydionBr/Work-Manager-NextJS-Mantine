@@ -2,24 +2,16 @@
 
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useState } from "react";
-import { useHotkeys, useClickOutside } from "@mantine/hooks";
+import { useClickOutside } from "@mantine/hooks";
 
-import {
-  useMantineColorScheme,
-  Box,
-  Transition,
-  Text,
-  Stack,
-} from "@mantine/core";
+import { useMantineColorScheme, Transition, Stack } from "@mantine/core";
 import LightSchemeButton from "./LightSchemeButton";
 import DarkSchemeButton from "./DarkSchemeButton";
 import SystemSchemeButton from "./SystemSchemeButton";
 
 export default function SchemeToggle() {
   const [isOpen, { close, toggle }] = useDisclosure(false);
-  const { toggleColorScheme, setColorScheme, colorScheme } =
-    useMantineColorScheme();
-  useHotkeys([["mod + J", () => toggleColorScheme()]]);
+  const { setColorScheme, colorScheme } = useMantineColorScheme();
   const ref = useClickOutside(() => close());
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);

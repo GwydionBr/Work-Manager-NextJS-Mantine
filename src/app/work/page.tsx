@@ -19,7 +19,6 @@ import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
 import ProjectFilter from "@/components/Work/Project/ProjectFilter";
 
 import { formatMoney } from "@/utils/formatFunctions";
-import PayoutCard from "@/components/Payout/PayoutCard";
 import { groupSessions } from "@/utils/sessionHelperFunctions";
 import NewHourlyPayoutCard from "@/components/Payout/NewHourlyPayoutCard";
 import NewProjectPayoutCard from "@/components/Payout/NewProjectPayoutCard";
@@ -171,7 +170,7 @@ export default function WorkPage() {
               {activeProject.sessions.length > 0 && (
                 <AnalysisActionIcon
                   onClick={openAnalysis}
-                  tooltipLabel="Analyse"
+                  tooltipLabel={locale === "de-DE" ? "Analyse" : "Analysis"}
                 />
               )}
               <EditActionIcon
@@ -184,12 +183,19 @@ export default function WorkPage() {
           }
         />
         <Stack
-          style={{ position: "sticky", top: 0, zIndex: 10, left: 0 }}
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 10,
+            left: 0,
+            borderBottom:
+              "1px solid light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2))",
+          }}
           bg="var(--mantine-color-body)"
           w="100%"
           gap="xs"
         >
-          <Group justify="space-between" p="xs">
+          <Group justify="space-between" p="xs" pb={0}>
             <FilterActionIcon
               onClick={handleFilterToggle}
               tooltipLabel={locale === "de-DE" ? "Filter" : "Filter"}

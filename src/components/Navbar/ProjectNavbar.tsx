@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
+import { useHotkeys } from "@mantine/hooks";
+import { useRouter, usePathname } from "next/navigation";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -16,25 +16,22 @@ import {
   Text,
   Transition,
 } from "@mantine/core";
-import NewProjectButton from "../Work/Project/NewProjectButton";
-import ProjectTree from "../Work/Project/ProjectTree";
+import NewProjectButton from "@/components/Work/Project/NewProjectButton";
+import ProjectTree from "@/components/Work/Project/ProjectTree";
 import NewFolderButton from "@/components/Work/Project/NewFolderButton";
-import AdjustmentActionIcon from "../UI/ActionIcons/AdjustmentActionIcon";
+import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
+import { SettingsTab } from "@/components/Settings/SettingsModal";
+import { IconArrowBarRight } from "@tabler/icons-react";
+import DelayedTooltip from "@/components/UI/DelayedTooltip";
 
 import classes from "./Navbar.module.css";
-import { SettingsTab } from "../Settings/SettingsModal";
-import { IconArrowBarRight } from "@tabler/icons-react";
+import Shortcut from "../UI/Shortcut";
 
-export default function ProjectNavbar({
-  isNavbarMinimized,
-  setIsNavbarMinimized,
-}: {
-  isNavbarMinimized: boolean;
-  setIsNavbarMinimized: (value: boolean) => void;
-}) {
+export default function ProjectNavbar() {
   const { isFetching, setActiveProjectId } = useWorkStore();
 
-  const { locale, setSelectedTab, setIsModalOpen } = useSettingsStore();
+  const { locale, setSelectedTab, setIsModalOpen, isNavbarOpen, toggleNavbar } =
+    useSettingsStore();
   const router = useRouter();
   const pathname = usePathname();
   const [isOverview, setIsOverview] = useState<boolean>(false);
@@ -43,28 +40,39 @@ export default function ProjectNavbar({
     setIsOverview(pathname === "/work/overview");
   }, [pathname]);
 
+  useHotkeys([["mod + J", () => toggleNavbar()]]);
+
   return (
-    <Box className={classes.main} w={isNavbarMinimized ? 60 : 250}>
+    <Box className={classes.main} w={isNavbarOpen ? 250 : 60}>
       <Group className={classes.title} align="center" justify="space-between">
         <Transition
-          mounted={isNavbarMinimized}
+          mounted={!isNavbarOpen}
           transition="fade"
           duration={200}
           enterDelay={200}
         >
           {(styles) => (
-            <ActionIcon
-              onClick={() => setIsNavbarMinimized(!isNavbarMinimized)}
-              aria-label="Toggle aside"
-              variant="light"
-              style={styles}
+            <DelayedTooltip
+              label={
+                <Stack align="center">
+                  <Text>Toggle Navbar</Text>
+                  <Shortcut keys={["mod", "J"]} />
+                </Stack>
+              }
             >
-              <IconArrowBarRight size={22} />
-            </ActionIcon>
+              <ActionIcon
+                onClick={() => toggleNavbar()}
+                aria-label="Toggle navbar"
+                variant="light"
+                style={styles}
+              >
+                <IconArrowBarRight size={22} />
+              </ActionIcon>
+            </DelayedTooltip>
           )}
         </Transition>
         <Transition
-          mounted={!isNavbarMinimized}
+          mounted={isNavbarOpen}
           transition="fade"
           duration={200}
           enterDelay={200}
@@ -78,7 +86,7 @@ export default function ProjectNavbar({
         {!isFetching && (
           <>
             <Transition
-              mounted={!isNavbarMinimized}
+              mounted={isNavbarOpen}
               transition="fade"
               duration={200}
               enterDelay={200}
@@ -104,7 +112,7 @@ export default function ProjectNavbar({
               )}
             </Transition>
             <Transition
-              mounted={isNavbarMinimized}
+              mounted={!isNavbarOpen}
               transition="fade"
               duration={200}
               enterDelay={200}
@@ -134,7 +142,7 @@ export default function ProjectNavbar({
       </Group>
 
       <Transition
-        mounted={!isNavbarMinimized}
+        mounted={isNavbarOpen}
         transition="fade"
         duration={200}
         enterDelay={200}
@@ -156,7 +164,7 @@ export default function ProjectNavbar({
         )}
       </Transition>
       <Transition
-        mounted={!isNavbarMinimized}
+        mounted={isNavbarOpen}
         transition="fade"
         duration={200}
         enterDelay={200}
@@ -177,7 +185,7 @@ export default function ProjectNavbar({
       </Transition>
 
       <Transition
-        mounted={!isNavbarMinimized}
+        mounted={isNavbarOpen}
         transition="fade"
         duration={200}
         enterDelay={200}
@@ -212,19 +220,28 @@ export default function ProjectNavbar({
             "1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-7))",
         }}
       >
-        <ActionIcon
-          onClick={() => setIsNavbarMinimized(!isNavbarMinimized)}
-          aria-label="Toggle aside"
-          variant="light"
+        <DelayedTooltip
+          label={
+            <Stack align="center">
+              <Text>Toggle Navbar</Text>
+              <Shortcut keys={["mod", "J"]} />
+            </Stack>
+          }
         >
-          <IconArrowBarRight
-            size={22}
-            style={{
-              transform: isNavbarMinimized ? "none" : "rotate(180deg)",
-              transition: "transform 0.4s linear",
-            }}
-          />
-        </ActionIcon>
+          <ActionIcon
+            onClick={() => toggleNavbar()}
+            aria-label="Toggle navbar"
+            variant="light"
+          >
+            <IconArrowBarRight
+              size={22}
+              style={{
+                transform: isNavbarOpen ? "rotate(180deg)" : "none",
+                transition: "transform 0.4s linear",
+              }}
+            />
+          </ActionIcon>
+        </DelayedTooltip>
       </Group>
     </Box>
   );

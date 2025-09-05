@@ -26,6 +26,7 @@ interface SettingsState {
   customRoundingAmount: number;
   defaultGroupColor: string | null;
   isAsideOpen: boolean;
+  isNavbarOpen: boolean;
   isFetching: boolean;
   lastFetch: Date | null;
   roundInTimeFragments: boolean;
@@ -39,6 +40,7 @@ interface SettingsActions {
   fetchSettings: () => Promise<void>;
   setSelectedTab: (tab: SettingsTab) => void;
   setIsModalOpen: (isModalOpen: boolean) => void;
+  toggleNavbar: () => void;
   setDefaultSalaryCurrency: (currency: Currency) => void;
   setDefaultSalaryAmount: (salaryAmount: number) => void;
   setDefaultFinanceCurrency: (financeCurrency: Currency) => void;
@@ -73,6 +75,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       defaultGroupColor: null,
       showCalendarTime: true,
       isAsideOpen: false,
+      isNavbarOpen: false,
       isFetching: true,
       lastFetch: null,
       roundInTimeFragments: false,
@@ -95,6 +98,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
           defaultGroupColor: null,
           showCalendarTime: true,
           isAsideOpen: false,
+          isNavbarOpen: false,
           isFetching: true,
           lastFetch: null,
           roundInTimeFragments: false,
@@ -129,6 +133,12 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       },
       setIsModalOpen: (isModalOpen: boolean) => {
         set({ isModalOpen: isModalOpen });
+      },
+      toggleNavbar: () => {
+        set({ isNavbarOpen: !get().isNavbarOpen });
+      },
+      setIsNavbarOpen: (isNavbarOpen: boolean) => {
+        set({ isNavbarOpen: isNavbarOpen });
       },
       setDefaultSalaryCurrency: async (currency: Currency) => {
         await actions.updateSettings({
