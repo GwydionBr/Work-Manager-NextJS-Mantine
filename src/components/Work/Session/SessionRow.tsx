@@ -96,13 +96,13 @@ export default function SessionRow({
       >
         <Group justify="space-between">
           <Group gap="xl">
-            {showCheckbox && project?.hourly_payment && (
+            {/* {showCheckbox && project?.hourly_payment && (
               <Checkbox
                 checked={isSelected}
                 onChange={onToggleSelection}
                 disabled={sessionPaid}
               />
-            )}
+            )} */}
             <Stack gap="xs">
               <Group>
                 <IconClock size={14} color="gray" />
