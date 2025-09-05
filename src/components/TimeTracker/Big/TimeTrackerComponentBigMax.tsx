@@ -102,7 +102,18 @@ export default function TimeTrackerComponentBigMax({
   removeTimer,
   setMemo,
 }: TimeTrackerComponentBigMaxProps) {
-  const { roundInTimeFragments: roundInTimeSections } = useSettingsStore();
+  const { roundInTimeFragments: roundInTimeSections, locale } =
+    useSettingsStore();
+
+  const getLocaleState = () => {
+    if (state === TimerState.Running) {
+      return locale === "de-DE" ? "Aktiv" : "Running";
+    } else if (state === TimerState.Paused) {
+      return locale === "de-DE" ? "Pausiert" : "Paused";
+    } else if (state === TimerState.Stopped) {
+      return locale === "de-DE" ? "Gestoppt" : "Stopped";
+    }
+  };
 
   return (
     <Card
@@ -142,7 +153,7 @@ export default function TimeTrackerComponentBigMax({
             />
           </Stack>
           <Badge size="lg" color={getStatusColor(state)}>
-            {state}
+            {getLocaleState()}
           </Badge>
           <XActionIcon onClick={removeTimer} />
         </Group>

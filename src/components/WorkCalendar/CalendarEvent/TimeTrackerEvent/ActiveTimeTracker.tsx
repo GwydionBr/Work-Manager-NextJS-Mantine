@@ -48,7 +48,9 @@ export default function ActiveTimeTracker({
           bg={backgroundColor}
           justify="space-between"
           style={{
-            border: `1px solid ${color}`,
+            borderTop: `1px solid ${color}`,
+            borderLeft: `1px solid ${color}`,
+            borderRight: `1px solid ${color}`,
             borderBottom: `3px solid red`,
             borderRadius: 5,
           }}

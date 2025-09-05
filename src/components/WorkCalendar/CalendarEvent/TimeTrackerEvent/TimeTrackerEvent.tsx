@@ -2,6 +2,7 @@
 
 import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useWorkStore } from "@/stores/workManagerStore";
 
 import { alpha, Stack, Text } from "@mantine/core";
 import { endOfDay, isToday, isYesterday, startOfDay } from "date-fns";
@@ -18,10 +19,13 @@ export default function TimeTrackerEvent({
   day,
 }: TimeTrackerEventProps) {
   const { isTimerRunning, getRunningTimer } = useTimeTrackerManager();
+  const { projects } = useWorkStore();
   const timer = getRunningTimer();
   const { locale } = useSettingsStore();
 
-  const color = timer?.color ?? "var(--mantine-color-red-6)";
+  const project = projects.find((p) => p.project.id === timer?.projectId);
+
+  const color = project?.project.color ?? "var(--mantine-color-red-6)";
   const backgroundColor = alpha(color, 0.1);
 
   if (!currentTime) {
