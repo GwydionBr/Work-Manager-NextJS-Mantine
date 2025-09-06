@@ -12,3 +12,8 @@ export interface ProjectTreeItem {
   type: "project" | "folder";
   children?: ProjectTreeItem[];
 }
+
+export interface SessionCollisionFragment {
+  start_time: string;
+  end_time: string;
+}

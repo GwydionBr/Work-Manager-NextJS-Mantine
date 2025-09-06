@@ -13,10 +13,11 @@ import { alpha, Box, Transition } from "@mantine/core";
 import TimeTrackerComponentBig from "./Big/TimeTrackerComponentBig";
 import TimeTrackerComponentSmall from "./Small/TimeTrackerComponentSmall";
 
-import { getTimeSectionSessions } from "@/utils/workHelperFunctions";
+import { getTimeFragmentSession } from "@/utils/timeFragmentFunctions";
 import { formatTimeSpan } from "@/utils/formatFunctions";
 
 import { TimerState } from "@/types/timeTracker.types";
+import { TablesInsert } from "@/types/db.types";
 
 interface TimeTrackerInstanceProps {
   timer: TimerData;
@@ -177,48 +178,81 @@ export default function TimeTrackerInstance({
 
   async function submitTimer() {
     if (isSubmitting) return;
-    let result = null;
     setIsSubmitting(true);
     setErrorMessage(null);
-    const newSession = getCurrentSession();
-    newSession.memo = memo === "" ? null : memo;
+    let newSession: TablesInsert<"timer_session"> = {
+      ...getCurrentSession(),
+      memo: memo === "" ? null : memo,
+    };
     if (roundInTimeSections) {
-      const newSessions = getTimeSectionSessions(
+      newSession = getTimeFragmentSession(
         new Date(newSession.start_time),
         new Date(newSession.end_time),
         timeSectionInterval,
         newSession
       );
-      const { success, alreadyExistingSessions } =
-        await addMultipleTimerSessions(
-          newSessions,
-          newSession.project_id as string
-        );
-      result = success;
-      if (alreadyExistingSessions.length > 0) {
-        setErrorMessage(
-          `Session already exists:\n${alreadyExistingSessions
-            .map((session) =>
+    }
+
+    const { success, collisionFragments, completeOverlap } =
+      await addTimerSession(newSession);
+
+    if (completeOverlap) {
+      setErrorMessage(
+        locale === "de-DE"
+          ? "Timer Sitzung überschneided sich komplett mit bereits bestehenden Sitzungen und wurde daher nicht gespeichert."
+          : "Timer session completely overlaps with another session and was not saved."
+      );
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 3000);
+      stopTimer();
+    } else if (collisionFragments) {
+      setErrorMessage(
+        locale === "de-DE"
+          ? `Timer Sitzung hat Überschneidungen und wurde angepasst.\n 
+          Überschneidungen: ${collisionFragments
+            .map((fragment) =>
               formatTimeSpan(
-                new Date(session.start_time),
-                new Date(session.end_time),
+                new Date(fragment.start_time),
+                new Date(fragment.end_time),
                 locale
               )
             )
-            .join("\n")}`
-        );
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 3000);
-      }
-    } else {
-      result = await addTimerSession(newSession);
+            .join(", ")}\n
+            Erstellte Sitzung: ${formatTimeSpan(
+              new Date(newSession.start_time),
+              new Date(newSession.end_time),
+              locale
+            )}`
+          : `Timer session overlaps with another session and was not saved.\n
+            Overlaps: ${collisionFragments
+              .map((fragment) =>
+                formatTimeSpan(
+                  new Date(fragment.start_time),
+                  new Date(fragment.end_time),
+                  locale
+                )
+              )
+              .join(", ")}\n
+            Created session: ${formatTimeSpan(
+              new Date(newSession.start_time),
+              new Date(newSession.end_time),
+              locale
+            )}`
+      );
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 8000);
     }
-    if (result) {
+    if (success) {
       setMemo("");
       stopTimer();
-    } else {
-      setErrorMessage("Error saving session");
+    } else if (!success && !completeOverlap && !collisionFragments) {
+      setErrorMessage(
+        locale === "de-DE"
+          ? "Fehler beim Speichern der Sitzung. Bitte versuche es erneut."
+          : "Error saving session. Please try again."
+      );
       setTimeout(() => {
         setErrorMessage(null);
       }, 3000);

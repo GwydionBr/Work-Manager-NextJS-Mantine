@@ -1,6 +1,7 @@
 import { RoundingAmount, RoundingDirection } from "@/types/settings.types";
 import { Tables, TablesInsert } from "@/types/db.types";
 import { TimerState } from "@/types/timeTracker.types";
+import { SessionCollisionFragment } from "@/types/work.types";
 
 export function getStatusColor(state: TimerState) {
   switch (state) {
@@ -213,4 +214,120 @@ export function filterOutExistingSessionFragments(
     newSessionsToAdd,
     alreadyExistingSessions,
   };
+}
+
+/**
+ * Filters out existing sessions that overlap with the new session.
+ * If there are collisions, adjusts the session to fit the collisions.
+ * @param existingSessions - Existing sessions
+ * @param newSession - New session
+ * @returns Adjusted session and collision fragments
+ */
+/**
+ * Filters sessions to only include those that could potentially collide with the new session
+ * based on having the same day (start_time or end_time on the same date).
+ * @param existingSessions - All existing sessions
+ * @param newSession - New session to check for collisions
+ * @returns Filtered sessions that could potentially collide
+ */
+export function getSessionsForCollisionCheck(
+  existingSessions: Tables<"timer_session">[],
+  newSession: TablesInsert<"timer_session">
+): Tables<"timer_session">[] {
+  const newStartDate = new Date(newSession.start_time);
+  const newEndDate = new Date(newSession.end_time);
+
+  // Get the date strings for comparison (YYYY-MM-DD format)
+  const newStartDateStr = newStartDate.toISOString().split("T")[0];
+  const newEndDateStr = newEndDate.toISOString().split("T")[0];
+
+  return existingSessions.filter((session) => {
+    const sessionStartDate = new Date(session.start_time);
+    const sessionEndDate = new Date(session.end_time);
+
+    const sessionStartDateStr = sessionStartDate.toISOString().split("T")[0];
+    const sessionEndDateStr = sessionEndDate.toISOString().split("T")[0];
+
+    // Include session if either its start_time or end_time is on the same day
+    // as the new session's start_time or end_time
+    return (
+      sessionStartDateStr === newStartDateStr ||
+      sessionStartDateStr === newEndDateStr ||
+      sessionEndDateStr === newStartDateStr ||
+      sessionEndDateStr === newEndDateStr
+    );
+  });
+}
+
+export function filterOutExistingSessionTimes(
+  existingSessions: Tables<"timer_session">[],
+  newSession: TablesInsert<"timer_session">
+): {
+  adjustedSession: TablesInsert<"timer_session"> | null;
+  collisionFragments: SessionCollisionFragment[] | null;
+} {
+  const collisionFragments: SessionCollisionFragment[] | null = [];
+  const newStart = new Date(newSession.start_time);
+  const newEnd = new Date(newSession.end_time);
+
+  // Find all existing sessions that overlap with the new session
+  const overlappingSessions = existingSessions.filter((existingSession) => {
+    const existingStart = new Date(existingSession.start_time);
+    const existingEnd = new Date(existingSession.end_time);
+
+    // Check for overlap: sessions overlap if one starts before the other ends
+    return newStart < existingEnd && newEnd > existingStart;
+  });
+
+  if (overlappingSessions.length === 0) {
+    // No collision, return the session as is
+    return {
+      adjustedSession: newSession,
+      collisionFragments: null,
+    };
+  } else {
+    // If there are collisions, adjust the session
+    const adjustedSession: TablesInsert<"timer_session"> = {
+      ...newSession,
+    };
+    // For each overlapping session, adjust the session
+    for (const overlappingSession of overlappingSessions) {
+      const overlappingStart = new Date(overlappingSession.start_time);
+      const overlappingEnd = new Date(overlappingSession.end_time);
+
+      // If the new session is completely overlapping with an existing session, return null
+      if (overlappingStart <= newStart && overlappingEnd >= newEnd) {
+        return {
+          adjustedSession: null,
+          collisionFragments: [
+            {
+              start_time: overlappingStart.toISOString(),
+              end_time: overlappingEnd.toISOString(),
+            },
+          ],
+        };
+      }
+      // If the new session starts before the existing session, adjust the start time
+      if (overlappingStart < newStart) {
+        adjustedSession.start_time = overlappingEnd.toISOString();
+        collisionFragments.push({
+          start_time: newStart.toISOString(),
+          end_time: overlappingEnd.toISOString(),
+        });
+      }
+      // If the new session ends after the existing session, adjust the end time
+      if (overlappingEnd > newEnd) {
+        adjustedSession.end_time = overlappingStart.toISOString();
+        collisionFragments.push({
+          start_time: overlappingStart.toISOString(),
+          end_time: newEnd.toISOString(),
+        });
+      }
+    }
+
+    return {
+      adjustedSession,
+      collisionFragments,
+    };
+  }
 }

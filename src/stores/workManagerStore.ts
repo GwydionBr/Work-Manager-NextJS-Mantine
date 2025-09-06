@@ -11,10 +11,17 @@ import {
   moveNode,
   addNode,
 } from "@/utils/treeHelperFunctions";
-import { filterOutExistingSessionFragments } from "@/utils/workHelperFunctions";
+import {
+  filterOutExistingSessionFragments,
+  filterOutExistingSessionTimes,
+} from "@/utils/workHelperFunctions";
 
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
-import { TimerProject, ProjectTreeItem } from "@/types/work.types";
+import {
+  TimerProject,
+  ProjectTreeItem,
+  SessionCollisionFragment,
+} from "@/types/work.types";
 import { Currency } from "@/types/settings.types";
 import { ErrorResponse, SuccessPayoutResponse } from "@/types/action.types";
 
@@ -38,7 +45,11 @@ interface WorkStoreActions {
   ) => void;
   setActiveProjectId: (id: string | null) => void;
   addProject: (project: TablesInsert<"timer_project">) => Promise<boolean>;
-  addTimerSession: (session: TablesInsert<"timer_session">) => Promise<boolean>;
+  addTimerSession: (session: TablesInsert<"timer_session">) => Promise<{
+    success: boolean;
+    completeOverlap: boolean;
+    collisionFragments: SessionCollisionFragment[] | null;
+  }>;
   addMultipleTimerSessions: (
     sessions: TablesInsert<"timer_session">[],
     projectId: string
@@ -273,12 +284,47 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
       async addTimerSession(session) {
         const { updateStore, projects, timerSessions } = get();
 
-        const newSession = await actions.createSession({ session });
-        if (!newSession.success) {
-          console.log("newSession", newSession);
-          return false;
+        // Find project
+        const project = projects.find(
+          (p) => p.project.id === session.project_id
+        );
+
+        // Check if project was found
+        if (!project) {
+          return {
+            success: false,
+            completeOverlap: false,
+            collisionFragments: null,
+          };
         }
 
+        // Filter out existing sessions that overlap with the new session
+        const { adjustedSession, collisionFragments } =
+          filterOutExistingSessionTimes(project.sessions, session);
+
+        if (!adjustedSession) {
+          return {
+            success: false,
+            completeOverlap: true,
+            collisionFragments: null,
+          };
+        }
+
+        // Create new session
+        const newSession = await actions.createSession({
+          session: adjustedSession,
+        });
+
+        // Check if new session was created
+        if (!newSession.success) {
+          return {
+            success: false,
+            completeOverlap: false,
+            collisionFragments: null,
+          };
+        }
+
+        // Update sessions and projects
         const updatedSessions = [...timerSessions, newSession.data];
         const updatedProjects = projects.map((p) =>
           p.project.id === session.project_id
@@ -286,7 +332,11 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
             : p
         );
         updateStore(updatedProjects, updatedSessions);
-        return true;
+        return {
+          success: true,
+          completeOverlap: false,
+          collisionFragments,
+        };
       },
 
       async addMultipleTimerSessions(sessions, projectId) {
