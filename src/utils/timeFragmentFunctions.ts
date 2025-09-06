@@ -29,7 +29,6 @@ export function getTimeFragmentSession(
   );
   blockStart.setSeconds(0);
   blockStart.setMilliseconds(0);
-  console.log("blockStart", blockStart);
 
   // Calculate the end of the last time block
   let blockEnd = new Date(end);
@@ -39,9 +38,8 @@ export function getTimeFragmentSession(
   );
   blockEnd.setSeconds(0);
   blockEnd.setMilliseconds(0);
-  console.log("blockEnd", blockEnd);
 
-  if (blockStart === blockEnd) {
+  if (blockStart.getTime() === blockEnd.getTime()) {
     blockEnd.setMinutes(blockEnd.getMinutes() + timeFragmentInterval);
   }
 

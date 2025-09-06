@@ -51,7 +51,6 @@ interface TimeTrackerComponentBigMaxProps {
   currency: Currency;
   salary: number;
   hourlyPayment: boolean;
-  errorMessage: string | null;
   memo: string;
   color: string | null;
   backgroundColor: string;
@@ -87,7 +86,6 @@ export default function TimeTrackerComponentBigMax({
   currency,
   salary,
   hourlyPayment,
-  errorMessage,
   memo,
   color,
   backgroundColor,
@@ -163,15 +161,6 @@ export default function TimeTrackerComponentBigMax({
             {projectTitle}
           </Text>
         </Group>
-
-        {/* Error Message */}
-        {errorMessage && (
-          <Paper p="xs" bg="red.1">
-            <Text c="red.9" size="sm">
-              {errorMessage}
-            </Text>
-          </Paper>
-        )}
 
         {/* Time Tracker Rows */}
         <Stack gap="md">

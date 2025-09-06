@@ -10,6 +10,7 @@ import {
 } from "@/stores/timeTrackerManagerStore";
 
 import { alpha, Box, Transition } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import TimeTrackerComponentBig from "./Big/TimeTrackerComponentBig";
 import TimeTrackerComponentSmall from "./Small/TimeTrackerComponentSmall";
 
@@ -46,7 +47,6 @@ export default function TimeTrackerInstance({
     automaticlyStopOtherTimer,
     locale,
   } = useSettingsStore();
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showSmall, setShowSmall] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -179,7 +179,6 @@ export default function TimeTrackerInstance({
   async function submitTimer() {
     if (isSubmitting) return;
     setIsSubmitting(true);
-    setErrorMessage(null);
     let newSession: TablesInsert<"timer_session"> = {
       ...getCurrentSession(),
       memo: memo === "" ? null : memo,
@@ -197,19 +196,24 @@ export default function TimeTrackerInstance({
       await addTimerSession(newSession);
 
     if (completeOverlap) {
-      setErrorMessage(
-        locale === "de-DE"
-          ? "Timer Sitzung überschneided sich komplett mit bereits bestehenden Sitzungen und wurde daher nicht gespeichert."
-          : "Timer session completely overlaps with another session and was not saved."
-      );
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 3000);
+      notifications.show({
+        title:
+          locale === "de-DE" ? "Komplette Überschneidung" : "Complete overlap",
+        message:
+          locale === "de-DE"
+            ? "Timer Sitzung überschneided sich komplett mit bereits bestehenden Sitzungen und wurde daher nicht gespeichert."
+            : "Timer session completely overlaps with another session and was not saved.",
+        color: "red",
+        autoClose: false,
+      });
       stopTimer();
     } else if (collisionFragments) {
-      setErrorMessage(
-        locale === "de-DE"
-          ? `Timer Sitzung hat Überschneidungen und wurde angepasst.\n 
+      notifications.show({
+        title:
+          locale === "de-DE" ? "Überschneidung Erkannnt" : "Overlap detected",
+        message:
+          locale === "de-DE"
+            ? `Timer Sitzung hat Überschneidungen und wurde angepasst.\n 
           Überschneidungen: ${collisionFragments
             .map((fragment) =>
               formatTimeSpan(
@@ -224,7 +228,7 @@ export default function TimeTrackerInstance({
               new Date(newSession.end_time),
               locale
             )}`
-          : `Timer session overlaps with another session and was not saved.\n
+            : `Timer session overlaps with another session and was not saved.\n
             Overlaps: ${collisionFragments
               .map((fragment) =>
                 formatTimeSpan(
@@ -238,24 +242,25 @@ export default function TimeTrackerInstance({
               new Date(newSession.start_time),
               new Date(newSession.end_time),
               locale
-            )}`
-      );
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 8000);
+            )}`,
+        color: "yellow",
+        autoClose: 10000,
+      });
     }
     if (success) {
       setMemo("");
       stopTimer();
     } else if (!success && !completeOverlap && !collisionFragments) {
-      setErrorMessage(
-        locale === "de-DE"
-          ? "Fehler beim Speichern der Sitzung. Bitte versuche es erneut."
-          : "Error saving session. Please try again."
-      );
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 3000);
+      notifications.show({
+        title:
+          locale === "de-DE" ? "Fehler" : "Error",
+        message:
+          locale === "de-DE"
+            ? "Fehler beim Speichern der Sitzung. Bitte versuche es erneut."
+            : "Error saving session. Please try again.",
+        color: "red",
+        autoClose: 6000,
+      });
     }
     setIsSubmitting(false);
   }
@@ -299,7 +304,6 @@ export default function TimeTrackerInstance({
               cancelTimer={cancelTimer}
               isTimeTrackerMinimized={isTimeTrackerMinimized}
               setIsTimeTrackerMinimized={setIsTimeTrackerMinimized}
-              errorMessage={errorMessage}
               isSubmitting={isSubmitting}
               setMemo={setMemo}
               submitTimer={submitTimer}

@@ -278,6 +278,7 @@ export function filterOutExistingSessionTimes(
     // Check for overlap: sessions overlap if one starts before the other ends
     return newStart < existingEnd && newEnd > existingStart;
   });
+  console.log("overlappingSessions", overlappingSessions);
 
   if (overlappingSessions.length === 0) {
     // No collision, return the session as is

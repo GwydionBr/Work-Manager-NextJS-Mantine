@@ -14,7 +14,6 @@ import TimeTrackerComponentBigMax from "./TimeTrackerComponentBigMax";
 interface TimeTrackerComponentBigProps {
   projectTitle: string;
   isTimeTrackerMinimized: boolean;
-  errorMessage: string | null;
   isSubmitting: boolean;
   moneyEarned: string;
   currency: Currency;
@@ -57,7 +56,6 @@ export default function TimeTrackerComponentBig({
   activeSeconds,
   roundedActiveTime,
   isTimeTrackerMinimized,
-  errorMessage,
   isSubmitting,
   storedActiveSeconds,
   storedPausedSeconds,
@@ -130,7 +128,6 @@ export default function TimeTrackerComponentBig({
           currency={currency}
           salary={salary}
           hourlyPayment={hourlyPayment}
-          errorMessage={errorMessage}
           color={color}
           backgroundColor={backgroundColor}
           startTimer={startTimer}
