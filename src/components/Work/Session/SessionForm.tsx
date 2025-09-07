@@ -11,13 +11,13 @@ import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { currencies } from "@/constants/settings";
 import TimeInput from "@/components/Work/Session/SessionTimeInput";
-
-import { Currency } from "@/types/settings.types";
-import { Tables } from "@/types/db.types";
 import UpdateButton from "@/components/UI/Buttons/UpdateButton";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 import LocaleDateTimePicker from "@/components/UI/Locale/LocaleDateTimePicker";
+
+import { Currency } from "@/types/settings.types";
+import { Tables } from "@/types/db.types";
 
 interface NewSession {
   project_id?: string;

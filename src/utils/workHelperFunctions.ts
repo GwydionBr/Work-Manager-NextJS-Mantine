@@ -267,13 +267,13 @@ export function filterOutExistingSessionTimes(
   collisionFragments: SessionCollisionFragment[] | null;
 } {
   const collisionFragments: SessionCollisionFragment[] | null = [];
-  const newStart = new Date(newSession.start_time);
-  const newEnd = new Date(newSession.end_time);
+  const newStart = new Date(newSession.start_time).getTime();
+  const newEnd = new Date(newSession.end_time).getTime();
 
   // Find all existing sessions that overlap with the new session
   const overlappingSessions = existingSessions.filter((existingSession) => {
-    const existingStart = new Date(existingSession.start_time);
-    const existingEnd = new Date(existingSession.end_time);
+    const existingStart = new Date(existingSession.start_time).getTime();
+    const existingEnd = new Date(existingSession.end_time).getTime();
 
     // Check for overlap: sessions overlap if one starts before the other ends
     return newStart < existingEnd && newEnd > existingStart;
@@ -282,6 +282,7 @@ export function filterOutExistingSessionTimes(
 
   if (overlappingSessions.length === 0) {
     // No collision, return the session as is
+    console.log("no collision");
     return {
       adjustedSession: newSession,
       collisionFragments: null,
@@ -293,35 +294,40 @@ export function filterOutExistingSessionTimes(
     };
     // For each overlapping session, adjust the session
     for (const overlappingSession of overlappingSessions) {
-      const overlappingStart = new Date(overlappingSession.start_time);
-      const overlappingEnd = new Date(overlappingSession.end_time);
+      const overlappingStart = new Date(
+        overlappingSession.start_time
+      ).getTime();
+      const overlappingEnd = new Date(overlappingSession.end_time).getTime();
 
       // If the new session is completely overlapping with an existing session, return null
       if (overlappingStart <= newStart && overlappingEnd >= newEnd) {
+        console.log("complete overlap");
         return {
           adjustedSession: null,
           collisionFragments: [
             {
-              start_time: overlappingStart.toISOString(),
-              end_time: overlappingEnd.toISOString(),
+              start_time: overlappingStart,
+              end_time: overlappingEnd,
             },
           ],
         };
       }
       // If the new session starts before the existing session, adjust the start time
-      if (overlappingStart < newStart) {
-        adjustedSession.start_time = overlappingEnd.toISOString();
+      if (overlappingStart <= newStart) {
+        console.log("start before overlap");
+        adjustedSession.start_time = new Date(overlappingEnd).toISOString();
         collisionFragments.push({
-          start_time: newStart.toISOString(),
-          end_time: overlappingEnd.toISOString(),
+          start_time: newStart,
+          end_time: overlappingEnd,
         });
       }
       // If the new session ends after the existing session, adjust the end time
-      if (overlappingEnd > newEnd) {
-        adjustedSession.end_time = overlappingStart.toISOString();
+      if (overlappingEnd >= newEnd) {
+        console.log("end after overlap");
+        adjustedSession.end_time = new Date(overlappingStart).toISOString();
         collisionFragments.push({
-          start_time: overlappingStart.toISOString(),
-          end_time: newEnd.toISOString(),
+          start_time: overlappingStart,
+          end_time: newEnd,
         });
       }
     }

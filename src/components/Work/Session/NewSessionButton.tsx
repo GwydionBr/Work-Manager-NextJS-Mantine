@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -9,11 +10,15 @@ import { Box, Modal } from "@mantine/core";
 import SessionForm from "@/components/Work/Session/SessionForm";
 import AddActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 
+import { getTimeFragmentSession } from "@/utils/timeFragmentFunctions";
+import { formatTimeSpan } from "@/utils/formatFunctions";
+
 import { TablesInsert } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
 
 export default function NewSessionButton() {
-  const { locale } = useSettingsStore();
+  const { locale, roundInTimeFragments, timeFragmentInterval } =
+    useSettingsStore();
   const [opened, { open, close }] = useDisclosure(false);
   const { activeProjectId, addTimerSession } = useWorkStore();
   const activeProject = useWorkStore((state) =>
@@ -35,7 +40,7 @@ export default function NewSessionButton() {
     }
     setSubmitting(true);
 
-    const newSession: TablesInsert<"timer_session"> = {
+    let newSession: TablesInsert<"timer_session"> = {
       ...values,
       user_id: activeProject.project.user_id,
       start_time: new Date(values.start_time).toISOString(),
@@ -49,9 +54,81 @@ export default function NewSessionButton() {
         : activeProject.project.currency,
     };
 
-    const success = await addTimerSession(newSession);
+    if (roundInTimeFragments) {
+      newSession = getTimeFragmentSession(
+        new Date(newSession.start_time),
+        new Date(newSession.end_time),
+        timeFragmentInterval,
+        newSession
+      );
+    }
+
+    const { success, collisionFragments, completeOverlap } =
+      await addTimerSession(newSession);
+
+    if (completeOverlap) {
+      notifications.show({
+        title:
+          locale === "de-DE" ? "Komplette Überschneidung" : "Complete overlap",
+        message:
+          locale === "de-DE"
+            ? "Timer Sitzung überschneided sich komplett mit bereits bestehenden Sitzungen und wurde daher nicht gespeichert."
+            : "Timer session completely overlaps with another session and was not saved.",
+        color: "red",
+        autoClose: false,
+      });
+    } else if (collisionFragments) {
+      notifications.show({
+        title:
+          locale === "de-DE" ? "Überschneidung Erkannnt" : "Overlap detected",
+        message:
+          locale === "de-DE"
+            ? `Timer Sitzung hat Überschneidungen und wurde angepasst.\n 
+          Überschneidungen: ${collisionFragments
+            .map((fragment) =>
+              formatTimeSpan(
+                new Date(fragment.start_time),
+                new Date(fragment.end_time),
+                locale
+              )
+            )
+            .join(", ")}\n
+            Erstellte Sitzung: ${formatTimeSpan(
+              new Date(newSession.start_time),
+              new Date(newSession.end_time),
+              locale
+            )}`
+            : `Timer session overlaps with another session and was not saved.\n
+            Overlaps: ${collisionFragments
+              .map((fragment) =>
+                formatTimeSpan(
+                  new Date(fragment.start_time),
+                  new Date(fragment.end_time),
+                  locale
+                )
+              )
+              .join(", ")}\n
+            Created session: ${formatTimeSpan(
+              new Date(newSession.start_time),
+              new Date(newSession.end_time),
+              locale
+            )}`,
+        color: "yellow",
+        autoClose: 10000,
+      });
+    }
     if (success) {
       close();
+    } else if (!success && !completeOverlap && !collisionFragments) {
+      notifications.show({
+        title: locale === "de-DE" ? "Fehler" : "Error",
+        message:
+          locale === "de-DE"
+            ? "Fehler beim Speichern der Sitzung. Bitte versuche es erneut."
+            : "Error saving session. Please try again.",
+        color: "red",
+        autoClose: 6000,
+      });
     }
     setSubmitting(false);
   }

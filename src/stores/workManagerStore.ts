@@ -404,6 +404,12 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
 
       async updateTimerSession(session) {
         const { updateStore, projects, timerSessions } = get();
+        const project = projects.find((p) => p.project.id === session.project_id);
+        if (!project) {
+          return false;
+        }
+
+        
         const updatedSession = await actions.updateSession({ session });
         if (!updatedSession.success) {
           return false;

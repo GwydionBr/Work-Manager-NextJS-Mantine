@@ -14,6 +14,6 @@ export interface ProjectTreeItem {
 }
 
 export interface SessionCollisionFragment {
-  start_time: string;
-  end_time: string;
+  start_time: number;
+  end_time: number;
 }

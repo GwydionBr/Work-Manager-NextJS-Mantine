@@ -42,8 +42,8 @@ export default function TimeTrackerInstance({
   const { addTimerSession, addMultipleTimerSessions, projects } =
     useWorkStore();
   const {
-    timeFragmentInterval: timeSectionInterval,
-    roundInTimeFragments: roundInTimeSections,
+    timeFragmentInterval,
+    roundInTimeFragments,
     automaticlyStopOtherTimer,
     locale,
   } = useSettingsStore();
@@ -112,8 +112,8 @@ export default function TimeTrackerInstance({
     tempStartTime: timer.tempStartTime,
     storedActiveSeconds: timer.storedActiveSeconds,
     storedPausedSeconds: timer.storedPausedSeconds,
-    timeSectionInterval: timeSectionInterval,
-    roundInTimeSections: roundInTimeSections,
+    timeSectionInterval: timeFragmentInterval,
+    roundInTimeSections: roundInTimeFragments,
     memo: timer.memo,
   });
 
@@ -171,8 +171,8 @@ export default function TimeTrackerInstance({
   }, [forceEndTimer]);
 
   useEffect(() => {
-    setRoundInTimeSections(roundInTimeSections, timeSectionInterval);
-  }, [roundInTimeSections, timeSectionInterval, setRoundInTimeSections]);
+    setRoundInTimeSections(roundInTimeFragments, timeFragmentInterval);
+  }, [roundInTimeFragments, timeFragmentInterval, setRoundInTimeSections]);
 
   if (!isClient) return null;
 
@@ -183,11 +183,11 @@ export default function TimeTrackerInstance({
       ...getCurrentSession(),
       memo: memo === "" ? null : memo,
     };
-    if (roundInTimeSections) {
+    if (roundInTimeFragments) {
       newSession = getTimeFragmentSession(
         new Date(newSession.start_time),
         new Date(newSession.end_time),
-        timeSectionInterval,
+        timeFragmentInterval,
         newSession
       );
     }
@@ -228,7 +228,7 @@ export default function TimeTrackerInstance({
               new Date(newSession.end_time),
               locale
             )}`
-            : `Timer session overlaps with another session and was not saved.\n
+            : `Timer session overlaps with another session and got adjusted.\n
             Overlaps: ${collisionFragments
               .map((fragment) =>
                 formatTimeSpan(
@@ -252,8 +252,7 @@ export default function TimeTrackerInstance({
       stopTimer();
     } else if (!success && !completeOverlap && !collisionFragments) {
       notifications.show({
-        title:
-          locale === "de-DE" ? "Fehler" : "Error",
+        title: locale === "de-DE" ? "Fehler" : "Error",
         message:
           locale === "de-DE"
             ? "Fehler beim Speichern der Sitzung. Bitte versuche es erneut."
