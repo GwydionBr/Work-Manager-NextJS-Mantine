@@ -203,7 +203,6 @@ export default function SessionForm({
     form.setFieldValue("start_time", value);
 
     const startTime = new Date(value);
-    console.log(userChangedEndTime);
     const endTime = userChangedEndTime
       ? new Date(form.values.end_time)
       : new Date(
@@ -340,11 +339,7 @@ export default function SessionForm({
             }
           />
         )}
-        {onCancel && (
-          <CancelButton
-            onClick={onCancel}
-          />
-        )}
+        {onCancel && <CancelButton onClick={onCancel} />}
       </Stack>
     </form>
   );

@@ -192,7 +192,7 @@ export default function TimeTrackerInstance({
       );
     }
 
-    const { success, collisionFragments, completeOverlap } =
+    const { createdSession, collisionFragments, completeOverlap } =
       await addTimerSession(newSession);
 
     if (completeOverlap) {
@@ -207,13 +207,14 @@ export default function TimeTrackerInstance({
         autoClose: false,
       });
       stopTimer();
-    } else if (collisionFragments) {
-      notifications.show({
-        title:
-          locale === "de-DE" ? "Überschneidung Erkannnt" : "Overlap detected",
-        message:
-          locale === "de-DE"
-            ? `Timer Sitzung hat Überschneidungen und wurde angepasst.\n 
+    } else if (createdSession) {
+      if (collisionFragments) {
+        notifications.show({
+          title:
+            locale === "de-DE" ? "Überschneidung Erkannnt" : "Overlap detected",
+          message:
+            locale === "de-DE"
+              ? `Timer Sitzung hat Überschneidungen und wurde angepasst.\n 
           Überschneidungen: ${collisionFragments
             .map((fragment) =>
               formatTimeSpan(
@@ -224,11 +225,11 @@ export default function TimeTrackerInstance({
             )
             .join(", ")}\n
             Erstellte Sitzung: ${formatTimeSpan(
-              new Date(newSession.start_time),
-              new Date(newSession.end_time),
+              new Date(createdSession.start_time),
+              new Date(createdSession.end_time),
               locale
             )}`
-            : `Timer session overlaps with another session and got adjusted.\n
+              : `Timer session overlaps with another session and got adjusted.\n
             Overlaps: ${collisionFragments
               .map((fragment) =>
                 formatTimeSpan(
@@ -239,18 +240,17 @@ export default function TimeTrackerInstance({
               )
               .join(", ")}\n
             Created session: ${formatTimeSpan(
-              new Date(newSession.start_time),
-              new Date(newSession.end_time),
+              new Date(createdSession.start_time),
+              new Date(createdSession.end_time),
               locale
             )}`,
-        color: "yellow",
-        autoClose: 10000,
-      });
-    }
-    if (success) {
+          color: "yellow",
+          autoClose: false,
+        });
+      }
       setMemo("");
       stopTimer();
-    } else if (!success && !completeOverlap && !collisionFragments) {
+    } else {
       notifications.show({
         title: locale === "de-DE" ? "Fehler" : "Error",
         message:

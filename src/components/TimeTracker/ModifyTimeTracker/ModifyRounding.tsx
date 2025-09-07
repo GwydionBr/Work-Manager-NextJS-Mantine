@@ -55,8 +55,6 @@ export default function ModifyRounding({
   // Convert rounding interval to rounding amount
   const getRoundingAmountFromInterval = (interval: number): RoundingAmount => {
     switch (interval) {
-      case 1:
-        return "s";
       case 60:
         return "min";
       case 900:
@@ -76,8 +74,6 @@ export default function ModifyRounding({
     custom: number
   ): number => {
     switch (amount) {
-      case "s":
-        return 1;
       case "min":
         return 60;
       case "1/4h":

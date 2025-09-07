@@ -13,7 +13,7 @@ export interface ProjectTreeItem {
   children?: ProjectTreeItem[];
 }
 
-export interface SessionCollisionFragment {
+export interface TimeSpan {
   start_time: number;
   end_time: number;
 }

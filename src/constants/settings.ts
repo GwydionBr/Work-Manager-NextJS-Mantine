@@ -34,7 +34,6 @@ export const shortCurrencies: { value: Currency; label: string }[] = [
 ];
 
 export const roundingAmounts: { value: RoundingAmount; label: string }[] = [
-  { value: "s", label: "Seconds" },
   { value: "min", label: "Minutes" },
   { value: "1/4h", label: "Quarter Hour" },
   { value: "1/2h", label: "Half Hour" },
