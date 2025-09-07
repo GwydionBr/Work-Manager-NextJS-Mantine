@@ -313,8 +313,9 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           ...session,
           start_time: new Date(adjustedTimeSpan.start_time).toISOString(),
           end_time: new Date(adjustedTimeSpan.end_time).toISOString(),
-          active_seconds:
-            (adjustedTimeSpan.end_time - adjustedTimeSpan.start_time) / 1000,
+          active_seconds: Math.round(
+            (adjustedTimeSpan.end_time - adjustedTimeSpan.start_time) / 1000
+          ),
         };
 
         console.log("sessionToCreate", sessionToCreate);
@@ -326,6 +327,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
 
         // Check if new session was created
         if (!newSession.success) {
+          console.log(newSession.error);
           return {
             createdSession: null,
             completeOverlap: false,

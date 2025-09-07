@@ -311,17 +311,21 @@ export function useTimeTracker(initialState: TimeTrackerState) {
           state.roundingMode
         );
 
+    const newStartTime = new Date(state.startTime ?? 0);
+    newStartTime.setSeconds(0);
+    newStartTime.setMilliseconds(0);
+
+    const newEndTime = new Date(
+      newStartTime.getTime() +
+        (currentActiveSeconds + state.pausedSeconds) * 1000
+    );
+
     const newTimerSession: TablesInsert<"timer_session"> = {
       user_id: state.userId,
       project_id: state.projectId,
-      start_time: new Date(state.startTime ?? 0).toISOString(),
+      start_time: newStartTime.toISOString(),
       true_end_time: new Date().toISOString(),
-      end_time: state.startTime
-        ? new Date(
-            state.startTime +
-              (currentActiveSeconds + state.pausedSeconds) * 1000
-          ).toISOString()
-        : new Date().toISOString(),
+      end_time: newEndTime.toISOString(),
       hourly_payment: state.hourlyPayment,
       active_seconds: currentActiveSeconds,
       paused_seconds: state.pausedSeconds,

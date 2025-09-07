@@ -145,8 +145,8 @@ export default function NewSessionButton() {
         <SessionForm
           initialValues={{
             project_id: activeProject?.project.id,
-            start_time: new Date().toISOString(),
-            end_time: new Date().toISOString(),
+            start_time: new Date(new Date().setSeconds(0, 0)).toISOString(),
+            end_time: new Date(new Date().setSeconds(0, 0)).toISOString(),
             active_seconds: 0,
             paused_seconds: 0,
             currency: activeProject?.project.currency || "USD",
