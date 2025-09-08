@@ -62,7 +62,7 @@ export function DayColumn({
 }: DayColumnProps) {
   const { hovered, ref: hoverRef } = useHover();
   const { locale } = useSettingsStore();
-  const { addingMode, setAddingMode } = useCalendarStore();
+  const { addingMode } = useCalendarStore();
   useHotkeys([["escape", () => setStartNewSession(null)]]);
 
   // Clip sessions to the visible day window so cross-midnight sessions
@@ -211,7 +211,7 @@ export function DayColumn({
           ))
         ) : (
           <Box>
-            {itemsForRender.map((s) => {
+            {clippedItems.map((s) => {
               return (
                 <CalendarSessionEvent
                   key={s.id}

@@ -2,12 +2,24 @@
 
 import { useHover } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
+import { useMemo } from "react";
 
-import { Box, Card, Group, HoverCard, Stack, Text } from "@mantine/core";
+import {
+  Box,
+  Card,
+  Group,
+  HoverCard,
+  Stack,
+  Text,
+  Indicator,
+} from "@mantine/core";
+
 import { CalendarDay, VisibleProject } from "@/types/workCalendar.types";
 import { formatDate, formatMoney, formatTime } from "@/utils/formatFunctions";
-import { useMemo } from "react";
 import { calculateSessionTimeForDay } from "../calendarUtils";
+import { isToday } from "date-fns";
+import { TimerState } from "@/types/timeTracker.types";
 
 interface ColumnHeaderProps {
   day?: CalendarDay;
@@ -24,6 +36,8 @@ export default function ColumnHeader({
 }: ColumnHeaderProps) {
   const { hovered, ref } = useHover();
   const { locale } = useSettingsStore();
+  const { isTimerRunning, getRunningTimer } = useTimeTrackerManager();
+  const timer = getRunningTimer();
   const totalTime = useMemo(() => {
     if (!day) return 0;
     return day.sessions.reduce(
@@ -69,12 +83,24 @@ export default function ColumnHeader({
           {icon && icon}
           {day && (
             <Stack gap={4}>
-              <Text fw={600}>
-                {formatDate(day.day, locale)}
-              </Text>
-              <Text size="xs" c="dimmed" fw={500} ta="center">
-                {formatTime(totalTime)}
-              </Text>
+              <Text fw={600}>{formatDate(day.day, locale)}</Text>
+              <Group justify="center">
+                {timer && isToday(day.day) && (
+                  <Indicator
+                    size={10}
+                    color="red"
+                    processing={timer.state === TimerState.Running}
+                  />
+                )}
+                <Text size="xs" c="dimmed" fw={500} ta="center">
+                  {formatTime(
+                    totalTime +
+                      (isToday(day.day) && isTimerRunning
+                        ? (getRunningTimer()?.activeSeconds ?? 0)
+                        : 0)
+                  )}
+                </Text>
+              </Group>
             </Stack>
           )}
         </Stack>

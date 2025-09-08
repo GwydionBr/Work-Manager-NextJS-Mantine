@@ -125,6 +125,7 @@ export function useTimeTracker(initialState: TimeTrackerState) {
           storedActiveSeconds: newActiveSeconds,
           activeTime: secondsToTimerFormat(newActiveSeconds),
           activeSeconds: newActiveSeconds,
+          tempStartTime: Date.now(),
         }));
       } else {
         setState((prev) => ({
