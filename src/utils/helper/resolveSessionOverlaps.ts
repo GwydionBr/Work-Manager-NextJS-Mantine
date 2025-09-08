@@ -1,23 +1,22 @@
-import { Tables } from "@/types/db.types";
-import { TimeSpan } from "@/types/work.types";
-
+import { Tables, TablesInsert } from "@/types/db.types";
 
 /**
  * Filters out existing sessions that overlap with the new session.
+ * If there are no collisions, returns the new session as is.
  * If there are collisions, adjusts the session to fit the collisions.
  * @param existingSessions - Existing sessions
  * @param newSession - New session
- * @returns Adjusted session and collision fragments
+ * @returns Adjusted session Array and overlapping sessions
  */
 export function resolveSessionOverlaps(
   existingSessions: Tables<"timer_session">[],
-  newSessionTime: TimeSpan
+  newSession: TablesInsert<"timer_session">
 ): {
-  adjustedTimeSpans: TimeSpan[] | null;
+  adjustedTimeSpans: TablesInsert<"timer_session">[] | null;
   overlappingSessions: Tables<"timer_session">[];
 } {
-  const newStart = new Date(newSessionTime.start_time).getTime();
-  const newEnd = new Date(newSessionTime.end_time).getTime();
+  const newStart = new Date(newSession.start_time).getTime();
+  const newEnd = new Date(newSession.end_time).getTime();
 
   // Finde alle kollidierenden Sessions
   const overlappingSessions = existingSessions.filter((existingSession) => {
@@ -28,7 +27,7 @@ export function resolveSessionOverlaps(
 
   if (overlappingSessions.length === 0) {
     return {
-      adjustedTimeSpans: [newSessionTime],
+      adjustedTimeSpans: [newSession],
       overlappingSessions,
     };
   }
@@ -57,7 +56,7 @@ export function resolveSessionOverlaps(
   timePoints.sort((a, b) => a.time - b.time);
 
   // Jetzt Intervalle bauen
-  const adjustedTimeSpans: TimeSpan[] = [];
+  const adjustedTimeSpans: TablesInsert<"timer_session">[] = [];
   let activeNew = false;
   let activeExisting = 0;
 
@@ -73,8 +72,10 @@ export function resolveSessionOverlaps(
     // Nur wenn die neue Session aktiv ist und KEINE bestehende Session läuft
     if (activeNew && activeExisting === 0) {
       adjustedTimeSpans.push({
-        start_time: new Date(current.time).getTime(),
-        end_time: new Date(next.time).getTime(),
+        ...newSession,
+        start_time: new Date(current.time).toISOString(),
+        end_time: new Date(next.time).toISOString(),
+        active_seconds: Math.round((next.time - current.time) / 1000),
       });
     }
   }

@@ -58,7 +58,7 @@ export default function NewSessionButton() {
       newSession = getTimeFragmentSession(timeFragmentInterval, newSession);
     }
 
-    const { createdSession, collisionFragments, completeOverlap } =
+    const { createdSessions, overlappingSessions, completeOverlap } =
       await addTimerSession(newSession);
 
     if (completeOverlap) {
@@ -72,15 +72,15 @@ export default function NewSessionButton() {
         color: "red",
         autoClose: false,
       });
-    } else if (createdSession) {
-      if (collisionFragments) {
+    } else if (createdSessions) {
+      if (overlappingSessions) {
         notifications.show({
           title:
             locale === "de-DE" ? "Überschneidung Erkannnt" : "Overlap detected",
           message:
             locale === "de-DE"
               ? `Timer Sitzung hat Überschneidungen und wurde angepasst.\n 
-          Überschneidungen: ${collisionFragments
+          Überschneidungen: ${overlappingSessions
             .map((fragment) =>
               formatTimeSpan(
                 new Date(fragment.start_time),
@@ -89,13 +89,17 @@ export default function NewSessionButton() {
               )
             )
             .join(", ")}\n
-            Erstellte Sitzung: ${formatTimeSpan(
-              new Date(createdSession.start_time),
-              new Date(createdSession.end_time),
-              locale
-            )}`
-              : `Timer session overlaps with another session and was not saved.\n
-            Overlaps: ${collisionFragments
+            Erstellte Sitzung: ${createdSessions
+              .map((session) =>
+                formatTimeSpan(
+                  new Date(session.start_time),
+                  new Date(session.end_time),
+                  locale
+                )
+              )
+              .join(", ")}`
+              : `Timer session overlaps with another session and was adjusted.\n
+            Overlaps: ${overlappingSessions
               .map((fragment) =>
                 formatTimeSpan(
                   new Date(fragment.start_time),
@@ -104,11 +108,15 @@ export default function NewSessionButton() {
                 )
               )
               .join(", ")}\n
-            Created session: ${formatTimeSpan(
-              new Date(createdSession.start_time),
-              new Date(createdSession.end_time),
-              locale
-            )}`,
+            Created session: ${createdSessions
+              .map((session) =>
+                formatTimeSpan(
+                  new Date(session.start_time),
+                  new Date(session.end_time),
+                  locale
+                )
+              )
+              .join(", ")}`,
           color: "yellow",
           autoClose: false,
         });

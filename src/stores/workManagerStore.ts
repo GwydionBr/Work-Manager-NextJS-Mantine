@@ -11,10 +11,7 @@ import {
   moveNode,
   addNode,
 } from "@/utils/treeHelperFunctions";
-import {
-  filterOutExistingSessionFragments,
-  filterOutExistingSessionTimes,
-} from "@/utils/workHelperFunctions";
+import { resolveSessionOverlaps } from "@/utils/helper";
 
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { TimerProject, ProjectTreeItem, TimeSpan } from "@/types/work.types";
@@ -42,9 +39,9 @@ interface WorkStoreActions {
   setActiveProjectId: (id: string | null) => void;
   addProject: (project: TablesInsert<"timer_project">) => Promise<boolean>;
   addTimerSession: (session: TablesInsert<"timer_session">) => Promise<{
-    createdSession: Tables<"timer_session"> | null;
+    createdSessions: Tables<"timer_session">[] | null;
     completeOverlap: boolean;
-    collisionFragments: TimeSpan[] | null;
+    overlappingSessions: Tables<"timer_session">[] | null;
   }>;
   updateProject: (project: TablesUpdate<"timer_project">) => Promise<boolean>;
   updateTimerSession: (
@@ -281,66 +278,57 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         // Check if project was found
         if (!project) {
           return {
-            createdSession: null,
+            createdSessions: null,
             completeOverlap: false,
-            collisionFragments: null,
+            overlappingSessions: null,
           };
         }
 
         // Filter out existing sessions that overlap with the new session
-        const { adjustedTimeSpan, collisionFragments } =
-          filterOutExistingSessionTimes(project.sessions, {
-            start_time: new Date(session.start_time).getTime(),
-            end_time: new Date(session.end_time).getTime(),
-          });
+        const { adjustedTimeSpans, overlappingSessions } =
+          resolveSessionOverlaps(project.sessions, session);
 
-        if (!adjustedTimeSpan?.[0]) {
+        if (!adjustedTimeSpans) {
           return {
-            createdSession: null,
+            createdSessions: null,
             completeOverlap: true,
-            collisionFragments: null,
+            overlappingSessions: null,
           };
         }
 
-        const sessionToCreate = {
-          ...session,
-          start_time: new Date(adjustedTimeSpan[0].start_time).toISOString(),
-          end_time: new Date(adjustedTimeSpan[0].end_time).toISOString(),
-          active_seconds: Math.round(
-            (adjustedTimeSpan[0].end_time - adjustedTimeSpan[0].start_time) /
-              1000
-          ),
-        };
-
-        console.log("sessionToCreate", sessionToCreate);
+        console.log("sessionToCreate", adjustedTimeSpans);
 
         // Create new session
-        const newSession = await actions.createSession({
-          session: sessionToCreate,
+        const newSessions = await actions.createSessions({
+          sessions: adjustedTimeSpans,
         });
 
-        // Check if new session was created
-        if (!newSession.success) {
-          console.log(newSession.error);
+        // Check if new sessions were created
+        if (!newSessions.success) {
+          console.log(newSessions.error);
           return {
-            createdSession: null,
+            createdSessions: null,
             completeOverlap: false,
-            collisionFragments: null,
+            overlappingSessions: null,
           };
         }
 
         // Update sessions and projects
-        const updatedSessions = [...timerSessions, newSession.data];
+        const updatedSessions = [...timerSessions, ...newSessions.data];
         const updatedProjects = projects.map((p) =>
           p.project.id === session.project_id
-            ? { project: p.project, sessions: [...p.sessions, newSession.data] }
+            ? {
+                project: p.project,
+                sessions: [...p.sessions, ...newSessions.data],
+              }
             : p
         );
         updateStore(updatedProjects, updatedSessions);
         return {
-          createdSession: newSession.data,
+          createdSessions: newSessions.data,
           completeOverlap: false,
-          collisionFragments,
+          overlappingSessions:
+            overlappingSessions.length > 0 ? overlappingSessions : null,
         };
       },
 

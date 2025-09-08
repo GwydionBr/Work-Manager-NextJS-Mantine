@@ -39,8 +39,7 @@ export default function TimeTrackerInstance({
   const [memo, setMemo] = useState<string>(timer.memo ?? "");
   const { updateTimer, removeTimer, setForceEndTimer, getAllTimers } =
     useTimeTrackerManager();
-  const { addTimerSession, projects } =
-    useWorkStore();
+  const { addTimerSession, projects } = useWorkStore();
   const {
     timeFragmentInterval,
     roundInTimeFragments,
@@ -187,7 +186,7 @@ export default function TimeTrackerInstance({
       newSession = getTimeFragmentSession(timeFragmentInterval, newSession);
     }
 
-    const { createdSession, collisionFragments, completeOverlap } =
+    const { createdSessions, overlappingSessions, completeOverlap } =
       await addTimerSession(newSession);
 
     if (completeOverlap) {
@@ -202,15 +201,15 @@ export default function TimeTrackerInstance({
         autoClose: false,
       });
       stopTimer();
-    } else if (createdSession) {
-      if (collisionFragments) {
+    } else if (createdSessions) {
+      if (overlappingSessions) {
         notifications.show({
           title:
             locale === "de-DE" ? "Überschneidung Erkannnt" : "Overlap detected",
           message:
             locale === "de-DE"
               ? `Timer Sitzung hat Überschneidungen und wurde angepasst.\n 
-          Überschneidungen: ${collisionFragments
+          Überschneidungen: ${overlappingSessions
             .map((fragment) =>
               formatTimeSpan(
                 new Date(fragment.start_time),
@@ -219,13 +218,17 @@ export default function TimeTrackerInstance({
               )
             )
             .join(", ")}\n
-            Erstellte Sitzung: ${formatTimeSpan(
-              new Date(createdSession.start_time),
-              new Date(createdSession.end_time),
-              locale
-            )}`
+            Erstellte Sitzung: ${createdSessions
+              .map((session) =>
+                formatTimeSpan(
+                  new Date(session.start_time),
+                  new Date(session.end_time),
+                  locale
+                )
+              )
+              .join(", ")}`
               : `Timer session overlaps with another session and got adjusted.\n
-            Overlaps: ${collisionFragments
+            Overlaps: ${overlappingSessions
               .map((fragment) =>
                 formatTimeSpan(
                   new Date(fragment.start_time),
@@ -234,11 +237,15 @@ export default function TimeTrackerInstance({
                 )
               )
               .join(", ")}\n
-            Created session: ${formatTimeSpan(
-              new Date(createdSession.start_time),
-              new Date(createdSession.end_time),
-              locale
-            )}`,
+            Created session: ${createdSessions
+              .map((session) =>
+                formatTimeSpan(
+                  new Date(session.start_time),
+                  new Date(session.end_time),
+                  locale
+                )
+              )
+              .join(", ")}`,
           color: "yellow",
           autoClose: false,
         });

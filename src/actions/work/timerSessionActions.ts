@@ -52,26 +52,7 @@ export async function getProjectSessions({
   return { success: true, data, error: null };
 }
 
-export async function createSession({
-  session,
-}: {
-  session: TablesInsert<"timer_session">;
-}): Promise<ApiResponseSingle<"timer_session">> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("timer_session")
-    .insert(session)
-    .select()
-    .single();
-
-  if (error) {
-    return { success: false, data: null, error: error.message };
-  }
-
-  return { success: true, data, error: null };
-}
-
-export async function createMultipleSessions({
+export async function createSessions({
   sessions,
 }: {
   sessions: TablesInsert<"timer_session">[];
