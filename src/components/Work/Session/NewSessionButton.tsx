@@ -15,6 +15,7 @@ import { formatTimeSpan } from "@/utils/formatFunctions";
 
 import { TablesInsert } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
+import SessionNotification from "./SessionNotification";
 
 export default function NewSessionButton() {
   const { locale, roundInTimeFragments, timeFragmentInterval } =
@@ -61,78 +62,17 @@ export default function NewSessionButton() {
     const { createdSessions, overlappingSessions, completeOverlap } =
       await addTimerSession(newSession);
 
-    if (completeOverlap) {
-      notifications.show({
-        title:
-          locale === "de-DE" ? "Komplette Überschneidung" : "Complete overlap",
-        message:
-          locale === "de-DE"
-            ? "Timer Sitzung überschneided sich komplett mit bereits bestehenden Sitzungen und wurde daher nicht gespeichert."
-            : "Timer session completely overlaps with another session and was not saved.",
-        color: "red",
-        autoClose: false,
-      });
-    } else if (createdSessions) {
-      if (overlappingSessions) {
-        notifications.show({
-          title:
-            locale === "de-DE" ? "Überschneidung Erkannnt" : "Overlap detected",
-          message:
-            locale === "de-DE"
-              ? `Timer Sitzung hat Überschneidungen und wurde angepasst.\n 
-          Überschneidungen: ${overlappingSessions
-            .map((fragment) =>
-              formatTimeSpan(
-                new Date(fragment.start_time),
-                new Date(fragment.end_time),
-                locale
-              )
-            )
-            .join(", ")}\n
-            Erstellte Sitzung: ${createdSessions
-              .map((session) =>
-                formatTimeSpan(
-                  new Date(session.start_time),
-                  new Date(session.end_time),
-                  locale
-                )
-              )
-              .join(", ")}`
-              : `Timer session overlaps with another session and was adjusted.\n
-            Overlaps: ${overlappingSessions
-              .map((fragment) =>
-                formatTimeSpan(
-                  new Date(fragment.start_time),
-                  new Date(fragment.end_time),
-                  locale
-                )
-              )
-              .join(", ")}\n
-            Created session: ${createdSessions
-              .map((session) =>
-                formatTimeSpan(
-                  new Date(session.start_time),
-                  new Date(session.end_time),
-                  locale
-                )
-              )
-              .join(", ")}`,
-          color: "yellow",
-          autoClose: false,
-        });
-      }
-      close();
-    } else {
-      notifications.show({
-        title: locale === "de-DE" ? "Fehler" : "Error",
-        message:
-          locale === "de-DE"
-            ? "Fehler beim Speichern der Sitzung. Bitte versuche es erneut."
-            : "Error saving session. Please try again.",
-        color: "red",
-        autoClose: 6000,
-      });
-    }
+    SessionNotification({
+      originalSession: newSession,
+      completeOverlap,
+      createdSessions,
+      overlappingSessions,
+      locale,
+      onCreatedSessions: () => {
+        close();
+      },
+    });
+
     setSubmitting(false);
   }
 

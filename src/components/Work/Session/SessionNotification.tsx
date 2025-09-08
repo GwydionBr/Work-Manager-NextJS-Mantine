@@ -41,6 +41,7 @@ export default function SessionNotification({
       color: "red",
       icon: <IconAlertCircle />,
       autoClose: false,
+      withBorder: true,
     });
     onCompleteOverlap?.();
   } else if (createdSessions) {
@@ -122,6 +123,7 @@ export default function SessionNotification({
         ),
         color: "yellow",
         autoClose: false,
+        withBorder: true,
       });
     }
     onCreatedSessions?.();
@@ -134,6 +136,7 @@ export default function SessionNotification({
           : "Error saving session. Please try again.",
       color: "red",
       autoClose: 6000,
+      withBorder: true,
     });
     onError?.();
   }
