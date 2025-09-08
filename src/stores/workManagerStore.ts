@@ -399,6 +399,16 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         endCurrency
       ) {
         const { updateStore, projects, timerSessions } = get();
+        console.log(
+          "All session payout params",
+          sessionIds,
+          startValue,
+          title,
+          startCurrency,
+          categoryId,
+          endValue,
+          endCurrency
+        );
         const payoutResult = await actions.payoutSessions({
           date: new Date(),
           sessionIds,
@@ -410,6 +420,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           endCurrency,
         });
         if (!payoutResult.success) {
+          console.log("Error: ",payoutResult.error);
           return payoutResult;
         }
 
@@ -446,6 +457,8 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           endValue,
           endCurrency,
         });
+
+        console.log("Project payout result", payoutResult);
 
         return payoutResult;
       },

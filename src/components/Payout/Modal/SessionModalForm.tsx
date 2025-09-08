@@ -62,9 +62,11 @@ export default function SessionModalForm({
   async function onSubmit(values: z.infer<typeof schema>) {
     setIsProcessing(true);
     setError(null);
+    console.log("Start payout");
 
     try {
       // Create a timeout promise that rejects after 30 seconds
+      console.log("Start try Block");
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => {
           reject(
@@ -79,6 +81,7 @@ export default function SessionModalForm({
 
       // Race between the payout operation and the timeout
       const title = `Payout (${projectTitle}) ${formatDate(new Date(), locale)}`;
+      console.log("Start server call");
       const payoutResult = await Promise.race([
         payoutSessions(
           sessionIds,
@@ -93,7 +96,7 @@ export default function SessionModalForm({
         ),
         timeoutPromise,
       ]);
-
+      console.log("Payout result from Modal", payoutResult);
       if (payoutResult.success) {
         addExistingSingleCashFlow(payoutResult.data.cashFlow);
         handleClose();
@@ -105,6 +108,7 @@ export default function SessionModalForm({
       }
     } catch (error) {
       // Handle timeout or other errors
+      console.log("Error from Modal: ", error);
       const errorMessage =
         error instanceof Error
           ? error.message
