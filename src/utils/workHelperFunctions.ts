@@ -227,7 +227,7 @@ export function filterOutExistingSessionTimes(
   existingSessions: Tables<"timer_session">[],
   newSessionTime: TimeSpan
 ): {
-  adjustedTimeSpan: TimeSpan | null;
+  adjustedTimeSpan: TimeSpan[] | null;
   collisionFragments: TimeSpan[] | null;
 } {
   const collisionFragments: TimeSpan[] | null = [];
@@ -248,14 +248,18 @@ export function filterOutExistingSessionTimes(
     // No collision, return the session as is
     console.log("no collision");
     return {
-      adjustedTimeSpan: newSessionTime,
+      adjustedTimeSpan: [newSessionTime],
       collisionFragments: null,
     };
   } else {
     // If there are collisions, adjust the session
-    const adjustedTimeSpan: TimeSpan = {
-      ...newSessionTime,
-    };
+
+    const adjustedTimeSpan: TimeSpan[] = [
+      {
+        ...newSessionTime,
+      },
+    ];
+
     // For each overlapping session, adjust the session
     for (const overlappingSession of overlappingSessions) {
       const overlappingStart = new Date(
@@ -279,7 +283,7 @@ export function filterOutExistingSessionTimes(
       // If the new session starts before the existing session, adjust the start time
       if (overlappingStart <= newStart) {
         console.log("start before overlap");
-        adjustedTimeSpan.start_time = overlappingEnd;
+        adjustedTimeSpan[0].start_time = overlappingEnd;
         collisionFragments.push({
           start_time: newStart,
           end_time: overlappingEnd,
@@ -288,7 +292,7 @@ export function filterOutExistingSessionTimes(
       // If the new session ends after the existing session, adjust the end time
       if (overlappingEnd >= newEnd) {
         console.log("end after overlap");
-        adjustedTimeSpan.end_time = overlappingStart;
+        adjustedTimeSpan[0].end_time = overlappingStart;
         collisionFragments.push({
           start_time: overlappingStart,
           end_time: newEnd,
@@ -302,3 +306,4 @@ export function filterOutExistingSessionTimes(
     };
   }
 }
+

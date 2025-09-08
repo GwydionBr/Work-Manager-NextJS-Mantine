@@ -14,7 +14,7 @@ import { notifications } from "@mantine/notifications";
 import TimeTrackerComponentBig from "./Big/TimeTrackerComponentBig";
 import TimeTrackerComponentSmall from "./Small/TimeTrackerComponentSmall";
 
-import { getTimeFragmentSession } from "@/utils/timeFragmentFunctions";
+import { getTimeFragmentSession } from "@/utils/helper/getTimeFragmentSession";
 import { formatTimeSpan } from "@/utils/formatFunctions";
 
 import { TimerState } from "@/types/timeTracker.types";
@@ -39,7 +39,7 @@ export default function TimeTrackerInstance({
   const [memo, setMemo] = useState<string>(timer.memo ?? "");
   const { updateTimer, removeTimer, setForceEndTimer, getAllTimers } =
     useTimeTrackerManager();
-  const { addTimerSession, addMultipleTimerSessions, projects } =
+  const { addTimerSession, projects } =
     useWorkStore();
   const {
     timeFragmentInterval,
@@ -184,12 +184,7 @@ export default function TimeTrackerInstance({
       memo: memo === "" ? null : memo,
     };
     if (roundInTimeFragments) {
-      newSession = getTimeFragmentSession(
-        new Date(newSession.start_time),
-        new Date(newSession.end_time),
-        timeFragmentInterval,
-        newSession
-      );
+      newSession = getTimeFragmentSession(timeFragmentInterval, newSession);
     }
 
     const { createdSession, collisionFragments, completeOverlap } =

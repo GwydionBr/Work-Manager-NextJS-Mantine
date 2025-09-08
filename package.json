@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest"
   },
   "overrides": {
     "react-is": "^19.0.0"
@@ -67,7 +68,7 @@
     "prettier": "^3.4.2",
     "stylelint": "^16.13.2",
     "stylelint-config-standard-scss": "^14.0.0",
-    "ts-jest": "^29.2.5",
+    "ts-jest": "^29.4.1",
     "typescript": "5.7.3",
     "typescript-eslint": "^8.20.0"
   },

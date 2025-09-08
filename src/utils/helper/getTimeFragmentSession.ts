@@ -1,28 +1,27 @@
 import { TablesInsert } from "@/types/db.types";
 
 /**
- * Splits a session into multiple time blocks based on the specified interval.
+ * Rounds a session to align with the specified time interval boundaries.
  *
- * Example: If a session runs from 17:17 to 17:36 and timeSectionInterval is "10min",
- * it will create 3 sessions:
- * - 17:10-17:20 (3 minutes active: 17:17-17:20)
- * - 17:20-17:30 (10 minutes active: 17:20-17:30)
- * - 17:30-17:40 (6 minutes active: 17:30-17:36)
+ * Example: If a session runs from 17:17 to 17:36 and the interval is 10 minutes,
+ * it will create a single session covering the aligned block:
+ * - 17:10–17:40 (30 minutes total duration)
  *
- * @param start - Start time of the original session
- * @param end - End time of the original session
- * @param timeFragmentInterval - Time interval for splitting (5, 10, 15, 30, 60)
- * @param originalSession - Optional original session data to copy properties from
- * @returns Array of session objects split into time blocks
+ * The resulting session has:
+ * - start_time = floored to the nearest interval
+ * - end_time = ceiled to the nearest interval (or extended by one interval if equal to start)
+ * - active_seconds = total seconds in that block
+ *
+ * @param timeFragmentInterval - Time interval for rounding (5, 10, 15, 30, 60 minutes)
+ * @param originalSession - Original session data to copy properties from
+ * @returns A single session object aligned to the interval
  */
 export function getTimeFragmentSession(
-  start: Date,
-  end: Date,
   timeFragmentInterval: number,
   originalSession: TablesInsert<"timer_session">
 ) {
   // Calculate the start of the first time block
-  const blockStart = new Date(start);
+  const blockStart = new Date(originalSession.start_time);
   blockStart.setMinutes(
     Math.floor(blockStart.getMinutes() / timeFragmentInterval) *
       timeFragmentInterval
@@ -31,7 +30,7 @@ export function getTimeFragmentSession(
   blockStart.setMilliseconds(0);
 
   // Calculate the end of the last time block
-  let blockEnd = new Date(end);
+  let blockEnd = new Date(originalSession.end_time);
   blockEnd.setMinutes(
     Math.ceil(blockEnd.getMinutes() / timeFragmentInterval) *
       timeFragmentInterval

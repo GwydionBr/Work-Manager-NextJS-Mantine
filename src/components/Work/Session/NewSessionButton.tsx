@@ -10,7 +10,7 @@ import { Box, Modal } from "@mantine/core";
 import SessionForm from "@/components/Work/Session/SessionForm";
 import AddActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 
-import { getTimeFragmentSession } from "@/utils/timeFragmentFunctions";
+import { getTimeFragmentSession } from "@/utils/helper/getTimeFragmentSession";
 import { formatTimeSpan } from "@/utils/formatFunctions";
 
 import { TablesInsert } from "@/types/db.types";
@@ -55,12 +55,7 @@ export default function NewSessionButton() {
     };
 
     if (roundInTimeFragments) {
-      newSession = getTimeFragmentSession(
-        new Date(newSession.start_time),
-        new Date(newSession.end_time),
-        timeFragmentInterval,
-        newSession
-      );
+      newSession = getTimeFragmentSession(timeFragmentInterval, newSession);
     }
 
     const { createdSession, collisionFragments, completeOverlap } =

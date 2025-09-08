@@ -46,13 +46,6 @@ interface WorkStoreActions {
     completeOverlap: boolean;
     collisionFragments: TimeSpan[] | null;
   }>;
-  addMultipleTimerSessions: (
-    sessions: TablesInsert<"timer_session">[],
-    projectId: string
-  ) => Promise<{
-    success: boolean;
-    alreadyExistingSessions: Tables<"timer_session">[];
-  }>;
   updateProject: (project: TablesUpdate<"timer_project">) => Promise<boolean>;
   updateTimerSession: (
     session: TablesUpdate<"timer_session">
@@ -301,7 +294,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
             end_time: new Date(session.end_time).getTime(),
           });
 
-        if (!adjustedTimeSpan) {
+        if (!adjustedTimeSpan?.[0]) {
           return {
             createdSession: null,
             completeOverlap: true,
@@ -311,10 +304,11 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
 
         const sessionToCreate = {
           ...session,
-          start_time: new Date(adjustedTimeSpan.start_time).toISOString(),
-          end_time: new Date(adjustedTimeSpan.end_time).toISOString(),
+          start_time: new Date(adjustedTimeSpan[0].start_time).toISOString(),
+          end_time: new Date(adjustedTimeSpan[0].end_time).toISOString(),
           active_seconds: Math.round(
-            (adjustedTimeSpan.end_time - adjustedTimeSpan.start_time) / 1000
+            (adjustedTimeSpan[0].end_time - adjustedTimeSpan[0].start_time) /
+              1000
           ),
         };
 
@@ -347,53 +341,6 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           createdSession: newSession.data,
           completeOverlap: false,
           collisionFragments,
-        };
-      },
-
-      async addMultipleTimerSessions(sessions, projectId) {
-        const { updateStore, projects, timerSessions } = get();
-
-        const project = projects.find((p) => p.project.id === projectId);
-        if (!project) {
-          return {
-            success: false,
-            alreadyExistingSessions: [],
-          };
-        }
-
-        const { newSessionsToAdd, alreadyExistingSessions } =
-          filterOutExistingSessionFragments(project.sessions, sessions);
-
-        if (newSessionsToAdd.length === 0) {
-          return {
-            success: true,
-            alreadyExistingSessions,
-          };
-        }
-
-        const newSessions = await actions.createMultipleSessions({
-          sessions: newSessionsToAdd,
-        });
-        if (!newSessions.success) {
-          return {
-            success: false,
-            alreadyExistingSessions,
-          };
-        }
-
-        const updatedSessions = [...timerSessions, ...newSessions.data];
-        const updatedProjects = projects.map((p) =>
-          p.project.id === projectId
-            ? {
-                project: p.project,
-                sessions: [...p.sessions, ...newSessions.data],
-              }
-            : p
-        );
-        updateStore(updatedProjects, updatedSessions);
-        return {
-          success: true,
-          alreadyExistingSessions,
         };
       },
 
