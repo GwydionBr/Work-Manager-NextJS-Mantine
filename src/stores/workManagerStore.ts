@@ -11,7 +11,7 @@ import {
   moveNode,
   addNode,
 } from "@/utils/treeHelperFunctions";
-import { resolveSessionOverlaps } from "@/utils/helper";
+import { getTimeFragmentSession, resolveSessionOverlaps } from "@/utils/helper";
 
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { TimerProject, ProjectTreeItem, TimeSpan } from "@/types/work.types";
@@ -38,7 +38,11 @@ interface WorkStoreActions {
   ) => void;
   setActiveProjectId: (id: string | null) => void;
   addProject: (project: TablesInsert<"timer_project">) => Promise<boolean>;
-  addTimerSession: (session: TablesInsert<"timer_session">) => Promise<{
+  addTimerSession: (
+    session: TablesInsert<"timer_session">,
+    roundInTimeFragments: boolean,
+    timeFragmentInterval: number
+  ) => Promise<{
     createdSessions: Tables<"timer_session">[] | null;
     completeOverlap: boolean;
     overlappingSessions: Tables<"timer_session">[] | null;
@@ -267,7 +271,11 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         return true;
       },
 
-      async addTimerSession(session) {
+      async addTimerSession(
+        session,
+        roundInTimeFragments,
+        timeFragmentInterval
+      ) {
         const { updateStore, projects, timerSessions } = get();
 
         // Find project
@@ -284,9 +292,15 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           };
         }
 
+        let newSession: TablesInsert<"timer_session"> = { ...session };
+
+        if (roundInTimeFragments) {
+          newSession = getTimeFragmentSession(timeFragmentInterval, newSession);
+        }
+
         // Filter out existing sessions that overlap with the new session
         const { adjustedTimeSpans, overlappingSessions } =
-          resolveSessionOverlaps(project.sessions, session);
+          resolveSessionOverlaps(project.sessions, newSession);
 
         if (!adjustedTimeSpans) {
           return {

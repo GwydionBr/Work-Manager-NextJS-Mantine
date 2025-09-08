@@ -10,13 +10,10 @@ import {
 } from "@/stores/timeTrackerManagerStore";
 
 import { alpha, Box, Transition } from "@mantine/core";
-import { IconAlertCircle } from "@tabler/icons-react";
-import { notifications } from "@mantine/notifications";
 import TimeTrackerComponentBig from "./Big/TimeTrackerComponentBig";
 import TimeTrackerComponentSmall from "./Small/TimeTrackerComponentSmall";
 
 import { getTimeFragmentSession } from "@/utils/helper/getTimeFragmentSession";
-import { formatTimeSpan } from "@/utils/formatFunctions";
 
 import { TimerState } from "@/types/timeTracker.types";
 import { TablesInsert } from "@/types/db.types";
@@ -184,12 +181,9 @@ export default function TimeTrackerInstance({
       ...getCurrentSession(),
       memo: memo === "" ? null : memo,
     };
-    if (roundInTimeFragments) {
-      newSession = getTimeFragmentSession(timeFragmentInterval, newSession);
-    }
 
     const { createdSessions, overlappingSessions, completeOverlap } =
-      await addTimerSession(newSession);
+      await addTimerSession(newSession, roundInTimeFragments, timeFragmentInterval);
 
     SessionNotification({
       originalSession: newSession,

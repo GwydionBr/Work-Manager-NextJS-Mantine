@@ -25,6 +25,7 @@ import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
 import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
 import { formatDateTime } from "@/utils/formatFunctions";
 import AppointmentForm from "@/components/Appointments/AppointmentForm";
+import SessionNotification from "@/components/Work/Session/SessionNotification";
 
 interface CalendarGridProps {
   days: CalendarDay[];
@@ -172,12 +173,26 @@ export default function CalendarGrid({
       memo: values.memo || null,
     };
 
-    const success = await addTimerSession(newSession);
-    if (success) {
-      close();
-      setStartNewSession(null);
-      setNewSessionDay(null);
-    }
+    const { createdSessions, overlappingSessions, completeOverlap } =
+      await addTimerSession(
+        newSession,
+        roundInTimeFragments,
+        timeFragmentInterval
+      );
+
+    SessionNotification({
+      originalSession: newSession,
+      completeOverlap,
+      createdSessions,
+      overlappingSessions,
+      locale,
+      onCreatedSessions: () => {
+        close();
+        setStartNewSession(null);
+        setNewSessionDay(null);
+      },
+    });
+
     setSubmitting(false);
   }
 

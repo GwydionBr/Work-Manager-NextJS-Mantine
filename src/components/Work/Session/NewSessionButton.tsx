@@ -60,7 +60,11 @@ export default function NewSessionButton() {
     }
 
     const { createdSessions, overlappingSessions, completeOverlap } =
-      await addTimerSession(newSession);
+      await addTimerSession(
+        newSession,
+        roundInTimeFragments,
+        timeFragmentInterval
+      );
 
     SessionNotification({
       originalSession: newSession,
