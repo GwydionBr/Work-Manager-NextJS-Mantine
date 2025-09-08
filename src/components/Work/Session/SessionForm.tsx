@@ -94,6 +94,16 @@ export default function SessionForm({
     initialValues: {
       ...initialValues,
       project_id: initialValues.project_id || project?.id || undefined,
+      start_time: (() => {
+        const d = new Date(initialValues.start_time);
+        d.setSeconds(0, 0);
+        return d.toISOString();
+      })(),
+      end_time: (() => {
+        const d = new Date(initialValues.end_time);
+        d.setSeconds(0, 0);
+        return d.toISOString();
+      })(),
     },
     validate: zodResolver(schema),
   });
@@ -203,14 +213,13 @@ export default function SessionForm({
     form.setFieldValue("start_time", value);
 
     const startTime = new Date(value);
-    const endTime =
-      userChangedEndTime
-        ? new Date(form.values.end_time)
-        : new Date(
-            startTime.getTime() +
-              form.values.active_seconds * 1000 +
-              form.values.paused_seconds * 1000
-          );
+    const endTime = userChangedEndTime
+      ? new Date(form.values.end_time)
+      : new Date(
+          startTime.getTime() +
+            form.values.active_seconds * 1000 +
+            form.values.paused_seconds * 1000
+        );
     const totalSeconds = Math.floor(
       (endTime.getTime() - startTime.getTime()) / 1000
     );

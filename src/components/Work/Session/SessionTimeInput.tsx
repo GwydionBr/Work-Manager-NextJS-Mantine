@@ -9,6 +9,7 @@ import {
   Paper,
   Stack,
   Text,
+  Grid,
 } from "@mantine/core";
 
 interface TimeInputProps {
@@ -86,91 +87,71 @@ export default function TimeInput({
 
   return (
     <Paper p="md" withBorder>
-      <Stack gap="md">
-        <Group gap="xs">
-          {icon}
-          <Text size="sm" fw={600} c={color}>
-            {label}
-          </Text>
-        </Group>
-
-        <Collapse in={isOpen}>
-          <Group gap="lg" justify="center">
-            <Stack gap="xs" align="center">
-              <NumberInput
-                w={90}
-                allowNegative={false}
-                allowLeadingZeros={false}
-                allowDecimal={false}
-                min={0}
-                max={999}
-                placeholder="0"
-                label={locale === "de-DE" ? "Stunden" : "Hours"}
-                size="sm"
-                value={
-                  timeComponents.hours > 0 ? timeComponents.hours : undefined
-                }
-                onChange={handleHoursChange}
-              />
-            </Stack>
-
-            <Text size="xl" fw={700} c="dimmed" style={{ marginTop: "20px" }}>
-              :
+      <Grid align="center">
+        <Grid.Col span={4}>
+          <Group gap="xs" align="flex-start">
+            {icon}
+            <Text size="sm" fw={600} c={color}>
+              {label}
             </Text>
-
-            <Stack gap="xs" align="center">
-              <NumberInput
-                w={90}
-                allowNegative={false}
-                allowLeadingZeros={false}
-                allowDecimal={false}
-                min={0}
-                max={59}
-                placeholder="0"
-                label={locale === "de-DE" ? "Minuten" : "Minutes"}
-                size="sm"
-                value={
-                  timeComponents.minutes > 0
-                    ? timeComponents.minutes
-                    : undefined
-                }
-                onChange={handleMinutesChange}
-                data-autofocus={autoFocus}
-              />
-            </Stack>
-
-            <Text size="xl" fw={700} c="dimmed" style={{ marginTop: "20px" }}>
-              :
-            </Text>
-
-            <Stack gap="xs" align="center">
-              <NumberInput
-                w={90}
-                allowNegative={false}
-                allowLeadingZeros={false}
-                allowDecimal={false}
-                min={0}
-                max={59}
-                placeholder="0"
-                label={locale === "de-DE" ? "Sekunden" : "Seconds"}
-                size="sm"
-                value={
-                  timeComponents.seconds > 0
-                    ? timeComponents.seconds
-                    : undefined
-                }
-                onChange={handleSecondsChange}
-              />
-            </Stack>
           </Group>
-        </Collapse>
+        </Grid.Col>
+
+        <Grid.Col span={8}>
+          <Collapse in={isOpen}>
+            <Group gap="lg" justify="flex-start">
+              <Stack gap="xs" align="center">
+                <NumberInput
+                  w={90}
+                  allowNegative={false}
+                  allowLeadingZeros={false}
+                  allowDecimal={false}
+                  min={0}
+                  max={999}
+                  placeholder="0"
+                  label={locale === "de-DE" ? "Stunden" : "Hours"}
+                  size="sm"
+                  value={
+                    timeComponents.hours > 0 ? timeComponents.hours : undefined
+                  }
+                  onChange={handleHoursChange}
+                />
+              </Stack>
+
+              <Text size="xl" fw={700} c="dimmed" style={{ marginTop: "20px" }}>
+                :
+              </Text>
+
+              <Stack gap="xs" align="center">
+                <NumberInput
+                  w={90}
+                  allowNegative={false}
+                  allowLeadingZeros={false}
+                  allowDecimal={false}
+                  min={0}
+                  max={59}
+                  placeholder="0"
+                  label={locale === "de-DE" ? "Minuten" : "Minutes"}
+                  size="sm"
+                  value={
+                    timeComponents.minutes > 0
+                      ? timeComponents.minutes
+                      : undefined
+                  }
+                  onChange={handleMinutesChange}
+                  data-autofocus={autoFocus}
+                />
+              </Stack>
+            </Group>
+          </Collapse>
+        </Grid.Col>
 
         {error && (
           <Text size="xs" c="red" ta="center">
             {error}
           </Text>
         )}
-      </Stack>
+      </Grid>
     </Paper>
   );
 }
