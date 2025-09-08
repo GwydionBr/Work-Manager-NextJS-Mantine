@@ -10,6 +10,7 @@ import {
 } from "@/stores/timeTrackerManagerStore";
 
 import { alpha, Box, Transition } from "@mantine/core";
+import { IconAlertCircle } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 import TimeTrackerComponentBig from "./Big/TimeTrackerComponentBig";
 import TimeTrackerComponentSmall from "./Small/TimeTrackerComponentSmall";
@@ -198,6 +199,7 @@ export default function TimeTrackerInstance({
             ? "Timer Sitzung überschneided sich komplett mit bereits bestehenden Sitzungen und wurde daher nicht gespeichert."
             : "Timer session completely overlaps with another session and was not saved.",
         color: "red",
+        icon: <IconAlertCircle />,
         autoClose: false,
       });
       stopTimer();

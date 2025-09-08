@@ -1,30 +1,26 @@
 // __tests__/newFilterOutExistingSessionTimes.test.ts
 import { resolveSessionOverlaps } from "../src/utils/helper/resolveSessionOverlaps";
-import { TimeSpan } from "../src/types/work.types";
 import { Tables } from "../src/types/db.types";
 
-function makeSession(start: string, end: string): TimeSpan {
-  return {
-    start_time: new Date(`2023-01-01T${start}:00Z`).getTime(),
-    end_time: new Date(`2023-01-01T${end}:00Z`).getTime(),
-  };
-}
-
-function makeExistingSession(
+function makeSession(
   start: string,
   end: string,
   id: string = "1"
 ): Tables<"timer_session"> {
+  const startDate = new Date(`2023-01-01T${start}:00Z`);
+  const endDate = new Date(`2023-01-01T${end}:00Z`);
   return {
     id,
     user_id: "1",
     project_id: "1",
-    start_time: new Date(`2023-01-01T${start}:00Z`).toISOString(),
-    end_time: new Date(`2023-01-01T${end}:00Z`).toISOString(),
-    true_end_time: new Date(`2023-01-01T${end}:00Z`).toISOString(),
-    active_seconds: 0,
+    start_time: startDate.toISOString(),
+    end_time: endDate.toISOString(),
+    true_end_time: new Date(0).toISOString(),
+    active_seconds: Math.round(
+      (endDate.getTime() - startDate.getTime()) / 1000
+    ),
     paused_seconds: 0,
-    created_at: new Date().toISOString(),
+    created_at: new Date(0).toISOString(),
     currency: "USD",
     hourly_payment: false,
     memo: "Test Description",
@@ -47,7 +43,7 @@ describe("resolveSessionOverlaps", () => {
 
   it("cuts out a single overlap in the middle", () => {
     const newSession = makeSession("10:00", "11:00");
-    const existing = [makeExistingSession("10:20", "10:40")];
+    const existing = [makeSession("10:20", "10:40")];
 
     const result = resolveSessionOverlaps(existing, newSession);
 
@@ -60,8 +56,8 @@ describe("resolveSessionOverlaps", () => {
   it("splits into three parts with two overlaps", () => {
     const newSession = makeSession("10:00", "11:00");
     const existing = [
-      makeExistingSession("10:20", "10:30", "a"),
-      makeExistingSession("10:40", "10:50", "b"),
+      makeSession("10:20", "10:30", "a"),
+      makeSession("10:40", "10:50", "b"),
     ];
 
     const result = resolveSessionOverlaps(existing, newSession);
@@ -75,7 +71,28 @@ describe("resolveSessionOverlaps", () => {
 
   it("returns null if fully overlapped", () => {
     const newSession = makeSession("10:00", "11:00");
-    const existing = [makeExistingSession("09:00", "12:00")];
+    const existing = [makeSession("09:00", "12:00")];
+
+    const result = resolveSessionOverlaps(existing, newSession);
+
+    expect(result.adjustedTimeSpans).toBeNull();
+  });
+
+  it("returns null if several sessions overlap completey time", () => {
+    const newSession = makeSession("10:00", "11:00");
+    const existing = [
+      makeSession("10:00", "10:30"),
+      makeSession("10:30", "11:00"),
+    ];
+
+    const result = resolveSessionOverlaps(existing, newSession);
+
+    expect(result.adjustedTimeSpans).toBeNull();
+  });
+
+  it("returns null if exactly same time", () => {
+    const newSession = makeSession("10:00", "11:00");
+    const existing = [makeSession("10:00", "11:00")];
 
     const result = resolveSessionOverlaps(existing, newSession);
 
@@ -84,7 +101,7 @@ describe("resolveSessionOverlaps", () => {
 
   it("trims overlap at start", () => {
     const newSession = makeSession("10:00", "11:00");
-    const existing = [makeExistingSession("09:30", "10:15")];
+    const existing = [makeSession("09:30", "10:15")];
 
     const result = resolveSessionOverlaps(existing, newSession);
 
@@ -93,7 +110,7 @@ describe("resolveSessionOverlaps", () => {
 
   it("trims overlap at end", () => {
     const newSession = makeSession("10:00", "11:00");
-    const existing = [makeExistingSession("10:45", "11:30")];
+    const existing = [makeSession("10:45", "11:30")];
 
     const result = resolveSessionOverlaps(existing, newSession);
 

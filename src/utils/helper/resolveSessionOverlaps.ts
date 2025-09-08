@@ -70,7 +70,7 @@ export function resolveSessionOverlaps(
     if (!current.isNewSession && current.type === "end") activeExisting--;
 
     // Nur wenn die neue Session aktiv ist und KEINE bestehende Session läuft
-    if (activeNew && activeExisting === 0) {
+    if (activeNew && activeExisting === 0 && next.time > current.time) {
       adjustedTimeSpans.push({
         ...newSession,
         start_time: new Date(current.time).toISOString(),
