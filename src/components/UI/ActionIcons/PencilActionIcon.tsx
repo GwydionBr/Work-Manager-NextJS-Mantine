@@ -7,6 +7,7 @@ interface PencilActionIconProps extends ActionIconProps {
   iconSize?: number;
   iconColor?: string;
   tooltipLabel?: string;
+  filled?: boolean;
 }
 
 export default function PencilActionIcon({
@@ -14,12 +15,13 @@ export default function PencilActionIcon({
   iconSize,
   iconColor,
   tooltipLabel,
+  filled,
   ...props
 }: PencilActionIconProps) {
   return (
     <DelayedTooltip label={tooltipLabel}>
       <ActionIcon variant="transparent" onClick={onClick} size="md" {...props}>
-        <IconPencil size={iconSize} color={iconColor} />
+        <IconPencil size={iconSize} color={iconColor} fill={filled ? "currentColor" : "none"} />
       </ActionIcon>
     </DelayedTooltip>
   );
