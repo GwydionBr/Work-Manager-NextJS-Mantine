@@ -24,7 +24,7 @@ export default function SelectActionIcon({
       <ActionIcon
         onClick={onClick}
         size="md"
-        variant={selected ? "light" : "transparent"}
+        variant="transparent"
         color={selected ? "blue" : undefined}
         {...props}
       >

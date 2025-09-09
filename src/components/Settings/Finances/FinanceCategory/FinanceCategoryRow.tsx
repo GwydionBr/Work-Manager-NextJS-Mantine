@@ -37,7 +37,6 @@ export default function FinanceCategoryRow({
       p="md"
       shadow="md"
       w="100%"
-      maw={500}
       ref={ref}
     >
       <Group justify="flex-start">

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
@@ -8,9 +9,9 @@ import { Stack, Text, Skeleton, Group, Popover } from "@mantine/core";
 import FinanceCategoryRow from "./FinanceCategoryRow";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import FinanceCategoryForm from "@/components/Finances/Form/FinanceCategoryForm";
-import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import PencilActionIcon from "@/components/UI/ActionIcons/PencilActionIcon";
 import { useCallback, useMemo, useState } from "react";
+import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 
 export default function FinanceCategorySettings() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -25,6 +26,12 @@ export default function FinanceCategorySettings() {
   ] = useDisclosure(false);
   const [selectedModeActive, { toggle: toggleSelectedMode }] =
     useDisclosure(false);
+
+  useEffect(() => {
+    if (!selectedModeActive) {
+      setSelectedCategories([]);
+    }
+  }, [selectedModeActive]);
 
   const categoryIdList = useMemo(
     () => financeCategories.map((c) => c.id),
@@ -65,7 +72,10 @@ export default function FinanceCategorySettings() {
             returnFocus
           >
             <Popover.Target>
-              <PlusActionIcon onClick={openCategoryForm} />
+              <PlusActionIcon
+                onClick={openCategoryForm}
+                disabled={isFetching}
+              />
             </Popover.Target>
             <Popover.Dropdown>
               <FinanceCategoryForm onClose={closeCategoryForm} />
@@ -75,6 +85,7 @@ export default function FinanceCategorySettings() {
             {locale === "de-DE" ? "Alle Kategorien" : "All Categories"}
           </Text>
           <PencilActionIcon
+            disabled={isFetching || financeCategories.length === 0}
             tooltipLabel={
               locale === "de-DE"
                 ? "Aktiviere Mehrfachauswahl"
@@ -91,7 +102,17 @@ export default function FinanceCategorySettings() {
               : "No categories found"}
           </Text>
         ) : (
-          <Stack gap="xs" align="center" w="100%">
+          <Stack gap="xs" align="center" w="100%" maw={500}>
+            {selectedModeActive && (
+              <Group w="100%" justify="space-between">
+                <Text fz="sm" c="dimmed">
+                  {locale === "de-DE"
+                    ? "Kategorien auswählen"
+                    : "Select categories"}
+                </Text>
+                <DeleteActionIcon onClick={() => setSelectedCategories([])} />
+              </Group>
+            )}
             {!isFetching &&
               financeCategories.map((category, index) => (
                 <FinanceCategoryRow
