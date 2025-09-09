@@ -95,6 +95,7 @@ export default function TimeTrackerComponentSmall({
       w={50}
       align="center"
       justify="center"
+      pb="xs"
       gap="xs"
       bg={backgroundColor}
       style={{
@@ -192,7 +193,7 @@ export default function TimeTrackerComponentSmall({
             in={state === "running" || state === "paused"}
             transitionDuration={400}
           >
-            <Stack gap="xs" align="center" justify="center" pb="xs">
+            <Stack gap="xs" align="center" justify="center">
               <StopActionIcon stopTimer={submitTimer} disabled={isSubmitting} />
               <CancelActionIcon
                 cancelTimer={cancelTimer}

@@ -4,25 +4,28 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import { useCalendarStore } from "@/stores/calendarStore";
 
 import { Group, ActionIcon, Text, Kbd, Stack } from "@mantine/core";
-import { IconArrowsSort } from "@tabler/icons-react";
+import { IconArrowsSort, IconMinus, IconPlus } from "@tabler/icons-react";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import CalendarLegendButton from "./CalendarLegendButton";
-import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
-import Shortcut from "@/components/UI/Shortcut";
 
 import { VisibleProject } from "@/types/workCalendar.types";
+
+const zoomLabels = ["1 h", "30 min", "15 min", "10 min", "5 min"];
+
 
 interface CalendarLegendProps {
   visibleProjects: VisibleProject[];
   handleScrollToNow: () => void;
+  handleZoomChange: (oldIndex: number, newIndex: number) => void;
 }
 
 export default function CalendarLegend({
   visibleProjects,
   handleScrollToNow,
+  handleZoomChange,
 }: CalendarLegendProps) {
   const { locale } = useSettingsStore();
-  const { addingMode, setAddingMode } = useCalendarStore();
+  const {  zoomIndex, changeZoomIndex } = useCalendarStore();
 
   return (
     <Group
@@ -39,35 +42,46 @@ export default function CalendarLegend({
           "1px solid light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-1))",
       }}
     >
-      <PlusActionIcon
-        tooltipLabel={
-          addingMode ? (
-            locale === "de-DE" ? (
-              <Stack align="center">
-                <Text>Einfüge-Modus deaktivieren</Text>
-                <Shortcut keys={["Esc"]} />
-              </Stack>
-            ) : (
-              <Stack align="center">
-                <Text>Disable entry mode</Text>
-                <Shortcut keys={["Esc"]} />
-              </Stack>
-            )
-          ) : locale === "de-DE" ? (
-            <Stack align="center">
-              <Text>Einfüge-Modus aktivieren</Text>
-                <Shortcut keys={["mod", "Enter"]} />
-            </Stack>
-          ) : (
-            <Stack align="center">
-              <Text>Enable adding mode</Text>
-                <Shortcut keys={["mod", "Enter"]} />
-            </Stack>
-          )
-        }
-        variant={addingMode ? "filled" : "light"}
-        onClick={() => setAddingMode(!addingMode)}
-      />
+      <ActionIcon.Group>
+        <ActionIcon
+          variant="light"
+          color="red"
+          size="lg"
+          radius="md"
+          onClick={() => {
+            const currentZoomIndex = zoomIndex;
+            changeZoomIndex(-1);
+            handleZoomChange(currentZoomIndex, currentZoomIndex - 1);
+          }}
+          disabled={zoomIndex === 0}
+        >
+          <IconMinus color="var(--mantine-color-red-text)" />
+        </ActionIcon>
+        <ActionIcon.GroupSection
+          variant="default"
+          size="lg"
+          bg="var(--mantine-color-body)"
+          miw={85}
+          ta="center"
+          fw={600}
+        >
+          {zoomLabels[zoomIndex]}
+        </ActionIcon.GroupSection>
+        <ActionIcon
+          variant="light"
+          size="lg"
+          radius="md"
+          onClick={() => {
+            const currentZoomIndex = zoomIndex;
+            changeZoomIndex(1);
+            handleZoomChange(currentZoomIndex, currentZoomIndex + 1);
+          }}
+          disabled={zoomIndex === 4}
+        >
+          <IconPlus color="var(--mantine-color-teal-text)" />
+        </ActionIcon>
+      </ActionIcon.Group>
+      
       {visibleProjects.length > 0 ? (
         <Group justify="center" wrap="wrap" gap="xs" w="100%">
           {visibleProjects.map((p) => (
