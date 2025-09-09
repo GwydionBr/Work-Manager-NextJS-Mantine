@@ -10,9 +10,9 @@ import {
   Group,
   Loader,
   Center,
-  SegmentedControl,
   Stack,
   Text,
+  ActionIcon,
 } from "@mantine/core";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
@@ -20,15 +20,21 @@ import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
 import LocaleDatePickerInput from "@/components/UI/Locale/LocaleDatePickerInput";
 import Shortcut from "@/components/UI/Shortcut";
 import { DatePickerInput } from "@mantine/dates";
+import { IconMinus, IconPlus } from "@tabler/icons-react";
 
-import { ViewMode } from "@/types/workCalendar.types";
 import { addDays, differenceInCalendarDays, isSameDay } from "date-fns";
+
+const zoomLabels = ["1 h", "30 min", "15 min", "10 min", "5 min"];
 
 interface CalendarHeaderProps {
   referenceDate: Date;
+  handleZoomChange: (oldIndex: number, newIndex: number) => void;
 }
 
-export default function CalendarHeader({ referenceDate }: CalendarHeaderProps) {
+export default function CalendarHeader({
+  referenceDate,
+  handleZoomChange,
+}: CalendarHeaderProps) {
   const { locale } = useSettingsStore();
   const {
     isFetching,
@@ -41,6 +47,8 @@ export default function CalendarHeader({ referenceDate }: CalendarHeaderProps) {
     setCurrentDateRange,
     setReferenceDate,
     setViewMode,
+    zoomIndex,
+    changeZoomIndex,
   } = useCalendarStore();
   const today = dayjs();
 
@@ -224,20 +232,46 @@ export default function CalendarHeader({ referenceDate }: CalendarHeaderProps) {
         )}
       </Grid.Col>
       <Grid.Col span={3} pr="md">
-        <Group justify="flex-end" gap="xs" w="100%">
-          <SegmentedControl
-            color="teal"
-            ml="md"
-            value={viewMode}
-            onChange={(v) => setViewMode(v as ViewMode)}
-            data={[
-              { label: locale === "de-DE" ? "Tag" : "Day", value: "day" },
-              {
-                label: locale === "de-DE" ? "Woche" : "Week",
-                value: "week",
-              },
-            ]}
-          />
+        <Group justify="flex-end" pr="md">
+          <ActionIcon.Group>
+            <ActionIcon
+              variant="light"
+              color="red"
+              size="lg"
+              radius="md"
+              onClick={() => {
+                const currentZoomIndex = zoomIndex;
+                changeZoomIndex(-1);
+                handleZoomChange(currentZoomIndex, currentZoomIndex - 1);
+              }}
+              disabled={zoomIndex === 0}
+            >
+              <IconMinus color="var(--mantine-color-red-text)" />
+            </ActionIcon>
+            <ActionIcon.GroupSection
+              variant="default"
+              size="lg"
+              bg="var(--mantine-color-body)"
+              miw={85}
+              ta="center"
+              fw={600}
+            >
+              {zoomLabels[zoomIndex]}
+            </ActionIcon.GroupSection>
+            <ActionIcon
+              variant="light"
+              size="lg"
+              radius="md"
+              onClick={() => {
+                const currentZoomIndex = zoomIndex;
+                changeZoomIndex(1);
+                handleZoomChange(currentZoomIndex, currentZoomIndex + 1);
+              }}
+              disabled={zoomIndex === 4}
+            >
+              <IconPlus color="var(--mantine-color-teal-text)" />
+            </ActionIcon>
+          </ActionIcon.Group>
         </Group>
       </Grid.Col>
     </Grid>

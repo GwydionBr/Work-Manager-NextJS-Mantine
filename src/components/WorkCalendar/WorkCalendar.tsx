@@ -12,7 +12,7 @@ import CalendarLegend from "./Calendar/CalendarLegend";
 import CalendarHeader from "./Calendar/CalendarHeader";
 
 import { getStartOfDay } from "./calendarUtils";
-import { addDays, isSameDay, differenceInCalendarDays } from "date-fns";
+import { addDays, differenceInCalendarDays } from "date-fns";
 
 import {
   CalendarSession,
@@ -265,7 +265,10 @@ export default function WorkCalendar() {
       scrollbars="y"
     >
       <Stack>
-        <CalendarHeader referenceDate={referenceDate} />
+        <CalendarHeader
+          referenceDate={referenceDate}
+          handleZoomChange={handleZoomChange}
+        />
         <CalendarGrid
           visibleProjects={visibleProjects}
           handleNextAndPrev={handleNextAndPrev}
@@ -280,7 +283,6 @@ export default function WorkCalendar() {
       <CalendarLegend
         visibleProjects={visibleProjects}
         handleScrollToNow={handleScrollToNow}
-        handleZoomChange={handleZoomChange}
       />
       {selectedSession && (
         <EditSessionDrawer
