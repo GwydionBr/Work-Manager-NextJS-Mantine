@@ -5,7 +5,7 @@ import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Grid } from "@mantine/core";
 import SettingsNavbar from "@/components/Navbar/SettingsNavbar";
-import FinanceCategorySettings from "./FinanceCategorySettings";
+import FinanceCategorySettings from "./FinanceCategory/FinanceCategorySettings";
 import FinanceRuleSettings from "./FinanceRuleSettings";
 import FinanceDefaultSettings from "./FinanceDefaultSettings";
 
