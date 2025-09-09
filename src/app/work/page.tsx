@@ -175,6 +175,10 @@ export default function WorkPage() {
     );
   };
 
+  const selectableSessions = timeFilteredSessions.filter(
+    (session) => !session.payed
+  );
+
   const isPayoutAvailable = activeProject.project.hourly_payment
     ? timeFilteredSessions.reduce(
         (acc, session) =>
@@ -232,6 +236,7 @@ export default function WorkPage() {
           <Group justify="space-between" p="xs" pb={5}>
             <Group>
               <FilterActionIcon
+                disabled={timeFilteredSessions.length === 0}
                 onClick={handleFilterToggle}
                 tooltipLabel={locale === "de-DE" ? "Filter" : "Filter"}
                 activeFilter={
@@ -248,6 +253,7 @@ export default function WorkPage() {
             </Group>
             <NewSessFormModal button={<AddActionIcon onClick={() => {}} />} />
             <SelectActionIcon
+              disabled={selectableSessions.length === 0}
               onClick={toggleSelectedMode}
               tooltipLabel={
                 locale === "de-DE" ? "Auswahlmodus" : "Selected Mode"
