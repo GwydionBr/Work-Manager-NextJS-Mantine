@@ -5,20 +5,30 @@ import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Stack, Text, Skeleton, Group, Popover } from "@mantine/core";
+import {
+  Stack,
+  Text,
+  Skeleton,
+  Group,
+  Popover,
+  Collapse,
+  List,
+} from "@mantine/core";
 import FinanceCategoryRow from "./FinanceCategoryRow";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import FinanceCategoryForm from "@/components/Finances/Form/FinanceCategoryForm";
-import PencilActionIcon from "@/components/UI/ActionIcons/PencilActionIcon";
 import { useCallback, useMemo, useState } from "react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
+import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
+import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
 
 export default function FinanceCategorySettings() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
     null
   );
-  const { financeCategories, isFetching } = useFinanceStore();
+  const { financeCategories, isFetching, deleteFinanceCategories } =
+    useFinanceStore();
   const { locale } = useSettingsStore();
   const [
     isCategoryFormOpen,
@@ -26,7 +36,15 @@ export default function FinanceCategorySettings() {
   ] = useDisclosure(false);
   const [selectedModeActive, { toggle: toggleSelectedMode }] =
     useDisclosure(false);
-
+  const [
+    deleteModalOpened,
+    { open: openDeleteModal, close: closeDeleteModal },
+  ] = useDisclosure(false);
+  const [modalInformation, setModalInformation] = useState<{
+    title: string;
+    message: React.ReactNode;
+    onDelete: () => void;
+  } | null>(null);
   useEffect(() => {
     if (!selectedModeActive) {
       setSelectedCategories([]);
@@ -36,6 +54,75 @@ export default function FinanceCategorySettings() {
   const categoryIdList = useMemo(
     () => financeCategories.map((c) => c.id),
     [financeCategories]
+  );
+
+  const toggleAllCategories = useCallback(() => {
+    if (selectedCategories.length > 0) {
+      setSelectedCategories([]);
+    } else {
+      setSelectedCategories(financeCategories.map((c) => c.id));
+    }
+  }, [financeCategories, selectedCategories]);
+
+  const onDelete = useCallback(
+    (ids: string[]) => {
+      setModalInformation({
+        title: locale === "de-DE" ? "Kategorie löschen" : "Delete Category",
+        message:
+          locale === "de-DE" ? (
+            <Stack>
+              <Text>
+                Sind Sie sicher, dass Sie diese Kategorie
+                {ids.length > 1 ? "n" : ""} löschen möchten?
+              </Text>
+              <List>
+                {financeCategories
+                  .filter((category) => ids.includes(category.id))
+                  .map((category) => (
+                    <List.Item key={category.id}>
+                      <Stack gap={0}>
+                        <Text>{category.title}</Text>
+                        <Text fz="xs" c="dimmed">
+                          {category.description}
+                        </Text>
+                      </Stack>
+                    </List.Item>
+                  ))}
+              </List>
+            </Stack>
+          ) : (
+            <Stack>
+              <Text>
+                Are you sure you want to delete{" "}
+                {ids.length > 1 ? "these categories" : "this category"}?
+              </Text>
+              <List>
+                {financeCategories
+                  .filter((category) => ids.includes(category.id))
+                  .map((category) => (
+                    <List.Item key={category.id}>
+                      <Stack gap={0}>
+                        <Text>{category.title}</Text>
+                        <Text fz="xs" c="dimmed">
+                          {category.description}
+                        </Text>
+                      </Stack>
+                    </List.Item>
+                  ))}
+              </List>
+            </Stack>
+          ),
+        onDelete: async () => {
+          const deleted = await deleteFinanceCategories(ids);
+          if (deleted) {
+            setSelectedCategories([]);
+            closeDeleteModal();
+          }
+        },
+      });
+      openDeleteModal();
+    },
+    [financeCategories, locale, deleteFinanceCategories]
   );
 
   const toggleCategorySelection = useCallback(
@@ -84,7 +171,7 @@ export default function FinanceCategorySettings() {
           <Text fw={500} mb="md">
             {locale === "de-DE" ? "Alle Kategorien" : "All Categories"}
           </Text>
-          <PencilActionIcon
+          <SelectActionIcon
             disabled={isFetching || financeCategories.length === 0}
             tooltipLabel={
               locale === "de-DE"
@@ -103,16 +190,24 @@ export default function FinanceCategorySettings() {
           </Text>
         ) : (
           <Stack gap="xs" align="center" w="100%" maw={500}>
-            {selectedModeActive && (
+            <Collapse in={selectedModeActive} w="100%">
               <Group w="100%" justify="space-between">
-                <Text fz="sm" c="dimmed">
-                  {locale === "de-DE"
-                    ? "Kategorien auswählen"
-                    : "Select categories"}
-                </Text>
-                <DeleteActionIcon onClick={() => setSelectedCategories([])} />
+                <Group>
+                  <SelectActionIcon
+                    onClick={toggleAllCategories}
+                    selected={
+                      selectedCategories.length === financeCategories.length
+                    }
+                  />
+                  <Text fz="sm" c="dimmed">
+                    {locale === "de-DE" ? "Alle" : "All"}
+                  </Text>
+                </Group>
+                <DeleteActionIcon
+                  onClick={() => onDelete(selectedCategories)}
+                />
               </Group>
-            )}
+            </Collapse>
             {!isFetching &&
               financeCategories.map((category, index) => (
                 <FinanceCategoryRow
@@ -123,6 +218,7 @@ export default function FinanceCategorySettings() {
                   onToggleSelected={(e) =>
                     toggleCategorySelection(category.id, index, e.shiftKey)
                   }
+                  onDelete={onDelete}
                 />
               ))}
             {isFetching &&
@@ -132,6 +228,13 @@ export default function FinanceCategorySettings() {
           </Stack>
         )}
       </Stack>
+      <ConfirmDeleteModal
+        opened={deleteModalOpened}
+        onClose={closeDeleteModal}
+        onDelete={modalInformation?.onDelete || (() => {})}
+        title={modalInformation?.title || ""}
+        message={modalInformation?.message || ""}
+      />
     </Group>
   );
 }

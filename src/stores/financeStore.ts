@@ -46,7 +46,7 @@ interface FinanceStoreActions {
   updateFinanceCategory: (
     category: TablesUpdate<"finance_category">
   ) => Promise<Tables<"finance_category"> | null>;
-  deleteFinanceCategory: (id: string) => Promise<boolean>;
+  deleteFinanceCategories: (ids: string[]) => Promise<boolean>;
 }
 
 export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
@@ -315,16 +315,16 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
       return updatedCategory.data;
     },
 
-    async deleteFinanceCategory(id) {
+    async deleteFinanceCategories(ids) {
       const { financeCategories } = get();
 
-      const deleted = await actions.deleteFinanceCategory({
-        categoryId: id,
+      const deleted = await actions.deleteFinanceCategories({
+        categoryIds: ids,
       });
       if (!deleted.success) return false;
 
       const updatedFinanceCategories = financeCategories.filter(
-        (c) => c.id !== id
+        (c) => !ids.includes(c.id)
       );
 
       set({

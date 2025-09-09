@@ -3,16 +3,29 @@
 import { useHover, useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Card, Group, Stack, Text } from "@mantine/core";
+import {
+  Card,
+  Group,
+  Modal,
+  Popover,
+  Stack,
+  Text,
+  Transition,
+} from "@mantine/core";
 import { Tables } from "@/types/db.types";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import React from "react";
+import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
+import PencilActionIcon from "@/components/UI/ActionIcons/PencilActionIcon";
+import FinanceCategoryForm from "@/components/Finances/Form/FinanceCategoryForm";
+import { IconPencil } from "@tabler/icons-react";
 
 interface FinanceCategoryRowProps {
   category: Tables<"finance_category">;
   selectedModeActive: boolean;
   isSelected?: boolean;
   onToggleSelected?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onDelete: (ids: string[]) => void;
 }
 
 export default function FinanceCategoryRow({
@@ -20,9 +33,18 @@ export default function FinanceCategoryRow({
   selectedModeActive,
   isSelected,
   onToggleSelected,
+  onDelete,
 }: FinanceCategoryRowProps) {
   const { hovered, ref } = useHover();
   const { locale } = useSettingsStore();
+  const [
+    isCategoryFormOpen,
+    { open: openCategoryForm, close: closeCategoryForm },
+  ] = useDisclosure(false);
+
+  const onEdit = (id: string) => {
+    console.log(id);
+  };
 
   return (
     <Card
@@ -39,25 +61,75 @@ export default function FinanceCategoryRow({
       w="100%"
       ref={ref}
     >
-      <Group justify="flex-start">
-        {selectedModeActive && (
-          <SelectActionIcon
-            tooltipLabel={
-              locale === "de-DE" ? "Kategorie auswählen" : "Select category"
+      <Group justify="space-between" w="100%">
+        <Group justify="flex-start" wrap="nowrap">
+          <Transition
+            mounted={selectedModeActive}
+            transition="fade-right"
+            duration={200}
+            enterDelay={100}
+            exitDelay={100}
+          >
+            {(styles) => (
+              <SelectActionIcon
+                tooltipLabel={
+                  locale === "de-DE" ? "Kategorie auswählen" : "Select category"
+                }
+                onClick={onToggleSelected ?? (() => {})}
+                selected={isSelected}
+                style={styles}
+              />
+            )}
+          </Transition>
+          <Stack
+            gap="xs"
+            style={{ cursor: selectedModeActive ? "pointer" : "default" }}
+            onClick={
+              selectedModeActive
+                ? (e: React.MouseEvent<HTMLDivElement>) =>
+                    onToggleSelected?.(e as any)
+                : undefined
             }
-            onClick={onToggleSelected ?? (() => {})}
-            selected={isSelected}
-          />
-        )}
-        <Stack gap="xs">
-          <Text fz="sm" fw={500}>
-            {category.title}
-          </Text>
-          <Text fz="xs" c="dimmed">
-            {category.description}
-          </Text>
-        </Stack>
+          >
+            <Text fz="sm" fw={500}>
+              {category.title}
+            </Text>
+            <Text fz="xs" c="dimmed">
+              {category.description}
+            </Text>
+          </Stack>
+        </Group>
+        <Transition
+          mounted={!selectedModeActive && hovered}
+          transition="fade-left"
+          duration={200}
+          enterDelay={100}
+          exitDelay={100}
+        >
+          {(styles) => (
+            <Group style={styles}>
+              <PencilActionIcon onClick={openCategoryForm} />
+
+              <DeleteActionIcon onClick={() => onDelete([category.id])} />
+            </Group>
+          )}
+        </Transition>
       </Group>
+      <Modal
+        opened={isCategoryFormOpen}
+        onClose={closeCategoryForm}
+        title={
+          <Group>
+            <IconPencil />
+            <Text>
+              {locale === "de-DE" ? "Kategorie bearbeiten" : "Edit category"}
+            </Text>
+          </Group>
+        }
+        centered
+      >
+        <FinanceCategoryForm onClose={closeCategoryForm} category={category} />
+      </Modal>
     </Card>
   );
 }

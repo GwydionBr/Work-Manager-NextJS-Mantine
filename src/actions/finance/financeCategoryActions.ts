@@ -76,16 +76,16 @@ export async function updateFinanceCategory({
   return { success: true, data, error: null };
 }
 
-export async function deleteFinanceCategory({
-  categoryId,
+export async function deleteFinanceCategories({
+  categoryIds,
 }: {
-  categoryId: string;
+  categoryIds: string[];
 }): Promise<SimpleResponse> {
   const supabase = await createClient();
   const { error } = await supabase
     .from("finance_category")
     .delete()
-    .eq("id", categoryId);
+    .in("id", categoryIds);
 
   if (error) {
     return { success: false, data: null, error: error.message };

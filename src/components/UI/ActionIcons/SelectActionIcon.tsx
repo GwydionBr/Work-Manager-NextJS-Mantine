@@ -1,5 +1,9 @@
 import { ActionIcon, ActionIconProps } from "@mantine/core";
-import { IconSquareRounded, IconSquareRoundedCheck } from "@tabler/icons-react";
+import {
+  IconSquareRounded,
+  IconSquareRoundedCheck,
+  IconSquareRoundedCheckFilled,
+} from "@tabler/icons-react";
 import DelayedTooltip from "../DelayedTooltip";
 import React from "react";
 
@@ -9,6 +13,7 @@ interface SelectActionIconProps extends ActionIconProps {
   iconColor?: string;
   tooltipLabel?: string;
   selected?: boolean;
+  filled?: boolean;
 }
 
 export default function SelectActionIcon({
@@ -17,6 +22,7 @@ export default function SelectActionIcon({
   iconColor,
   tooltipLabel,
   selected,
+  filled,
   ...props
 }: SelectActionIconProps) {
   return (
@@ -28,7 +34,9 @@ export default function SelectActionIcon({
         color={selected ? "blue" : undefined}
         {...props}
       >
-        {selected ? (
+        {filled ? (
+          <IconSquareRoundedCheckFilled size={iconSize} color={iconColor} />
+        ) : selected ? (
           <IconSquareRoundedCheck size={iconSize} color={iconColor} />
         ) : (
           <IconSquareRounded size={iconSize} color={iconColor} />

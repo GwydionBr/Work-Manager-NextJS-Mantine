@@ -74,7 +74,7 @@ export {
   getAllFinanceCategories,
   createFinanceCategory,
   updateFinanceCategory,
-  deleteFinanceCategory,
+  deleteFinanceCategories,
 } from "./finance/financeCategoryActions";
 
 // Group Actions

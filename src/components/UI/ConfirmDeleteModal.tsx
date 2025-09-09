@@ -1,12 +1,14 @@
-import { Button, Group, Modal, Text } from "@mantine/core";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { Group, Modal, Text } from "@mantine/core";
+import { IconAlertHexagonFilled } from "@tabler/icons-react";
+import DeleteButton from "./Buttons/DeleteButton";
+import CancelButton from "./Buttons/CancelButton";
 
 interface ConfirmDeleteModalProps {
   opened: boolean;
   onClose: () => void;
   onDelete: () => void;
   title: string;
-  message: string;
+  message: string | React.ReactNode;
 }
 
 export default function ConfirmDeleteModal({
@@ -16,18 +18,22 @@ export default function ConfirmDeleteModal({
   title,
   message,
 }: ConfirmDeleteModalProps) {
-  const { locale } = useSettingsStore();
-
   return (
-    <Modal opened={opened} onClose={onClose} title={title} centered>
-      <Text>{message}</Text>
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      title={
+        <Group>
+          <IconAlertHexagonFilled size={25} color="red" />
+          <Text>{title}</Text>
+        </Group>
+      }
+      centered
+    >
+      {typeof message === "string" ? <Text>{message}</Text> : message}
       <Group mt="md" justify="flex-end" gap="sm">
-        <Button onClick={onClose} variant="outline">
-          {locale === "de-DE" ? "Abbrechen" : "Cancel"}
-        </Button>
-        <Button onClick={onDelete} color="red">
-          {locale === "de-DE" ? "Löschen" : "Delete"}
-        </Button>
+        <CancelButton onClick={onClose} color="teal" />
+        <DeleteButton onClick={onDelete} />
       </Group>
     </Modal>
   );
