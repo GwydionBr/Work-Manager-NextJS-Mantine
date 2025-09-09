@@ -23,6 +23,7 @@ interface SessionHierarchyProps {
   project?: Tables<"timer_project">;
   projects?: Tables<"timer_project">[];
   isOverview: boolean;
+  selectedModeActive: boolean;
 }
 
 export default function SessionHierarchy({
@@ -32,6 +33,7 @@ export default function SessionHierarchy({
   project,
   projects,
   isOverview,
+  selectedModeActive,
 }: SessionHierarchyProps) {
   const { locale } = useSettingsStore();
 
@@ -215,6 +217,9 @@ export default function SessionHierarchy({
                                               .reverse()
                                               .map((session) => (
                                                 <SessionRow
+                                                  selectedModeActive={
+                                                    selectedModeActive
+                                                  }
                                                   key={session.id}
                                                   session={session}
                                                   project={

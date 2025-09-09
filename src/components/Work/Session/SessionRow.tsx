@@ -34,6 +34,7 @@ interface SessionRowProps {
   isSelected?: boolean;
   onToggleSelection?: () => void;
   isOverview?: boolean;
+  selectedModeActive: boolean;
 }
 
 export default function SessionRow({
@@ -42,6 +43,7 @@ export default function SessionRow({
   isSelected,
   onToggleSelection,
   isOverview = false,
+  selectedModeActive,
 }: SessionRowProps) {
   const { locale } = useSettingsStore();
   const [deleteModalOpened, deleteModalHandler] = useDisclosure(false);
@@ -79,10 +81,7 @@ export default function SessionRow({
   const sessionPaid = isSessionPaid();
 
   // Only show checkbox for hourly payment projects and unpaid sessions
-  const showCheckbox =
-    (project?.hourly_payment || isOverview) &&
-    onToggleSelection &&
-    !sessionPaid;
+  const showCheckbox = selectedModeActive && onToggleSelection && !sessionPaid;
 
   return (
     <Box>
@@ -102,17 +101,36 @@ export default function SessionRow({
           opacity: sessionPaid ? 0.6 : 1,
           borderColor: sessionPaid ? "var(--mantine-color-green-4)" : undefined,
           borderWidth: isSelected ? "2px" : undefined,
+          cursor: showCheckbox ? "pointer" : "default",
+        }}
+        onClick={() => {
+          if (showCheckbox) {
+            onToggleSelection?.();
+          }
         }}
       >
         <Group justify="space-between">
           <Group gap="xl">
-            {showCheckbox && project?.hourly_payment && (
-              <SelectActionIcon
-                onClick={onToggleSelection}
-                selected={isSelected}
-              />
-            )}
-            <Stack gap="xs">
+            <Box w={0}>
+              <Transition
+                mounted={showCheckbox || false}
+                transition="fade-right"
+                duration={200}
+              >
+                {(styles) => (
+                  <SelectActionIcon
+                    style={styles}
+                    onClick={() => {}}
+                    selected={isSelected}
+                  />
+                )}
+              </Transition>
+            </Box>
+            <Stack
+              gap="xs"
+              ml={showCheckbox ? 40 : 0}
+              style={{ transition: "margin 0.2s ease" }}
+            >
               <Group>
                 <IconClock size={14} color="gray" />
                 <Text>
@@ -145,7 +163,7 @@ export default function SessionRow({
               </Group>
             </Stack>
             <Transition
-              mounted={hovered && !sessionPaid}
+              mounted={hovered && !sessionPaid && !selectedModeActive}
               transition="fade-left"
               duration={200}
               enterDelay={100}

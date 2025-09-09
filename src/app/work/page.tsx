@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useProjectFiltering } from "@/hooks/useProjectFiltering";
@@ -22,6 +22,7 @@ import { formatMoney } from "@/utils/formatFunctions";
 import { groupSessions } from "@/utils/sessionHelperFunctions";
 import NewHourlyPayoutCard from "@/components/Payout/NewHourlyPayoutCard";
 import NewProjectPayoutCard from "@/components/Payout/NewProjectPayoutCard";
+import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 
 export default function WorkPage() {
   const [oldActiveProjectId, setOldActiveProjectId] = useState<string | null>(
@@ -59,11 +60,31 @@ export default function WorkPage() {
     useDisclosure(false);
   const [payoutOpened, { open: openPayout, close: closePayout }] =
     useDisclosure(false);
+  const [
+    selectedModeActive,
+    {
+      open: activateSelectedMode,
+      close: deactivateSelectedMode,
+      toggle: toggleSelectedMode,
+    },
+  ] = useDisclosure(false);
   // Use the custom hook for filtering logic
   const { timeFilteredSessions } = useProjectFiltering(
     activeProject?.sessions ?? [],
     filterTimeSpan
   );
+
+  const toggleAllSessions = useCallback(() => {
+    if (selectedSessions.length > 0) {
+      setSelectedSessions([]);
+    } else {
+      setSelectedSessions(
+        timeFilteredSessions
+          .filter((session) => !session.payed)
+          .map((session) => session.id)
+      );
+    }
+  }, [selectedSessions.length, timeFilteredSessions]);
 
   useEffect(() => {
     if (oldActiveProjectId !== activeProjectId) {
@@ -71,6 +92,8 @@ export default function WorkPage() {
       closeFilter();
       closePayout();
       closeAnalysis();
+      deactivateSelectedMode();
+      setSelectedSessions([]);
       setOldActiveProjectId(activeProjectId);
     }
   }, [activeProjectId, oldActiveProjectId]);
@@ -195,7 +218,7 @@ export default function WorkPage() {
           w="100%"
           gap="xs"
         >
-          <Group justify="space-between" p="xs" pb={0}>
+          <Group justify="space-between" p="xs" pb={5}>
             <Group>
               <FilterActionIcon
                 onClick={handleFilterToggle}
@@ -211,7 +234,45 @@ export default function WorkPage() {
               />
             </Group>
             <NewSessionButton />
+            <SelectActionIcon
+              onClick={toggleSelectedMode}
+              tooltipLabel={
+                locale === "de-DE" ? "Auswahlmodus" : "Selected Mode"
+              }
+              size="md"
+              selected={selectedModeActive}
+            />
           </Group>
+          <Collapse in={selectedModeActive}>
+            <Stack align="flex-end">
+              <Text size="xs" c="dimmed">
+                {selectedSessions.length} /{" "}
+                {
+                  timeFilteredSessions.filter((session) => !session.payed)
+                    .length
+                }{" "}
+                {locale === "de-DE" ? "Sitzungen" : "Sessions"}
+              </Text>
+              <Group
+                onClick={toggleAllSessions}
+                style={{
+                  cursor: "pointer",
+                }}
+              >
+                <SelectActionIcon
+                  onClick={() => {}}
+                  selected={
+                    selectedSessions.length ===
+                    timeFilteredSessions.filter((session) => !session.payed)
+                      .length
+                  }
+                />
+                <Text fz="sm" c="dimmed">
+                  {locale === "de-DE" ? "Alle" : "All"}
+                </Text>
+              </Group>
+            </Stack>
+          </Collapse>
           <Collapse in={filterOpened}>
             <ProjectFilter
               timeSpan={filterTimeSpan}
@@ -236,6 +297,7 @@ export default function WorkPage() {
             {/* Session Hierarchy */}
             {timeFilteredSessions.length > 0 ? (
               <SessionHierarchy
+                selectedModeActive={selectedModeActive}
                 groupedSessions={groupSessions(timeFilteredSessions, locale)}
                 selectedSessions={selectedSessions}
                 onSessionToggle={handleSessionToggle}
