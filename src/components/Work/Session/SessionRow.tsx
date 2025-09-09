@@ -4,7 +4,15 @@ import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useDisclosure, useHover } from "@mantine/hooks";
 
-import { Card, Group, Stack, Text, Checkbox, Box } from "@mantine/core";
+import {
+  Card,
+  Group,
+  Stack,
+  Text,
+  Checkbox,
+  Box,
+  Transition,
+} from "@mantine/core";
 import { IconClock } from "@tabler/icons-react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
@@ -18,6 +26,7 @@ import {
 
 import type { Tables } from "@/types/db.types";
 import PencilActionIcon from "@/components/UI/ActionIcons/PencilActionIcon";
+import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 
 interface SessionRowProps {
   session: Tables<"timer_session">;
@@ -84,25 +93,25 @@ export default function SessionRow({
         mt="sm"
         radius={20}
         ref={ref}
+        bg={
+          isSelected
+            ? "light-dark(var(--mantine-color-blue-0), var(--mantine-color-dark-4))"
+            : "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
+        }
         style={{
           opacity: sessionPaid ? 0.6 : 1,
-          borderColor: sessionPaid
-            ? "var(--mantine-color-green-4)"
-            : isSelected
-              ? "var(--mantine-color-blue-4)"
-              : undefined,
+          borderColor: sessionPaid ? "var(--mantine-color-green-4)" : undefined,
           borderWidth: isSelected ? "2px" : undefined,
         }}
       >
         <Group justify="space-between">
           <Group gap="xl">
-            {/* {showCheckbox && project?.hourly_payment && (
-              <Checkbox
-                checked={isSelected}
-                onChange={onToggleSelection}
-                disabled={sessionPaid}
+            {showCheckbox && project?.hourly_payment && (
+              <SelectActionIcon
+                onClick={onToggleSelection}
+                selected={isSelected}
               />
-            )} */}
+            )}
             <Stack gap="xs">
               <Group>
                 <IconClock size={14} color="gray" />
@@ -135,22 +144,30 @@ export default function SessionRow({
                 </Text>
               </Group>
             </Stack>
-            {hovered && !sessionPaid && (
-              <Group>
-                <PencilActionIcon
-                  onClick={() => editDrawerHandler.open()}
-                  tooltipLabel={
-                    locale === "de-DE" ? "Sitzung bearbeiten" : "Edit session"
-                  }
-                />
-                <DeleteActionIcon
-                  onClick={() => deleteModalHandler.open()}
-                  tooltipLabel={
-                    locale === "de-DE" ? "Sitzung löschen" : "Delete session"
-                  }
-                />
-              </Group>
-            )}
+            <Transition
+              mounted={hovered && !sessionPaid}
+              transition="fade-left"
+              duration={200}
+              enterDelay={100}
+              exitDelay={100}
+            >
+              {(styles) => (
+                <Group style={styles}>
+                  <PencilActionIcon
+                    onClick={() => editDrawerHandler.open()}
+                    tooltipLabel={
+                      locale === "de-DE" ? "Sitzung bearbeiten" : "Edit session"
+                    }
+                  />
+                  <DeleteActionIcon
+                    onClick={() => deleteModalHandler.open()}
+                    tooltipLabel={
+                      locale === "de-DE" ? "Sitzung löschen" : "Delete session"
+                    }
+                  />
+                </Group>
+              )}
+            </Transition>
           </Group>
           <Group>
             {isOverview && project && (

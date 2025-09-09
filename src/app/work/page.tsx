@@ -196,19 +196,21 @@ export default function WorkPage() {
           gap="xs"
         >
           <Group justify="space-between" p="xs" pb={0}>
-            <FilterActionIcon
-              onClick={handleFilterToggle}
-              tooltipLabel={locale === "de-DE" ? "Filter" : "Filter"}
-              activeFilter={
-                filterTimeSpan[0] && filterTimeSpan[1] ? true : false
-              }
-            />
+            <Group>
+              <FilterActionIcon
+                onClick={handleFilterToggle}
+                tooltipLabel={locale === "de-DE" ? "Filter" : "Filter"}
+                activeFilter={
+                  filterTimeSpan[0] && filterTimeSpan[1] ? true : false
+                }
+              />
+              <PayoutActionIcon
+                onClick={handlePayoutToggle}
+                tooltipLabel={locale === "de-DE" ? "Auszahlung" : "Payout"}
+                disabled={!isPayoutAvailable}
+              />
+            </Group>
             <NewSessionButton />
-            <PayoutActionIcon
-              onClick={handlePayoutToggle}
-              tooltipLabel={locale === "de-DE" ? "Auszahlung" : "Payout"}
-              disabled={!isPayoutAvailable}
-            />
           </Group>
           <Collapse in={filterOpened}>
             <ProjectFilter
@@ -220,7 +222,7 @@ export default function WorkPage() {
             />
           </Collapse>
           <Collapse in={payoutOpened}>
-            <Group justify="flex-end">
+            <Group>
               {activeProject.project.hourly_payment ? (
                 <NewHourlyPayoutCard project={activeProject} />
               ) : (

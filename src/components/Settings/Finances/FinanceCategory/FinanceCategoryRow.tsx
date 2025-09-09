@@ -8,6 +8,7 @@ import {
   Group,
   Modal,
   Popover,
+  Box,
   Stack,
   Text,
   Transition,
@@ -60,36 +61,41 @@ export default function FinanceCategoryRow({
       shadow="md"
       w="100%"
       ref={ref}
+      style={{ cursor: selectedModeActive ? "pointer" : "default" }}
+      onClick={
+        selectedModeActive
+          ? (e: React.MouseEvent<HTMLDivElement>) =>
+              onToggleSelected?.(e as any)
+          : undefined
+      }
     >
       <Group justify="space-between" w="100%">
         <Group justify="flex-start" wrap="nowrap">
-          <Transition
-            mounted={selectedModeActive}
-            transition="fade-right"
-            duration={200}
-            enterDelay={100}
-            exitDelay={100}
-          >
-            {(styles) => (
-              <SelectActionIcon
-                tooltipLabel={
-                  locale === "de-DE" ? "Kategorie auswählen" : "Select category"
-                }
-                onClick={onToggleSelected ?? (() => {})}
-                selected={isSelected}
-                style={styles}
-              />
-            )}
-          </Transition>
+          <Box w={0}>
+            <Transition
+              mounted={selectedModeActive}
+              transition="fade-right"
+              duration={200}
+            >
+              {(styles) => (
+                <SelectActionIcon
+                  onClick={() => {}}
+                  tooltipLabel={
+                    locale === "de-DE"
+                      ? "Kategorie auswählen"
+                      : "Select category"
+                  }
+                  selected={isSelected}
+                  style={styles}
+                />
+              )}
+            </Transition>
+          </Box>
           <Stack
             gap="xs"
-            style={{ cursor: selectedModeActive ? "pointer" : "default" }}
-            onClick={
-              selectedModeActive
-                ? (e: React.MouseEvent<HTMLDivElement>) =>
-                    onToggleSelected?.(e as any)
-                : undefined
-            }
+            w="100%"
+            ml={selectedModeActive ? 40 : 0}
+            style={{ transition: "margin 0.2s ease" }}
           >
             <Text fz="sm" fw={500}>
               {category.title}

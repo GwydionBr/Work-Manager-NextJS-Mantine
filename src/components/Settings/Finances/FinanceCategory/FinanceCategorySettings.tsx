@@ -192,9 +192,12 @@ export default function FinanceCategorySettings() {
           <Stack gap="xs" align="center" w="100%" maw={500}>
             <Collapse in={selectedModeActive} w="100%">
               <Group w="100%" justify="space-between">
-                <Group>
+                <Group
+                  onClick={toggleAllCategories}
+                  style={{ cursor: "pointer" }}
+                >
                   <SelectActionIcon
-                    onClick={toggleAllCategories}
+                    onClick={() => {}}
                     selected={
                       selectedCategories.length === financeCategories.length
                     }
@@ -204,6 +207,7 @@ export default function FinanceCategorySettings() {
                   </Text>
                 </Group>
                 <DeleteActionIcon
+                  disabled={selectedCategories.length === 0}
                   onClick={() => onDelete(selectedCategories)}
                 />
               </Group>
