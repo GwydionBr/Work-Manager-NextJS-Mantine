@@ -3,6 +3,7 @@ import {
   IconSquareRounded,
   IconSquareRoundedCheck,
   IconSquareRoundedCheckFilled,
+  IconSquareRoundedMinusFilled,
 } from "@tabler/icons-react";
 import DelayedTooltip from "../DelayedTooltip";
 import React from "react";
@@ -14,6 +15,7 @@ interface SelectActionIconProps extends ActionIconProps {
   tooltipLabel?: string;
   selected?: boolean;
   filled?: boolean;
+  partiallySelected?: boolean;
 }
 
 export default function SelectActionIcon({
@@ -23,6 +25,7 @@ export default function SelectActionIcon({
   tooltipLabel,
   selected,
   filled,
+  partiallySelected,
   ...props
 }: SelectActionIconProps) {
   return (
@@ -38,6 +41,8 @@ export default function SelectActionIcon({
           <IconSquareRoundedCheckFilled size={iconSize} color={iconColor} />
         ) : selected ? (
           <IconSquareRoundedCheck size={iconSize} color={iconColor} />
+        ) : partiallySelected ? (
+          <IconSquareRoundedMinusFilled size={iconSize} color={iconColor} />
         ) : (
           <IconSquareRounded size={iconSize} color={iconColor} />
         )}

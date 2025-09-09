@@ -179,6 +179,7 @@ export default function FinanceCategorySettings() {
                 : "Activate bulk select"
             }
             filled={selectedModeActive}
+            selected={selectedModeActive}
             onClick={toggleSelectedMode}
           />
         </Group>
@@ -200,6 +201,10 @@ export default function FinanceCategorySettings() {
                     onClick={() => {}}
                     selected={
                       selectedCategories.length === financeCategories.length
+                    }
+                    partiallySelected={
+                      selectedCategories.length > 0 &&
+                      selectedCategories.length < financeCategories.length
                     }
                   />
                   <Text fz="sm" c="dimmed">

@@ -6,7 +6,7 @@ import { useWorkStore } from "@/stores/workManagerStore";
 import { useProjectFiltering } from "@/hooks/useProjectFiltering";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Box, Collapse, Group, Loader, Stack, Text } from "@mantine/core";
+import { Box, Collapse, Divider, Group, Loader, Stack, Text } from "@mantine/core";
 import NewSessionButton from "@/components/Work/Session/NewSessionButton";
 import EditProjectDrawer from "@/components/Work/Project/EditProjectDrawer";
 import Header from "@/components/Header/Header";
@@ -241,18 +241,11 @@ export default function WorkPage() {
               }
               size="md"
               selected={selectedModeActive}
+              filled={selectedModeActive}
             />
           </Group>
           <Collapse in={selectedModeActive}>
-            <Stack align="flex-end">
-              <Text size="xs" c="dimmed">
-                {selectedSessions.length} /{" "}
-                {
-                  timeFilteredSessions.filter((session) => !session.payed)
-                    .length
-                }{" "}
-                {locale === "de-DE" ? "Sitzungen" : "Sessions"}
-              </Text>
+            <Group justify="flex-end" pb="xs">
               <Group
                 onClick={toggleAllSessions}
                 style={{
@@ -266,12 +259,28 @@ export default function WorkPage() {
                     timeFilteredSessions.filter((session) => !session.payed)
                       .length
                   }
+                  partiallySelected={
+                    selectedSessions.length > 0 &&
+                    selectedSessions.length <
+                      timeFilteredSessions.filter((session) => !session.payed)
+                        .length
+                  }
                 />
+
                 <Text fz="sm" c="dimmed">
                   {locale === "de-DE" ? "Alle" : "All"}
                 </Text>
               </Group>
-            </Stack>
+              <Divider orientation="vertical" />
+              <Text size="xs" c="dimmed">
+                {selectedSessions.length} /{" "}
+                {
+                  timeFilteredSessions.filter((session) => !session.payed)
+                    .length
+                }{" "}
+                {locale === "de-DE" ? "Sitzungen" : "Sessions"}
+              </Text>
+            </Group>
           </Collapse>
           <Collapse in={filterOpened}>
             <ProjectFilter
