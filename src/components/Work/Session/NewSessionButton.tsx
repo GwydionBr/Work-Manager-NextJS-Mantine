@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Box, Modal } from "@mantine/core";
+import { Box, Modal, Group, Text } from "@mantine/core";
 import SessionForm from "@/components/Work/Session/SessionForm";
 import AddActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 
@@ -16,6 +15,7 @@ import { formatTimeSpan } from "@/utils/formatFunctions";
 import { TablesInsert } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
 import SessionNotification from "./SessionNotification";
+import { IconClockPlus } from "@tabler/icons-react";
 
 export default function NewSessionButton() {
   const { locale, roundInTimeFragments, timeFragmentInterval } =
@@ -85,7 +85,14 @@ export default function NewSessionButton() {
       <Modal
         opened={opened}
         onClose={close}
-        title={locale === "de-DE" ? "Sitzung hinzufügen" : "Add Session"}
+        title={
+          <Group>
+            <IconClockPlus />
+            <Text>
+              {locale === "de-DE" ? "Sitzung hinzufügen" : "Add Session"}
+            </Text>
+          </Group>
+        }
         size="lg"
         padding="md"
       >

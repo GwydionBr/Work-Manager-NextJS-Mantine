@@ -5,8 +5,16 @@ import { useForm } from "@mantine/form";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { NumberInput, Select, Stack, Textarea } from "@mantine/core";
-import { IconPlayerPlay, IconPlayerPause } from "@tabler/icons-react";
+import {
+  NumberInput,
+  Select,
+  Stack,
+  Textarea,
+  Group,
+  Button,
+  Text,
+} from "@mantine/core";
+import { IconPlayerPlay, IconPlayerPause, IconPlus } from "@tabler/icons-react";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { currencies } from "@/constants/settings";
@@ -33,20 +41,26 @@ interface NewSession {
 
 interface SessionFormProps {
   initialValues: NewSession;
-  onSubmit: (values: NewSession) => void;
-  onCancel: () => void;
   newSession: boolean;
   project?: Tables<"timer_project">;
   submitting?: boolean;
+  projectId?: string;
+  onProjectChange?: (value: string | null) => void;
+  onSubmit: (values: NewSession) => void;
+  onCancel: () => void;
+  onOpenProjectForm?: () => void;
 }
 
 export default function SessionForm({
   initialValues,
-  onSubmit,
-  onCancel,
   newSession,
   project,
   submitting,
+  onSubmit,
+  onCancel,
+  onOpenProjectForm,
+  projectId,
+  onProjectChange,
 }: SessionFormProps) {
   const { locale } = useSettingsStore();
   const { projects: timerProjects } = useWorkStore();
@@ -93,7 +107,8 @@ export default function SessionForm({
   const form = useForm<NewSession>({
     initialValues: {
       ...initialValues,
-      project_id: initialValues.project_id || project?.id || undefined,
+      project_id:
+        initialValues.project_id || projectId || project?.id || undefined,
       start_time: (() => {
         const d = new Date(initialValues.start_time);
         d.setSeconds(0, 0);
@@ -125,6 +140,13 @@ export default function SessionForm({
       setShowPaymentFields(project.hourly_payment);
     }
   }, [project]);
+
+  // Update project_id when projectId prop changes
+  useEffect(() => {
+    if (projectId && projectId !== form.values.project_id) {
+      form.setFieldValue("project_id", projectId);
+    }
+  }, [projectId, form]);
 
   const projects = useMemo(() => {
     return (
@@ -245,6 +267,9 @@ export default function SessionForm({
 
   function handleProjectChange(value: string | null) {
     if (!value) return;
+    if (onProjectChange) {
+      onProjectChange(value);
+    }
     const project = timerProjects.find((p) => p.project.id === value);
     if (project) {
       form.setFieldValue("project_id", value);
@@ -258,18 +283,30 @@ export default function SessionForm({
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
       <Stack gap="lg">
-        <Select
-          allowDeselect={false}
-          label={locale === "de-DE" ? "Projekt" : "Project"}
-          value={form.values.project_id}
-          error={form.errors.project_id}
-          placeholder={
-            locale === "de-DE" ? "Projekt auswählen" : "Select project"
-          }
-          data={projects}
-          searchable
-          onChange={handleProjectChange}
-        />
+        <Stack gap={0}>
+          <Group justify="flex-end">
+            <Button onClick={onOpenProjectForm} fw={500} variant="subtle">
+              <Group gap={4} p={0} m={0}>
+                <IconPlus size={14} />
+                <Text fz="xs" c="dimmed">
+                  {locale === "de-DE" ? "Neues Projekt" : "Add Project"}
+                </Text>
+              </Group>
+            </Button>
+          </Group>
+          <Select
+            allowDeselect={false}
+            label={locale === "de-DE" ? "Projekt" : "Project"}
+            value={form.values.project_id}
+            error={form.errors.project_id}
+            placeholder={
+              locale === "de-DE" ? "Projekt auswählen" : "Select project"
+            }
+            data={projects}
+            searchable
+            onChange={handleProjectChange}
+          />
+        </Stack>
         <TimeInput
           label={locale === "de-DE" ? "Aktive Zeit" : "Active Time"}
           value={form.values.active_seconds}

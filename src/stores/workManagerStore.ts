@@ -37,7 +37,9 @@ interface WorkStoreActions {
     updatedSessions: Tables<"timer_session">[]
   ) => void;
   setActiveProjectId: (id: string | null) => void;
-  addProject: (project: TablesInsert<"timer_project">) => Promise<boolean>;
+  addProject: (
+    project: TablesInsert<"timer_project">
+  ) => Promise<{ createdProject: Tables<"timer_project"> | null }>;
   addTimerSession: (
     session: TablesInsert<"timer_session">,
     roundInTimeFragments: boolean,
@@ -244,7 +246,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
 
         const newProject = await actions.createProject({ project });
         if (!newProject.success) {
-          return false;
+          return { createdProject: null };
         }
 
         const updatedProjects = [
@@ -268,7 +270,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           activeProjectId: newProject.data.id,
         });
         handleChangedNodes(changedNodes);
-        return true;
+        return { createdProject: newProject.data };
       },
 
       async addTimerSession(
@@ -420,7 +422,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           endCurrency,
         });
         if (!payoutResult.success) {
-          console.log("Error: ",payoutResult.error);
+          console.log("Error: ", payoutResult.error);
           return payoutResult;
         }
 

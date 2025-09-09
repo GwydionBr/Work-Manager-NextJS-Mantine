@@ -32,6 +32,8 @@ import { groupSessions } from "@/utils/sessionHelperFunctions";
 import NewHourlyPayoutCard from "@/components/Payout/NewHourlyPayoutCard";
 import NewProjectPayoutCard from "@/components/Payout/NewProjectPayoutCard";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
+import NewSessFormModal from "@/components/Work/Session/SessionFormModal";
+import AddActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 
 export default function WorkPage() {
   const [oldActiveProjectId, setOldActiveProjectId] = useState<string | null>(
@@ -244,7 +246,7 @@ export default function WorkPage() {
                 opened={payoutOpened}
               />
             </Group>
-            <NewSessionButton />
+            <NewSessFormModal button={<AddActionIcon onClick={() => {}} />} />
             <SelectActionIcon
               onClick={toggleSelectedMode}
               tooltipLabel={
