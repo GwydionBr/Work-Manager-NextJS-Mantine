@@ -7,6 +7,7 @@ interface PayoutActionIconProps extends ActionIconProps {
   iconSize?: number;
   iconColor?: string;
   tooltipLabel?: string;
+  opened?: boolean;
 }
 
 export default function PayoutActionIcon({
@@ -14,12 +15,23 @@ export default function PayoutActionIcon({
   iconSize,
   iconColor,
   tooltipLabel,
+  opened,
   ...props
 }: PayoutActionIconProps) {
   return (
     <DelayedTooltip label={tooltipLabel}>
-      <ActionIcon variant="transparent" onClick={onClick} size="md" {...props}>
-        <IconBrandCashapp size={iconSize} color={iconColor} />
+      <ActionIcon
+        variant="transparent"
+        onClick={onClick}
+        size="md"
+        color={opened ? "blue" : undefined}
+        {...props}
+      >
+        <IconBrandCashapp
+          size={iconSize}
+          color={iconColor}
+          fill={opened ? "currentColor" : "none"}
+        />
       </ActionIcon>
     </DelayedTooltip>
   );

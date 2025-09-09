@@ -1,12 +1,21 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useProjectFiltering } from "@/hooks/useProjectFiltering";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Box, Collapse, Divider, Group, Loader, Stack, Text } from "@mantine/core";
+import {
+  Box,
+  Collapse,
+  Divider,
+  Group,
+  Loader,
+  Stack,
+  Text,
+  Grid,
+} from "@mantine/core";
 import NewSessionButton from "@/components/Work/Session/NewSessionButton";
 import EditProjectDrawer from "@/components/Work/Project/EditProjectDrawer";
 import Header from "@/components/Header/Header";
@@ -226,11 +235,13 @@ export default function WorkPage() {
                 activeFilter={
                   filterTimeSpan[0] && filterTimeSpan[1] ? true : false
                 }
+                opened={filterOpened}
               />
               <PayoutActionIcon
                 onClick={handlePayoutToggle}
                 tooltipLabel={locale === "de-DE" ? "Auszahlung" : "Payout"}
                 disabled={!isPayoutAvailable}
+                opened={payoutOpened}
               />
             </Group>
             <NewSessionButton />
@@ -244,62 +255,69 @@ export default function WorkPage() {
               filled={selectedModeActive}
             />
           </Group>
-          <Collapse in={selectedModeActive}>
-            <Group justify="flex-end" pb="xs">
-              <Group
-                onClick={toggleAllSessions}
-                style={{
-                  cursor: "pointer",
-                }}
-              >
-                <SelectActionIcon
-                  onClick={() => {}}
-                  selected={
-                    selectedSessions.length ===
-                    timeFilteredSessions.filter((session) => !session.payed)
-                      .length
-                  }
-                  partiallySelected={
-                    selectedSessions.length > 0 &&
-                    selectedSessions.length <
+          <Grid>
+            <Grid.Col span={6}>
+              <Collapse in={filterOpened}>
+                <ProjectFilter
+                  timeSpan={filterTimeSpan}
+                  onTimeSpanChange={setFilterTimeSpan}
+                  sessions={timeFilteredSessions}
+                  project={activeProject.project}
+                  openPayout={handlePayoutToggle}
+                />
+              </Collapse>
+              <Collapse in={payoutOpened}>
+                <Group>
+                  {activeProject.project.hourly_payment ? (
+                    <NewHourlyPayoutCard project={activeProject} />
+                  ) : (
+                    <NewProjectPayoutCard project={activeProject.project} />
+                  )}
+                </Group>
+              </Collapse>
+            </Grid.Col>
+            <Grid.Col span={6}>
+              <Collapse in={selectedModeActive}>
+                <Group justify="flex-end" pb="xs">
+                  <Group
+                    onClick={toggleAllSessions}
+                    style={{
+                      cursor: "pointer",
+                    }}
+                  >
+                    <SelectActionIcon
+                      onClick={() => {}}
+                      selected={
+                        selectedSessions.length ===
+                        timeFilteredSessions.filter((session) => !session.payed)
+                          .length
+                      }
+                      partiallySelected={
+                        selectedSessions.length > 0 &&
+                        selectedSessions.length <
+                          timeFilteredSessions.filter(
+                            (session) => !session.payed
+                          ).length
+                      }
+                    />
+
+                    <Text fz="sm" c="dimmed">
+                      {locale === "de-DE" ? "Alle" : "All"}
+                    </Text>
+                  </Group>
+                  <Divider orientation="vertical" />
+                  <Text size="xs" c="dimmed">
+                    {selectedSessions.length} /{" "}
+                    {
                       timeFilteredSessions.filter((session) => !session.payed)
                         .length
-                  }
-                />
-
-                <Text fz="sm" c="dimmed">
-                  {locale === "de-DE" ? "Alle" : "All"}
-                </Text>
-              </Group>
-              <Divider orientation="vertical" />
-              <Text size="xs" c="dimmed">
-                {selectedSessions.length} /{" "}
-                {
-                  timeFilteredSessions.filter((session) => !session.payed)
-                    .length
-                }{" "}
-                {locale === "de-DE" ? "Sitzungen" : "Sessions"}
-              </Text>
-            </Group>
-          </Collapse>
-          <Collapse in={filterOpened}>
-            <ProjectFilter
-              timeSpan={filterTimeSpan}
-              onTimeSpanChange={setFilterTimeSpan}
-              sessions={timeFilteredSessions}
-              project={activeProject.project}
-              openPayout={handlePayoutToggle}
-            />
-          </Collapse>
-          <Collapse in={payoutOpened}>
-            <Group>
-              {activeProject.project.hourly_payment ? (
-                <NewHourlyPayoutCard project={activeProject} />
-              ) : (
-                <NewProjectPayoutCard project={activeProject.project} />
-              )}
-            </Group>
-          </Collapse>
+                    }{" "}
+                    {locale === "de-DE" ? "Sitzungen" : "Sessions"}
+                  </Text>
+                </Group>
+              </Collapse>
+            </Grid.Col>
+          </Grid>
         </Stack>
         {activeProject?.sessions.length > 0 ? (
           <Box w="100%">
