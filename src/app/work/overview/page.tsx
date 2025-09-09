@@ -131,6 +131,7 @@ export default function WorkOverviewPage() {
               onSessionToggle={handleSessionToggle}
               projects={projects}
               isOverview={true}
+              selectedModeActive={false}
             />
           ) : (
             <Text size="lg" c="gray" ta="center">
