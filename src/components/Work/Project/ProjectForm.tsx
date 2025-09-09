@@ -1,6 +1,7 @@
 "use client";
 
 import { useForm } from "@mantine/form";
+
 import { useEffect, useState } from "react";
 import { useDisclosure, useClickOutside } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
@@ -19,6 +20,7 @@ import {
   Popover,
   Button,
   Fieldset,
+  Text,
 } from "@mantine/core";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
@@ -27,7 +29,9 @@ import CancelButton from "@/components/UI/Buttons/CancelButton";
 import UpdateButton from "@/components/UI/Buttons/UpdateButton";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
 import ProjectColorPicker from "@/components/UI/ProjectColorPicker";
-import { IconPalette } from "@tabler/icons-react";
+import { IconPalette, IconPlus } from "@tabler/icons-react";
+import FinanceCategoryForm from "@/components/Finances/Form/FinanceCategoryForm";
+import { Tables } from "@/types/db.types";
 
 interface ProjectFormProps {
   initialValues: {
@@ -64,6 +68,10 @@ export default function ProjectForm({
 }: ProjectFormProps) {
   const { locale } = useSettingsStore();
   const [isColorPickerOpen, { open, close }] = useDisclosure(false);
+  const [
+    isCategoryFormOpen,
+    { open: openCategoryForm, close: closeCategoryForm },
+  ] = useDisclosure(false);
   const ref = useClickOutside(() => {
     close();
   });
@@ -117,6 +125,10 @@ export default function ProjectForm({
         [field]: value,
       }));
     }
+  };
+
+  const handleAddCategory = (category: Tables<"finance_category">) => {
+    form.setFieldValue("cash_flow_category_id", category.id);
   };
 
   const categoryOptions = financeCategories.map((category) => ({
@@ -256,24 +268,60 @@ export default function ProjectForm({
                 />
               </Popover.Dropdown>
             </Popover>
-
-            <Select
-              label={locale === "de-DE" ? "Kategorie" : "Category"}
-              placeholder={
-                locale === "de-DE"
-                  ? "Kategorie auswählen (optional)"
-                  : "Select category (optional)"
-              }
-              data={categoryOptions}
-              clearable
-              searchable
-              nothingFoundMessage={
-                locale === "de-DE"
-                  ? "Keine Kategorien gefunden"
-                  : "No categories found"
-              }
-              {...form.getInputProps("cash_flow_category_id")}
-            />
+            <Stack gap={0}>
+              <Group justify="flex-end">
+                <Popover
+                  opened={isCategoryFormOpen}
+                  onClose={closeCategoryForm}
+                  onOpen={openCategoryForm}
+                  closeOnClickOutside
+                  trapFocus
+                  returnFocus
+                  withOverlay
+                >
+                  <Popover.Target>
+                    <Button
+                      onClick={openCategoryForm}
+                      fw={500}
+                      variant="subtle"
+                    >
+                      <Group gap={4} p={0} m={0}>
+                        <IconPlus size={14} />
+                        <Text fz="xs" c="dimmed">
+                          {locale === "de-DE"
+                            ? "Neue Kategorie"
+                            : "Add Category"}
+                        </Text>
+                      </Group>
+                    </Button>
+                  </Popover.Target>
+                  <Popover.Dropdown>
+                    <FinanceCategoryForm
+                      onClose={closeCategoryForm}
+                      category={null}
+                      onSuccess={handleAddCategory}
+                    />
+                  </Popover.Dropdown>
+                </Popover>
+              </Group>
+              <Select
+                label={locale === "de-DE" ? "Kategorie" : "Category"}
+                placeholder={
+                  locale === "de-DE"
+                    ? "Kategorie auswählen (optional)"
+                    : "Select category (optional)"
+                }
+                data={categoryOptions}
+                clearable
+                searchable
+                nothingFoundMessage={
+                  locale === "de-DE"
+                    ? "Keine Kategorien gefunden"
+                    : "No categories found"
+                }
+                {...form.getInputProps("cash_flow_category_id")}
+              />
+            </Stack>
           </Group>
         </Fieldset>
         {newProject ? (

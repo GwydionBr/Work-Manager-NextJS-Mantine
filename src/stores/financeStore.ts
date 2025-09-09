@@ -42,10 +42,10 @@ interface FinanceStoreActions {
   deleteRecurringCashFlow: (id: string) => Promise<boolean>;
   addFinanceCategory: (
     category: TablesInsert<"finance_category">
-  ) => Promise<boolean>;
+  ) => Promise<Tables<"finance_category"> | null>;
   updateFinanceCategory: (
     category: TablesUpdate<"finance_category">
-  ) => Promise<boolean>;
+  ) => Promise<Tables<"finance_category"> | null>;
   deleteFinanceCategory: (id: string) => Promise<boolean>;
 }
 
@@ -286,7 +286,7 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
       const newCategory = await actions.createFinanceCategory({
         category,
       });
-      if (!newCategory.success) return false;
+      if (!newCategory.success) return null;
 
       const newFinanceCategories = [...financeCategories, newCategory.data];
 
@@ -294,7 +294,7 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
         financeCategories: newFinanceCategories,
       });
 
-      return true;
+      return newCategory.data;
     },
 
     async updateFinanceCategory(category) {
@@ -303,7 +303,7 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
       const updatedCategory = await actions.updateFinanceCategory({
         category,
       });
-      if (!updatedCategory.success) return false;
+      if (!updatedCategory.success) return null;
 
       const updatedFinanceCategories = financeCategories.map((c) =>
         c.id === category.id ? updatedCategory.data : c
@@ -312,7 +312,7 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
       set({
         financeCategories: updatedFinanceCategories,
       });
-      return true;
+      return updatedCategory.data;
     },
 
     async deleteFinanceCategory(id) {

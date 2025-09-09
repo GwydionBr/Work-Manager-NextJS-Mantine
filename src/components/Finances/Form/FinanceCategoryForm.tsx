@@ -4,13 +4,16 @@ import { useForm } from "@mantine/form";
 import { useState } from "react";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { notifications } from "@mantine/notifications";
 
-import { TextInput, Stack, Alert, Textarea } from "@mantine/core";
+import { TextInput, Stack, Textarea } from "@mantine/core";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
 import UpdateButton from "@/components/UI/Buttons/UpdateButton";
+import { Tables } from "@/types/db.types";
+import { IconCheck, IconX } from "@tabler/icons-react";
 
 const schema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters"),
@@ -19,6 +22,7 @@ const schema = z.object({
 
 interface FinanceCategoryFormProps {
   onClose: () => void;
+  onSuccess?: (category: Tables<"finance_category">) => void;
   category?: {
     id: string;
     title: string;
@@ -28,12 +32,12 @@ interface FinanceCategoryFormProps {
 
 export default function FinanceCategoryForm({
   onClose,
+  onSuccess,
   category,
 }: FinanceCategoryFormProps) {
   const { locale } = useSettingsStore();
   const { addFinanceCategory, updateFinanceCategory } = useFinanceStore();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const form = useForm({
     initialValues: {
@@ -45,30 +49,58 @@ export default function FinanceCategoryForm({
 
   async function handleFormSubmit(values: z.infer<typeof schema>) {
     setIsLoading(true);
-    let success = false;
+    let currentCategory: Tables<"finance_category"> | null = null;
 
     if (category) {
-      success = await updateFinanceCategory({
+      const updatedCategory = await updateFinanceCategory({
         id: category.id,
         title: values.title,
         description: values.description,
       });
+      currentCategory = updatedCategory;
     } else {
-      success = await addFinanceCategory({
+      const newCategory = await addFinanceCategory({
         title: values.title,
         description: values.description,
       });
+      currentCategory = newCategory;
     }
 
-    if (success) {
+    if (currentCategory) {
       form.reset();
       onClose();
+      onSuccess?.(currentCategory);
+      notifications.show({
+        title:
+          locale === "de-DE"
+            ? "Kategorie erfolgreich erstellt"
+            : "Category created successfully",
+        message:
+          locale === "de-DE"
+            ? "Kategorie erfolgreich erstellt"
+            : "Category created successfully",
+        icon: <IconCheck />,
+        color: "green",
+        autoClose: 4000,
+        withBorder: true,
+        position: "top-center",
+      });
     } else {
-      setError(
-        category
-          ? "Failed to update finance category. Please try again."
-          : "Failed to create finance category. Please try again."
-      );
+      notifications.show({
+        title:
+          locale === "de-DE"
+            ? "Kategorie konnte nicht erstellt werden"
+            : "Category could not be created",
+        message:
+          locale === "de-DE"
+            ? "Kategorie konnte nicht erstellt werden"
+            : "Category could not be created",
+        icon: <IconX />,
+        color: "red",
+        autoClose: 4000,
+        position: "top-center",
+        withBorder: true,
+      });
     }
     setIsLoading(false);
   }
@@ -108,11 +140,6 @@ export default function FinanceCategoryForm({
           />
         )}
         <CancelButton onClick={onClose} />
-        {error && (
-          <Alert variant="light" color="red">
-            {error}
-          </Alert>
-        )}
       </Stack>
     </form>
   );
