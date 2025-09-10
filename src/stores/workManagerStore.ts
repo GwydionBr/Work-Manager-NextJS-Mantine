@@ -324,8 +324,6 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           };
         }
 
-        console.log("sessionToCreate", adjustedTimeSpans);
-
         // Create new session
         const newSessions = await actions.createSessions({
           sessions: adjustedTimeSpans,
@@ -333,7 +331,6 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
 
         // Check if new sessions were created
         if (!newSessions.success) {
-          console.log(newSessions.error);
           return {
             createdSessions: null,
             completeOverlap: false,
@@ -439,16 +436,6 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         endCurrency
       ) {
         const { updateStore, projects, timerSessions } = get();
-        console.log(
-          "All session payout params",
-          sessionIds,
-          startValue,
-          title,
-          startCurrency,
-          categoryId,
-          endValue,
-          endCurrency
-        );
         const payoutResult = await actions.payoutSessions({
           date: new Date(),
           sessionIds,
@@ -460,7 +447,6 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           endCurrency,
         });
         if (!payoutResult.success) {
-          console.log("Error: ", payoutResult.error);
           return payoutResult;
         }
 
@@ -497,8 +483,6 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           endValue,
           endCurrency,
         });
-
-        console.log("Project payout result", payoutResult);
 
         return payoutResult;
       },

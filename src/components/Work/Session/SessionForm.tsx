@@ -229,6 +229,7 @@ export default function SessionForm({
 
   // Handle start_time changes and update end_time/active_seconds accordingly
   const handleStartTimeChange = (value: string | null) => {
+    console.log("handleStartTimeChange", value);
     if (!value) return;
     setUserChangedStartTime(true);
 
@@ -237,14 +238,11 @@ export default function SessionForm({
     const startTime = new Date(value);
     const endTime = userChangedEndTime
       ? new Date(form.values.end_time)
-      : new Date(
-          startTime.getTime() +
-            form.values.active_seconds * 1000 +
-            form.values.paused_seconds * 1000
-        );
+      : new Date();
     const totalSeconds = Math.floor(
       (endTime.getTime() - startTime.getTime()) / 1000
     );
+    console.log("totalSeconds", totalSeconds);
 
     if (totalSeconds > 0) {
       // Calculate active seconds by subtracting paused seconds
