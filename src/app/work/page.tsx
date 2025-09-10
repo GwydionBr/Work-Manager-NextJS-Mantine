@@ -75,7 +75,11 @@ export default function WorkPage() {
     useDisclosure(false);
   const [
     selectedModeActive,
-    { close: deactivateSelectedMode, toggle: toggleSelectedMode },
+    {
+      close: deactivateSelectedMode,
+      toggle: toggleSelectedMode,
+      open: activateSelectedMode,
+    },
   ] = useDisclosure(false);
   // Use the custom hook for filtering logic
   const { timeFilteredSessions } = useProjectFiltering(
@@ -94,6 +98,15 @@ export default function WorkPage() {
       );
     }
   }, [selectedSessions.length, timeFilteredSessions]);
+
+  const selectAllSessions = useCallback(() => {
+    activateSelectedMode();
+    setSelectedSessions(
+      timeFilteredSessions
+        .filter((session) => !session.payed)
+        .map((session) => session.id)
+    );
+  }, [timeFilteredSessions]);
 
   const toggleGroupSelection = useCallback(
     (sessionIds: string[]) => {
@@ -313,6 +326,7 @@ export default function WorkPage() {
                   sessions={timeFilteredSessions}
                   project={activeProject.project}
                   openPayout={handlePayoutToggle}
+                  onSelectAll={selectAllSessions}
                 />
               </Collapse>
               <Collapse in={payoutOpened}>

@@ -9,7 +9,11 @@ import { DatePickerInput } from "@mantine/dates";
 import PayoutModal from "@/components/Payout/Modal/PayoutModal";
 import { Currency } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
-import { IconBrandCashapp } from "@tabler/icons-react";
+import {
+  IconBrandCashapp,
+  IconSquareRounded,
+  IconSquareRoundedCheck,
+} from "@tabler/icons-react";
 import { formatMoney } from "@/utils/formatFunctions";
 
 interface ProjectFilterProps {
@@ -18,6 +22,7 @@ interface ProjectFilterProps {
   sessions: Tables<"timer_session">[];
   project: Tables<"timer_project">;
   openPayout: () => void;
+  onSelectAll: () => void;
 }
 
 export default function ProjectFilter({
@@ -26,12 +31,12 @@ export default function ProjectFilter({
   sessions,
   project,
   openPayout,
+  onSelectAll,
 }: ProjectFilterProps) {
   const { locale } = useSettingsStore();
   const [openedModal, { open: openModal, close: closeModal }] =
     useDisclosure(false);
   const today = dayjs();
-  const paidSessions = sessions.filter((session) => session.payed);
   const unpaidSessions = sessions.filter((session) => !session.payed);
 
   const sessionPayout = unpaidSessions.reduce(
@@ -137,8 +142,19 @@ export default function ProjectFilter({
           </Text>
           <Divider />
         </Stack>
-        <Button onClick={handlePayoutClick} leftSection={<IconBrandCashapp />}>
+        <Button
+          onClick={handlePayoutClick}
+          disabled={sessionPayout <= 0}
+          leftSection={<IconBrandCashapp />}
+        >
           Payout {formatMoney(sessionPayout, project.currency, locale)}
+        </Button>
+        <Button
+          variant="outline"
+          leftSection={<IconSquareRoundedCheck />}
+          onClick={onSelectAll}
+        >
+          Select All
         </Button>
       </Stack>
       <PayoutModal
