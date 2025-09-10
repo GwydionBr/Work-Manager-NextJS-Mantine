@@ -14,7 +14,7 @@ import {
 import { getTimeFragmentSession, resolveSessionOverlaps } from "@/utils/helper";
 
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
-import { TimerProject, ProjectTreeItem, TimeSpan } from "@/types/work.types";
+import { TimerProject, ProjectTreeItem } from "@/types/work.types";
 import { Currency } from "@/types/settings.types";
 import { ErrorResponse, SuccessPayoutResponse } from "@/types/action.types";
 
