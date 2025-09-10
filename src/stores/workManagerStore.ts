@@ -125,7 +125,12 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         }),
 
       async fetchWorkData() {
-        const { createProjectTree, activeProjectId: storedActiveId } = get();
+        const {
+          createProjectTree,
+          activeProjectId: storedActiveId,
+          lastActiveProjectId: storedLastActiveId,
+          setActiveProjectId,
+        } = get();
         const [projects, timerSessions, folders] = await Promise.all([
           actions.getAllProjects(),
           actions.getAllSessions(),
@@ -145,22 +150,25 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           }))
           .sort(
             (a, b) =>
-              new Date(a.project.created_at).getTime() -
-              new Date(b.project.created_at).getTime()
+              new Date(b.project.created_at).getTime() -
+              new Date(a.project.created_at).getTime()
           );
 
         const stillValidId =
           storedActiveId &&
           projectsData.find((p) => p.project.id === storedActiveId)
             ? storedActiveId
-            : (projectsData[0]?.project.id ?? null);
+            : storedLastActiveId &&
+                projectsData.find((p) => p.project.id === storedLastActiveId)
+              ? storedLastActiveId
+              : (projectsData[0]?.project.id ?? null);
+
         set({
           folders: folders.data,
-          activeProjectId: stillValidId,
-          lastActiveProjectId: stillValidId,
           projects: projectsData,
           timerSessions: timerSessions.data,
         });
+        setActiveProjectId(stillValidId);
         createProjectTree(projects.data, folders.data);
         set({ isFetching: false, lastFetch: new Date() });
       },
@@ -644,6 +652,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
       name: "work-store",
       partialize: (state) => ({
         activeProjectId: state.activeProjectId,
+        lastActiveProjectId: state.lastActiveProjectId,
       }),
     }
   )

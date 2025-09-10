@@ -142,7 +142,6 @@ export default function WorkCalendar() {
       appointments: appointmentsByDay.get(d.toISOString().slice(0, 10)) ?? [],
     }));
   }, [days, sessionsByDay, appointmentsByDay]);
-  console.log("calendarDays", calendarDays);
 
   // Projects visible in the current view (based on sessions overlapping the visible days)
   const visibleProjects: VisibleProject[] = useMemo(() => {
