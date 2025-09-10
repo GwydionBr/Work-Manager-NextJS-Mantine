@@ -162,7 +162,7 @@ export default function TimeTrackerComponentBigMin({
             )}
           </Stack>
         </Card>
-        {!roundInTimeSections && (
+        {/* {!roundInTimeSections && (
           <Card
             shadow="sm"
             padding="xs"
@@ -184,7 +184,7 @@ export default function TimeTrackerComponentBigMin({
               </Text>
             </Stack>
           </Card>
-        )}
+        )} */}
         <Transition
           mounted={state === "stopped"}
           transition="fade-left"
@@ -196,12 +196,12 @@ export default function TimeTrackerComponentBigMin({
             </Box>
           )}
         </Transition>
-        {state === "running" && !roundInTimeSections && (
+        {/* {state === "running" && !roundInTimeSections && (
           <PauseActionIcon pauseTimer={pauseTimer} disabled={isSubmitting} />
         )}
         {state === "paused" && (
           <ResumeActionIcon resumeTimer={resumeTimer} disabled={isSubmitting} />
-        )}
+        )} */}
         <Transition
           mounted={state === "running" || state === "paused"}
           transition="fade-left"

@@ -204,7 +204,7 @@ export default function TimeTrackerComponentBigMax({
             activationState={TimerState.Running}
             color="var(--mantine-color-blue-6)"
           />
-          {!roundInTimeSections && (
+          {/* {!roundInTimeSections && (
             <TimeTrackerRow
               icon={
                 <IconPlayerPause
@@ -217,7 +217,7 @@ export default function TimeTrackerComponentBigMax({
               activationState={TimerState.Paused}
               color="var(--mantine-color-orange-6)"
             />
-          )}
+          )} */}
         </Stack>
 
         {/* Buttons */}
@@ -233,7 +233,7 @@ export default function TimeTrackerComponentBigMax({
               Start
             </Button>
           )}
-          {state === "running" && !roundInTimeSections && (
+          {/* {state === "running" && !roundInTimeSections && (
             <Button
               w="60%"
               onClick={pauseTimer}
@@ -244,8 +244,8 @@ export default function TimeTrackerComponentBigMax({
             >
               Pause
             </Button>
-          )}
-          {state === "paused" && (
+          )} */}
+          {/* {state === "paused" && (
             <Button
               w="60%"
               onClick={resumeTimer}
@@ -256,7 +256,7 @@ export default function TimeTrackerComponentBigMax({
             >
               Resume
             </Button>
-          )}
+          )} */}
 
           <Collapse in={state !== "stopped"} transitionDuration={400} w="60%">
             <Stack gap="md" align="center">

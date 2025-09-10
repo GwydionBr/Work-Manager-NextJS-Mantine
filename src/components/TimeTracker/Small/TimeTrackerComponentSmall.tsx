@@ -155,7 +155,7 @@ export default function TimeTrackerComponentSmall({
               {roundedActiveTime}
             </Text>
           </Card>
-          {!roundInTimeSections && (
+          {/* {!roundInTimeSections && (
             <Card
               w={47}
               shadow="sm"
@@ -178,9 +178,9 @@ export default function TimeTrackerComponentSmall({
                 {pausedTime}
               </Text>
             </Card>
-          )}
+          )} */}
           {state === "stopped" && <StartActionIcon startTimer={startTimer} />}
-          {state === "running" && !roundInTimeSections && (
+          {/* {state === "running" && !roundInTimeSections && (
             <PauseActionIcon pauseTimer={pauseTimer} disabled={isSubmitting} />
           )}
           {state === "paused" && (
@@ -188,7 +188,7 @@ export default function TimeTrackerComponentSmall({
               resumeTimer={resumeTimer}
               disabled={isSubmitting}
             />
-          )}
+          )} */}
           <Collapse
             in={state === "running" || state === "paused"}
             transitionDuration={400}
