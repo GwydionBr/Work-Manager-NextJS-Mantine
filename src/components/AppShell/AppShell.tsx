@@ -59,6 +59,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       notifications.show({
         title: "New Deploy",
         message: "A new deploy is available",
+        autoClose: false,
       });
     }
   }, [hasNewDeploy]);
