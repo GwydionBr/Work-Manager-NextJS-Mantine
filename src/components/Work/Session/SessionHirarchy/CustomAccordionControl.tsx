@@ -26,6 +26,8 @@ interface CustomAccordionControlProps extends AccordionControlProps {
   selectedSessionIds: string[];
   sessionIds: string[];
   selectionModeActive: boolean;
+  selectableIdSet: Set<string>;
+  onGroupToggle: (sessionIds: string[]) => void;
 }
 
 export default function CustomAccordionControl({
@@ -36,9 +38,21 @@ export default function CustomAccordionControl({
   selectedSessionIds,
   sessionIds,
   selectionModeActive,
+  selectableIdSet,
+  onGroupToggle,
   ...props
 }: CustomAccordionControlProps) {
   const { locale } = useSettingsStore();
+
+  const groupSelectableIds = sessionIds.filter((id) => selectableIdSet.has(id));
+  const selectedCount = groupSelectableIds.filter((id) =>
+    selectedSessionIds.includes(id)
+  ).length;
+  const allSelected =
+    groupSelectableIds.length > 0 &&
+    selectedCount === groupSelectableIds.length;
+  const partiallySelected =
+    selectedCount > 0 && selectedCount < groupSelectableIds.length;
 
   const renderEarnings = (earnings: EarningsBreakdown) => (
     <Group gap="xs">
@@ -75,10 +89,14 @@ export default function CustomAccordionControl({
         >
           {(styles) => (
             <SelectActionIcon
-              onClick={() => {}}
+              onClick={(e) => {
+                e.stopPropagation();
+                onGroupToggle(groupSelectableIds);
+              }}
               iconSize={24}
               tooltipLabel="Select sessions"
-              selected={selectedSessionIds.length > 0}
+              selected={allSelected}
+              partiallySelected={partiallySelected}
               style={styles}
             />
           )}

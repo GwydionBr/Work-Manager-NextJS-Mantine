@@ -95,6 +95,27 @@ export default function WorkPage() {
     }
   }, [selectedSessions.length, timeFilteredSessions]);
 
+  const toggleGroupSelection = useCallback(
+    (sessionIds: string[]) => {
+      const groupIds = sessionIds.filter((id) =>
+        timeFilteredSessions.some((s) => s.id === id && !s.payed)
+      );
+      const isAnySelected = groupIds.some((id) =>
+        selectedSessions.includes(id)
+      );
+      if (isAnySelected) {
+        setSelectedSessions((prev) =>
+          prev.filter((id) => !groupIds.includes(id))
+        );
+      } else {
+        setSelectedSessions((prev) =>
+          Array.from(new Set([...prev, ...groupIds]))
+        );
+      }
+    },
+    [timeFilteredSessions, selectedSessions]
+  );
+
   const toggleSessionSelection = useCallback(
     (sessionId: string, index: number, range: boolean) => {
       if (range && lastSelectedIndex !== null) {
@@ -363,6 +384,14 @@ export default function WorkPage() {
                 )}
                 selectedSessions={selectedSessions}
                 onSessionToggle={toggleSessionSelection}
+                onGroupToggle={toggleGroupSelection}
+                selectableIdSet={
+                  new Set(
+                    timeFilteredSessions
+                      .filter((s) => !s.payed)
+                      .map((s) => s.id)
+                  )
+                }
                 project={activeProject.project}
                 isOverview={false}
               />

@@ -2,17 +2,13 @@
 
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Accordion, Box, Group, Text } from "@mantine/core";
+import { Accordion, Box } from "@mantine/core";
 import { IconCalendar, IconClock, IconFolder } from "@tabler/icons-react";
 import SessionRow from "@/components/Work/Session/SessionRow";
-import {
-  formatTime,
-  areEarningsBreakdownEmpty,
-} from "@/utils/sessionHelperFunctions";
-import { formatDate, formatMoney, formatMonth } from "@/utils/formatFunctions";
+import { formatDate, formatMonth } from "@/utils/formatFunctions";
 
 import type { Tables } from "@/types/db.types";
-import type { EarningsBreakdown, Year } from "@/types/timerSession.types";
+import type { Year } from "@/types/timerSession.types";
 import CustomAccordionControl from "./CustomAccordionControl";
 
 const Radius = 20;
@@ -21,6 +17,8 @@ interface SessionHierarchyProps {
   groupedSessions: { year: number; data: Year }[];
   selectedSessions: string[];
   onSessionToggle: (sessionId: string, index: number, range: boolean) => void;
+  onGroupToggle: (sessionIds: string[]) => void;
+  selectableIdSet: Set<string>;
   project?: Tables<"timer_project">;
   projects?: Tables<"timer_project">[];
   isOverview: boolean;
@@ -31,6 +29,8 @@ export default function SessionHierarchy({
   groupedSessions,
   selectedSessions,
   onSessionToggle,
+  onGroupToggle,
+  selectableIdSet,
   project,
   projects,
   isOverview,
@@ -38,39 +38,26 @@ export default function SessionHierarchy({
 }: SessionHierarchyProps) {
   const { locale } = useSettingsStore();
 
-  const renderTime = (seconds: number) => (
-    <Text
-      size="sm"
-      c="light-dark(var(--mantine-color-blue-9), var(--mantine-color-blue-4))"
-    >
-      {formatTime(seconds)}
-    </Text>
-  );
+  const getBorderColor = (sessionIds: string[]): string | undefined => {
+    const groupIds = sessionIds.filter((id) => selectableIdSet.has(id));
+    if (groupIds.length === 0) return undefined;
+    const selectedCount = groupIds.filter((id) =>
+      selectedSessions.includes(id)
+    ).length;
+    if (selectedCount === 0) return undefined;
+    if (selectedCount === groupIds.length) return "var(--mantine-color-blue-6)";
+    return "var(--mantine-color-teal-6)";
+  };
 
-  const renderEarnings = (earnings: EarningsBreakdown) => (
-    <Group gap="xs">
-      {!areEarningsBreakdownEmpty(earnings) && (
-        <Group gap="xs">
-          {earnings.unpaid.some((e) => e.amount > 0) && (
-            <Text size="sm" c="red">
-              {earnings.unpaid
-                .map((e) => formatMoney(e.amount, e.currency, locale))
-                .join(" ") + " "}
-              {locale === "de-DE" ? "unbezahlt" : "unpaid"}
-            </Text>
-          )}
-          {earnings.paid.some((e) => e.amount > 0) && (
-            <Text size="sm" c="dimmed">
-              {earnings.paid
-                .map((e) => formatMoney(e.amount, e.currency, locale))
-                .join(" ") + " "}
-              {locale === "de-DE" ? "bezahlt" : "paid"}
-            </Text>
-          )}
-        </Group>
-      )}
-    </Group>
-  );
+  const getBackgroundColor = (sessionIds: string[]): string | undefined => {
+    const groupIds = sessionIds.filter((id) => selectableIdSet.has(id));
+    if (groupIds.length === 0) return undefined;
+    const selectedCount = groupIds.filter((id) =>
+      selectedSessions.includes(id)
+    ).length;
+    if (selectedCount === groupIds.length) return "light-dark(var(--mantine-color-blue-0), var(--mantine-color-dark-6))";
+    if (selectedCount === 0) return undefined;
+  };
 
   return (
     <Box>
@@ -84,7 +71,13 @@ export default function SessionHierarchy({
           defaultValue={index === 0 ? [String(yearData.totalEarnings)] : []}
           radius={Radius}
         >
-          <Accordion.Item value={String(yearData.totalEarnings)}>
+          <Accordion.Item
+            value={String(yearData.totalEarnings)}
+            style={{
+              borderColor: getBorderColor(yearData.sessionIds),
+              backgroundColor: getBackgroundColor(yearData.sessionIds),
+            }}
+          >
             <CustomAccordionControl
               icon={<IconCalendar size={18} />}
               label={year.toString()}
@@ -93,6 +86,8 @@ export default function SessionHierarchy({
               selectedSessionIds={selectedSessions}
               sessionIds={yearData.sessionIds}
               selectionModeActive={selectedModeActive}
+              onGroupToggle={onGroupToggle}
+              selectableIdSet={selectableIdSet}
             />
             <Accordion.Panel>
               {Object.entries(yearData.months)
@@ -109,7 +104,15 @@ export default function SessionHierarchy({
                       index === 0 ? [String(monthData.totalEarnings)] : []
                     }
                   >
-                    <Accordion.Item value={String(monthData.totalEarnings)}>
+                    <Accordion.Item
+                      value={String(monthData.totalEarnings)}
+                      style={{
+                        borderColor: getBorderColor(monthData.sessionIds),
+                        backgroundColor: getBackgroundColor(
+                          monthData.sessionIds
+                        ),
+                      }}
+                    >
                       <CustomAccordionControl
                         icon={<IconFolder size={18} color="blue" />}
                         label={formatMonth(Number(month), locale)}
@@ -118,6 +121,8 @@ export default function SessionHierarchy({
                         selectedSessionIds={selectedSessions}
                         sessionIds={monthData.sessionIds}
                         selectionModeActive={selectedModeActive}
+                        onGroupToggle={onGroupToggle}
+                        selectableIdSet={selectableIdSet}
                       />
                       <Accordion.Panel>
                         {Object.entries(monthData.weeks)
@@ -138,6 +143,14 @@ export default function SessionHierarchy({
                             >
                               <Accordion.Item
                                 value={String(weekData.totalEarnings)}
+                                style={{
+                                  borderColor: getBorderColor(
+                                    weekData.sessionIds
+                                  ),
+                                  backgroundColor: getBackgroundColor(
+                                    weekData.sessionIds
+                                  ),
+                                }}
                               >
                                 <CustomAccordionControl
                                   icon={
@@ -153,6 +166,8 @@ export default function SessionHierarchy({
                                   selectedSessionIds={selectedSessions}
                                   sessionIds={weekData.sessionIds}
                                   selectionModeActive={selectedModeActive}
+                                  onGroupToggle={onGroupToggle}
+                                  selectableIdSet={selectableIdSet}
                                 />
                                 <Accordion.Panel>
                                   {Object.entries(weekData.days)
@@ -174,7 +189,17 @@ export default function SessionHierarchy({
                                             : []
                                         }
                                       >
-                                        <Accordion.Item value={day}>
+                                        <Accordion.Item
+                                          value={day}
+                                          style={{
+                                            borderColor: getBorderColor(
+                                              dayData.sessionIds
+                                            ),
+                                            backgroundColor: getBackgroundColor(
+                                              dayData.sessionIds
+                                            ),
+                                          }}
+                                        >
                                           <CustomAccordionControl
                                             icon={
                                               <IconClock
@@ -195,6 +220,8 @@ export default function SessionHierarchy({
                                             selectionModeActive={
                                               selectedModeActive
                                             }
+                                            onGroupToggle={onGroupToggle}
+                                            selectableIdSet={selectableIdSet}
                                           />
                                           <Accordion.Panel>
                                             {dayData.sessions
