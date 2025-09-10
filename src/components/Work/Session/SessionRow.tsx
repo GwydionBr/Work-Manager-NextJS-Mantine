@@ -149,10 +149,10 @@ export default function SessionRow({
                   {locale === "de-DE" ? "Aktiv" : "Active"}:{" "}
                   {formatTime(session.active_seconds)}
                 </Text>
-                <Text size="sm" c="dimmed">
+                {/* <Text size="sm" c="dimmed">
                   {locale === "de-DE" ? "Pausiert" : "Paused"}:{" "}
                   {formatTime(session.paused_seconds)}
-                </Text>
+                </Text> */}
               </Group>
             </Stack>
             <Transition
