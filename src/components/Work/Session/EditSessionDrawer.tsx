@@ -26,7 +26,7 @@ export default function EditSessionDrawer({
   onClose,
 }: TimerSessionModalProps) {
   const { locale } = useSettingsStore();
-  const { updateTimerSession, projects, deleteTimerSession } = useWorkStore();
+  const { updateTimerSession, projects, deleteTimerSessions } = useWorkStore();
   const [submitting, setSubmitting] = useState(false);
 
   const drawerStack = useDrawersStack(["edit-session", "delete-session"]);
@@ -92,7 +92,7 @@ export default function EditSessionDrawer({
     setSubmitting(false);
   }
   async function handleDelete() {
-    const success = await deleteTimerSession(timerSession.id);
+    const success = await deleteTimerSessions([timerSession.id]);
     if (success) {
       handleClose();
     }

@@ -115,6 +115,7 @@ export default function TimeInput({
                     timeComponents.hours > 0 ? timeComponents.hours : undefined
                   }
                   onChange={handleHoursChange}
+                  data-autofocus={autoFocus}
                 />
               </Stack>
 
@@ -139,7 +140,6 @@ export default function TimeInput({
                       : undefined
                   }
                   onChange={handleMinutesChange}
-                  data-autofocus={autoFocus}
                 />
               </Stack>
             </Group>

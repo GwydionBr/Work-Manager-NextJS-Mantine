@@ -90,16 +90,16 @@ export async function updateSession({
   return { success: true, data, error: null };
 }
 
-export async function deleteSession({
-  sessionId,
+export async function deleteSessions({
+  sessionIds,
 }: {
-  sessionId: string;
+  sessionIds: string[];
 }): Promise<SimpleResponse> {
   const supabase = await createClient();
   const { error } = await supabase
     .from("timer_session")
     .delete()
-    .eq("id", sessionId);
+    .in("id", sessionIds);
 
   if (error) {
     return { success: false, data: null, error: error.message };

@@ -33,6 +33,7 @@ import NewProjectPayoutCard from "@/components/Payout/NewProjectPayoutCard";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import NewSessFormModal from "@/components/Work/Session/SessionFormModal";
 import AddActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
+import SessionSelector from "@/components/Work/Session/SessionSelector";
 
 export default function WorkPage() {
   const [oldActiveProjectId, setOldActiveProjectId] = useState<string | null>(
@@ -341,43 +342,11 @@ export default function WorkPage() {
             </Grid.Col>
             <Grid.Col span={6}>
               <Collapse in={selectedModeActive}>
-                <Group justify="flex-end" pb="xs">
-                  <Group
-                    onClick={toggleAllSessions}
-                    style={{
-                      cursor: "pointer",
-                    }}
-                  >
-                    <SelectActionIcon
-                      onClick={() => {}}
-                      selected={
-                        selectedSessions.length ===
-                        timeFilteredSessions.filter((session) => !session.payed)
-                          .length
-                      }
-                      partiallySelected={
-                        selectedSessions.length > 0 &&
-                        selectedSessions.length <
-                          timeFilteredSessions.filter(
-                            (session) => !session.payed
-                          ).length
-                      }
-                    />
-
-                    <Text fz="sm" c="dimmed">
-                      {locale === "de-DE" ? "Alle" : "All"}
-                    </Text>
-                  </Group>
-                  <Divider orientation="vertical" />
-                  <Text size="xs" c="dimmed">
-                    {selectedSessions.length} /{" "}
-                    {
-                      timeFilteredSessions.filter((session) => !session.payed)
-                        .length
-                    }{" "}
-                    {locale === "de-DE" ? "Sitzungen" : "Sessions"}
-                  </Text>
-                </Group>
+                <SessionSelector
+                  selectedSessions={selectedSessions}
+                  timeFilteredSessions={timeFilteredSessions}
+                  toggleAllSessions={toggleAllSessions}
+                />
               </Collapse>
             </Grid.Col>
           </Grid>

@@ -40,12 +40,12 @@ export default function SessionRow({
   const { locale } = useSettingsStore();
   const [deleteModalOpened, deleteModalHandler] = useDisclosure(false);
   const [editDrawerOpened, editDrawerHandler] = useDisclosure(false);
-  const { deleteTimerSession } = useWorkStore();
+  const { deleteTimerSessions } = useWorkStore();
 
   const { hovered, ref } = useHover();
 
   async function handleDelete() {
-    const success = await deleteTimerSession(session.id);
+    const success = await deleteTimerSessions([session.id]);
     if (success) {
       deleteModalHandler.close();
     }

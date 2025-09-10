@@ -11,6 +11,7 @@ interface DeleteButtonProps extends ButtonProps {
   iconSize?: number;
   iconColor?: string;
   tooltipLabel?: string;
+  label?: string;
 }
 
 export default function DeleteActionIcon({
@@ -18,6 +19,7 @@ export default function DeleteActionIcon({
   iconSize,
   iconColor,
   tooltipLabel,
+  label,
   ...props
 }: DeleteButtonProps) {
   const { locale } = useSettingsStore();
@@ -31,7 +33,7 @@ export default function DeleteActionIcon({
         onClick={onClick}
         {...props}
       >
-        {locale === "de-DE" ? "Löschen" : "Delete"}
+        {label ? label : locale === "de-DE" ? "Löschen" : "Delete"}
       </Button>
     </DelayedTooltip>
   );

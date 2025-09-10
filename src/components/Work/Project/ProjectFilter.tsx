@@ -147,14 +147,16 @@ export default function ProjectFilter({
           disabled={sessionPayout <= 0}
           leftSection={<IconBrandCashapp />}
         >
-          Payout {formatMoney(sessionPayout, project.currency, locale)}
+          {locale === "de-DE" ? "" : "Payout"}{" "}
+          {formatMoney(sessionPayout, project.currency, locale)}{" "}
+          {locale === "de-DE" ? "Auszahlen" : ""}
         </Button>
         <Button
           variant="outline"
           leftSection={<IconSquareRoundedCheck />}
           onClick={onSelectAll}
         >
-          Select All
+          {locale === "de-DE" ? "Alle auswählen" : "Select All"}
         </Button>
       </Stack>
       <PayoutModal

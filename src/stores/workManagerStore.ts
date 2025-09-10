@@ -54,7 +54,7 @@ interface WorkStoreActions {
     session: TablesUpdate<"timer_session">
   ) => Promise<boolean>;
   deleteProject: (id: string) => Promise<boolean>;
-  deleteTimerSession: (id: string) => Promise<boolean>;
+  deleteTimerSessions: (ids: string[]) => Promise<boolean>;
   payoutSessions: (
     sessionIds: string[],
     startValue: number,
@@ -348,17 +348,17 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         };
       },
 
-      async deleteTimerSession(id) {
+      async deleteTimerSessions(ids) {
         const { updateStore, projects, timerSessions } = get();
-        const deleted = await actions.deleteSession({ sessionId: id });
+        const deleted = await actions.deleteSessions({ sessionIds: ids });
         if (!deleted.success) {
           return false;
         }
 
-        const updatedSessions = timerSessions.filter((s) => s.id !== id);
+        const updatedSessions = timerSessions.filter((s) => !ids.includes(s.id));
         const updatedProjects = projects.map((p) => ({
           project: p.project,
-          sessions: p.sessions.filter((s) => s.id !== id),
+          sessions: p.sessions.filter((s) => !ids.includes(s.id)),
         }));
         updateStore(updatedProjects, updatedSessions);
         return true;
