@@ -129,6 +129,8 @@ export default function WorkOverviewPage() {
               groupedSessions={groupSessions(filteredSessions, locale)}
               selectedSessions={selectedSessions}
               onSessionToggle={handleSessionToggle}
+              onGroupToggle={() => {}}
+              selectableIdSet={new Set(filteredSessions.map((s) => s.id))}
               projects={projects}
               isOverview={true}
               selectedModeActive={false}
