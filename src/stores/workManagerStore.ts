@@ -53,6 +53,10 @@ interface WorkStoreActions {
   updateTimerSession: (
     session: TablesUpdate<"timer_session">
   ) => Promise<boolean>;
+  updateMultipleTimerSessions: (
+    sessionIds: string[],
+    update: TablesUpdate<"timer_session">
+  ) => Promise<boolean>;
   deleteProject: (id: string) => Promise<boolean>;
   deleteTimerSessions: (ids: string[]) => Promise<boolean>;
   payoutSessions: (
@@ -355,7 +359,9 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           return false;
         }
 
-        const updatedSessions = timerSessions.filter((s) => !ids.includes(s.id));
+        const updatedSessions = timerSessions.filter(
+          (s) => !ids.includes(s.id)
+        );
         const updatedProjects = projects.map((p) => ({
           project: p.project,
           sessions: p.sessions.filter((s) => !ids.includes(s.id)),
@@ -385,6 +391,30 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           project: p.project,
           sessions: p.sessions.map((s) =>
             s.id === session.id ? updatedSession.data : s
+          ),
+        }));
+        updateStore(updatedProjects, updatedSessions);
+        return true;
+      },
+
+      async updateMultipleTimerSessions(sessionIds, update) {
+        const { updateStore, projects, timerSessions } = get();
+
+        const updatedSessionsResponse = await actions.updateMultipleSessions({
+          sessionIds,
+          update,
+        });
+        if (!updatedSessionsResponse.success) {
+          return false;
+        }
+
+        const updatedSessions = timerSessions.map((s) =>
+          sessionIds.includes(s.id) ? { ...s, ...update } : s
+        );
+        const updatedProjects = projects.map((p) => ({
+          project: p.project,
+          sessions: p.sessions.map((s) =>
+            sessionIds.includes(s.id) ? { ...s, ...update } : s
           ),
         }));
         updateStore(updatedProjects, updatedSessions);

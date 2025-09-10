@@ -110,15 +110,15 @@ export async function deleteSessions({
 
 export async function updateMultipleSessions({
   sessionIds,
-  updates,
+  update,
 }: {
   sessionIds: string[];
-  updates: Partial<Tables<"timer_session">>;
+  update: TablesUpdate<"timer_session">;
 }): Promise<SimpleResponse> {
   const supabase = await createClient();
   const { error } = await supabase
     .from("timer_session")
-    .update(updates)
+    .update(update)
     .in("id", sessionIds);
 
   if (error) {
