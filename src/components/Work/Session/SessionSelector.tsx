@@ -28,12 +28,21 @@ export default function SessionSelector({
     deleteModalOpened,
     { open: openDeleteModal, close: closeDeleteModal },
   ] = useDisclosure(false);
+  const [editModalOpened, { open: openEditModal, close: closeEditModal }] =
+    useDisclosure(false);
 
   const handleDelete = async () => {
     const success = await deleteTimerSessions(selectedSessions);
     if (success) {
       closeDeleteModal();
     }
+  };
+
+  const handleEdit = () => {
+    openEditModal();
+    setTimeout(() => {
+      closeEditModal();
+    }, 3000);
   };
 
   return (
@@ -73,11 +82,16 @@ export default function SessionSelector({
         <Stack mb="xs">
           <Button
             variant="outline"
-            onClick={() => {}}
+            onClick={handleEdit}
             leftSection={<IconPencil />}
           >
             {locale === "de-DE" ? "Auswahl bearbeiten" : "Edit Selection"}
           </Button>
+          <Collapse in={editModalOpened}>
+            <Text>
+              {locale === "de-DE" ? "Kommt bald..." : "Coming soon..."}
+            </Text>
+          </Collapse>
           <DeleteButton
             onClick={openDeleteModal}
             label={locale === "de-DE" ? "Auswahl löschen" : "Delete Selection"}
