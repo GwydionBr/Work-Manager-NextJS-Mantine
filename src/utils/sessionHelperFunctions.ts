@@ -13,7 +13,7 @@ export function groupSessions(
   locale: Locale
 ): { year: number; data: Year }[] {
   const groupedSessions: Record<number, Year> = sessions.reduce(
-    (acc, session) => {
+    (acc, session, index) => {
       if (!session.start_time || !session.currency) {
         return acc;
       }
@@ -121,7 +121,10 @@ export function groupSessions(
           );
       }
       acc[year].months[month].weeks[week].days[day].totalTime += timeInSeconds;
-      acc[year].months[month].weeks[week].days[day].sessions.push(session);
+      acc[year].months[month].weeks[week].days[day].sessions.push({
+        ...session,
+        index,
+      });
 
       return acc;
     },

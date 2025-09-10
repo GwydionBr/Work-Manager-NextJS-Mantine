@@ -39,7 +39,7 @@ export type Year = {
             {
               totalEarnings: EarningsBreakdown;
               totalTime: number;
-              sessions: Tables<"timer_session">[];
+              sessions: (Tables<"timer_session"> & { index: number })[];
             }
           >;
         }

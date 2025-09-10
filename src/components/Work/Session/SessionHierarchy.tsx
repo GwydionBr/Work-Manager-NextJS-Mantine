@@ -19,7 +19,7 @@ const Radius = 20;
 interface SessionHierarchyProps {
   groupedSessions: { year: number; data: Year }[];
   selectedSessions: string[];
-  onSessionToggle: (sessionId: string) => void;
+  onSessionToggle: (sessionId: string, index: number, range: boolean) => void;
   project?: Tables<"timer_project">;
   projects?: Tables<"timer_project">[];
   isOverview: boolean;
@@ -233,8 +233,12 @@ export default function SessionHierarchy({
                                                   isSelected={selectedSessions.includes(
                                                     session.id
                                                   )}
-                                                  onToggleSelection={() =>
-                                                    onSessionToggle(session.id)
+                                                  onToggleSelected={(e) =>
+                                                    onSessionToggle(
+                                                      session.id,
+                                                      session.index,
+                                                      e.shiftKey
+                                                    )
                                                   }
                                                   isOverview={isOverview}
                                                 />

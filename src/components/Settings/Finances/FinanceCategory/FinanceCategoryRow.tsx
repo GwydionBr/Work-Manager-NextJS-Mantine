@@ -43,10 +43,6 @@ export default function FinanceCategoryRow({
     { open: openCategoryForm, close: closeCategoryForm },
   ] = useDisclosure(false);
 
-  const onEdit = (id: string) => {
-    console.log(id);
-  };
-
   return (
     <Card
       bg={

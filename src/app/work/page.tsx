@@ -16,7 +16,6 @@ import {
   Text,
   Grid,
 } from "@mantine/core";
-import NewSessionButton from "@/components/Work/Session/NewSessionButton";
 import EditProjectDrawer from "@/components/Work/Project/EditProjectDrawer";
 import Header from "@/components/Header/Header";
 import WorkAnalysis from "@/components/Work/Analysis/WorkAnalysis";
@@ -37,6 +36,9 @@ import AddActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 
 export default function WorkPage() {
   const [oldActiveProjectId, setOldActiveProjectId] = useState<string | null>(
+    null
+  );
+  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
     null
   );
   const {
@@ -73,11 +75,7 @@ export default function WorkPage() {
     useDisclosure(false);
   const [
     selectedModeActive,
-    {
-      open: activateSelectedMode,
-      close: deactivateSelectedMode,
-      toggle: toggleSelectedMode,
-    },
+    { close: deactivateSelectedMode, toggle: toggleSelectedMode },
   ] = useDisclosure(false);
   // Use the custom hook for filtering logic
   const { timeFilteredSessions } = useProjectFiltering(
@@ -96,6 +94,29 @@ export default function WorkPage() {
       );
     }
   }, [selectedSessions.length, timeFilteredSessions]);
+
+  const toggleSessionSelection = useCallback(
+    (sessionId: string, index: number, range: boolean) => {
+      if (range && lastSelectedIndex !== null) {
+        const start = Math.min(lastSelectedIndex, index);
+        const end = Math.max(lastSelectedIndex, index);
+        const rangeIds = timeFilteredSessions
+          .slice(start, end + 1)
+          .map((session) => session.id);
+        setSelectedSessions((prev) =>
+          Array.from(new Set([...prev, ...rangeIds]))
+        );
+      } else {
+        setSelectedSessions((prev) =>
+          prev.includes(sessionId)
+            ? prev.filter((id) => id !== sessionId)
+            : [...prev, sessionId]
+        );
+        setLastSelectedIndex(index);
+      }
+    },
+    [timeFilteredSessions, lastSelectedIndex]
+  );
 
   useEffect(() => {
     if (oldActiveProjectId !== activeProjectId) {
@@ -166,13 +187,11 @@ export default function WorkPage() {
     }
   };
 
-  const handleSessionToggle = (sessionId: string) => {
-    if (!activeProject.project.hourly_payment) return;
-    setSelectedSessions(
-      selectedSessions.includes(sessionId)
-        ? selectedSessions.filter((id) => id !== sessionId)
-        : [...selectedSessions, sessionId]
-    );
+  const handleSelectionToggle = () => {
+    if (selectedModeActive) {
+      setSelectedSessions([]);
+    }
+    toggleSelectedMode();
   };
 
   const selectableSessions = timeFilteredSessions.filter(
@@ -254,7 +273,7 @@ export default function WorkPage() {
             <NewSessFormModal button={<AddActionIcon onClick={() => {}} />} />
             <SelectActionIcon
               disabled={selectableSessions.length === 0}
-              onClick={toggleSelectedMode}
+              onClick={handleSelectionToggle}
               tooltipLabel={
                 locale === "de-DE" ? "Auswahlmodus" : "Selected Mode"
               }
@@ -333,9 +352,16 @@ export default function WorkPage() {
             {timeFilteredSessions.length > 0 ? (
               <SessionHierarchy
                 selectedModeActive={selectedModeActive}
-                groupedSessions={groupSessions(timeFilteredSessions, locale)}
+                groupedSessions={groupSessions(
+                  timeFilteredSessions.sort(
+                    (a, b) =>
+                      new Date(b.start_time).getTime() -
+                      new Date(a.start_time).getTime()
+                  ),
+                  locale
+                )}
                 selectedSessions={selectedSessions}
-                onSessionToggle={handleSessionToggle}
+                onSessionToggle={toggleSessionSelection}
                 project={activeProject.project}
                 isOverview={false}
               />

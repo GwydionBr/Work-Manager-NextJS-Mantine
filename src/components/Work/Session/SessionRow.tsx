@@ -4,15 +4,7 @@ import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useDisclosure, useHover } from "@mantine/hooks";
 
-import {
-  Card,
-  Group,
-  Stack,
-  Text,
-  Checkbox,
-  Box,
-  Transition,
-} from "@mantine/core";
+import { Card, Group, Stack, Text, Box, Transition } from "@mantine/core";
 import { IconClock } from "@tabler/icons-react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
@@ -29,10 +21,10 @@ import PencilActionIcon from "@/components/UI/ActionIcons/PencilActionIcon";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 
 interface SessionRowProps {
-  session: Tables<"timer_session">;
+  session: Tables<"timer_session"> & { index: number };
   project?: Tables<"timer_project">;
   isSelected?: boolean;
-  onToggleSelection?: () => void;
+  onToggleSelected?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   isOverview?: boolean;
   selectedModeActive: boolean;
 }
@@ -41,7 +33,7 @@ export default function SessionRow({
   session,
   project,
   isSelected,
-  onToggleSelection,
+  onToggleSelected,
   isOverview = false,
   selectedModeActive,
 }: SessionRowProps) {
@@ -81,7 +73,7 @@ export default function SessionRow({
   const sessionPaid = isSessionPaid();
 
   // Only show checkbox for hourly payment projects and unpaid sessions
-  const showCheckbox = selectedModeActive && onToggleSelection && !sessionPaid;
+  const showCheckbox = selectedModeActive && onToggleSelected && !sessionPaid;
 
   return (
     <Box>
@@ -103,11 +95,12 @@ export default function SessionRow({
           borderWidth: isSelected ? "2px" : undefined,
           cursor: showCheckbox ? "pointer" : "default",
         }}
-        onClick={() => {
-          if (showCheckbox) {
-            onToggleSelection?.();
-          }
-        }}
+        onClick={
+          showCheckbox
+            ? (e: React.MouseEvent<HTMLDivElement>) =>
+                onToggleSelected?.(e as any)
+            : undefined
+        }
       >
         <Group justify="space-between">
           <Group gap="xl">
