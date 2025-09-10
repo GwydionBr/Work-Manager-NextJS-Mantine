@@ -13,6 +13,8 @@ import { useFinanceStore } from "@/stores/financeStore";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useTaskStore } from "@/stores/taskStore";
 import { useCalendarStore } from "@/stores/calendarStore";
+import { useHasNewDeploy } from "next-deploy-notifications";
+import { notifications } from "@mantine/notifications";
 
 import classes from "./AppShell.module.css";
 
@@ -50,6 +52,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     fetchSettings,
     lastFetch: lastSettingsFetch,
   } = useSettingsStore();
+  const { hasNewDeploy } = useHasNewDeploy();
+
+  useEffect(() => {
+    if (hasNewDeploy) {
+      notifications.show({
+        title: "New Deploy",
+        message: "A new deploy is available",
+      });
+    }
+  }, [hasNewDeploy]);
 
   const [isBurgerOpen, { toggle: toggleBurger }] = useDisclosure();
   useHotkeys([["mod + B", () => toggleAside()]]);
