@@ -9,7 +9,7 @@ import { useSessionFiltering } from "@/hooks/useSessionFiltering";
 import { Box, Collapse, Group, Stack, Text } from "@mantine/core";
 import Header from "@/components/Header/Header";
 import PayoutMenu from "@/components/Payout/PayoutCard";
-import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
+import SessionHierarchy from "@/components/Work/Session/SessionHirarchy/SessionHierarchy";
 import { groupSessions } from "@/utils/sessionHelperFunctions";
 import SessionFilter from "@/components/Work/Session/BulkSelectionControl";
 import WorkAnalysis from "@/components/Work/Analysis/WorkAnalysis";

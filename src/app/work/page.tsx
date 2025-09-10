@@ -23,7 +23,7 @@ import AnalysisActionIcon from "@/components/UI/ActionIcons/AnalysisActionIcon";
 import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
 import FilterActionIcon from "@/components/UI/ActionIcons/FilterActionIcon";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
-import SessionHierarchy from "@/components/Work/Session/SessionHierarchy";
+import SessionHierarchy from "@/components/Work/Session/SessionHirarchy/SessionHierarchy";
 import ProjectFilter from "@/components/Work/Project/ProjectFilter";
 
 import { formatMoney } from "@/utils/formatFunctions";
@@ -102,6 +102,7 @@ export default function WorkPage() {
         const end = Math.max(lastSelectedIndex, index);
         const rangeIds = timeFilteredSessions
           .slice(start, end + 1)
+          .filter((session) => !session.payed)
           .map((session) => session.id);
         setSelectedSessions((prev) =>
           Array.from(new Set([...prev, ...rangeIds]))

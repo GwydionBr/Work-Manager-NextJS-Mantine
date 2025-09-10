@@ -13,6 +13,7 @@ import { formatDate, formatMoney, formatMonth } from "@/utils/formatFunctions";
 
 import type { Tables } from "@/types/db.types";
 import type { EarningsBreakdown, Year } from "@/types/timerSession.types";
+import CustomAccordionControl from "./CustomAccordionControl";
 
 const Radius = 20;
 
@@ -84,17 +85,15 @@ export default function SessionHierarchy({
           radius={Radius}
         >
           <Accordion.Item value={String(yearData.totalEarnings)}>
-            <Accordion.Control
+            <CustomAccordionControl
               icon={<IconCalendar size={18} />}
-              style={{ fontWeight: "bold" }}
-            >
-              <Group>
-                {year}
-                {!areEarningsBreakdownEmpty(yearData.totalEarnings) &&
-                  renderEarnings(yearData.totalEarnings)}
-                {yearData.totalTime > 0 && renderTime(yearData.totalTime)}
-              </Group>
-            </Accordion.Control>
+              label={year.toString()}
+              earnings={yearData.totalEarnings}
+              time={yearData.totalTime}
+              selectedSessionIds={selectedSessions}
+              sessionIds={yearData.sessionIds}
+              selectionModeActive={selectedModeActive}
+            />
             <Accordion.Panel>
               {Object.entries(yearData.months)
                 .reverse()
@@ -111,18 +110,15 @@ export default function SessionHierarchy({
                     }
                   >
                     <Accordion.Item value={String(monthData.totalEarnings)}>
-                      <Accordion.Control
+                      <CustomAccordionControl
                         icon={<IconFolder size={18} color="blue" />}
-                      >
-                        <Group>
-                          {formatMonth(Number(month), locale)}
-                          {!areEarningsBreakdownEmpty(
-                            monthData.totalEarnings
-                          ) && renderEarnings(monthData.totalEarnings)}
-                          {monthData.totalTime > 0 &&
-                            renderTime(monthData.totalTime)}
-                        </Group>
-                      </Accordion.Control>
+                        label={formatMonth(Number(month), locale)}
+                        earnings={monthData.totalEarnings}
+                        time={monthData.totalTime}
+                        selectedSessionIds={selectedSessions}
+                        sessionIds={monthData.sessionIds}
+                        selectionModeActive={selectedModeActive}
+                      />
                       <Accordion.Panel>
                         {Object.entries(monthData.weeks)
                           .reverse()
@@ -143,22 +139,21 @@ export default function SessionHierarchy({
                               <Accordion.Item
                                 value={String(weekData.totalEarnings)}
                               >
-                                <Accordion.Control
+                                <CustomAccordionControl
                                   icon={
                                     <IconCalendar size={18} color="orange" />
                                   }
-                                >
-                                  <Group>
-                                    {locale === "de-DE"
+                                  label={
+                                    locale === "de-DE"
                                       ? `${week}. Woche`
-                                      : `Week ${week}`}
-                                    {!areEarningsBreakdownEmpty(
-                                      weekData.totalEarnings
-                                    ) && renderEarnings(weekData.totalEarnings)}
-                                    {weekData.totalTime > 0 &&
-                                      renderTime(weekData.totalTime)}
-                                  </Group>
-                                </Accordion.Control>
+                                      : `Week ${week}`
+                                  }
+                                  earnings={weekData.totalEarnings}
+                                  time={weekData.totalTime}
+                                  selectedSessionIds={selectedSessions}
+                                  sessionIds={weekData.sessionIds}
+                                  selectionModeActive={selectedModeActive}
+                                />
                                 <Accordion.Panel>
                                   {Object.entries(weekData.days)
                                     .sort(([dayA], [dayB]) =>
@@ -180,29 +175,27 @@ export default function SessionHierarchy({
                                         }
                                       >
                                         <Accordion.Item value={day}>
-                                          <Accordion.Control
+                                          <CustomAccordionControl
                                             icon={
                                               <IconClock
                                                 size={18}
                                                 color="green"
                                               />
                                             }
-                                          >
-                                            <Group>
-                                              {formatDate(
-                                                new Date(day),
-                                                locale
-                                              )}
-                                              {!areEarningsBreakdownEmpty(
-                                                dayData.totalEarnings
-                                              ) &&
-                                                renderEarnings(
-                                                  dayData.totalEarnings
-                                                )}
-                                              {dayData.totalTime > 0 &&
-                                                renderTime(dayData.totalTime)}
-                                            </Group>
-                                          </Accordion.Control>
+                                            label={formatDate(
+                                              new Date(day),
+                                              locale
+                                            )}
+                                            earnings={dayData.totalEarnings}
+                                            time={dayData.totalTime}
+                                            selectedSessionIds={
+                                              selectedSessions
+                                            }
+                                            sessionIds={dayData.sessionIds}
+                                            selectionModeActive={
+                                              selectedModeActive
+                                            }
+                                          />
                                           <Accordion.Panel>
                                             {dayData.sessions
                                               .sort(

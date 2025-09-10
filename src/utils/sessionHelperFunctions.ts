@@ -40,6 +40,7 @@ export function groupSessions(
       // Year
       acc[year] = acc[year] || {
         totalEarnings: { paid: [], unpaid: [] },
+        sessionIds: [],
         totalTime: 0,
         months: {},
       };
@@ -56,10 +57,12 @@ export function groupSessions(
         );
       }
       acc[year].totalTime += timeInSeconds;
+      acc[year].sessionIds.push(session.id);
 
       // Month
       acc[year].months[month] = acc[year].months[month] || {
         totalEarnings: { paid: [], unpaid: [] },
+        sessionIds: [],
         totalTime: 0,
         weeks: {},
       };
@@ -76,12 +79,14 @@ export function groupSessions(
         );
       }
       acc[year].months[month].totalTime += timeInSeconds;
+      acc[year].months[month].sessionIds.push(session.id);
 
       // Week
       acc[year].months[month].weeks[week] = acc[year].months[month].weeks[
         week
       ] || {
         totalEarnings: { paid: [], unpaid: [] },
+        sessionIds: [],
         totalTime: 0,
         days: {},
       };
@@ -98,11 +103,13 @@ export function groupSessions(
         );
       }
       acc[year].months[month].weeks[week].totalTime += timeInSeconds;
+      acc[year].months[month].weeks[week].sessionIds.push(session.id);
 
       // Day
       acc[year].months[month].weeks[week].days[day] = acc[year].months[month]
         .weeks[week].days[day] || {
         totalEarnings: { paid: [], unpaid: [] },
+        sessionIds: [],
         totalTime: 0,
         sessions: [],
       };
@@ -125,6 +132,7 @@ export function groupSessions(
         ...session,
         index,
       });
+      acc[year].months[month].weeks[week].days[day].sessionIds.push(session.id);
 
       return acc;
     },

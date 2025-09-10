@@ -23,21 +23,25 @@ export interface EarningsBreakdown {
 
 export type Year = {
   totalEarnings: EarningsBreakdown;
+  sessionIds: string[];
   totalTime: number;
   months: Record<
     number,
     {
       totalEarnings: EarningsBreakdown;
+      sessionIds: string[];
       totalTime: number;
       weeks: Record<
         number,
         {
           totalEarnings: EarningsBreakdown;
+          sessionIds: string[];
           totalTime: number;
           days: Record<
             string,
             {
               totalEarnings: EarningsBreakdown;
+              sessionIds: string[];
               totalTime: number;
               sessions: (Tables<"timer_session"> & { index: number })[];
             }
