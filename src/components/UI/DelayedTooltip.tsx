@@ -14,6 +14,7 @@ export default function DelayedTooltip({
 }: DelayedTooltipProps) {
   return (
     <Tooltip
+      events={{ hover: true, focus: true, touch: false }}
       label={label}
       openDelay={openDelay}
       closeDelay={closeDelay}

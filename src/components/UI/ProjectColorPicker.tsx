@@ -14,6 +14,8 @@ export default function ProjectColorPicker({
 }: ProjectColorPickerProps) {
   return (
     <ColorPicker
+      saturationLabel="Saturation"
+      hueLabel="Hue"
       value={value}
       onChange={(color) => {
         onChange(color);
@@ -37,6 +39,7 @@ export default function ProjectColorPicker({
         DEFAULT_THEME.colors.yellow[6],
         DEFAULT_THEME.colors.orange[6],
       ]}
+      autoFocus={true}
       {...props}
     />
   );

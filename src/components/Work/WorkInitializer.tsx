@@ -80,8 +80,7 @@ export default function WorkInitializer() {
             <Text size="sm" ta="center" c="dimmed">
               {locale === "de-DE"
                 ? "Möchtest du deinen Workflow optimieren? Konfiguriere Standardeinstellungen in"
-                : "Want to streamline your workflow? Configure default settings in"}
-              the{" "}
+                : "Want to streamline your workflow? Configure default settings in the"}{" "}
               <Anchor
                 component="button"
                 onClick={() => {
@@ -92,7 +91,7 @@ export default function WorkInitializer() {
                 fw={500}
                 inline
               >
-                  {locale === "de-DE" ? "Arbeits-Einstellungen" : "Work Settings"}
+                {locale === "de-DE" ? "Arbeits-Einstellungen" : "Work Settings"}
               </Anchor>{" "}
               {locale === "de-DE"
                 ? "für schnellere Projekterstellung"

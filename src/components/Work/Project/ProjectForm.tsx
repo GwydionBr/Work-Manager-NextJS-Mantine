@@ -21,6 +21,8 @@ import {
   Button,
   Fieldset,
   Text,
+  SegmentedControl,
+  Center,
 } from "@mantine/core";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
@@ -29,13 +31,21 @@ import {
   getRoundingInTimeFragments,
   getRoundingModes,
 } from "@/constants/settings";
+import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 import UpdateButton from "@/components/UI/Buttons/UpdateButton";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
 import ProjectColorPicker from "@/components/UI/ProjectColorPicker";
-import { IconPalette, IconPlus } from "@tabler/icons-react";
+import {
+  IconBriefcase,
+  IconHammer,
+  IconPalette,
+  IconPlus,
+} from "@tabler/icons-react";
 import FinanceCategoryForm from "@/components/Finances/Form/FinanceCategoryForm";
 import { Tables } from "@/types/db.types";
+
+import classes from "./Project.module.css";
 
 interface ProjectFormProps {
   initialValues: {
@@ -206,15 +216,23 @@ export default function ProjectForm({
           <TextInput
             withAsterisk
             data-autofocus
-            label={locale === "de-DE" ? "Titel" : "Title"}
+            aria-label={
+              locale === "de-DE" ? "Name des Projekts" : "Name of the project"
+            }
+            label={locale === "de-DE" ? "Name" : "Name"}
             placeholder={
               locale === "de-DE"
-                ? "Projekt Titel eingeben"
-                : "Enter project title"
+                ? "Project Name eingeben"
+                : "Enter project name"
             }
             {...form.getInputProps("title")}
           />
           <Textarea
+            aria-label={
+              locale === "de-DE"
+                ? "Beschreibung des Projekts"
+                : "Description of the project"
+            }
             label={locale === "de-DE" ? "Beschreibung" : "Description"}
             placeholder={
               locale === "de-DE"
@@ -231,22 +249,40 @@ export default function ProjectForm({
           }
         >
           <Stack gap="xs" align="flex-start">
-            <Tooltip
-              label={locale === "de-DE" ? "Projekt Typ" : "Project type"}
-              refProp="rootRef"
+            <DelayedTooltip
+              label={
+                locale === "de-DE"
+                  ? "Projekt Typ (Hobby/Arbeit)"
+                  : "Project type (Hobby/Work)"
+              }
               openDelay={500}
             >
-              <Switch
-                size="xl"
-                pt={25}
-                onLabel={locale === "de-DE" ? "Hobby" : "Hobby"}
-                offLabel={locale === "de-DE" ? "Arbeit" : "Work"}
-                checked={isHobby}
-                onChange={(event) =>
-                  handleHobbyToggle(event.currentTarget.checked)
-                }
+              <SegmentedControl
+                color={isHobby ? "lime" : "cyan"}
+                data={[
+                  {
+                    value: "hobby",
+                    label: (
+                      <Group gap="xs" align="center" wrap="nowrap">
+                        <IconHammer size={20} />
+                        <Text>{locale === "de-DE" ? "Hobby" : "Hobby"}</Text>
+                      </Group>
+                    ),
+                  },
+                  {
+                    value: "work",
+                    label: (
+                      <Group gap="xs" align="center" wrap="nowrap">
+                        <IconBriefcase size={20} />
+                        <Text>{locale === "de-DE" ? "Arbeit" : "Work"}</Text>
+                      </Group>
+                    ),
+                  },
+                ]}
+                value={isHobby ? "hobby" : "work"}
+                onChange={(value) => handleHobbyToggle(value === "hobby")}
               />
-            </Tooltip>
+            </DelayedTooltip>
 
             <Collapse in={!isHobby}>
               <Group align="flex-end">
@@ -263,12 +299,10 @@ export default function ProjectForm({
                   }
                   error={form.errors.salary}
                 />
-                <Tooltip
+                <DelayedTooltip
                   label={
                     locale === "de-DE" ? "Zahlungsmethode" : "Payment method"
                   }
-                  refProp="rootRef"
-                  openDelay={500}
                 >
                   <Switch
                     size="xl"
@@ -282,7 +316,7 @@ export default function ProjectForm({
                       )
                     }
                   />
-                </Tooltip>
+                </DelayedTooltip>
               </Group>
             </Collapse>
             {/* Currency - only show for work projects */}
@@ -308,7 +342,13 @@ export default function ProjectForm({
           legend={locale === "de-DE" ? "Konfiguration" : "Configuration"}
         >
           <Group wrap="nowrap" justify="space-between">
-            <Popover opened={isColorPickerOpen} onClose={close} onOpen={open}>
+            <Popover
+              opened={isColorPickerOpen}
+              onClose={close}
+              onOpen={open}
+              trapFocus
+              returnFocus
+            >
               <Popover.Target>
                 <Button
                   mt="lg"

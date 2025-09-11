@@ -392,10 +392,10 @@ export default function WorkPage() {
             )}
           </Box>
         ) : (
-          <Text size="lg" c="gray" ta="center">
+          <Text size="lg" c="gray" ta="center" mt="xl">
             {locale === "de-DE"
-              ? "Fügen Sie eine Sitzung hinzu, um sie hier zu sehen"
-              : "Add as Session to see it here"}
+              ? "Füge eine Sitzung hinzu, um sie hier zu sehen"
+              : "Add a session to see it here"}
           </Text>
         )}
         <EditProjectDrawer
