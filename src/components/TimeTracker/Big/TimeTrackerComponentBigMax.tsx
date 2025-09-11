@@ -10,9 +10,7 @@ import {
   Stack,
   Text,
   Button,
-  Paper,
   Collapse,
-  alpha,
 } from "@mantine/core";
 import { TimerState } from "@/types/timeTracker.types";
 import TimeTrackerRow from "../TimeTrackerRow";
@@ -20,16 +18,11 @@ import {
   IconCurrencyEuro,
   IconCurrencyDollar,
   IconPlayerPlay,
-  IconPlayerPause,
   IconPlayerStop,
   IconX,
   IconNotes,
 } from "@tabler/icons-react";
-import {
-  Currency,
-  RoundingAmount,
-  RoundingDirection,
-} from "@/types/settings.types";
+import { Currency, RoundingDirection } from "@/types/settings.types";
 import { getStatusColor } from "@/utils/workHelperFunctions";
 import ModifyTimeTrackerModal from "../ModifyTimeTracker/ModifyTimeTrackerModal";
 import TimeTrackerInfoHoverCard from "../TimeTrackerInfoHoverCard";
@@ -46,7 +39,7 @@ interface TimeTrackerComponentBigMaxProps {
   moneyEarned: string;
   storedActiveSeconds: number;
   storedPausedSeconds: number;
-  roundingMode: RoundingDirection;
+  roundingDirection: RoundingDirection;
   roundingInterval: number;
   currency: Currency;
   salary: number;
@@ -60,10 +53,9 @@ interface TimeTrackerComponentBigMaxProps {
   submitTimer: () => void;
   cancelTimer: () => void;
   removeTimer: () => void;
-  setRoundingAmount: (
-    roundingAmount: RoundingAmount,
-    roundingMode: RoundingDirection,
-    customRoundingAmount: number
+  setTimerRounding: (
+    roundingInterval: number,
+    roundingDirection: RoundingDirection
   ) => void;
   modifyActiveSeconds: (delta: number) => void;
   modifyPausedSeconds: (delta: number) => void;
@@ -81,7 +73,7 @@ export default function TimeTrackerComponentBigMax({
   moneyEarned,
   storedActiveSeconds,
   storedPausedSeconds,
-  roundingMode,
+  roundingDirection,
   roundingInterval,
   currency,
   salary,
@@ -90,13 +82,11 @@ export default function TimeTrackerComponentBigMax({
   color,
   backgroundColor,
   startTimer,
-  pauseTimer,
-  resumeTimer,
   submitTimer,
   cancelTimer,
   modifyActiveSeconds,
   modifyPausedSeconds,
-  setRoundingAmount,
+  setTimerRounding,
   removeTimer,
   setMemo,
 }: TimeTrackerComponentBigMaxProps) {
@@ -132,18 +122,18 @@ export default function TimeTrackerComponentBigMax({
               activeTime={activeTime}
               pausedTime={pausedTime}
               state={state}
-              roundingMode={roundingMode}
+              roundingDirection={roundingDirection}
               activeSeconds={activeSeconds}
               storedActiveSeconds={storedActiveSeconds}
               storedPausedSeconds={storedPausedSeconds}
               roundingInterval={roundingInterval}
               modifyActiveSeconds={modifyActiveSeconds}
               modifyPausedSeconds={modifyPausedSeconds}
-              setRoundingAmount={setRoundingAmount}
+              setTimerRounding={setTimerRounding}
             />
             <TimeTrackerInfoHoverCard
               currency={currency}
-              roundingMode={roundingMode}
+              roundingDirection={roundingDirection}
               roundingInterval={roundingInterval}
               projectTitle={projectTitle}
               salary={salary}

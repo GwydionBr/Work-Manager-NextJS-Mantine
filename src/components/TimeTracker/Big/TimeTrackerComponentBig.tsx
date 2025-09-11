@@ -5,7 +5,6 @@ import { TimerState } from "@/types/timeTracker.types";
 import { Stack, Collapse } from "@mantine/core";
 import {
   Currency,
-  RoundingAmount,
   RoundingDirection,
 } from "@/types/settings.types";
 import TimeTrackerComponentBigMin from "./TimeTrackerComponentBigMin";
@@ -24,7 +23,7 @@ interface TimeTrackerComponentBigProps {
   activeTime: string;
   pausedTime: string;
   activeSeconds: number;
-  roundingMode: RoundingDirection;
+  roundingDirection: RoundingDirection;
   roundingInterval: number;
   storedActiveSeconds: number;
   storedPausedSeconds: number;
@@ -40,10 +39,9 @@ interface TimeTrackerComponentBigProps {
   cancelTimer: () => void;
   modifyActiveSeconds: (delta: number) => void;
   modifyPausedSeconds: (delta: number) => void;
-  setRoundingAmount: (
-    roundingAmount: RoundingAmount,
-    roundingMode: RoundingDirection,
-    customRoundingAmount: number
+  setTimerRounding: (
+    roundingInterval: number,
+    roundingDirection: RoundingDirection
   ) => void;
   setMemo: (memo: string) => void;
 }
@@ -59,7 +57,7 @@ export default function TimeTrackerComponentBig({
   isSubmitting,
   storedActiveSeconds,
   storedPausedSeconds,
-  roundingMode,
+  roundingDirection,
   roundingInterval,
   salary,
   moneyEarned,
@@ -76,7 +74,7 @@ export default function TimeTrackerComponentBig({
   cancelTimer,
   modifyActiveSeconds,
   modifyPausedSeconds,
-  setRoundingAmount,
+  setTimerRounding,
   setMemo,
 }: TimeTrackerComponentBigProps) {
   return (
@@ -92,7 +90,7 @@ export default function TimeTrackerComponentBig({
           activeSeconds={activeSeconds}
           storedActiveSeconds={storedActiveSeconds}
           storedPausedSeconds={storedPausedSeconds}
-          roundingMode={roundingMode}
+          roundingDirection={roundingDirection}
           roundingInterval={roundingInterval}
           currency={currency}
           salary={salary}
@@ -105,7 +103,7 @@ export default function TimeTrackerComponentBig({
           removeTimer={removeTimer}
           modifyActiveSeconds={modifyActiveSeconds}
           modifyPausedSeconds={modifyPausedSeconds}
-          setRoundingAmount={setRoundingAmount}
+          setTimerRounding={setTimerRounding}
           color={color}
           backgroundColor={backgroundColor}
         />
@@ -123,7 +121,7 @@ export default function TimeTrackerComponentBig({
           moneyEarned={moneyEarned}
           storedActiveSeconds={storedActiveSeconds}
           storedPausedSeconds={storedPausedSeconds}
-          roundingMode={roundingMode}
+          roundingDirection={roundingDirection}
           roundingInterval={roundingInterval}
           currency={currency}
           salary={salary}
@@ -137,7 +135,7 @@ export default function TimeTrackerComponentBig({
           cancelTimer={cancelTimer}
           modifyActiveSeconds={modifyActiveSeconds}
           modifyPausedSeconds={modifyPausedSeconds}
-          setRoundingAmount={setRoundingAmount}
+          setTimerRounding={setTimerRounding}
           removeTimer={removeTimer}
           setMemo={setMemo} 
         />

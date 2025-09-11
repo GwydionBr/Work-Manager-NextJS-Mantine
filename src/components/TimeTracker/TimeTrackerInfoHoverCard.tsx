@@ -18,7 +18,7 @@ import InfoActionIcon from "@/components/UI/ActionIcons/InfoActionIcon";
 
 interface TimeTrackerInfoHoverCardProps {
   currency: Currency;
-  roundingMode: RoundingDirection;
+  roundingDirection: RoundingDirection;
   roundingInterval: number;
   projectTitle: string;
   salary: number;
@@ -27,7 +27,7 @@ interface TimeTrackerInfoHoverCardProps {
 
 export default function TimeTrackerInfoHoverCard({
   currency,
-  roundingMode,
+  roundingDirection,
   roundingInterval,
   projectTitle,
   salary,
@@ -48,8 +48,8 @@ export default function TimeTrackerInfoHoverCard({
     return `${Math.floor(seconds / 3600)}h`;
   };
 
-  const getRoundingModeLabel = (mode: RoundingDirection) => {
-    switch (mode) {
+  const getRoundingDirectionLabel = (direction: RoundingDirection) => {
+    switch (direction) {
       case "up":
         return locale === "de-DE" ? "Aufrunden" : "Round Up";
       case "down":
@@ -57,7 +57,7 @@ export default function TimeTrackerInfoHoverCard({
       case "nearest":
         return locale === "de-DE" ? "Am nächsten" : "Round Nearest";
       default:
-        return mode;
+        return direction;
     }
   };
 
@@ -140,7 +140,7 @@ export default function TimeTrackerInfoHoverCard({
               {locale === "de-DE" ? "Modus" : "Mode"}
             </Text>
             <Badge color="orange" variant="light" size="sm">
-              {getRoundingModeLabel(roundingMode)}
+              {getRoundingDirectionLabel(roundingDirection)}
             </Badge>
           </Group>
 

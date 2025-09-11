@@ -24,12 +24,12 @@ import { RoundingDirection } from "@/types/settings.types";
 export default function RoundingSettings() {
   const {
     locale,
-    roundingMode,
+    roundingDirection: roundingMode,
     roundingInterval,
     roundInTimeFragments,
     timeFragmentInterval,
     setRoundingInterval,
-    setRoundingMode,
+    setRoundingDirection: setRoundingMode,
     setRoundInTimeFragments,
     setTimeFragmentInterval,
   } = useSettingsStore();
@@ -84,7 +84,10 @@ export default function RoundingSettings() {
             value={roundingMode}
             onChange={(value) => setRoundingMode(value as RoundingDirection)}
           />
-          <Transition mounted={roundingIntervalState !== roundingInterval} transition="fade-right">
+          <Transition
+            mounted={roundingIntervalState !== roundingInterval}
+            transition="fade-right"
+          >
             {(styles) => (
               <Button
                 onClick={handleCustomSubmit}

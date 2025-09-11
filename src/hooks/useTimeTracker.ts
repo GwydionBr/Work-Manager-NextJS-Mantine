@@ -6,13 +6,8 @@ import { TimerState } from "@/types/timeTracker.types";
 import {
   secondsToTimerFormat,
   getRoundedSeconds,
-  getRoundingInterval,
 } from "@/utils/workHelperFunctions";
-import {
-  Currency,
-  RoundingAmount,
-  RoundingDirection,
-} from "@/types/settings.types";
+import { Currency, RoundingDirection } from "@/types/settings.types";
 import { TablesInsert } from "@/types/db.types";
 
 interface TimeTrackerState {
@@ -23,7 +18,7 @@ interface TimeTrackerState {
   hourlyPayment: boolean;
   userId: string;
   roundingInterval: number;
-  roundingMode: RoundingDirection;
+  roundingDirection: RoundingDirection;
   timeSectionInterval: number;
   roundInTimeSections: boolean;
   moneyEarned: string;
@@ -63,7 +58,7 @@ export function useTimeTracker(initialState: TimeTrackerState) {
             getRoundedSeconds(
               newActiveSeconds,
               prevState.roundingInterval,
-              prevState.roundingMode
+              prevState.roundingDirection
             )
           );
           document.title = `${newActiveTime} - ${prevState.projectTitle} | Work Manager`;
@@ -76,7 +71,7 @@ export function useTimeTracker(initialState: TimeTrackerState) {
               (getRoundedSeconds(
                 newActiveSeconds,
                 prevState.roundingInterval,
-                prevState.roundingMode
+                prevState.roundingDirection
               ) /
                 3600) *
               prevState.salary
@@ -103,7 +98,7 @@ export function useTimeTracker(initialState: TimeTrackerState) {
     updateLoop();
   }, [
     state.roundingInterval,
-    state.roundingMode,
+    state.roundingDirection,
     state.salary,
     state.tempStartTime,
     state.storedActiveSeconds,
@@ -274,22 +269,15 @@ export function useTimeTracker(initialState: TimeTrackerState) {
     };
   }, []);
 
-  const setRoundingAmount = useCallback(
-    (
-      roundingAmount: RoundingAmount,
-      roundingMode: RoundingDirection,
-      customRoundingAmount: number
-    ) => {
+  const setTimerRounding = useCallback(
+    (roundingInterval: number, roundingDirection: RoundingDirection) => {
       setState((prev) => ({
         ...prev,
-        roundingInterval: getRoundingInterval(
-          roundingAmount,
-          customRoundingAmount
-        ),
-        roundingMode,
+        roundingInterval: roundingInterval,
+        roundingDirection: roundingDirection,
       }));
     },
-    [state.roundingInterval, state.roundingMode, state.salary]
+    [state.roundingInterval, state.roundingDirection]
   );
 
   const setRoundInTimeSections = useCallback(
@@ -309,7 +297,7 @@ export function useTimeTracker(initialState: TimeTrackerState) {
       : getRoundedSeconds(
           state.activeSeconds,
           state.roundingInterval,
-          state.roundingMode
+          state.roundingDirection
         );
 
     const newStartTime = new Date(state.startTime ?? 0);
@@ -338,7 +326,7 @@ export function useTimeTracker(initialState: TimeTrackerState) {
     return newTimerSession;
   }, [
     state.roundingInterval,
-    state.roundingMode,
+    state.roundingDirection,
     state.salary,
     state.currency,
     state.hourlyPayment,
@@ -362,7 +350,7 @@ export function useTimeTracker(initialState: TimeTrackerState) {
     getCurrentSession,
     modifyActiveSeconds,
     modifyPausedSeconds,
-    setRoundingAmount,
+    setTimerRounding,
     setRoundInTimeSections,
   };
 }

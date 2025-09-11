@@ -1,6 +1,5 @@
 import {
   Currency,
-  RoundingAmount,
   RoundingDirection,
   FinanceInterval,
   Locale,
@@ -32,14 +31,6 @@ export const shortCurrencies: { value: Currency; label: string }[] = [
   { value: "INR", label: "₹" },
   { value: "BRL", label: "R$" },
   { value: "VEF", label: "Bs" },
-];
-
-export const roundingAmounts: { value: RoundingAmount; label: string }[] = [
-  { value: "min", label: "Minutes" },
-  { value: "1/4h", label: "Quarter Hour" },
-  { value: "1/2h", label: "Half Hour" },
-  { value: "h", label: "Hour" },
-  { value: "custom", label: "Custom" },
 ];
 
 export const getRoundingModes = (locale: Locale) => {

@@ -14,10 +14,7 @@ import TimeTrackerInstance from "./TimeTrackerInstance";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import { Currency } from "@/types/settings.types";
 import TimeTrackerActionIcon from "./TimeTrackerActionIcons/TimeTrackerActionIcon";
-import {
-  getRoundingInterval,
-  getStatusColor,
-} from "@/utils/workHelperFunctions";
+import { getStatusColor } from "@/utils/workHelperFunctions";
 
 interface TimerManagerProps {
   isBig: boolean;
@@ -32,10 +29,14 @@ export default function TimerManager({
 }: TimerManagerProps) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isClient, setIsClient] = useState(false);
-  const { getAllTimers, addTimer, timers: timerData, isTimerRunning } = useTimeTrackerManager();
+  const {
+    getAllTimers,
+    addTimer,
+    timers: timerData,
+    isTimerRunning,
+  } = useTimeTrackerManager();
   const { activeProjectId } = useWorkStore();
-  const { roundingAmount, roundingMode, customRoundingAmount, locale } =
-    useSettingsStore();
+  const { roundingInterval, roundingDirection, locale } = useSettingsStore();
   const activeProject = useWorkStore((state) =>
     state.projects.find((p) => p.project.id === activeProjectId)
   );
@@ -65,11 +66,8 @@ export default function TimerManager({
       salary: salary,
       hourlyPayment: hourlyPayment,
       userId: userId,
-      roundingInterval: getRoundingInterval(
-        roundingAmount,
-        customRoundingAmount
-      ),
-      roundingMode: roundingMode,
+      roundingInterval: roundingInterval,
+      roundingDirection: roundingDirection,
       state: TimerState.Stopped,
       activeSeconds: 0,
       pausedSeconds: 0,
@@ -112,11 +110,8 @@ export default function TimerManager({
         salary: activeProject.project.salary,
         hourlyPayment: activeProject.project.hourly_payment,
         userId: activeProject.project.user_id,
-        roundingInterval: getRoundingInterval(
-          roundingAmount,
-          customRoundingAmount
-        ),
-        roundingMode: roundingMode,
+        roundingInterval: roundingInterval,
+        roundingDirection: roundingDirection,
         state: TimerState.Stopped,
         activeSeconds: 0,
         pausedSeconds: 0,

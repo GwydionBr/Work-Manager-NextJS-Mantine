@@ -22,108 +22,55 @@ import {
   IconAlertCircle,
   IconInfoCircle,
 } from "@tabler/icons-react";
-import { roundingAmounts, getRoundingModes } from "@/constants/settings";
-import { RoundingAmount, RoundingDirection } from "@/types/settings.types";
+import { getRoundingModes } from "@/constants/settings";
+import { RoundingDirection } from "@/types/settings.types";
 import { getRoundedSeconds } from "@/utils/workHelperFunctions";
 
 interface ModifyRoundingProps {
-  setRoundingAmount: (
-    roundingAmount: RoundingAmount,
-    roundingMode: RoundingDirection,
-    customRoundingAmount: number
+  setTimerRounding: (
+    roundingInterval: number,
+    roundingDirection: RoundingDirection
   ) => void;
   activeSeconds: number;
-  roundingMode: RoundingDirection;
+  roundingDirection: RoundingDirection;
   roundingInterval: number;
 }
 
 export default function ModifyRounding({
-  setRoundingAmount,
+  setTimerRounding,
   activeSeconds,
-  roundingMode,
+  roundingDirection,
   roundingInterval,
 }: ModifyRoundingProps) {
   const { locale } = useSettingsStore();
-  const [selectedRoundingAmount, setSelectedRoundingAmount] =
-    useState<RoundingAmount>("min");
-  const [selectedRoundingMode, setSelectedRoundingMode] =
-    useState<RoundingDirection>(roundingMode as RoundingDirection);
-  const [customAmount, setCustomAmount] = useState(1);
+  const [selectedRoundingInterval, setSelectedRoundingInterval] =
+    useState<number>(roundingInterval);
+  const [selectedRoundingDirection, setSelectedRoundingDirection] =
+    useState<RoundingDirection>(roundingDirection as RoundingDirection);
   const [loading, setLoading] = useState(false);
   const [previewRoundedSeconds, setPreviewRoundedSeconds] = useState(0);
 
-  // Convert rounding interval to rounding amount
-  const getRoundingAmountFromInterval = (interval: number): RoundingAmount => {
-    switch (interval) {
-      case 60:
-        return "min";
-      case 900:
-        return "1/4h";
-      case 1800:
-        return "1/2h";
-      case 3600:
-        return "h";
-      default:
-        return "custom";
-    }
-  };
-
-  // Convert rounding amount to interval
-  const getIntervalFromRoundingAmount = (
-    amount: RoundingAmount,
-    custom: number
-  ): number => {
-    switch (amount) {
-      case "min":
-        return 60;
-      case "1/4h":
-        return 900;
-      case "1/2h":
-        return 1800;
-      case "h":
-        return 3600;
-      case "custom":
-        return custom * 60;
-      default:
-        return 60;
-    }
-  };
-
   useEffect(() => {
     // Initialize with current time tracker settings
-    setSelectedRoundingAmount(getRoundingAmountFromInterval(roundingInterval));
-    setSelectedRoundingMode(roundingMode as RoundingDirection);
-    setCustomAmount(roundingInterval / 60);
-  }, [roundingInterval, roundingMode]);
+    setSelectedRoundingInterval(roundingInterval);
+    setSelectedRoundingDirection(roundingDirection as RoundingDirection);
+  }, [roundingInterval, roundingDirection]);
 
   // Calculate preview of rounded seconds
   useEffect(() => {
-    const interval = getIntervalFromRoundingAmount(
-      selectedRoundingAmount,
-      customAmount
-    );
     const rounded = getRoundedSeconds(
       activeSeconds,
-      interval,
-      selectedRoundingMode
+      selectedRoundingInterval,
+      selectedRoundingDirection
     );
     setPreviewRoundedSeconds(rounded);
-  }, [
-    selectedRoundingAmount,
-    selectedRoundingMode,
-    customAmount,
-    activeSeconds,
-  ]);
+  }, [selectedRoundingInterval, selectedRoundingDirection, activeSeconds]);
 
   async function handleApplyRounding() {
     setLoading(true);
 
     // Update time tracker rounding settings only
-    setRoundingAmount(
-      selectedRoundingAmount,
-      selectedRoundingMode,
-      customAmount
-    );
+    setTimerRounding(selectedRoundingInterval, selectedRoundingDirection);
 
     setLoading(false);
   }
@@ -143,10 +90,8 @@ export default function ModifyRounding({
   };
 
   const hasChanges =
-    selectedRoundingAmount !==
-      getRoundingAmountFromInterval(roundingInterval) ||
-    selectedRoundingMode !== roundingMode ||
-    customAmount !== roundingInterval / 60;
+    selectedRoundingInterval !== roundingInterval ||
+    selectedRoundingDirection !== roundingDirection
 
   return (
     <Stack gap="lg">
@@ -166,16 +111,7 @@ export default function ModifyRounding({
             <Text size="sm" c="dimmed" mb="xs">
               {locale === "de-DE" ? "Aktuelle Rundung" : "Current Rounding"}
             </Text>
-            <Text fw={600}>
-              {
-                roundingAmounts.find(
-                  (r) =>
-                    r.value === getRoundingAmountFromInterval(roundingInterval)
-                )?.label
-              }
-              {getRoundingAmountFromInterval(roundingInterval) === "custom" &&
-                ` (${Math.round(roundingInterval / 60)} min)`}
-            </Text>
+            <Text fw={600}>{roundingInterval} min</Text>
           </Box>
 
           <Box>
@@ -184,8 +120,9 @@ export default function ModifyRounding({
             </Text>
             <Text fw={600}>
               {
-                getRoundingModes(locale).find((r) => r.value === roundingMode)
-                  ?.label
+                getRoundingModes(locale).find(
+                  (r) => r.value === roundingDirection
+                )?.label
               }
             </Text>
           </Box>
@@ -203,37 +140,24 @@ export default function ModifyRounding({
 
         <Stack gap="md">
           <Group gap="md" align="end">
-            <Select
-              label={locale === "de-DE" ? "Rundungs-Betrag" : "Rounding Amount"}
-              value={selectedRoundingAmount}
-              onChange={(value) =>
-                setSelectedRoundingAmount(value as RoundingAmount)
+            <NumberInput
+              label={
+                locale === "de-DE" ? "Rundungsintervall" : "Rounding Interval"
               }
-              data={roundingAmounts}
-              w={200}
+              suffix={locale === "de-DE" ? " Minuten" : " minutes"}
+              value={selectedRoundingInterval}
+              onChange={(value) => setSelectedRoundingInterval(Number(value))}
+              min={1}
+              max={1440}
+              w={150}
             />
-
-            {selectedRoundingAmount === "custom" && (
-              <NumberInput
-                label={
-                  locale === "de-DE"
-                    ? "Benutzerdefinierter Betrag (Minuten)"
-                    : "Custom Amount (minutes)"
-                }
-                value={customAmount}
-                onChange={(value) => setCustomAmount(Number(value))}
-                min={1}
-                max={1440}
-                w={150}
-              />
-            )}
           </Group>
 
           <Select
             label={locale === "de-DE" ? "Rundungs-Modus" : "Rounding Mode"}
-            value={selectedRoundingMode}
+            value={selectedRoundingDirection}
             onChange={(value) =>
-              setSelectedRoundingMode(value as RoundingDirection)
+              setSelectedRoundingDirection(value as RoundingDirection)
             }
             data={getRoundingModes(locale)}
             w={200}

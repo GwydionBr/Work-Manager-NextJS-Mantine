@@ -13,8 +13,6 @@ import {
 } from "@mantine/core";
 import { TimerState } from "@/types/timeTracker.types";
 import StartActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/StartActionIcons";
-import PauseActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/PauseActionIcon";
-import ResumeActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/ResumeActionIcon";
 import StopActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/StopActionIcon";
 import CancelActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/CancelActionIcon";
 import XActionIcon from "@/components/UI/ActionIcons/XActionIcon";
@@ -22,7 +20,6 @@ import ModifyTimeTrackerModal from "@/components/TimeTracker/ModifyTimeTracker/M
 import TimeTrackerInfoHoverCard from "@/components/TimeTracker/TimeTrackerInfoHoverCard";
 import {
   Currency,
-  RoundingAmount,
   RoundingDirection,
 } from "@/types/settings.types";
 
@@ -34,7 +31,7 @@ interface TimeTrackerComponentBigMinProps {
   pausedTime: string;
   roundedActiveTime: string;
   isSubmitting: boolean;
-  roundingMode: RoundingDirection;
+  roundingDirection: RoundingDirection;
   roundingInterval: number;
   currency: Currency;
   salary: number;
@@ -45,10 +42,9 @@ interface TimeTrackerComponentBigMinProps {
   backgroundColor: string;
   modifyActiveSeconds: (delta: number) => void;
   modifyPausedSeconds: (delta: number) => void;
-  setRoundingAmount: (
-    roundingAmount: RoundingAmount,
-    roundingMode: RoundingDirection,
-    customRoundingAmount: number
+  setTimerRounding: (
+    roundingInterval: number,
+    roundingDirection: RoundingDirection
   ) => void;
   startTimer: () => void;
   pauseTimer: () => void;
@@ -68,17 +64,15 @@ export default function TimeTrackerComponentBigMin({
   isSubmitting,
   storedActiveSeconds,
   storedPausedSeconds,
-  roundingMode,
+  roundingDirection,
   roundingInterval,
   currency,
   salary,
   hourlyPayment,
   modifyActiveSeconds,
   modifyPausedSeconds,
-  setRoundingAmount,
+  setTimerRounding,
   startTimer,
-  pauseTimer,
-  resumeTimer,
   submitTimer,
   cancelTimer,
   removeTimer,
@@ -104,18 +98,18 @@ export default function TimeTrackerComponentBigMin({
           activeTime={activeTime}
           pausedTime={pausedTime}
           state={state}
-          roundingMode={roundingMode}
+          roundingDirection={roundingDirection}
           activeSeconds={activeSeconds}
           storedActiveSeconds={storedActiveSeconds}
           storedPausedSeconds={storedPausedSeconds}
           roundingInterval={roundingInterval}
           modifyActiveSeconds={modifyActiveSeconds}
           modifyPausedSeconds={modifyPausedSeconds}
-          setRoundingAmount={setRoundingAmount}
+          setTimerRounding={setTimerRounding}
         />
         <TimeTrackerInfoHoverCard
           currency={currency}
-          roundingMode={roundingMode}
+          roundingDirection={roundingDirection}
           roundingInterval={roundingInterval}
           projectTitle={projectTitle}
           salary={salary}

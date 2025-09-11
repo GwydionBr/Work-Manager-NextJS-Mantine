@@ -13,8 +13,6 @@ import { alpha, Box, Transition } from "@mantine/core";
 import TimeTrackerComponentBig from "./Big/TimeTrackerComponentBig";
 import TimeTrackerComponentSmall from "./Small/TimeTrackerComponentSmall";
 
-import { getTimeFragmentSession } from "@/utils/helper/getTimeFragmentSession";
-
 import { TimerState } from "@/types/timeTracker.types";
 import { TablesInsert } from "@/types/db.types";
 import SessionNotification from "../Work/Session/SessionNotification";
@@ -78,7 +76,7 @@ export default function TimeTrackerInstance({
     tempStartTime,
     storedActiveSeconds,
     storedPausedSeconds,
-    roundingMode,
+    roundingDirection,
     roundingInterval,
     modifyActiveSeconds,
     modifyPausedSeconds,
@@ -89,7 +87,7 @@ export default function TimeTrackerInstance({
     stopTimer,
     cancelTimer,
     restoreTimer,
-    setRoundingAmount,
+    setTimerRounding,
     setRoundInTimeSections,
   } = useTimeTracker({
     projectId: timer.projectId,
@@ -99,7 +97,7 @@ export default function TimeTrackerInstance({
     hourlyPayment: timer.hourlyPayment,
     userId: timer.userId,
     roundingInterval: timer.roundingInterval,
-    roundingMode: timer.roundingMode,
+    roundingDirection: timer.roundingDirection,
     moneyEarned: timer.moneyEarned,
     activeTime: timer.activeTime,
     roundedActiveTime: timer.roundedActiveTime,
@@ -115,6 +113,9 @@ export default function TimeTrackerInstance({
     roundInTimeSections: roundInTimeFragments,
     memo: timer.memo,
   });
+
+  // console.log("rounded Time", roundedActiveTime);
+  // console.log("rounding interval ", roundingInterval);
 
   // Sync Hook state mit Store
   useEffect(() => {
@@ -243,7 +244,7 @@ export default function TimeTrackerInstance({
               activeTime={activeTime}
               pausedTime={pausedTime}
               activeSeconds={activeSeconds}
-              roundingMode={roundingMode}
+              roundingDirection={roundingDirection}
               roundingInterval={roundingInterval}
               salary={timer.salary}
               storedActiveSeconds={storedActiveSeconds}
@@ -259,7 +260,7 @@ export default function TimeTrackerInstance({
               submitTimer={submitTimer}
               modifyActiveSeconds={modifyActiveSeconds}
               modifyPausedSeconds={modifyPausedSeconds}
-              setRoundingAmount={setRoundingAmount}
+              setTimerRounding={setTimerRounding}
             />
           </div>
         )}
@@ -284,7 +285,7 @@ export default function TimeTrackerInstance({
               activeTime={activeTime}
               pausedTime={pausedTime}
               activeSeconds={activeSeconds}
-              roundingMode={roundingMode}
+              roundingDirection={roundingDirection}
               roundingInterval={roundingInterval}
               projectTitle={timer.projectTitle}
               salary={timer.salary}
@@ -294,7 +295,7 @@ export default function TimeTrackerInstance({
               storedPausedSeconds={storedPausedSeconds}
               modifyActiveSeconds={modifyActiveSeconds}
               modifyPausedSeconds={modifyPausedSeconds}
-              setRoundingAmount={setRoundingAmount}
+              setTimerRounding={setTimerRounding}
               showSmall={showSmall}
               setShowSmall={setShowSmall}
               isSubmitting={isSubmitting}

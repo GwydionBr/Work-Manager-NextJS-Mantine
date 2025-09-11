@@ -1,4 +1,3 @@
-// __tests__/getTimeFragmentSession.test.ts
 import { getTimeFragmentSession } from "../src/utils/helper";
 import { TablesInsert } from "../src/types/db.types";
 

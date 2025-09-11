@@ -13,7 +13,7 @@ export interface TimerData {
   hourlyPayment: boolean;
   userId: string;
   roundingInterval: number;
-  roundingMode: RoundingDirection;
+  roundingDirection: RoundingDirection;
   state: TimerState;
   activeSeconds: number;
   pausedSeconds: number;
@@ -68,11 +68,12 @@ export const useTimeTrackerManager = create(
         if (timerCount >= 3) {
           return {
             success: false,
-            error:
-              {
-                german: "Es können maximal 3 Timer gleichzeitig laufen. Bitte stoppen oder entfernen Sie einen bestehenden Timer.",
-                english: "Maximum 3 time trackers allowed. Please stop or remove an existing timer first.",
-              },
+            error: {
+              german:
+                "Es können maximal 3 Timer gleichzeitig laufen. Bitte stoppen oder entfernen Sie einen bestehenden Timer.",
+              english:
+                "Maximum 3 time trackers allowed. Please stop or remove an existing timer first.",
+            },
           };
         }
 

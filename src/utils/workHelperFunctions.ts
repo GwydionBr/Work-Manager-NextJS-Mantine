@@ -1,4 +1,4 @@
-import { RoundingAmount, RoundingDirection } from "@/types/settings.types";
+import { RoundingDirection } from "@/types/settings.types";
 import { Tables, TablesInsert } from "@/types/db.types";
 import { TimerState } from "@/types/timeTracker.types";
 import { TimeSpan } from "@/types/work.types";
@@ -16,38 +16,32 @@ export function getStatusColor(state: TimerState) {
   }
 }
 
-export function getRoundingInterval(
-  roundingAmount: RoundingAmount,
-  customRoundingAmount?: number
-) {
-  switch (roundingAmount) {
-    case "min":
-      return 60;
-    case "1/4h":
-      return 900; // 15 minutes
-    case "1/2h":
-      return 1800; // 30 minutes
-    case "h":
-      return 3600; // 1 hour
-    case "custom":
-      return (customRoundingAmount ?? 0) * 60;
-    default:
-      return 60;
-  }
-}
-
+/**
+ * Rounds the seconds to the nearest rounding interval
+ * @param seconds - The seconds to round
+ * @param roundingInterval - The rounding interval in minutes
+ * @param roundingDirection - The rounding direction
+ * @returns The rounded seconds
+ */
 export function getRoundedSeconds(
   seconds: number,
   roundingInterval: number,
-  roundingMode: RoundingDirection
+  roundingDirection: RoundingDirection
 ) {
-  switch (roundingMode) {
+  const roundingIntervalSeconds = roundingInterval * 60;
+  switch (roundingDirection) {
     case "up":
-      return Math.ceil(seconds / roundingInterval) * roundingInterval;
+      return (
+        Math.ceil(seconds / roundingIntervalSeconds) * roundingIntervalSeconds
+      );
     case "down":
-      return Math.floor(seconds / roundingInterval) * roundingInterval;
+      return (
+        Math.floor(seconds / roundingIntervalSeconds) * roundingIntervalSeconds
+      );
     case "nearest":
-      return Math.round(seconds / roundingInterval) * roundingInterval;
+      return (
+        Math.round(seconds / roundingIntervalSeconds) * roundingIntervalSeconds
+      );
     default:
       return seconds;
   }
@@ -306,4 +300,3 @@ export function filterOutExistingSessionTimes(
     };
   }
 }
-
