@@ -38,6 +38,7 @@ export default function ColumnHeader({
   const { locale } = useSettingsStore();
   const { isTimerRunning, getRunningTimer } = useTimeTrackerManager();
   const timer = getRunningTimer();
+  const isDayToday = day ? isToday(day.day) : false;
   const totalTime = useMemo(() => {
     if (!day) return 0;
     return day.sessions.reduce(
@@ -69,12 +70,17 @@ export default function ColumnHeader({
             top: 60,
             zIndex: 20,
             cursor: day ? "pointer" : "default",
-            border: day
-              ? "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))"
-              : "none",
-            backgroundColor:
-              hovered && day
-                ? "light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))"
+            border: isDayToday
+              ? "2px solid light-dark(var(--mantine-color-gray-9), var(--mantine-color-dark-0))"
+              : day
+                ? "1px solid light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-3))"
+                : "none",
+            backgroundColor: isDayToday
+              ? hovered
+                ? "light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-5))"
+                : "light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))"
+              : hovered && day
+                ? "light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5))"
                 : "var(--mantine-color-body)",
             borderTopLeftRadius: day ? 6 : 0,
             borderTopRightRadius: day ? 6 : 0,

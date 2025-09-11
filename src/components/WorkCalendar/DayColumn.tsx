@@ -4,12 +4,13 @@ import { useHover, useHotkeys } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useCalendarStore } from "@/stores/calendarStore";
 
-import { Box, Skeleton, Stack, Text } from "@mantine/core";
+import { alpha, Box, Skeleton, Stack, Text } from "@mantine/core";
 
 import {
   getStartOfDay,
   getEndOfDay,
   mergeAdjacentSessionsForRender,
+  isToday,
 } from "./calendarUtils";
 import {
   CalendarSession,
@@ -27,7 +28,7 @@ interface DayColumnProps {
   yToTime: (y: number, day: Date) => Date;
   timeToY: (date: Date) => number;
   isFetching: boolean;
-  currentTime?: Date;
+  currentTime: Date;
   sessions: CalendarSession[];
   appointments: CalendarAppointment[];
   handleSessionClick: (sessionId: string) => void;
@@ -127,11 +128,11 @@ export function DayColumn({
         style={{
           position: "relative",
           height: rasterHeight * 24 * hourMultiplier,
-          border: currentTime
+          border: isToday(day)
             ? "2px solid light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-3))"
             : "1px solid light-dark(var(--mantine-color-gray-6), var(--mantine-color-gray-6))",
           borderRadius: 0,
-          background: currentTime
+          background: isToday(day)
             ? "light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))"
             : "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))",
           overflow: "hidden",
@@ -161,6 +162,17 @@ export function DayColumn({
 
         {/* Current time indicator - red line for today */}
         <TimeTrackerEvent toY={timeToY} currentTime={currentTime} day={day} />
+
+        <Box
+          style={{
+            background: alpha("var(--mantine-color-red-6)", 0.3),
+            position: "absolute",
+            top: timeToY(currentTime) - rasterHeight / 2,
+            left: 0,
+            right: 0,
+            height: rasterHeight,
+          }}
+        />
 
         {/* New session event */}
         {!isFetching && addingMode && hovered && startNewSession === null && (

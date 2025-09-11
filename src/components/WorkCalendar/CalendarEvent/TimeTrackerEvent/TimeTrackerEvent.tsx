@@ -10,7 +10,7 @@ import ActiveTimeTracker from "./ActiveTimeTracker";
 
 interface TimeTrackerEventProps {
   toY: (date: Date) => number;
-  currentTime?: Date;
+  currentTime: Date;
   day: Date;
 }
 export default function TimeTrackerEvent({
@@ -28,7 +28,7 @@ export default function TimeTrackerEvent({
   const color = project?.project.color ?? "var(--mantine-color-red-6)";
   const backgroundColor = alpha(color, 0.1);
 
-  if (!currentTime) {
+  if (!isToday(day)) {
     if (isYesterday(day) && isTimerRunning && timer) {
       // Check if the running timer started yesterday
       const timerStartDate = new Date(timer.startTime ?? 0);

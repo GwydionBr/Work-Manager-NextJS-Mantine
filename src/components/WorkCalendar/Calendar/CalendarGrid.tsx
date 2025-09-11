@@ -211,10 +211,10 @@ export default function CalendarGrid({
             top: 65,
             zIndex: 20,
             borderBottom:
-              "2px solid light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2))",
+              "2px solid light-dark(var(--mantine-color-gray-9), var(--mantine-color-dark-0))",
           }}
         >
-          <Box w={42}>
+          <Box w={49}>
             <ColumnHeader
               icon={<PrevActionIcon onClick={() => handleNextAndPrev(-1)} />}
               visibleProjects={visibleProjects}
@@ -222,7 +222,7 @@ export default function CalendarGrid({
           </Box>
           <Grid
             w="100%"
-            columns={420}
+            columns={days.length}
             gutter={0}
             align="flex-end"
             style={{
@@ -235,7 +235,7 @@ export default function CalendarGrid({
             {days.map((d) => {
               return (
                 <Grid.Col
-                  span={Math.floor(420 / days.length)}
+                  span={1}
                   key={`day-${getStartOfDay(d.day).toISOString().slice(0, 10)}`}
                 >
                   <ColumnHeader
@@ -247,7 +247,7 @@ export default function CalendarGrid({
               );
             })}
           </Grid>
-          <Box w={42}>
+          <Box w={49}>
             <ColumnHeader
               icon={<NextActionIcon onClick={() => handleNextAndPrev(1)} />}
               visibleProjects={visibleProjects}
@@ -283,7 +283,7 @@ export default function CalendarGrid({
               style={{ position: "relative", overflow: "hidden" }}
             >
               <Grid
-                columns={420}
+                columns={days.length}
                 gutter={0}
                 align="flex-end"
                 ref={ref}
@@ -308,7 +308,7 @@ export default function CalendarGrid({
                 {days.map((d) => {
                   return (
                     <Grid.Col
-                      span={Math.floor(420 / days.length)}
+                      span={1}
                       key={`day-${getStartOfDay(d.day).toISOString().slice(0, 10)}`}
                     >
                       <DayColumn
@@ -317,7 +317,7 @@ export default function CalendarGrid({
                         yToTime={yToTime}
                         timeToY={timeToY}
                         isFetching={isFetching}
-                        currentTime={isToday(d.day) ? currentTime : undefined}
+                        currentTime={currentTime}
                         sessions={d.sessions}
                         appointments={d.appointments}
                         handleSessionClick={handleSessionClick}
