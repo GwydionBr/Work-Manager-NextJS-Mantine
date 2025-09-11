@@ -24,20 +24,8 @@ import CreateButton from "@/components/UI/Buttons/CreateButton";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 import LocaleDateTimePicker from "@/components/UI/Locale/LocaleDateTimePicker";
 
-import { Currency } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
-
-interface NewSession {
-  project_id?: string;
-  start_time: string;
-  end_time: string;
-  active_seconds: number;
-  paused_seconds: number;
-  currency: Currency;
-  salary: number;
-  memo?: string;
-  [key: string]: unknown;
-}
+import { NewSession } from "@/types/timerSession.types";
 
 interface SessionFormProps {
   initialValues: NewSession;

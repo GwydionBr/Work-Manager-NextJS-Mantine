@@ -6,16 +6,7 @@ import { useWorkStore } from "@/stores/workManagerStore";
 import { useProjectFiltering } from "@/hooks/useProjectFiltering";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import {
-  Box,
-  Collapse,
-  Divider,
-  Group,
-  Loader,
-  Stack,
-  Text,
-  Grid,
-} from "@mantine/core";
+import { Box, Collapse, Group, Loader, Stack, Text, Grid } from "@mantine/core";
 import EditProjectDrawer from "@/components/Work/Project/EditProjectDrawer";
 import Header from "@/components/Header/Header";
 import WorkAnalysis from "@/components/Work/Analysis/WorkAnalysis";
@@ -31,7 +22,7 @@ import { groupSessions } from "@/utils/sessionHelperFunctions";
 import NewHourlyPayoutCard from "@/components/Payout/NewHourlyPayoutCard";
 import NewProjectPayoutCard from "@/components/Payout/NewProjectPayoutCard";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
-import NewSessFormModal from "@/components/Work/Session/SessionFormModal";
+import SessionFormModal from "@/components/Work/Session/SessionFormModal";
 import AddActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import SessionSelector from "@/components/Work/Session/SessionSelector";
 
@@ -82,6 +73,11 @@ export default function WorkPage() {
       open: activateSelectedMode,
     },
   ] = useDisclosure(false);
+  const [
+    sessionFormOpened,
+    { open: openSessionForm, close: closeSessionForm },
+  ] = useDisclosure(false);
+
   // Use the custom hook for filtering logic
   const { timeFilteredSessions } = useProjectFiltering(
     activeProject?.sessions ?? [],
@@ -306,7 +302,16 @@ export default function WorkPage() {
                 opened={payoutOpened}
               />
             </Group>
-            <NewSessFormModal button={<AddActionIcon onClick={() => {}} />} />
+            <AddActionIcon
+              onClick={openSessionForm}
+              tooltipLabel={
+                locale === "de-DE" ? "Sitzung hinzufügen" : "Add Session"
+              }
+            />
+            <SessionFormModal
+              opened={sessionFormOpened}
+              onClose={closeSessionForm}
+            />
             <SelectActionIcon
               disabled={selectableSessions.length === 0}
               onClick={handleSelectionToggle}

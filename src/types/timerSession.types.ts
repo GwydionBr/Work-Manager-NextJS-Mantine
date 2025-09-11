@@ -11,6 +11,18 @@ export interface SessionListProps {
   isOverview?: boolean;
 }
 
+export interface NewSession {
+  project_id?: string;
+  start_time: string;
+  end_time: string;
+  active_seconds: number;
+  paused_seconds: number;
+  currency: Currency;
+  salary: number;
+  memo?: string;
+  [key: string]: unknown;
+}
+
 export interface Earnings {
   amount: number;
   currency: Currency;

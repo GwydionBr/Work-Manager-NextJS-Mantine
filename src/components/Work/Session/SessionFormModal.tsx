@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useSettingsStore from "@/stores/settingsStore";
 import { useWorkStore } from "@/stores/workManagerStore";
 
-import { Box, Button, Group, Modal, Text, useModalsStack } from "@mantine/core";
+import { Group, Modal, Text, useModalsStack } from "@mantine/core";
 import SessionForm from "./SessionForm";
 import { TablesInsert } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
@@ -12,12 +12,19 @@ import { getTimeFragmentSession } from "@/utils/helper/getTimeFragmentSession";
 import SessionNotification from "./SessionNotification";
 import ProjectForm from "../Project/ProjectForm";
 import { IconClockPlus } from "@tabler/icons-react";
+import { NewSession } from "@/types/timerSession.types";
 
 interface SessionFormModalProps {
-  button: React.ReactNode;
+  opened: boolean;
+  onClose: () => void;
+  initialValues?: NewSession;
 }
 
-export default function SessionFormModal({ button }: SessionFormModalProps) {
+export default function SessionFormModal({
+  opened,
+  onClose,
+  initialValues,
+}: SessionFormModalProps) {
   const stack = useModalsStack(["session-form", "project-form"]);
   const { locale, roundInTimeFragments, timeFragmentInterval, format24h } =
     useSettingsStore();
@@ -28,6 +35,14 @@ export default function SessionFormModal({ button }: SessionFormModalProps) {
   );
   const [submittingSession, setSubmittingSession] = useState(false);
   const [submittingProject, setSubmittingProject] = useState(false);
+
+  useEffect(() => {
+    if (opened) {
+      stack.open("session-form");
+    } else {
+      stack.closeAll();
+    }
+  }, [opened]);
 
   async function handleSessionSubmit(values: {
     start_time: string;
@@ -76,7 +91,7 @@ export default function SessionFormModal({ button }: SessionFormModalProps) {
       locale,
       format24h,
       onCreatedSessions: () => {
-        stack.closeAll();
+        onClose();
       },
     });
 
@@ -103,22 +118,23 @@ export default function SessionFormModal({ button }: SessionFormModalProps) {
     setSubmittingProject(false);
   }
   return (
-    <Box>
-      <Modal.Stack>
-        <Modal
-          {...stack.register("session-form")}
-          title={
-            <Group>
-              <IconClockPlus />
-              <Text>
-                {locale === "de-DE" ? "Sitzung hinzufügen" : "Add Session"}
-              </Text>
-            </Group>
-          }
-          transitionProps={{ transition: "fade-right", duration: 400 }}
-        >
-          <SessionForm
-            initialValues={{
+    <Modal.Stack>
+      <Modal
+        {...stack.register("session-form")}
+        onClose={onClose}
+        title={
+          <Group>
+            <IconClockPlus />
+            <Text>
+              {locale === "de-DE" ? "Sitzung hinzufügen" : "Add Session"}
+            </Text>
+          </Group>
+        }
+        transitionProps={{ transition: "fade-right", duration: 400 }}
+      >
+        <SessionForm
+          initialValues={
+            initialValues ?? {
               project_id: activeProject?.project.id,
               start_time: new Date(new Date().setSeconds(0, 0)).toISOString(),
               end_time: new Date(new Date().setSeconds(0, 0)).toISOString(),
@@ -128,42 +144,40 @@ export default function SessionFormModal({ button }: SessionFormModalProps) {
               salary: activeProject?.project.hourly_payment
                 ? activeProject?.project.salary || 0
                 : 0,
-            }}
-            onSubmit={handleSessionSubmit}
-            projectId={currentProjectId ?? undefined}
-            onProjectChange={setCurrentProjectId}
-            onOpenProjectForm={() => stack.open("project-form")}
-            onCancel={stack.closeAll}
-            newSession
-            project={activeProject?.project}
-            submitting={submittingSession}
-          />
-        </Modal>
+            }
+          }
+          onSubmit={handleSessionSubmit}
+          projectId={currentProjectId ?? undefined}
+          onProjectChange={setCurrentProjectId}
+          onOpenProjectForm={() => stack.open("project-form")}
+          onCancel={onClose}
+          newSession
+          project={activeProject?.project}
+          submitting={submittingSession}
+        />
+      </Modal>
 
-        <Modal
-          {...stack.register("project-form")}
-          title="Add project"
-          transitionProps={{ transition: "fade-right", duration: 400 }}
-        >
-          <ProjectForm
-            initialValues={{
-              color: null,
-              title: "",
-              description: "",
-              salary: 0,
-              currency: "USD",
-              hourly_payment: false,
-              cash_flow_category_id: null,
-            }}
-            onSubmit={handleProjectSubmit}
-            onCancel={() => stack.close("project-form")}
-            newProject
-            submitting={submittingProject}
-          />
-        </Modal>
-      </Modal.Stack>
-
-      <Box onClick={() => stack.open("session-form")}>{button}</Box>
-    </Box>
+      <Modal
+        {...stack.register("project-form")}
+        title="Add project"
+        transitionProps={{ transition: "fade-right", duration: 400 }}
+      >
+        <ProjectForm
+          initialValues={{
+            color: null,
+            title: "",
+            description: "",
+            salary: 0,
+            currency: "USD",
+            hourly_payment: false,
+            cash_flow_category_id: null,
+          }}
+          onSubmit={handleProjectSubmit}
+          onCancel={() => stack.close("project-form")}
+          newProject
+          submitting={submittingProject}
+        />
+      </Modal>
+    </Modal.Stack>
   );
 }
