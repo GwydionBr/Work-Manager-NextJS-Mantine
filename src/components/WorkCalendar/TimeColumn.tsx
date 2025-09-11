@@ -51,6 +51,7 @@ export function TimeColumn({
           }}
         >
           {Array.from({ length: totalTimeUnits + 1 }, (_, i) => (
+            
             <Text
               key={i}
               size="xs"
