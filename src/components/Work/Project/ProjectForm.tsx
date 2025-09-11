@@ -24,7 +24,11 @@ import {
 } from "@mantine/core";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
-import { currencies } from "@/constants/settings";
+import {
+  currencies,
+  getRoundingInTimeFragments,
+  getRoundingModes,
+} from "@/constants/settings";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 import UpdateButton from "@/components/UI/Buttons/UpdateButton";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
@@ -42,6 +46,10 @@ interface ProjectFormProps {
     hourly_payment: boolean;
     currency: string;
     cash_flow_category_id?: string | null;
+    rounding_interval: number | null;
+    rounding_direction: string | null;
+    round_in_time_fragments: boolean | null;
+    time_fragment_interval: number | null;
   };
   onSubmit: (values: any) => void;
   onCancel?: () => void;
@@ -57,6 +65,10 @@ const schema = z.object({
   hourly_payment: z.boolean(),
   currency: z.string().min(1, { message: "Currency is required" }),
   cash_flow_category_id: z.string().nullable().optional(),
+  rounding_interval: z.number(),
+  rounding_direction: z.string(),
+  round_in_time_fragments: z.boolean(),
+  time_fragment_interval: z.number(),
 });
 
 export default function ProjectForm({
@@ -66,12 +78,22 @@ export default function ProjectForm({
   newProject,
   submitting,
 }: ProjectFormProps) {
-  const { locale } = useSettingsStore();
+  const {
+    locale,
+    roundingInterval: settingsRoundingInterval,
+    roundingDirection: settingsRoundingDirection,
+    roundInTimeFragments: settingsRoundInTimeFragments,
+    timeFragmentInterval: settingsTimeFragmentInterval,
+  } = useSettingsStore();
   const [isColorPickerOpen, { open, close }] = useDisclosure(false);
   const [
     isCategoryFormOpen,
     { open: openCategoryForm, close: closeCategoryForm },
   ] = useDisclosure(false);
+  const [
+    isDefaultRounding,
+    { open: openDefaultRounding, close: closeDefaultRounding },
+  ] = useDisclosure(initialValues.rounding_interval === null);
   const ref = useClickOutside(() => {
     close();
   });
@@ -91,6 +113,16 @@ export default function ProjectForm({
   const form = useForm({
     initialValues: {
       ...initialValues,
+      round_in_time_fragments:
+        initialValues.round_in_time_fragments === null
+          ? settingsRoundInTimeFragments
+          : initialValues.round_in_time_fragments,
+      time_fragment_interval:
+        initialValues.time_fragment_interval || settingsTimeFragmentInterval,
+      rounding_interval:
+        initialValues.rounding_interval || settingsRoundingInterval,
+      rounding_direction:
+        initialValues.rounding_direction || settingsRoundingDirection,
     },
     validate: zodResolver(schema),
   });
@@ -116,6 +148,24 @@ export default function ProjectForm({
     }
   };
 
+  const handleCustomRoundingToggle = (checked: boolean) => {
+    if (checked) {
+      openDefaultRounding();
+    } else {
+      closeDefaultRounding();
+      form.setFieldValue("rounding_interval", settingsRoundingInterval);
+      form.setFieldValue("rounding_direction", settingsRoundingDirection);
+      form.setFieldValue(
+        "round_in_time_fragments",
+        settingsRoundInTimeFragments
+      );
+      form.setFieldValue(
+        "time_fragment_interval",
+        settingsTimeFragmentInterval
+      );
+    }
+  };
+
   // Update previous work values when user changes work-related fields
   const handleWorkFieldChange = (field: string, value: any) => {
     form.setFieldValue(field, value);
@@ -125,6 +175,17 @@ export default function ProjectForm({
         [field]: value,
       }));
     }
+  };
+
+  const handleSubmit = (values: any) => {
+    const newValues = { ...values };
+    if (isDefaultRounding) {
+      newValues.rounding_interval = null;
+      newValues.rounding_direction = null;
+      newValues.round_in_time_fragments = null;
+      newValues.time_fragment_interval = null;
+    }
+    onSubmit(newValues);
   };
 
   const handleAddCategory = (category: Tables<"finance_category">) => {
@@ -137,7 +198,7 @@ export default function ProjectForm({
   }));
 
   return (
-    <form onSubmit={form.onSubmit(onSubmit)}>
+    <form onSubmit={form.onSubmit(handleSubmit)}>
       <Stack gap="xl">
         <Fieldset
           legend={locale === "de-DE" ? "Projekt Details" : "Project details"}
@@ -324,9 +385,103 @@ export default function ProjectForm({
             </Stack>
           </Group>
         </Fieldset>
+        <Fieldset
+          legend={locale === "de-DE" ? "Zeit Rundung" : "Time Rounding"}
+        >
+          <Stack>
+            <Switch
+              label={
+                locale === "de-DE"
+                  ? "Rundung aus Einstellungen verwenden"
+                  : "Use rounding from settings"
+              }
+              checked={isDefaultRounding}
+              onChange={(event) =>
+                handleCustomRoundingToggle(event.currentTarget.checked)
+              }
+            />
+            <Stack>
+              <Switch
+                disabled={isDefaultRounding}
+                label={
+                  locale === "de-DE"
+                    ? "Runden in Zeitabschnitten"
+                    : "Round in time fragments"
+                }
+                checked={form.values.round_in_time_fragments || false}
+                onChange={(event) =>
+                  handleWorkFieldChange(
+                    "round_in_time_fragments",
+                    event.currentTarget.checked
+                  )
+                }
+              />
+              <Collapse in={!form.values.round_in_time_fragments || false}>
+                <Group>
+                  <NumberInput
+                    disabled={isDefaultRounding}
+                    label={
+                      locale === "de-DE"
+                        ? "Rundungsintervall"
+                        : "Rounding interval"
+                    }
+                    suffix={locale === "de-DE" ? " Minuten" : " minutes"}
+                    allowNegative={false}
+                    allowDecimal={false}
+                    allowLeadingZeros={false}
+                    min={1}
+                    max={1440}
+                    value={form.values.rounding_interval}
+                    onChange={(value) =>
+                      handleWorkFieldChange("rounding_interval", value || 1)
+                    }
+                  />
+                  <Select
+                    w={125}
+                    disabled={isDefaultRounding}
+                    label={
+                      locale === "de-DE" ? "Rundungsmodus" : "Rounding mode"
+                    }
+                    data={getRoundingModes(locale)}
+                    value={form.values.rounding_direction}
+                    onChange={(value) =>
+                      handleWorkFieldChange("rounding_direction", value || "")
+                    }
+                  />
+                </Group>
+              </Collapse>
+              <Collapse in={form.values.round_in_time_fragments || false}>
+                <Group>
+                  <Select
+                    w={200}
+                    disabled={isDefaultRounding}
+                    data={getRoundingInTimeFragments(locale)}
+                    label={
+                      locale === "de-DE"
+                        ? "Zeitabschnittsintervall"
+                        : "Time Fragment Interval"
+                    }
+                    placeholder={
+                      locale === "de-DE"
+                        ? "Intervall auswählen"
+                        : "Select Default Rounding Amount"
+                    }
+                    value={form.values.time_fragment_interval.toString()}
+                    onChange={(value) =>
+                      handleWorkFieldChange(
+                        "time_fragment_interval",
+                        Number(value) || 5
+                      )
+                    }
+                  />
+                </Group>
+              </Collapse>
+            </Stack>
+          </Stack>
+        </Fieldset>
         {newProject ? (
           <CreateButton
-            onClick={form.onSubmit(onSubmit)}
+            onClick={form.onSubmit(handleSubmit)}
             type="submit"
             loading={submitting}
             mt="md"
@@ -334,7 +489,7 @@ export default function ProjectForm({
           />
         ) : (
           <UpdateButton
-            onClick={form.onSubmit(onSubmit)}
+            onClick={form.onSubmit(handleSubmit)}
             type="submit"
             loading={submitting}
             mt="md"

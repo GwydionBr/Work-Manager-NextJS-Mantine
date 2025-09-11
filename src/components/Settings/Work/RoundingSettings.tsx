@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
-  getRoundingInTimeSections,
+  getRoundingInTimeFragments,
   getRoundingModes,
 } from "@/constants/settings";
 
@@ -48,7 +48,7 @@ export default function RoundingSettings() {
     setLoading(false);
   }
 
-  const roundingInTimeSections = getRoundingInTimeSections(locale);
+  const roundingInTimeSections = getRoundingInTimeFragments(locale);
   const roundingModes = getRoundingModes(locale);
 
   return (

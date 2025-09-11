@@ -119,6 +119,12 @@ export default function EditProjectDrawer({
                 hourly_payment: activeProject.project.hourly_payment,
                 cash_flow_category_id:
                   activeProject.project.cash_flow_category_id,
+                rounding_interval: activeProject.project.rounding_interval,
+                rounding_direction: activeProject.project.rounding_direction,
+                round_in_time_fragments:
+                  activeProject.project.round_in_time_fragments,
+                time_fragment_interval:
+                  activeProject.project.time_fragment_interval,
               }}
               onSubmit={handleSubmit}
               onCancel={handleClose}
@@ -133,7 +139,9 @@ export default function EditProjectDrawer({
           title={
             <Group>
               <IconExclamationMark size={25} color="red" />
-              <Text>{locale === "de-DE" ? "Projekt löschen" : "Delete Project"}</Text>
+              <Text>
+                {locale === "de-DE" ? "Projekt löschen" : "Delete Project"}
+              </Text>
             </Group>
           }
         >

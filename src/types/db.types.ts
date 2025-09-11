@@ -635,7 +635,6 @@ export type Database = {
           default_group_color: string | null;
           default_project_hourly_payment: boolean;
           default_salary_amount: number;
-          default_work_settings_id: string | null;
           format_24h: boolean;
           id: string;
           locale: Database["public"]["Enums"]["locales"];
@@ -657,7 +656,6 @@ export type Database = {
           default_group_color?: string | null;
           default_project_hourly_payment?: boolean;
           default_salary_amount?: number;
-          default_work_settings_id?: string | null;
           format_24h?: boolean;
           id?: string;
           locale?: Database["public"]["Enums"]["locales"];
@@ -679,7 +677,6 @@ export type Database = {
           default_group_color?: string | null;
           default_project_hourly_payment?: boolean;
           default_salary_amount?: number;
-          default_work_settings_id?: string | null;
           format_24h?: boolean;
           id?: string;
           locale?: Database["public"]["Enums"]["locales"];
@@ -844,11 +841,16 @@ export type Database = {
           id: string;
           is_favorite: boolean;
           order_index: number;
+          round_in_time_fragments: boolean | null;
+          rounding_direction:
+            | Database["public"]["Enums"]["roundingDirection"]
+            | null;
+          rounding_interval: number | null;
           salary: number;
+          time_fragment_interval: number | null;
           title: string;
           total_payout: number;
           user_id: string;
-          work_settings_id: string | null;
         };
         Insert: {
           cash_flow_category_id?: string | null;
@@ -861,11 +863,16 @@ export type Database = {
           id?: string;
           is_favorite?: boolean;
           order_index?: number;
+          round_in_time_fragments?: boolean | null;
+          rounding_direction?:
+            | Database["public"]["Enums"]["roundingDirection"]
+            | null;
+          rounding_interval?: number | null;
           salary: number;
+          time_fragment_interval?: number | null;
           title: string;
           total_payout?: number;
           user_id?: string;
-          work_settings_id?: string | null;
         };
         Update: {
           cash_flow_category_id?: string | null;
@@ -878,20 +885,18 @@ export type Database = {
           id?: string;
           is_favorite?: boolean;
           order_index?: number;
+          round_in_time_fragments?: boolean | null;
+          rounding_direction?:
+            | Database["public"]["Enums"]["roundingDirection"]
+            | null;
+          rounding_interval?: number | null;
           salary?: number;
+          time_fragment_interval?: number | null;
           title?: string;
           total_payout?: number;
           user_id?: string;
-          work_settings_id?: string | null;
         };
         Relationships: [
-          {
-            foreignKeyName: "timer_project_work_settings_id_fkey";
-            columns: ["work_settings_id"];
-            isOneToOne: false;
-            referencedRelation: "work_settings";
-            referencedColumns: ["id"];
-          },
           {
             foreignKeyName: "timerProject_cash_flow_category_id_fkey";
             columns: ["cash_flow_category_id"];
@@ -1020,45 +1025,6 @@ export type Database = {
             referencedColumns: ["id"];
           },
         ];
-      };
-      work_settings: {
-        Row: {
-          created_at: string;
-          currency: Database["public"]["Enums"]["currency"];
-          hourly_payment: boolean;
-          id: string;
-          round_in_time_fragments: boolean;
-          rounding_direction: Database["public"]["Enums"]["roundingDirection"];
-          rounding_interval: number;
-          salary: number;
-          time_fragments_interval: number;
-          user_id: string;
-        };
-        Insert: {
-          created_at?: string;
-          currency?: Database["public"]["Enums"]["currency"];
-          hourly_payment?: boolean;
-          id?: string;
-          round_in_time_fragments?: boolean;
-          rounding_direction?: Database["public"]["Enums"]["roundingDirection"];
-          rounding_interval: number;
-          salary?: number;
-          time_fragments_interval?: number;
-          user_id?: string;
-        };
-        Update: {
-          created_at?: string;
-          currency?: Database["public"]["Enums"]["currency"];
-          hourly_payment?: boolean;
-          id?: string;
-          round_in_time_fragments?: boolean;
-          rounding_direction?: Database["public"]["Enums"]["roundingDirection"];
-          rounding_interval?: number;
-          salary?: number;
-          time_fragments_interval?: number;
-          user_id?: string;
-        };
-        Relationships: [];
       };
     };
     Views: {

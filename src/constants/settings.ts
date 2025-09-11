@@ -45,18 +45,16 @@ export const getRoundingModes = (locale: Locale) => {
   return roundingModes;
 };
 
-export const getRoundingInTimeSections = (locale: Locale) => {
-  const roundingInTimeSections: { value: string; label: string }[] = [
+export const getRoundingInTimeFragments = (locale: Locale) => {
+  const roundingInTimeFragments: { value: string; label: string }[] = [
     { value: "5", label: locale === "de-DE" ? "5 Minuten" : "5 minutes" },
     { value: "10", label: locale === "de-DE" ? "10 Minuten" : "10 minutes" },
     { value: "15", label: locale === "de-DE" ? "15 Minuten" : "15 minutes" },
     { value: "30", label: locale === "de-DE" ? "30 Minuten" : "30 minutes" },
     { value: "60", label: locale === "de-DE" ? "1 Stunde" : "1 hour" },
   ];
-  return roundingInTimeSections;
+  return roundingInTimeFragments;
 };
-
-
 
 export const financeIntervals: { value: FinanceInterval; label: string }[] = [
   { value: "day", label: "Day" },
