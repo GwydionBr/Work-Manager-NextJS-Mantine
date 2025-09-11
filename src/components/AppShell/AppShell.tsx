@@ -13,14 +13,16 @@ import { useFinanceStore } from "@/stores/financeStore";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useTaskStore } from "@/stores/taskStore";
 import { useCalendarStore } from "@/stores/calendarStore";
+import { useCheckNewVersion } from "@/hooks/useCheckNewVersion";
 import { notifications } from "@mantine/notifications";
 
 import classes from "./AppShell.module.css";
 
-import { AppShell, Burger, Group } from "@mantine/core";
+import { AppShell, Burger, Button, Group, Stack, Text } from "@mantine/core";
 import { DatesProvider } from "@mantine/dates";
 import Navbar from "@/components/Navbar/Navbar";
 import Aside from "./Aside";
+import { IconRefresh } from "@tabler/icons-react";
 
 enum FetchPriority {
   Settings = "settings",
@@ -51,6 +53,31 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     fetchSettings,
     lastFetch: lastSettingsFetch,
   } = useSettingsStore();
+  const newVersion = useCheckNewVersion();
+
+  useEffect(() => {
+    if (newVersion) {
+      notifications.show({
+        title:
+          locale === "de-DE"
+            ? "Neue Version verfügbar"
+            : "New version available",
+        message: (
+          <Stack>
+            <Text>Please refresh the page to get the latest version.</Text>
+            <Button
+              onClick={() => window.location.reload()}
+              leftSection={<IconRefresh />}
+            >
+              {locale === "de-DE" ? "Aktualisieren" : "Refresh"}
+            </Button>
+          </Stack>
+        ),
+        color: "yellow",
+        autoClose: false,
+      });
+    }
+  }, [newVersion]);
 
   const [isBurgerOpen, { toggle: toggleBurger }] = useDisclosure();
   useHotkeys([["mod + B", () => toggleAside()]]);
