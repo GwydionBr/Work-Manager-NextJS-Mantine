@@ -63,8 +63,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             ? "Neue Version verfügbar"
             : "New version available",
         message: (
-          <Stack>
-            <Text>Please refresh the page to get the latest version.</Text>
+          <Stack align="center">
+            <Text>
+              {locale === "de-DE"
+                ? "Bitte aktualisieren Sie die Seite, um die neueste Version zu erhalten."
+                : "Please refresh the page to get the latest version."}
+            </Text>
             <Button
               onClick={() => window.location.reload()}
               leftSection={<IconRefresh />}
