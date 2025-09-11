@@ -19,7 +19,7 @@ interface SessionFormModalProps {
 
 export default function SessionFormModal({ button }: SessionFormModalProps) {
   const stack = useModalsStack(["session-form", "project-form"]);
-  const { locale, roundInTimeFragments, timeFragmentInterval } =
+  const { locale, roundInTimeFragments, timeFragmentInterval, format24h } =
     useSettingsStore();
   const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
   const { activeProjectId, addTimerSession, addProject } = useWorkStore();
@@ -74,6 +74,7 @@ export default function SessionFormModal({ button }: SessionFormModalProps) {
       createdSessions,
       overlappingSessions,
       locale,
+      format24h,
       onCreatedSessions: () => {
         stack.closeAll();
       },

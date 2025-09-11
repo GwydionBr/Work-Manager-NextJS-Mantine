@@ -18,7 +18,7 @@ interface CalendarGridProps {
 
 export default function CalendarGrid({
   currentDate,
-  selectedDate,
+  selectedDate, 
   entries,
   onDateSelect,
 }: CalendarGridProps) {

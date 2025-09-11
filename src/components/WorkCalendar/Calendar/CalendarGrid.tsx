@@ -187,7 +187,8 @@ export default function CalendarGrid({
       createdSessions,
       overlappingSessions,
       locale,
-      onCreatedSessions: () => {
+      format24h,
+      onCreatedSessions: () => {  
         close();
         setStartNewSession(null);
         setNewSessionDay(null);
@@ -262,7 +263,7 @@ export default function CalendarGrid({
               hourMultiplier={hourMultiplier}
               currentTime={currentTime}
               timeToY={timeToY}
-            />
+              />
           </Stack>
           <Stack
             h="100%"

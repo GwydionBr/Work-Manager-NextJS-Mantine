@@ -10,7 +10,6 @@ import SessionForm from "@/components/Work/Session/SessionForm";
 import AddActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 
 import { getTimeFragmentSession } from "@/utils/helper/getTimeFragmentSession";
-import { formatTimeSpan } from "@/utils/formatFunctions";
 
 import { TablesInsert } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
@@ -18,7 +17,7 @@ import SessionNotification from "./SessionNotification";
 import { IconClockPlus } from "@tabler/icons-react";
 
 export default function NewSessionButton() {
-  const { locale, roundInTimeFragments, timeFragmentInterval } =
+  const { locale, roundInTimeFragments, timeFragmentInterval, format24h } =
     useSettingsStore();
   const [opened, { open, close }] = useDisclosure(false);
   const { activeProjectId, addTimerSession } = useWorkStore();
@@ -72,6 +71,7 @@ export default function NewSessionButton() {
       createdSessions,
       overlappingSessions,
       locale,
+      format24h,
       onCreatedSessions: () => {
         close();
       },
