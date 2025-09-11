@@ -1,41 +1,34 @@
 "use client";
 
-import { Grid, Text } from "@mantine/core";
-
-import classes from "./Settings.module.css";
+import { Text, Card, Group, Divider } from "@mantine/core";
 
 interface SettingsRowProps {
   title?: string;
-  description?: string;
   children?: React.ReactNode;
 }
 
-export default function SettingsRow({
-  title,
-  description,
-  children,
-}: SettingsRowProps) {
+export default function SettingsRow({ title, children }: SettingsRowProps) {
   return (
-    <Grid
-      className={classes.settingRowContainer}
-      align="center"
-      justify="center"
+    <Card
+      withBorder
+      shadow="sm"
+      radius="md"
+      p={0}
+      h="100%"
     >
-      <Grid.Col span={2} className={classes.borderRight}>
-        <Text>{title ?? ""}</Text>
-      </Grid.Col>
-      <Grid.Col
-        span={description ? 3 : 0}
-        className={description ? classes.borderRight : ""}
-      >
-        <Text>{description ?? ""}</Text>
-      </Grid.Col>
-      <Grid.Col
-        span={description ? 7 : 9}
-        className={classes.childrenContainer}
-      >
-        {children}
-      </Grid.Col>
-    </Grid>
+      <Group align="center" h="100%">
+        <Group h="100%" w={150} p="md" justify="center">
+          <Text ta="center">{title ?? ""}</Text>
+        </Group>
+        <Divider
+          orientation="vertical"
+          my="sm"
+          color="light-dark(var(--mantine-color-dark-6), var(--mantine-color-blue-2))"
+        />
+        <Group ml="md" p="md" h="100%">
+          {children}
+        </Group>
+      </Group>
+    </Card>
   );
 }

@@ -23,6 +23,7 @@ interface SettingsState {
   showCalendarTime: boolean;
   roundingAmount: RoundingAmount;
   roundingMode: RoundingDirection;
+  roundingInterval: number;
   customRoundingAmount: number;
   defaultGroupColor: string | null;
   isAsideOpen: boolean;
@@ -48,6 +49,7 @@ interface SettingsActions {
   setDefaultProjectHourlyPayment: (projectHourlyPayment: boolean) => void;
   setRoundingAmount: (roundingAmount: RoundingAmount) => Promise<void>;
   setRoundingMode: (roundingMode: RoundingDirection) => Promise<void>;
+  setRoundingInterval: (roundingInterval: number) => Promise<void>;
   setCustomRoundingAmount: (customRoundingAmount: number) => Promise<void>;
   setDefaultGroupColor: (color: string | null) => void;
   setIsAsideOpen: (isAsideOpen: boolean) => void;
@@ -72,6 +74,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       defaultProjectHourlyPayment: true,
       roundingAmount: "min",
       roundingMode: "up",
+      roundingInterval: 1,
       customRoundingAmount: 0,
       defaultSalaryAmount: 0,
       defaultGroupColor: null,
@@ -97,6 +100,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
           defaultProjectHourlyPayment: true,
           roundingAmount: "min",
           roundingMode: "up",
+          roundingInterval: 1,
           customRoundingAmount: 0,
           defaultGroupColor: null,
           showCalendarTime: true,
@@ -122,6 +126,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
             showCalendarTime: data.show_calendar_time,
             roundingAmount: data.rounding_amount as RoundingAmount,
             roundingMode: data.rounding_direction,
+            roundingInterval: data.rounding_interval,
             customRoundingAmount: data.rounding_custom_amount,
             defaultGroupColor: data.default_group_color,
             roundInTimeFragments: data.round_in_time_sections,
@@ -186,6 +191,13 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
           rounding_direction: roundingMode,
         });
         set({ roundingMode: roundingMode });
+      },
+      setRoundingInterval: async (roundingInterval: number) => {
+        await actions.updateSettings({
+          id: get().settingsId ?? "",
+          rounding_interval: roundingInterval,
+        });
+        set({ roundingInterval: roundingInterval });
       },
       setCustomRoundingAmount: async (customRoundingAmount: number) => {
         await actions.updateSettings({

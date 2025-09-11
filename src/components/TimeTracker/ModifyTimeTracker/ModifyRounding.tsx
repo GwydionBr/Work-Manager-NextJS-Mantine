@@ -22,7 +22,7 @@ import {
   IconAlertCircle,
   IconInfoCircle,
 } from "@tabler/icons-react";
-import { roundingAmounts, roundingModes } from "@/constants/settings";
+import { roundingAmounts, getRoundingModes } from "@/constants/settings";
 import { RoundingAmount, RoundingDirection } from "@/types/settings.types";
 import { getRoundedSeconds } from "@/utils/workHelperFunctions";
 
@@ -183,7 +183,10 @@ export default function ModifyRounding({
               {locale === "de-DE" ? "Aktueller Modus" : "Current Mode"}
             </Text>
             <Text fw={600}>
-              {roundingModes.find((r) => r.value === roundingMode)?.label}
+              {
+                getRoundingModes(locale).find((r) => r.value === roundingMode)
+                  ?.label
+              }
             </Text>
           </Box>
         </Group>
@@ -232,7 +235,7 @@ export default function ModifyRounding({
             onChange={(value) =>
               setSelectedRoundingMode(value as RoundingDirection)
             }
-            data={roundingModes}
+            data={getRoundingModes(locale)}
             w={200}
           />
 

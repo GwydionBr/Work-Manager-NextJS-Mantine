@@ -643,6 +643,7 @@ export type Database = {
           rounding_amount: Database["public"]["Enums"]["roundingAmount"];
           rounding_custom_amount: number;
           rounding_direction: Database["public"]["Enums"]["roundingDirection"];
+          rounding_interval: number;
           show_calendar_time: boolean;
           time_section_interval: number;
           updated_at: string;
@@ -664,6 +665,7 @@ export type Database = {
           rounding_amount?: Database["public"]["Enums"]["roundingAmount"];
           rounding_custom_amount?: number;
           rounding_direction?: Database["public"]["Enums"]["roundingDirection"];
+          rounding_interval?: number;
           show_calendar_time?: boolean;
           time_section_interval?: number;
           updated_at?: string;
@@ -685,6 +687,7 @@ export type Database = {
           rounding_amount?: Database["public"]["Enums"]["roundingAmount"];
           rounding_custom_amount?: number;
           rounding_direction?: Database["public"]["Enums"]["roundingDirection"];
+          rounding_interval?: number;
           show_calendar_time?: boolean;
           time_section_interval?: number;
           updated_at?: string;
@@ -882,6 +885,13 @@ export type Database = {
           work_settings_id?: string | null;
         };
         Relationships: [
+          {
+            foreignKeyName: "timer_project_work_settings_id_fkey";
+            columns: ["work_settings_id"];
+            isOneToOne: false;
+            referencedRelation: "work_settings";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "timerProject_cash_flow_category_id_fkey";
             columns: ["cash_flow_category_id"];

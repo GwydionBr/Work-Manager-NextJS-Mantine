@@ -3,6 +3,7 @@ import {
   RoundingAmount,
   RoundingDirection,
   FinanceInterval,
+  Locale,
 } from "@/types/settings.types";
 
 export const currencies: { value: Currency; label: string }[] = [
@@ -41,19 +42,30 @@ export const roundingAmounts: { value: RoundingAmount; label: string }[] = [
   { value: "custom", label: "Custom" },
 ];
 
-export const roundingInTimeSections: { value: string; label: string }[] = [
-  { value: "5", label: "5 Minutes" },
-  { value: "10", label: "10 Minutes" },
-  { value: "15", label: "15 Minutes" },
-  { value: "30", label: "30 Minutes" },
-  { value: "60", label: "1 Hour" },
-];
+export const getRoundingModes = (locale: Locale) => {
+  const roundingModes: { value: RoundingDirection; label: string }[] = [
+    { value: "up", label: locale === "de-DE" ? "Auf" : "Up" },
+    { value: "down", label: locale === "de-DE" ? "Ab" : "Down" },
+    {
+      value: "nearest",
+      label: locale === "de-DE" ? "Zum nächsten" : "Nearest",
+    },
+  ];
+  return roundingModes;
+};
 
-export const roundingModes: { value: RoundingDirection; label: string }[] = [
-  { value: "up", label: "Up" },
-  { value: "down", label: "Down" },
-  { value: "nearest", label: "Nearest" },
-];
+export const getRoundingInTimeSections = (locale: Locale) => {
+  const roundingInTimeSections: { value: string; label: string }[] = [
+    { value: "5", label: locale === "de-DE" ? "5 Minuten" : "5 minutes" },
+    { value: "10", label: locale === "de-DE" ? "10 Minuten" : "10 minutes" },
+    { value: "15", label: locale === "de-DE" ? "15 Minuten" : "15 minutes" },
+    { value: "30", label: locale === "de-DE" ? "30 Minuten" : "30 minutes" },
+    { value: "60", label: locale === "de-DE" ? "1 Stunde" : "1 hour" },
+  ];
+  return roundingInTimeSections;
+};
+
+
 
 export const financeIntervals: { value: FinanceInterval; label: string }[] = [
   { value: "day", label: "Day" },

@@ -4,94 +4,78 @@ import { useEffect, useState } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
+  getRoundingInTimeSections,
+  getRoundingModes,
+} from "@/constants/settings";
+
+import {
   Group,
   Select,
-  Text,
   NumberInput,
   Button,
   Stack,
   Switch,
   Collapse,
+  Transition,
 } from "@mantine/core";
-import {
-  roundingAmounts,
-  roundingInTimeSections,
-  roundingModes,
-} from "@/constants/settings";
 
-import {
-  RoundingAmount,
-  RoundingDirection,
-  RoundingInTimeSections,
-} from "@/types/settings.types";
-
-import classes from "./WorkSettings.module.css";
+import { RoundingDirection } from "@/types/settings.types";
 
 export default function RoundingSettings() {
   const {
     locale,
-    roundingAmount,
     roundingMode,
-    customRoundingAmount,
-    roundInTimeFragments: roundInTimeSections,
-    timeFragmentInterval: timeSectionInterval,
-    setRoundingAmount,
+    roundingInterval,
+    roundInTimeFragments,
+    timeFragmentInterval,
+    setRoundingInterval,
     setRoundingMode,
-    setCustomRoundingAmount,
-    setRoundInTimeFragments: setRoundInTimeSections,
-    setTimeFragmentInterval: setTimeSectionInterval,
+    setRoundInTimeFragments,
+    setTimeFragmentInterval,
   } = useSettingsStore();
 
-  const [customAmount, setCustomAmount] = useState(customRoundingAmount);
+  const [roundingIntervalState, setRoundingIntervalState] =
+    useState(roundingInterval);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setCustomAmount(customRoundingAmount);
-  }, [customRoundingAmount]);
+    setRoundingIntervalState(roundingInterval);
+  }, [roundingInterval]);
 
   async function handleCustomSubmit() {
     setLoading(true);
-    await setCustomRoundingAmount(customAmount);
+    await setRoundingInterval(roundingIntervalState);
     setLoading(false);
   }
 
+  const roundingInTimeSections = getRoundingInTimeSections(locale);
+  const roundingModes = getRoundingModes(locale);
+
   return (
     <Stack>
-      <Collapse in={roundInTimeSections === false}>
+      <Switch
+        label={
+          locale === "de-DE"
+            ? "Runden in Zeitabschnitten"
+            : "Round in time fragments"
+        }
+        checked={roundInTimeFragments}
+        onChange={(event) =>
+          setRoundInTimeFragments(event.currentTarget.checked)
+        }
+      />
+      <Collapse in={!roundInTimeFragments}>
         <Group>
-          {customAmount !== customRoundingAmount && (
-            <Button
-              onClick={handleCustomSubmit}
-              loading={loading}
-              disabled={loading}
-            >
-              {locale === "de-DE" ? "Speichern" : "Save"}
-            </Button>
-          )}
-          {roundingAmount === "custom" && (
-            <Group gap={5} className={classes.customRoundingAmountContainer}>
-              <NumberInput
-                w={75}
-                allowNegative={false}
-                allowDecimal={false}
-                allowLeadingZeros={false}
-                value={customAmount}
-                onChange={(value) => setCustomAmount(Number(value))}
-              />
-              <Text>{locale === "de-DE" ? "Minuten" : "minutes"}</Text>
-            </Group>
-          )}
-          <Select
-            w={150}
-            data={roundingAmounts}
-            label={locale === "de-DE" ? "Rundungsbetrag" : "Rounding amount"}
-            placeholder={
-              locale === "de-DE"
-                ? "Rundungsbetrag auswählen"
-                : "Select Default Rounding Amount"
+          <NumberInput
+            label={
+              locale === "de-DE" ? "Rundungsintervall" : "Rounding interval"
             }
-            value={roundingAmount}
-            onChange={(value) => setRoundingAmount(value as RoundingAmount)}
+            suffix={locale === "de-DE" ? " Minuten" : " minutes"}
+            allowNegative={false}
+            allowDecimal={false}
+            allowLeadingZeros={false}
+            value={roundingIntervalState}
+            onChange={(value) => setRoundingIntervalState(Number(value))}
           />
           <Select
             w={125}
@@ -100,36 +84,37 @@ export default function RoundingSettings() {
             value={roundingMode}
             onChange={(value) => setRoundingMode(value as RoundingDirection)}
           />
+          <Transition mounted={roundingIntervalState !== roundingInterval} transition="fade-right">
+            {(styles) => (
+              <Button
+                onClick={handleCustomSubmit}
+                loading={loading}
+                disabled={loading}
+                style={{ ...styles }}
+              >
+                {locale === "de-DE" ? "Speichern" : "Save"}
+              </Button>
+            )}
+          </Transition>
         </Group>
       </Collapse>
-      <Switch
-        label={
-          locale === "de-DE"
-            ? "Runden in Zeitabschnitten"
-            : "Round in time sections"
-        }
-        checked={roundInTimeSections}
-        onChange={(event) =>
-          setRoundInTimeSections(event.currentTarget.checked)
-        }
-      />
-      <Collapse in={roundInTimeSections === true}>
+      <Collapse in={roundInTimeFragments}>
         <Group>
           <Select
             w={200}
             data={roundingInTimeSections}
             label={
               locale === "de-DE"
-                ? "Runden in Zeitabschnitten"
-                : "Rounding in time fragments"
+                ? "Zeitabschnittsintervall"
+                : "Time Fragment Interval"
             }
             placeholder={
               locale === "de-DE"
-                ? "Rundungsbetrag auswählen"
+                ? "Intervall auswählen"
                 : "Select Default Rounding Amount"
             }
-            value={timeSectionInterval.toString()}
-            onChange={(value) => setTimeSectionInterval(Number(value))}
+            value={timeFragmentInterval.toString()}
+            onChange={(value) => setTimeFragmentInterval(Number(value))}
           />
         </Group>
       </Collapse>
