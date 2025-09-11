@@ -249,7 +249,7 @@ export default function WorkCalendar() {
     if (viewport.current) {
       const currentTime = getCurrentTime();
       viewport.current.scrollTo({
-        top: currentTime * rasterHeight * zoomLevel[zoomIndex],
+        top: currentTime * rasterHeight * zoomLevel[zoomIndex] - 50,
         behavior: "smooth",
       });
     }

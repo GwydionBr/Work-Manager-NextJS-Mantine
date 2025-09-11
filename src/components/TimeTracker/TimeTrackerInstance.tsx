@@ -44,6 +44,7 @@ export default function TimeTrackerInstance({
     roundInTimeFragments,
     automaticlyStopOtherTimer,
     locale,
+    format24h,
   } = useSettingsStore();
   const [showSmall, setShowSmall] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -181,9 +182,18 @@ export default function TimeTrackerInstance({
       ...getCurrentSession(),
       memo: memo === "" ? null : memo,
     };
+    console.log("newSession", newSession);
 
+    console.log("start addTimerSession");
     const { createdSessions, overlappingSessions, completeOverlap } =
-      await addTimerSession(newSession, roundInTimeFragments, timeFragmentInterval);
+      await addTimerSession(
+        newSession,
+        roundInTimeFragments,
+        timeFragmentInterval
+      );
+    console.log("createdSessions", createdSessions);
+    console.log("overlappingSessions", overlappingSessions);
+    console.log("completeOverlap", completeOverlap);
 
     SessionNotification({
       originalSession: newSession,
@@ -191,6 +201,7 @@ export default function TimeTrackerInstance({
       createdSessions,
       overlappingSessions,
       locale,
+      format24h,
       onCompleteOverlap: () => {
         stopTimer();
       },
@@ -199,6 +210,7 @@ export default function TimeTrackerInstance({
         stopTimer();
       },
     });
+    console.log("SessionNotification finished");
 
     setIsSubmitting(false);
   }
