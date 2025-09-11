@@ -110,6 +110,10 @@ export default function WorkInitializer() {
                 currency: defaultSalaryCurrency,
                 hourly_payment: false,
                 cash_flow_category_id: null,
+                rounding_interval: null,
+                rounding_direction: null,
+                round_in_time_fragments: null,
+                time_fragment_interval: null,
               }}
               onSubmit={handleSubmit}
               newProject={true}
