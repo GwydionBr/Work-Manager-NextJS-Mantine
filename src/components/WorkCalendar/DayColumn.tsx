@@ -61,7 +61,7 @@ export function DayColumn({
   snapYToInterval,
 }: DayColumnProps) {
   const { hovered, ref: hoverRef } = useHover();
-  const { locale } = useSettingsStore();
+  const { format24h } = useSettingsStore();
   const { addingMode } = useCalendarStore();
   useHotkeys([["escape", () => setStartNewSession(null)]]);
 
@@ -163,26 +163,23 @@ export function DayColumn({
         <TimeTrackerEvent toY={timeToY} currentTime={currentTime} day={day} />
 
         {/* New session event */}
-        {!isFetching &&
-          addingMode &&
-          hovered &&
-          startNewSession === null && (
-            <Stack
-              style={{
-                position: "absolute",
-                top: snappedY - 2,
-                left: 0,
-                right: 0,
-                borderTop:
-                  "3px solid light-dark(var(--mantine-color-teal-6), var(--mantine-color-teal-7))",
-                zIndex: 10,
-              }}
-            >
-              <Text ta="center">
-                {formatDateTime(yToTime(snappedY, day), locale)}
-              </Text>
-            </Stack>
-          )}
+        {!isFetching && addingMode && hovered && startNewSession === null && (
+          <Stack
+            style={{
+              position: "absolute",
+              top: snappedY - 2,
+              left: 0,
+              right: 0,
+              borderTop:
+                "3px solid light-dark(var(--mantine-color-teal-6), var(--mantine-color-teal-7))",
+              zIndex: 10,
+            }}
+          >
+            <Text ta="center">
+              {formatDateTime(yToTime(snappedY, day), format24h)}
+            </Text>
+          </Stack>
+        )}
 
         {!isFetching && startNewSession !== null && newSessionDay === day && (
           <NewSessionEvent

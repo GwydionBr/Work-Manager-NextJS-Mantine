@@ -33,6 +33,7 @@ interface SettingsState {
   timeFragmentInterval: number;
   automaticlyStopOtherTimer: boolean;
   locale: Locale;
+  format24h: boolean;
 }
 
 interface SettingsActions {
@@ -56,6 +57,7 @@ interface SettingsActions {
     automaticlyStopOtherTimer: boolean
   ) => Promise<void>;
   setLocale: (locale: Locale) => Promise<void>;
+  setFormat24h: (format24h: boolean) => Promise<void>;
   setShowCalendarTime: (showCalendarTime: boolean) => Promise<void>;
 }
 
@@ -82,6 +84,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       timeFragmentInterval: 10,
       automaticlyStopOtherTimer: false,
       locale: "en-US",
+      format24h: false,
 
       resetStore: () =>
         set({
@@ -105,6 +108,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
           timeFragmentInterval: 10,
           automaticlyStopOtherTimer: false,
           locale: "en-US",
+          format24h: false,
         }),
       fetchSettings: async () => {
         const { data } = await actions.getSettings();
@@ -124,6 +128,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
             timeFragmentInterval: data.time_section_interval,
             automaticlyStopOtherTimer: data.automaticly_stop_other_timer,
             locale: data.locale,
+            format24h: data.format_24h,
           });
         }
         set({ isFetching: false, lastFetch: new Date() });
@@ -236,6 +241,13 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
           locale: locale,
         });
         set({ locale: locale });
+      },
+      setFormat24h: async (format24h: boolean) => {
+        await actions.updateSettings({
+          id: get().settingsId ?? "",
+          format_24h: format24h,
+        });
+        set({ format24h: format24h });
       },
     }),
     {

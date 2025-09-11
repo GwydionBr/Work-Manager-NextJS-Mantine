@@ -636,6 +636,7 @@ export type Database = {
           default_project_hourly_payment: boolean;
           default_salary_amount: number;
           default_work_settings_id: string | null;
+          format_24h: boolean;
           id: string;
           locale: Database["public"]["Enums"]["locales"];
           round_in_time_sections: boolean;
@@ -656,6 +657,7 @@ export type Database = {
           default_project_hourly_payment?: boolean;
           default_salary_amount?: number;
           default_work_settings_id?: string | null;
+          format_24h?: boolean;
           id?: string;
           locale?: Database["public"]["Enums"]["locales"];
           round_in_time_sections?: boolean;
@@ -676,6 +678,7 @@ export type Database = {
           default_project_hourly_payment?: boolean;
           default_salary_amount?: number;
           default_work_settings_id?: string | null;
+          format_24h?: boolean;
           id?: string;
           locale?: Database["public"]["Enums"]["locales"];
           round_in_time_sections?: boolean;

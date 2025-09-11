@@ -14,7 +14,7 @@ export default function NewSessionEvent({
   y: number;
   yToTime: (y: number) => Date;
 }) {
-  const { locale } = useSettingsStore();
+  const { locale, format24h } = useSettingsStore();
 
   const actualStart = Math.min(start, y);
   const actualEnd = Math.max(start, y);
@@ -42,7 +42,7 @@ export default function NewSessionEvent({
           </Text>
         ) : null}
         <Text ta="center" fw={600}>
-          {formatTimeSpan(yToTime(actualStart), yToTime(actualEnd), locale)}
+          {formatTimeSpan(yToTime(actualStart), yToTime(actualEnd), format24h)}
         </Text>
         {isStartDynamic ? (
           <Text ta="center">

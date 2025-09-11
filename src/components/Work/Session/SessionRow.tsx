@@ -37,7 +37,7 @@ export default function SessionRow({
   isOverview = false,
   selectedModeActive,
 }: SessionRowProps) {
-  const { locale } = useSettingsStore();
+  const { locale, format24h } = useSettingsStore();
   const [deleteModalOpened, deleteModalHandler] = useDisclosure(false);
   const [editDrawerOpened, editDrawerHandler] = useDisclosure(false);
   const { deleteTimerSessions } = useWorkStore();
@@ -130,7 +130,7 @@ export default function SessionRow({
                   {formatTimeSpan(
                     new Date(session.start_time),
                     new Date(session.end_time),
-                    locale
+                    format24h
                   )}
                 </Text>
                 {sessionPaid && (

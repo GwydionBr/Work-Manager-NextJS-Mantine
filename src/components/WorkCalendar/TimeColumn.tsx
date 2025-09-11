@@ -3,6 +3,7 @@
 import { Box, Stack, Text } from "@mantine/core";
 import { useMemo } from "react";
 import useSettingsStore from "@/stores/settingsStore";
+import { formatDateTime } from "@/utils/formatFunctions";
 
 interface TimeColumnProps {
   hourHeight: number;
@@ -14,15 +15,7 @@ export function TimeColumn({ hourHeight, hourMultiplier }: TimeColumnProps) {
   const timeUnitsPerHour = hourMultiplier;
 
   // Locale aus den Settings lesen
-  const locale = useSettingsStore((state) => state.locale);
-
-  // Formatter, der sich an der aktuellen Locale orientiert
-  const timeFormatter = useMemo(() => {
-    return new Intl.DateTimeFormat(locale, {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  }, [locale]);
+  const { format24h } = useSettingsStore();
 
   // Berechne die Gesamtanzahl der Zeiteinheiten für 24 Stunden
   const totalTimeUnits = 24 * timeUnitsPerHour;
@@ -39,7 +32,7 @@ export function TimeColumn({ hourHeight, hourMultiplier }: TimeColumnProps) {
     const minutes = Math.floor(normalizedTotalMinutes % 60);
 
     const date = new Date(1970, 0, 1, hours, minutes, 0, 0);
-    return timeFormatter.format(date);
+    return formatDateTime(date, format24h);
   };
 
   return (

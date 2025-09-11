@@ -2,7 +2,7 @@
 
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Group, Select, Text } from "@mantine/core";
+import { Group, Select, Switch, Text } from "@mantine/core";
 
 import { Locale } from "@/types/settings.types";
 import ReactCountryFlag from "react-country-flag";
@@ -21,7 +21,7 @@ const locales = [
 ] as const;
 
 export default function LocaleSettings() {
-  const { locale, setLocale } = useSettingsStore();
+  const { locale, setLocale, format24h, setFormat24h } = useSettingsStore();
 
   const currentLocale = locales.find((l) => l.value === locale);
 
@@ -62,6 +62,18 @@ export default function LocaleSettings() {
             </div>
           );
         }}
+      />
+      <Select
+        data={[
+          { value: "24h", label: "24h" },
+          { value: "12h", label: "12h" },
+        ]}
+        label={locale === "de-DE" ? "Zeitformat" : "Time Format"}
+        placeholder={
+          locale === "de-DE" ? "Zeitformat auswählen" : "Select Time Format"
+        }
+        value={format24h ? "24h" : "12h"}
+        onChange={(value) => setFormat24h(value === "24h")}
       />
     </Group>
   );

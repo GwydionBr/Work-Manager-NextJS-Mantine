@@ -19,7 +19,7 @@ export default function CalendarEventHoverCard({
   s,
   color,
 }: CalendarEventHoverCardProps) {
-  const { locale } = useSettingsStore();
+  const { locale, format24h } = useSettingsStore();
   const earnings = (s.salary * s.active_seconds) / 3600;
   return (
     <Card
@@ -35,7 +35,11 @@ export default function CalendarEventHoverCard({
       </Card.Section>
       <Stack pt="xs" gap="xs">
         <Text ta="center" size="xs" fw={500}>
-          {formatTimeSpan(new Date(s.start_time), new Date(s.end_time), locale)}
+          {formatTimeSpan(
+            new Date(s.start_time),
+            new Date(s.end_time),
+            format24h
+          )}
         </Text>
         <Text ta="center" size="xs" fw={500}>
           {formatTime(s.active_seconds)}

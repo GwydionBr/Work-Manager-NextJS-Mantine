@@ -1,3 +1,7 @@
+"use client";
+
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import { Stack, Text, List, Group } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconAlertCircle } from "@tabler/icons-react";
@@ -26,6 +30,7 @@ export default function SessionNotification({
   onError,
   locale,
 }: SessionNotificationProps) {
+  const { format24h } = useSettingsStore();
   const isSingleOverlap =
     overlappingSessions && overlappingSessions.length === 1;
   const isSingleCreatedSession =
@@ -68,7 +73,7 @@ export default function SessionNotification({
                     {formatTimeSpan(
                       new Date(originalSession.start_time),
                       new Date(originalSession.end_time),
-                      locale
+                      format24h
                     )}
                   </List.Item>
                 </List>
@@ -90,7 +95,7 @@ export default function SessionNotification({
                     {formatTimeSpan(
                       new Date(fragment.start_time),
                       new Date(fragment.end_time),
-                      locale
+                      format24h
                     )}
                   </List.Item>
                 ))}
@@ -113,7 +118,7 @@ export default function SessionNotification({
                     {formatTimeSpan(
                       new Date(session.start_time),
                       new Date(session.end_time),
-                      locale
+                      format24h
                     )}
                   </List.Item>
                 ))}

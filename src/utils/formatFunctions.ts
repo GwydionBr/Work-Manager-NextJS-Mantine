@@ -26,11 +26,16 @@ export function formatTime(seconds: number): string {
   return `${hours}h - ${minutes}min`;
 }
 
-export function formatTimeSpan(start: Date, end: Date, locale: Locale): string {
-  return `${formatDateTime(start, locale)} - ${formatDateTime(end, locale)}`;
+export function formatTimeSpan(
+  start: Date,
+  end: Date,
+  format24h: boolean
+): string {
+  return `${formatDateTime(start, format24h)} - ${formatDateTime(end, format24h)}`;
 }
 
-export function formatDateTime(date: Date, locale: Locale) {
+export function formatDateTime(date: Date, format24h: boolean) {
+  const locale = format24h ? "de-DE" : "en-US";
   return date.toLocaleString(locale, {
     hour: "2-digit",
     minute: "2-digit",

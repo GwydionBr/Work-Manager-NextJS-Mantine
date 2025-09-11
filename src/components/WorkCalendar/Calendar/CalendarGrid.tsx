@@ -63,6 +63,7 @@ export default function CalendarGrid({
     roundInTimeFragments,
     timeFragmentInterval,
     showCalendarTime,
+    format24h,
   } = useSettingsStore();
 
   const { ref, x, y } = useMouse();
@@ -300,7 +301,7 @@ export default function CalendarGrid({
                     }}
                   >
                     <Text>
-                      {formatDateTime(yToTime(y, new Date()), locale)}
+                      {formatDateTime(yToTime(y, new Date()), format24h)}
                     </Text>
                   </Stack>
                 )}
