@@ -15,7 +15,7 @@ import SessionFilter from "@/components/Work/Session/BulkSelectionControl";
 import WorkAnalysis from "@/components/Work/Analysis/WorkAnalysis";
 import AnalysisActionIcon from "@/components/UI/ActionIcons/AnalysisActionIcon";
 import FilterActionIcon from "@/components/UI/ActionIcons/FilterActionIcon";
-import NewSessionButton from "@/components/Work/Session/NewSessionButton";
+import SessionFormModal from "@/components/Work/Session/SessionFormModal";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
 import PayoutCard from "@/components/Payout/PayoutCard";
 
@@ -26,6 +26,10 @@ export default function WorkOverviewPage() {
   const [
     filterOpened,
     { open: openFilter, close: closeFilter, toggle: toggleFilter },
+  ] = useDisclosure(false);
+  const [
+    sessionFormOpened,
+    { open: openSessionForm, close: closeSessionForm },
   ] = useDisclosure(false);
   const [
     payoutOpened,
@@ -77,7 +81,10 @@ export default function WorkOverviewPage() {
             tooltipLabel={locale === "de-DE" ? "Filter" : "Filter"}
             filled={filterOpened}
           /> */}
-          <NewSessionButton />
+          <SessionFormModal
+            opened={sessionFormOpened}
+            onClose={closeSessionForm}
+          />
           {/* <PayoutActionIcon
             onClick={togglePayout}
             tooltipLabel={locale === "de-DE" ? "Auszahlung" : "Payout"}
