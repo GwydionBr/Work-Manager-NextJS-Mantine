@@ -260,6 +260,8 @@ export default function CalendarGrid({
             <TimeColumn
               hourHeight={rasterHeight}
               hourMultiplier={hourMultiplier}
+              currentTime={currentTime}
+              timeToY={timeToY}
             />
           </Stack>
           <Stack
@@ -340,6 +342,8 @@ export default function CalendarGrid({
             <TimeColumn
               hourHeight={rasterHeight}
               hourMultiplier={hourMultiplier}
+              currentTime={currentTime}
+              timeToY={timeToY}
             />
           </Stack>
         </Group>

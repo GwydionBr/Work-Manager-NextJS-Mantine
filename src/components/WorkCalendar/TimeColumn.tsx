@@ -1,16 +1,22 @@
 "use client";
 
 import { Box, Stack, Text } from "@mantine/core";
-import { useMemo } from "react";
 import useSettingsStore from "@/stores/settingsStore";
 import { formatDateTime } from "@/utils/formatFunctions";
 
 interface TimeColumnProps {
   hourHeight: number;
   hourMultiplier: number;
+  currentTime: Date;
+  timeToY: (date: Date) => number;
 }
 
-export function TimeColumn({ hourHeight, hourMultiplier }: TimeColumnProps) {
+export function TimeColumn({
+  hourHeight,
+  hourMultiplier,
+  currentTime,
+  timeToY,
+}: TimeColumnProps) {
   // Berechne die Anzahl der Zeiteinheiten pro Stunde basierend auf dem Multiplier
   const timeUnitsPerHour = hourMultiplier;
 
@@ -61,6 +67,17 @@ export function TimeColumn({ hourHeight, hourMultiplier }: TimeColumnProps) {
               {formatTime(i)}
             </Text>
           ))}
+          {/* Current time indicator */}
+          <Box
+            style={{
+              position: "absolute",
+              top: timeToY(currentTime),
+              left: 0,
+              right: 0,
+              height: 2,
+              background: "var(--mantine-color-red-6)",
+            }}
+          />
         </Box>
       </Stack>
     </Box>
