@@ -44,21 +44,21 @@ export default function AuthenticationForm({
     toggle(defaultType);
   }, [defaultType]);
 
-  async function handleSubmit(values: any) {
+  async function handleSubmit(values: typeof form.values) {
     setIsLoading(true);
     if (type === "login") {
       const { success, error } = await login(values);
       if (success) {
         router.push("/work");
       } else {
-        setError(error);
+        setError(error || "An error occurred");
       }
     } else {
       const { success, error } = await signup(values);
       if (success) {
         router.push("/work");
       } else {
-        setError(error);
+        setError(error || "An error occurred");
       }
     }
     setIsLoading(false);
@@ -73,7 +73,8 @@ export default function AuthenticationForm({
       email: "",
       name: "",
       password: "",
-      terms: true,
+      confirmPassword: "",
+      terms: false,
     },
     validate: {
       email: (val) => (/^\S+@\S+$/.test(val) ? null : "Invalid email"),
@@ -81,6 +82,11 @@ export default function AuthenticationForm({
         val.length <= 6
           ? "Password should include at least 6 characters"
           : null,
+      confirmPassword: (val, values) =>
+        type === "register" && val !== values.password
+          ? "Passwords do not match"
+          : null,
+      terms: (val) => (val ? null : "You must accept the terms and conditions"),
     },
   });
 
@@ -122,7 +128,7 @@ export default function AuthenticationForm({
           <TextInput
             required
             label="Email"
-            placeholder="hello@example.com"
+            placeholder="email@example.com"
             value={form.values.email}
             onChange={(event) =>
               form.setFieldValue("email", event.currentTarget.value)
@@ -146,6 +152,20 @@ export default function AuthenticationForm({
             radius="md"
             size="md"
           />
+          {type === "register" && (
+            <PasswordInput
+              required
+              label="Confirm Password"
+              placeholder="Confirm your password"
+              value={form.values.confirmPassword}
+              onChange={(event) =>
+                form.setFieldValue("confirmPassword", event.currentTarget.value)
+              }
+              error={form.errors.confirmPassword && "Passwords do not match"}
+              radius="md"
+              size="md"
+            />
+          )}
           {type === "register" && (
             <Checkbox
               label="I accept terms and conditions"
@@ -180,6 +200,7 @@ export default function AuthenticationForm({
             disabled={isLoading}
             className={classes.authButton}
             size="md"
+            onClick={() => handleSubmit(form.values)}
           >
             {upperFirst(type)}
           </Button>

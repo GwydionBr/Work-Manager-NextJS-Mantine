@@ -51,7 +51,7 @@ export default function FinanceInitializer() {
             <Text size="sm" ta="center" c="dimmed">
               {locale === "de-DE"
                 ? "Möchten Sie Ihre finanziellen Einstellungen anpassen? Besuchen Sie die"
-                : "Want to customize your financial settings? Visit the"}
+                : "Want to customize your financial settings? Visit the"}{" "}
               <Anchor
                 component="button"
                 onClick={() => {

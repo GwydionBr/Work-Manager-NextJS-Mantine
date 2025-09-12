@@ -1,13 +1,18 @@
 // src/hooks/useCheckNewVersion.ts
 import { useEffect, useState } from "react";
+import { useUserStore } from "@/stores/userStore";
 
 export function useCheckNewVersion(interval = 60000) {
   const [newVersion, setNewVersion] = useState<string | null>(null);
+  const { profile } = useUserStore();
 
   useEffect(() => {
     const current = process.env.NEXT_PUBLIC_COMMIT_SHA;
 
     const check = async () => {
+      if (!profile) {
+        return;
+      }
       try {
         const res = await fetch("/api/version");
         const data = await res.json();

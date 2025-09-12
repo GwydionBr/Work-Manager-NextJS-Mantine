@@ -281,6 +281,7 @@ export default function SessionForm({
             </Button>
           </Group>
           <Select
+            withAsterisk
             allowDeselect={false}
             label={locale === "de-DE" ? "Projekt" : "Project"}
             value={form.values.project_id}
@@ -313,12 +314,14 @@ export default function SessionForm({
           color="orange"
         />
         <LocaleDateTimePicker
+          withAsterisk
           label={locale === "de-DE" ? "Startzeit" : "Start Time"}
           value={form.values.start_time}
           onChange={handleStartTimeChange}
           error={form.errors.start_time}
         />
         <LocaleDateTimePicker
+          withAsterisk
           label={locale === "de-DE" ? "Endzeit" : "End Time"}
           value={form.values.end_time}
           onChange={handleEndTimeChange}

@@ -4,6 +4,7 @@ import * as actions from "@/actions";
 import { Tables, TablesUpdate } from "@/types/db.types";
 import { redirect } from "next/navigation";
 import { create } from "zustand";
+import { notifications } from "@mantine/notifications";
 
 // Import store instances to reset them
 import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
@@ -62,6 +63,7 @@ interface UserActions {
   resetStore: () => void;
   fetchUserData: () => Promise<void>;
   logout: () => Promise<boolean>;
+  deleteUser: () => Promise<boolean>;
   updateProfile: (profile: TablesUpdate<"profiles">) => Promise<boolean>;
   addFriend: (friendId: string) => Promise<boolean>;
   removeFriend: (friendId: string) => Promise<boolean>;
@@ -125,6 +127,26 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
     if (response.success) {
       resetAllStores();
       redirect("/");
+    }
+    return false;
+  },
+
+  deleteUser: async () => {
+    const response = await actions.deleteUser();
+    if (response.success) {
+      resetAllStores();
+      notifications.show({
+        title: "User deleted",
+        message: "Your account has been deleted",
+        color: "green",
+      });
+      redirect("/");
+    } else {
+      notifications.show({
+        title: "Error",
+        message: response.error,
+        color: "red",
+      });
     }
     return false;
   },

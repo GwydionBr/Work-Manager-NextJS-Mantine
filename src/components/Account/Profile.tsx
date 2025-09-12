@@ -19,6 +19,7 @@ import { IconCheck } from "@tabler/icons-react";
 import LogoutButton from "../Auth/LogoutButton";
 import PencilActionIcon from "../UI/ActionIcons/PencilActionIcon";
 import CancelButton from "../UI/Buttons/CancelButton";
+import DeleteUserButton from "../Auth/DeleteUserButton";
 
 export default function Profile() {
   const { locale } = useSettingsStore();
@@ -105,6 +106,11 @@ export default function Profile() {
   return (
     <Card withBorder radius="md" shadow="md" p="xl">
       <Stack gap="lg">
+        <Group justify="flex-end">
+          <DeleteUserButton size="md" />
+          <LogoutButton size="md" />
+        </Group>
+
         <Group justify="space-between" align="center">
           <Stack gap="xs">
             <Text size="sm" c="dimmed">
@@ -163,8 +169,6 @@ export default function Profile() {
           </Text>
           <Text size="lg">{profile.email}</Text>
         </Stack>
-
-        <LogoutButton />
       </Stack>
     </Card>
   );

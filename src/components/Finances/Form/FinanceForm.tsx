@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useFinanceStore } from "@/stores/financeStore";
 
@@ -13,6 +14,8 @@ import {
   Group,
   Alert,
   Select,
+  Popover,
+  Button,
 } from "@mantine/core";
 import {
   IconMinus,
@@ -26,10 +29,12 @@ import SingleFinanceForm, {
 import RecurringFinanceForm, {
   RecurringFinanceFormValues,
 } from "./RecurringFinanceForm";
+import { Tables } from "@/types/db.types";
 
 import { CashFlowType } from "@/types/settings.types";
 
 import classes from "../../UI/Switch.module.css";
+import FinanceCategoryForm from "./FinanceCategoryForm";
 
 interface FinanceFormProps {
   onClose: () => void;
@@ -49,6 +54,10 @@ export default function FinanceForm({
     useSettingsStore();
   const { addSingleCashFlow, addRecurringCashFlow, financeCategories } =
     useFinanceStore();
+  const [
+    isCategoryFormOpen,
+    { open: openCategoryForm, close: closeCategoryForm },
+  ] = useDisclosure(false);
 
   useEffect(() => {
     if (financeCategories.length > 0) {
@@ -72,6 +81,10 @@ export default function FinanceForm({
       onClose();
     }
   }
+
+  const handleAddCategory = (category: Tables<"finance_category">) => {
+    setCategoryId(category.id);
+  };
 
   async function handleRecurringFinanceSubmit(
     values: RecurringFinanceFormValues
@@ -133,26 +146,57 @@ export default function FinanceForm({
           <IconReload size={16} />
           <Text>{locale === "de-DE" ? "Wiederkehrend" : "Recurring"}</Text>
         </Group>
-        <Select
-          data={financeCategories.map((category) => ({
-            label: category.title,
-            value: category.id,
-          }))}
-          label={locale === "de-DE" ? "Kategorie" : "Category"}
-          placeholder={
-            locale === "de-DE" ? "Kategorie auswählen" : "Select a category"
-          }
-          value={categoryId}
-          onChange={(value) => setCategoryId(value)}
-          searchable
-          clearable
-          nothingFoundMessage={
-            locale === "de-DE"
-              ? "Keine Kategorien gefunden"
-              : "No categories found"
-          }
-          size="sm"
-        />
+        <Stack gap={0}>
+          <Group justify="flex-end">
+            <Popover
+              opened={isCategoryFormOpen}
+              onClose={closeCategoryForm}
+              onOpen={openCategoryForm}
+              closeOnClickOutside
+              trapFocus
+              returnFocus
+              withOverlay
+            >
+              <Popover.Target>
+                <Button onClick={openCategoryForm} fw={500} variant="subtle" size="xs">
+                  <Group gap={4} p={0} m={0}>
+                    <IconPlus size={14} />
+                    <Text fz="xs" c="dimmed">
+                      {locale === "de-DE" ? "Neue Kategorie" : "Add Category"}
+                    </Text>
+                  </Group>
+                </Button>
+              </Popover.Target>
+              <Popover.Dropdown>
+                <FinanceCategoryForm
+                  onClose={closeCategoryForm}
+                  category={null}
+                  onSuccess={handleAddCategory}
+                />
+              </Popover.Dropdown>
+            </Popover>
+          </Group>
+          <Select
+            data={financeCategories.map((category) => ({
+              label: category.title,
+              value: category.id,
+            }))}
+            label={locale === "de-DE" ? "Kategorie" : "Category"}
+            placeholder={
+              locale === "de-DE" ? "Kategorie auswählen" : "Select a category"
+            }
+            value={categoryId}
+            onChange={(value) => setCategoryId(value)}
+            searchable
+            clearable
+            nothingFoundMessage={
+              locale === "de-DE"
+                ? "Keine Kategorien gefunden"
+                : "No categories found"
+            }
+            size="sm"
+          />
+        </Stack>
       </Stack>
       {isRecurring ? (
         <RecurringFinanceForm

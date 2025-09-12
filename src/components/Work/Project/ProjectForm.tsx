@@ -15,14 +15,12 @@ import {
   Select,
   Group,
   Switch,
-  Tooltip,
   Collapse,
   Popover,
   Button,
   Fieldset,
   Text,
   SegmentedControl,
-  Center,
 } from "@mantine/core";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
@@ -44,8 +42,6 @@ import {
 } from "@tabler/icons-react";
 import FinanceCategoryForm from "@/components/Finances/Form/FinanceCategoryForm";
 import { Tables } from "@/types/db.types";
-
-import classes from "./Project.module.css";
 
 interface ProjectFormProps {
   initialValues: {

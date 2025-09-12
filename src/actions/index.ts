@@ -49,6 +49,7 @@ export { login } from "./auth/email/loginEmail";
 export { logout } from "./auth/logout";
 export { signup } from "./auth/email/signupEmail";
 export { signInWithGithub } from "./auth/github/signInWithGithub";
+export { deleteUser } from "./auth/deleteUser";
 
 // Settings Actions
 

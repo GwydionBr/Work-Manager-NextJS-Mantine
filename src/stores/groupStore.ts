@@ -106,32 +106,32 @@ export const useGroupStore = create<GroupState & GroupActions>()(
         isDateChanged: false,
       }),
     fetchGroupData: async () => {
-      const activeGroup = get().activeGroupId;
-      set({ selectedDate: new Date() });
-      const groupResponse = await actions.getAllGroups();
+      // const activeGroup = get().activeGroupId;
+      // set({ selectedDate: new Date() });
+      // const groupResponse = await actions.getAllGroups();
 
-      if (groupResponse.success) {
-        set({
-          groups: groupResponse.data,
-          isFetching: false,
-          lastFetch: new Date(),
-        });
-        if (!activeGroup) {
-          set({
-            activeGroupId: groupResponse.data[0]?.id || null,
-          });
-        }
-      } else {
-        set({ isFetching: false });
-      }
-      const { data: groupRequests, error: groupRequestsError } =
-        await actions.getGroupRequests();
-      if (groupRequests) {
-        set({ groupRequests: groupRequests.groupRequests });
-      }
-      if (groupRequestsError) {
-        console.error(groupRequestsError);
-      }
+      // if (groupResponse.success) {
+      //   set({
+      //     groups: groupResponse.data,
+      //     isFetching: false,
+      //     lastFetch: new Date(),
+      //   });
+      //   if (!activeGroup) {
+      //     set({
+      //       activeGroupId: groupResponse.data[0]?.id || null,
+      //     });
+      //   }
+      // } else {
+      //   set({ isFetching: false });
+      // }
+      // const { data: groupRequests, error: groupRequestsError } =
+      //   await actions.getGroupRequests();
+      // if (groupRequests) {
+      //   set({ groupRequests: groupRequests.groupRequests });
+      // }
+      // if (groupRequestsError) {
+      //   console.error(groupRequestsError);
+      // }
     },
 
     addGroup: async (group, color, memberIds) => {
