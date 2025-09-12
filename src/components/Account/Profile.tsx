@@ -106,8 +106,8 @@ export default function Profile() {
   return (
     <Card withBorder radius="md" shadow="md" p="xl">
       <Stack gap="lg">
-        <Group justify="flex-end">
-          <DeleteUserButton size="md" />
+        <Group justify="space-between">
+          <DeleteUserButton />
           <LogoutButton size="md" />
         </Group>
 

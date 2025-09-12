@@ -6,7 +6,7 @@ import { useDisclosure } from "@mantine/hooks";
 
 import { Button, ButtonProps } from "@mantine/core";
 import { useUserStore } from "@/stores/userStore";
-import { IconLogout } from "@tabler/icons-react";
+import { IconLogout, IconTrash } from "@tabler/icons-react";
 import ConfirmDeleteModal from "../UI/ConfirmDeleteModal";
 
 interface DeleteUserButtonProps extends ButtonProps {}
@@ -32,7 +32,8 @@ export default function DeleteUserButton({ ...props }: DeleteUserButtonProps) {
   return (
     <>
       <Button
-        leftSection={<IconLogout size={24} />}
+        size="xs"
+        leftSection={<IconTrash size={24} />}
         color="red"
         onClick={openDeleteModal}
         variant="filled"
