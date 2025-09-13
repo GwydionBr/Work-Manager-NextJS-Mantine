@@ -64,7 +64,8 @@ export const useTimeTrackerManager = create(
           isTimerRunning: false,
         }),
         
-      addTimer: (project, roundingSettings) => {
+      addTimer: (project, roundingSettings) => {  
+        console.log("start addTimer");
         const timerData = {
           projectId: project.id,
           projectTitle: project.title,
@@ -101,6 +102,7 @@ export const useTimeTrackerManager = create(
           memo: null,
         };
         const currentTimers = get().timers;
+        console.log("currentTimers", currentTimers);
         const timerCount = Object.keys(currentTimers).length;
 
         // Check if maximum 3 time trackers reached
@@ -120,7 +122,7 @@ export const useTimeTrackerManager = create(
         const existingTimerForProject = Object.values(currentTimers).find(
           (timer) => timer.projectId === timerData.projectId
         );
-
+        console.log("existingTimerForProject", existingTimerForProject);
         if (existingTimerForProject) {
           return {
             success: false,

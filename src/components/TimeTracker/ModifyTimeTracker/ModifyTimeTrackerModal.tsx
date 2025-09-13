@@ -93,6 +93,7 @@ export default function ModifyTimeTrackerModal({
               setTempTimerRounding={setTempTimerRounding}
               activeSeconds={activeSeconds}
               timerRoundingSettings={timerRoundingSettings}
+              onClose={() => setOpened(false)}
             />
           </Tabs.Panel>
         </Tabs>

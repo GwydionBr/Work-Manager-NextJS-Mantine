@@ -17,6 +17,7 @@ import {
   Paper,
   Switch,
   Collapse,
+  Anchor,
 } from "@mantine/core";
 import {
   IconSettings,
@@ -32,19 +33,22 @@ import { RoundingDirection } from "@/types/settings.types";
 import { getRoundedSeconds } from "@/utils/workHelperFunctions";
 import { TimerRoundingSettings } from "@/types/timeTracker.types";
 import { getRoundingLabel } from "@/utils/timeTrackerFunctions";
+import { SettingsTab } from "@/components/Settings/SettingsModal";
 
 interface ModifyRoundingProps {
   setTempTimerRounding: (timerRoundingSettings: TimerRoundingSettings) => void;
   activeSeconds: number;
   timerRoundingSettings: TimerRoundingSettings;
+  onClose: () => void;
 }
 
 export default function ModifyRounding({
   setTempTimerRounding,
   activeSeconds,
   timerRoundingSettings,
+  onClose,
 }: ModifyRoundingProps) {
-  const { locale } = useSettingsStore();
+  const { locale, setSelectedTab, setIsModalOpen } = useSettingsStore();
   const [roundingSettings, setRoundingSettings] =
     useState<TimerRoundingSettings>(timerRoundingSettings);
   const [loading, setLoading] = useState(false);
@@ -286,11 +290,31 @@ export default function ModifyRounding({
         <Text size="xs" c="dimmed" ta="center" style={{ lineHeight: 1.4 }}>
           <IconAlertCircle
             size={12}
+            color="red"
             style={{ marginRight: "4px", verticalAlign: "middle" }}
           />
           {locale === "de-DE"
-            ? "Hinweis: Rundungs-Einstellungen beeinflussen, wie die Zeit berechnet und gespeichert wird. Die Rundungsänderungen werden nur für diesen Zeitrechner beibehalten."
-            : "Note: Rounding settings affect how time is calculated and saved. The rounding changes are kept for this time tracker only."}
+            ? `Hinweis: Rundungs-Einstellungen beeinflussen, wie die Zeit berechnet und gespeichert wird.
+             Die Rundungsänderungen werden nur für diesen Zeitrechner beibehalten und werden nach 
+             Erstellung einer Zeitaufnahme zurückgesetzt. Um bleibende Rundungsänderungen zu erhalten,
+             können Sie die Rundungs-Einstellungen im Projekt oder in den`
+            : `Note: Rounding settings affect how time is calculated and saved.
+             The rounding changes are kept for this time tracker only and will be reset after creating a time entry.
+             To keep permanent rounding changes, you can save the rounding settings in the project or in the`}{" "}
+          <Anchor
+            component="button"
+            onClick={() => {
+              setIsModalOpen(true);
+              setSelectedTab(SettingsTab.WORK);
+              onClose();
+            }}
+            c="blue"
+            fw={500}
+            inline
+          >
+            {locale === "de-DE" ? "Arbeits-Einstellungen" : "Work Settings"}
+          </Anchor>{" "}
+          {locale === "de-DE" ? "speichern." : ""}
         </Text>
       </Paper>
     </Stack>

@@ -66,11 +66,12 @@ export default function TimerManager({
   };
 
   useEffect(() => {
+    console.log("timers", timers);
     if (timers.length === 0) {
       if (!activeProject) return;
       handleAddTimer(activeProject.project);
     }
-  }, [timers, handleAddTimer, activeProject]);
+  }, [timers, activeProject]);
 
   const isOneTimerRunning = timers.some(
     (timer) => timer.state === TimerState.Running

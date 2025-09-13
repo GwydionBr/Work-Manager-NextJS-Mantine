@@ -389,6 +389,7 @@ export default function ModifyTime({
         <Text size="xs" c="dimmed" ta="center" style={{ lineHeight: 1.4 }}>
           <IconAlertCircle
             size={12}
+            color="red"
             style={{ marginRight: "4px", verticalAlign: "middle" }}
           />
           {locale === "de-DE"
