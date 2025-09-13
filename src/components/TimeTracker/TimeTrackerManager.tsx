@@ -66,7 +66,6 @@ export default function TimerManager({
   };
 
   useEffect(() => {
-    console.log("timers", timers);
     if (timers.length === 0) {
       if (!activeProject) return;
       handleAddTimer(activeProject.project);
