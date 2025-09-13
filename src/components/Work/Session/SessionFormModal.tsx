@@ -26,7 +26,7 @@ export default function SessionFormModal({
   initialValues,
 }: SessionFormModalProps) {
   const stack = useModalsStack(["session-form", "project-form"]);
-  const { locale, roundInTimeFragments, timeFragmentInterval, format24h } =
+  const { locale, timerRoundingSettings, format24h } =
     useSettingsStore();
   const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
   const { activeProjectId, addTimerSession, addProject } = useWorkStore();
@@ -72,15 +72,15 @@ export default function SessionFormModal({
         : activeProject.project.currency,
     };
 
-    if (roundInTimeFragments) {
-      newSession = getTimeFragmentSession(timeFragmentInterval, newSession);
+    if (timerRoundingSettings.roundInTimeFragments) {
+      newSession = getTimeFragmentSession(timerRoundingSettings.timeFragmentInterval, newSession);
     }
 
     const { createdSessions, overlappingSessions, completeOverlap } =
       await addTimerSession(
         newSession,
-        roundInTimeFragments,
-        timeFragmentInterval
+        timerRoundingSettings.roundInTimeFragments,
+        timerRoundingSettings.timeFragmentInterval
       );
 
     SessionNotification({

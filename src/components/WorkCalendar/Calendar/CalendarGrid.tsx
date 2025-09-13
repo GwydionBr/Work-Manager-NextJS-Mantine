@@ -52,11 +52,11 @@ export default function CalendarGrid({
     defaultSalaryCurrency,
     defaultSalaryAmount,
     defaultProjectHourlyPayment,
-    roundInTimeFragments,
-    timeFragmentInterval,
+    timerRoundingSettings,
     showCalendarTime,
     format24h,
   } = useSettingsStore();
+  const { roundInTimeFragments, timeFragmentInterval } = timerRoundingSettings;
 
   const { ref, x, y } = useMouse();
   const { hovered, ref: hoverRef } = useHover();

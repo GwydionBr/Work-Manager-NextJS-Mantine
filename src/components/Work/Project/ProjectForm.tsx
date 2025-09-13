@@ -84,13 +84,13 @@ export default function ProjectForm({
   newProject,
   submitting,
 }: ProjectFormProps) {
+  const { locale, timerRoundingSettings } = useSettingsStore();
   const {
-    locale,
-    roundingInterval: settingsRoundingInterval,
-    roundingDirection: settingsRoundingDirection,
-    roundInTimeFragments: settingsRoundInTimeFragments,
-    timeFragmentInterval: settingsTimeFragmentInterval,
-  } = useSettingsStore();
+    roundingInterval,
+    roundingDirection,
+    roundInTimeFragments,
+    timeFragmentInterval,
+  } = timerRoundingSettings;
   const [isColorPickerOpen, { open, close }] = useDisclosure(false);
   const [
     isCategoryFormOpen,
@@ -99,7 +99,12 @@ export default function ProjectForm({
   const [
     isDefaultRounding,
     { open: openDefaultRounding, close: closeDefaultRounding },
-  ] = useDisclosure(initialValues.rounding_interval === null);
+  ] = useDisclosure(
+    initialValues.rounding_interval === null ||
+      initialValues.rounding_direction === null ||
+      initialValues.round_in_time_fragments === null ||
+      initialValues.time_fragment_interval === null
+  );
   const ref = useClickOutside(() => {
     close();
   });
@@ -121,14 +126,17 @@ export default function ProjectForm({
       ...initialValues,
       round_in_time_fragments:
         initialValues.round_in_time_fragments === null
-          ? settingsRoundInTimeFragments
+          ? roundInTimeFragments
           : initialValues.round_in_time_fragments,
       time_fragment_interval:
-        initialValues.time_fragment_interval || settingsTimeFragmentInterval,
+        initialValues.time_fragment_interval ||
+        timeFragmentInterval,
       rounding_interval:
-        initialValues.rounding_interval || settingsRoundingInterval,
+        initialValues.rounding_interval ||
+        roundingInterval,
       rounding_direction:
-        initialValues.rounding_direction || settingsRoundingDirection,
+        initialValues.rounding_direction ||
+        roundingDirection,
     },
     validate: zodResolver(schema),
   });
@@ -159,15 +167,15 @@ export default function ProjectForm({
       openDefaultRounding();
     } else {
       closeDefaultRounding();
-      form.setFieldValue("rounding_interval", settingsRoundingInterval);
-      form.setFieldValue("rounding_direction", settingsRoundingDirection);
+      form.setFieldValue("rounding_interval", roundingInterval);
+      form.setFieldValue("rounding_direction", roundingDirection);
       form.setFieldValue(
         "round_in_time_fragments",
-        settingsRoundInTimeFragments
+        roundInTimeFragments
       );
       form.setFieldValue(
         "time_fragment_interval",
-        settingsTimeFragmentInterval
+        timeFragmentInterval
       );
     }
   };
