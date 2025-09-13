@@ -169,23 +169,6 @@ export default function TimeTrackerInstance({
 
   // Set Timer Rounding
   useEffect(() => {
-    if (project) {
-      setTimerRounding({
-        roundingDirection:
-          project.project.rounding_direction ??
-          settingsTimerRoundingSettings.roundingDirection,
-        roundingInterval:
-          project.project.rounding_interval ??
-          settingsTimerRoundingSettings.roundingInterval,
-        roundInTimeFragments:
-          project.project.round_in_time_fragments !== null
-            ? project.project.round_in_time_fragments
-            : settingsTimerRoundingSettings.roundInTimeFragments,
-        timeFragmentInterval:
-          project.project.time_fragment_interval ??
-          settingsTimerRoundingSettings.timeFragmentInterval,
-      });
-    }
     setTimerRounding(settingsTimerRoundingSettings);
   }, [settingsTimerRoundingSettings, setTimerRounding, project]);
 

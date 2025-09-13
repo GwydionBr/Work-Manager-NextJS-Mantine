@@ -2,7 +2,7 @@
 
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Currency, RoundingDirection } from "@/types/settings.types";
+import { Currency } from "@/types/settings.types";
 import { Text, Group, Badge, Stack, Divider, HoverCard } from "@mantine/core";
 import {
   IconCurrencyDollar,
@@ -16,6 +16,7 @@ import {
 import { formatMoney } from "@/utils/formatFunctions";
 import InfoActionIcon from "@/components/UI/ActionIcons/InfoActionIcon";
 import { TimerRoundingSettings } from "@/types/timeTracker.types";
+import { getRoundingLabel } from "@/utils/timeTrackerFunctions";
 
 interface TimeTrackerInfoHoverCardProps {
   currency: Currency;
@@ -39,25 +40,6 @@ export default function TimeTrackerInfoHoverCard({
     ) : (
       <IconCurrencyDollar size={16} />
     );
-  };
-
-  const getRoundingDirectionLabel = (
-    direction: RoundingDirection,
-    roundInTimeFragments: boolean
-  ) => {
-    if (roundInTimeFragments) {
-      return locale === "de-DE" ? "Fragmentweise" : "Fragment-wise";
-    }
-    switch (direction) {
-      case "up":
-        return locale === "de-DE" ? "Aufrunden" : "Round Up";
-      case "down":
-        return locale === "de-DE" ? "Abrunden" : "Round Down";
-      case "nearest":
-        return locale === "de-DE" ? "Am nächsten" : "Round Nearest";
-      default:
-        return direction;
-    }
   };
 
   return (
@@ -141,9 +123,10 @@ export default function TimeTrackerInfoHoverCard({
               {locale === "de-DE" ? "Modus" : "Mode"}
             </Text>
             <Badge color="orange" variant="light" size="sm">
-              {getRoundingDirectionLabel(
+              {getRoundingLabel(
                 timerRoundingSettings.roundingDirection,
-                timerRoundingSettings.roundInTimeFragments
+                timerRoundingSettings.roundInTimeFragments,
+                locale
               )}
             </Badge>
           </Group>

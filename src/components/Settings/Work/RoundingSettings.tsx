@@ -24,23 +24,21 @@ import { RoundingDirection } from "@/types/settings.types";
 export default function RoundingSettings() {
   const {
     locale,
-    roundingDirection: roundingMode,
-    roundingInterval,
-    roundInTimeFragments,
-    timeFragmentInterval,
+    timerRoundingSettings,
     setRoundingInterval,
-    setRoundingDirection: setRoundingMode,
+    setRoundingDirection,
     setRoundInTimeFragments,
     setTimeFragmentInterval,
   } = useSettingsStore();
 
-  const [roundingIntervalState, setRoundingIntervalState] =
-    useState(roundingInterval);
+  const [roundingIntervalState, setRoundingIntervalState] = useState(
+    timerRoundingSettings.roundingInterval
+  );
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setRoundingIntervalState(roundingInterval);
-  }, [roundingInterval]);
+    setRoundingIntervalState(timerRoundingSettings.roundingInterval);
+  }, [timerRoundingSettings.roundingInterval]);
 
   async function handleCustomSubmit() {
     setLoading(true);
@@ -59,12 +57,12 @@ export default function RoundingSettings() {
             ? "Runden in Zeitabschnitten"
             : "Round in time fragments"
         }
-        checked={roundInTimeFragments}
+        checked={timerRoundingSettings.roundInTimeFragments}
         onChange={(event) =>
           setRoundInTimeFragments(event.currentTarget.checked)
         }
       />
-      <Collapse in={!roundInTimeFragments}>
+      <Collapse in={!timerRoundingSettings.roundInTimeFragments}>
         <Group>
           <NumberInput
             label={
@@ -81,11 +79,13 @@ export default function RoundingSettings() {
             w={125}
             label={locale === "de-DE" ? "Rundungsmodus" : "Rounding mode"}
             data={roundingModes}
-            value={roundingMode}
-            onChange={(value) => setRoundingMode(value as RoundingDirection)}
+            value={timerRoundingSettings.roundingDirection}
+            onChange={(value) => setRoundingDirection(value as RoundingDirection)}
           />
           <Transition
-            mounted={roundingIntervalState !== roundingInterval}
+            mounted={
+              roundingIntervalState !== timerRoundingSettings.roundingInterval
+            }
             transition="fade-right"
           >
             {(styles) => (
@@ -101,7 +101,7 @@ export default function RoundingSettings() {
           </Transition>
         </Group>
       </Collapse>
-      <Collapse in={roundInTimeFragments}>
+      <Collapse in={timerRoundingSettings.roundInTimeFragments}>
         <Group>
           <Select
             w={200}
@@ -116,7 +116,7 @@ export default function RoundingSettings() {
                 ? "Intervall auswählen"
                 : "Select Default Rounding Amount"
             }
-            value={timeFragmentInterval.toString()}
+            value={timerRoundingSettings.timeFragmentInterval.toString()}
             onChange={(value) => setTimeFragmentInterval(Number(value))}
           />
         </Group>

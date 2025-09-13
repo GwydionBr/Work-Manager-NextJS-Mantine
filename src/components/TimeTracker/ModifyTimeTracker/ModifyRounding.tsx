@@ -15,6 +15,8 @@ import {
   NumberInput,
   Alert,
   Paper,
+  Switch,
+  Collapse,
 } from "@mantine/core";
 import {
   IconSettings,
@@ -22,10 +24,14 @@ import {
   IconAlertCircle,
   IconInfoCircle,
 } from "@tabler/icons-react";
-import { getRoundingModes } from "@/constants/settings";
+import {
+  getRoundingInTimeFragments,
+  getRoundingModes,
+} from "@/constants/settings";
 import { RoundingDirection } from "@/types/settings.types";
 import { getRoundedSeconds } from "@/utils/workHelperFunctions";
 import { TimerRoundingSettings } from "@/types/timeTracker.types";
+import { getRoundingLabel } from "@/utils/timeTrackerFunctions";
 
 interface ModifyRoundingProps {
   setTempTimerRounding: (timerRoundingSettings: TimerRoundingSettings) => void;
@@ -39,46 +45,31 @@ export default function ModifyRounding({
   timerRoundingSettings,
 }: ModifyRoundingProps) {
   const { locale } = useSettingsStore();
-  const [selectedRoundingInterval, setSelectedRoundingInterval] =
-    useState<number>(timerRoundingSettings.roundingInterval);
-  const [selectedRoundingDirection, setSelectedRoundingDirection] =
-    useState<RoundingDirection>(
-      timerRoundingSettings.roundingDirection as RoundingDirection
-    );
+  const [roundingSettings, setRoundingSettings] =
+    useState<TimerRoundingSettings>(timerRoundingSettings);
   const [loading, setLoading] = useState(false);
   const [previewRoundedSeconds, setPreviewRoundedSeconds] = useState(0);
 
   useEffect(() => {
     // Initialize with current time tracker settings
-    setSelectedRoundingInterval(timerRoundingSettings.roundingInterval);
-    setSelectedRoundingDirection(
-      timerRoundingSettings.roundingDirection as RoundingDirection
-    );
-  }, [
-    timerRoundingSettings.roundingInterval,
-    timerRoundingSettings.roundingDirection,
-  ]);
+    setRoundingSettings(timerRoundingSettings);
+  }, [timerRoundingSettings]);
 
   // Calculate preview of rounded seconds
   useEffect(() => {
     const rounded = getRoundedSeconds(
       activeSeconds,
-      selectedRoundingInterval,
-      selectedRoundingDirection
+      roundingSettings.roundingInterval,
+      roundingSettings.roundingDirection
     );
     setPreviewRoundedSeconds(rounded);
-  }, [selectedRoundingInterval, selectedRoundingDirection, activeSeconds]);
+  }, [roundingSettings, activeSeconds]);
 
   async function handleApplyRounding() {
     setLoading(true);
 
     // Update time tracker rounding settings only
-    setTempTimerRounding({
-      roundingInterval: selectedRoundingInterval,
-      roundingDirection: selectedRoundingDirection,
-      roundInTimeFragments: timerRoundingSettings.roundInTimeFragments,
-      timeFragmentInterval: timerRoundingSettings.timeFragmentInterval,
-    });
+    setTempTimerRounding(roundingSettings);
 
     setLoading(false);
   }
@@ -97,9 +88,7 @@ export default function ModifyRounding({
     }
   };
 
-  const hasChanges =
-    selectedRoundingInterval !== timerRoundingSettings.roundingInterval ||
-    selectedRoundingDirection !== timerRoundingSettings.roundingDirection;
+  const hasChanges = roundingSettings !== timerRoundingSettings;
 
   return (
     <Stack gap="lg">
@@ -119,7 +108,12 @@ export default function ModifyRounding({
             <Text size="sm" c="dimmed" mb="xs">
               {locale === "de-DE" ? "Aktuelle Rundung" : "Current Rounding"}
             </Text>
-            <Text fw={600}>{timerRoundingSettings.roundingInterval} min</Text>
+            <Text fw={600}>
+              {timerRoundingSettings.roundInTimeFragments
+                ? timerRoundingSettings.timeFragmentInterval
+                : timerRoundingSettings.roundingInterval}{" "}
+              min
+            </Text>
           </Box>
 
           <Box>
@@ -127,11 +121,11 @@ export default function ModifyRounding({
               {locale === "de-DE" ? "Aktueller Modus" : "Current Mode"}
             </Text>
             <Text fw={600}>
-              {
-                getRoundingModes(locale).find(
-                  (r) => r.value === timerRoundingSettings.roundingDirection
-                )?.label
-              }
+              {getRoundingLabel(
+                timerRoundingSettings.roundingDirection,
+                timerRoundingSettings.roundInTimeFragments,
+                locale
+              )}
             </Text>
           </Box>
         </Group>
@@ -147,29 +141,77 @@ export default function ModifyRounding({
         </Title>
 
         <Stack gap="md">
-          <Group gap="md" align="end">
-            <NumberInput
-              label={
-                locale === "de-DE" ? "Rundungsintervall" : "Rounding Interval"
-              }
-              suffix={locale === "de-DE" ? " Minuten" : " minutes"}
-              value={selectedRoundingInterval}
-              onChange={(value) => setSelectedRoundingInterval(Number(value))}
-              min={1}
-              max={1440}
-              w={150}
-            />
-          </Group>
-
-          <Select
-            label={locale === "de-DE" ? "Rundungs-Modus" : "Rounding Mode"}
-            value={selectedRoundingDirection}
-            onChange={(value) =>
-              setSelectedRoundingDirection(value as RoundingDirection)
+          <Switch
+            label={
+              locale === "de-DE"
+                ? "Runden in Zeitabschnitten"
+                : "Round in time fragments"
             }
-            data={getRoundingModes(locale)}
-            w={200}
+            checked={roundingSettings.roundInTimeFragments}
+            onChange={(event) =>
+              setRoundingSettings({
+                ...roundingSettings,
+                roundInTimeFragments: event.currentTarget.checked,
+              })
+            }
           />
+          <Collapse in={!roundingSettings.roundInTimeFragments}>
+            <Group gap="md" align="end">
+              <NumberInput
+                label={
+                  locale === "de-DE" ? "Rundungsintervall" : "Rounding Interval"
+                }
+                suffix={locale === "de-DE" ? " Minuten" : " minutes"}
+                value={roundingSettings.roundingInterval}
+                onChange={(value) =>
+                  setRoundingSettings({
+                    ...roundingSettings,
+                    roundingInterval: Number(value),
+                  })
+                }
+                min={1}
+                max={1440}
+                w={150}
+              />
+              <Select
+                label={locale === "de-DE" ? "Rundungs-Modus" : "Rounding Mode"}
+                value={roundingSettings.roundingDirection}
+                onChange={(value) =>
+                  setRoundingSettings({
+                    ...roundingSettings,
+                    roundingDirection: value as RoundingDirection,
+                  })
+                }
+                data={getRoundingModes(locale)}
+                w={200}
+              />
+            </Group>
+          </Collapse>
+          <Collapse in={roundingSettings.roundInTimeFragments}>
+            <Group>
+              <Select
+                w={200}
+                data={getRoundingInTimeFragments(locale)}
+                label={
+                  locale === "de-DE"
+                    ? "Zeitabschnittsintervall"
+                    : "Time Fragment Interval"
+                }
+                placeholder={
+                  locale === "de-DE"
+                    ? "Intervall auswählen"
+                    : "Select Default Rounding Amount"
+                }
+                value={roundingSettings.timeFragmentInterval.toString()}
+                onChange={(value) =>
+                  setRoundingSettings({
+                    ...roundingSettings,
+                    timeFragmentInterval: Number(value),
+                  })
+                }
+              />
+            </Group>
+          </Collapse>
 
           {hasChanges && (
             <Button

@@ -113,8 +113,9 @@ export default function TimerManager({
             activeProject.project.rounding_interval ??
             timerRoundingSettings.roundingInterval,
           roundInTimeFragments:
-            activeProject.project.round_in_time_fragments ??
-            timerRoundingSettings.roundInTimeFragments,
+            activeProject.project.round_in_time_fragments !== null
+              ? activeProject.project.round_in_time_fragments
+              : timerRoundingSettings.roundInTimeFragments,
           timeFragmentInterval:
             activeProject.project.time_fragment_interval ??
             timerRoundingSettings.timeFragmentInterval,
