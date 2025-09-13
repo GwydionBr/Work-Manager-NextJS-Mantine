@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { Currency } from "@/types/settings.types";
 import { TimerRoundingSettings, TimerState } from "@/types/timeTracker.types";
+import { Tables } from "@/types/db.types";
 
 export interface TimerData {
   id: string;
@@ -35,7 +36,10 @@ interface TimeTrackerManagerState {
   isTimerRunning: boolean;
 
   // Timer Management
-  addTimer: (timerData: Omit<TimerData, "id">) => {
+  addTimer: (
+    project: Tables<"timer_project">,
+    roundingSettings: TimerRoundingSettings
+  ) => {
     success: boolean;
     timerId?: string;
     error?: { german: string; english: string };
@@ -59,7 +63,43 @@ export const useTimeTrackerManager = create(
           timers: {} as Record<string, TimerData>,
           isTimerRunning: false,
         }),
-      addTimer: (timerData) => {
+        
+      addTimer: (project, roundingSettings) => {
+        const timerData = {
+          projectId: project.id,
+          projectTitle: project.title,
+          currency: project.currency,
+          salary: project.salary,
+          hourlyPayment: project.hourly_payment,
+          userId: project.user_id,
+          timerRoundingSettings: {
+            roundingDirection:
+              project.rounding_direction ?? roundingSettings.roundingDirection,
+            roundingInterval:
+              project.rounding_interval ?? roundingSettings.roundingInterval,
+            roundInTimeFragments:
+              project.round_in_time_fragments !== null
+                ? project.round_in_time_fragments
+                : roundingSettings.roundInTimeFragments,
+            timeFragmentInterval:
+              project.time_fragment_interval ??
+              roundingSettings.timeFragmentInterval,
+          },
+          state: TimerState.Stopped,
+          activeSeconds: 0,
+          pausedSeconds: 0,
+          startTime: null,
+          tempStartTime: null,
+          storedActiveSeconds: 0,
+          storedPausedSeconds: 0,
+          moneyEarned: "0.00",
+          activeTime: "00:00",
+          roundedActiveTime: "00:00",
+          pausedTime: "00:00",
+          forceEndTimer: false,
+          createdAt: new Date().getTime(),
+          memo: null,
+        };
         const currentTimers = get().timers;
         const timerCount = Object.keys(currentTimers).length;
 

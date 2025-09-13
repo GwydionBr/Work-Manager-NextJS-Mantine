@@ -36,7 +36,10 @@ export default function TimeTrackerInstance({
   const [memo, setMemo] = useState<string>(timer.memo ?? "");
   const { updateTimer, removeTimer, setForceEndTimer, getAllTimers } =
     useTimeTrackerManager();
-  const { addTimerSession, projects } = useWorkStore();
+  const { addTimerSession } = useWorkStore();
+  const project = useWorkStore((state) =>
+    state.projects.find((p) => p.project.id === timer.projectId)
+  );
   const {
     timerRoundingSettings: settingsTimerRoundingSettings,
     automaticlyStopOtherTimer,
@@ -45,8 +48,6 @@ export default function TimeTrackerInstance({
   } = useSettingsStore();
   const [showSmall, setShowSmall] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const project = projects.find((p) => p.project.id === timer.projectId);
 
   // Funktion zum Beenden aller anderen laufenden Timer
   const stopOtherRunningTimers = useCallback(() => {
@@ -121,29 +122,50 @@ export default function TimeTrackerInstance({
       pausedSeconds,
       startTime,
       tempStartTime,
-      timerRoundingSettings,
       storedActiveSeconds,
       storedPausedSeconds,
       memo,
-      projectTitle: project?.project.title ?? timer.projectTitle,
     });
   }, [
-    project,
+    timer.id,
+    updateTimer,
     state,
     activeTime,
     pausedTime,
     moneyEarned,
-    timer.id,
-    updateTimer,
     activeSeconds,
     pausedSeconds,
     startTime,
     tempStartTime,
-    timerRoundingSettings,
     storedActiveSeconds,
     storedPausedSeconds,
     memo,
   ]);
+
+  useEffect(() => {
+    if (project) {
+      const newTimerRoundingSettings = {
+        ...timerRoundingSettings,
+        roundingDirection:
+          project.project.rounding_direction ??
+          timerRoundingSettings.roundingDirection,
+        roundingInterval:
+          project.project.rounding_interval ??
+          timerRoundingSettings.roundingInterval,
+        roundInTimeFragments:
+          project.project.round_in_time_fragments ??
+          timerRoundingSettings.roundInTimeFragments,
+        timeFragmentInterval:
+          project.project.time_fragment_interval ??
+          timerRoundingSettings.timeFragmentInterval,
+      };
+      updateTimer(timer.id, {
+        projectTitle: project.project.title,
+        timerRoundingSettings: newTimerRoundingSettings,
+      });
+      setTimerRounding(newTimerRoundingSettings);
+    }
+  }, [project]);
 
   // Erweiterte startTimer Funktion, die andere Timer beendet
   const startTimerWithStopOthers = useCallback(() => {
@@ -166,11 +188,6 @@ export default function TimeTrackerInstance({
       setForceEndTimer(timer.id, false);
     }
   }, [forceEndTimer]);
-
-  // Set Timer Rounding
-  useEffect(() => {
-    setTimerRounding(settingsTimerRoundingSettings);
-  }, [settingsTimerRoundingSettings, setTimerRounding, project]);
 
   if (!isClient) return null;
 
