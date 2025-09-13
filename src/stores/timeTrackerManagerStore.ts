@@ -1,8 +1,8 @@
 // src/stores/timeTrackerManagerStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Currency, RoundingDirection } from "@/types/settings.types";
-import { TimerState } from "@/types/timeTracker.types";
+import { Currency } from "@/types/settings.types";
+import { TimerRoundingSettings, TimerState } from "@/types/timeTracker.types";
 
 export interface TimerData {
   id: string;
@@ -12,8 +12,7 @@ export interface TimerData {
   salary: number;
   hourlyPayment: boolean;
   userId: string;
-  roundingInterval: number;
-  roundingDirection: RoundingDirection;
+  timerRoundingSettings: TimerRoundingSettings;
   state: TimerState;
   activeSeconds: number;
   pausedSeconds: number;

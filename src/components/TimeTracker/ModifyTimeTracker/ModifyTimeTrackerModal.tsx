@@ -9,15 +9,13 @@ import MoreActionIcon from "../../UI/ActionIcons/MoreActionIcon";
 import ModifyTime from "./ModifyTime";
 import ModifyRounding from "./ModifyRounding";
 
-import { TimerState } from "@/types/timeTracker.types";
-import { RoundingDirection } from "@/types/settings.types";
+import { TimerRoundingSettings, TimerState } from "@/types/timeTracker.types";
 
 interface ModifyTimeTrackerModalProps {
   modifyActiveSeconds: (delta: number) => void;
   modifyPausedSeconds: (delta: number) => void;
-  setTimerRounding: (
-    roundingInterval: number,
-    roundingDirection: RoundingDirection
+  setTempTimerRounding: (
+    timerRoundingSettings: TimerRoundingSettings
   ) => void;
   activeTime: string; 
   pausedTime: string;
@@ -25,22 +23,20 @@ interface ModifyTimeTrackerModalProps {
   activeSeconds: number;
   storedActiveSeconds: number;
   storedPausedSeconds: number;
-  roundingDirection: RoundingDirection;
-  roundingInterval: number;
+  timerRoundingSettings: TimerRoundingSettings;
 }
 
 export default function ModifyTimeTrackerModal({
   modifyActiveSeconds,
   modifyPausedSeconds,
-  setTimerRounding,
+  setTempTimerRounding,
   activeTime,
   pausedTime,
   state,
   activeSeconds,
   storedActiveSeconds,
   storedPausedSeconds,
-  roundingDirection,
-  roundingInterval,
+  timerRoundingSettings,
 }: ModifyTimeTrackerModalProps) {
   const { locale } = useSettingsStore();
   const [opened, setOpened] = useState(false);
@@ -94,10 +90,9 @@ export default function ModifyTimeTrackerModal({
           </Tabs.Panel>
           <Tabs.Panel value="rounding">
             <ModifyRounding
-              setTimerRounding={setTimerRounding}
+              setTempTimerRounding={setTempTimerRounding}
               activeSeconds={activeSeconds}
-              roundingDirection={roundingDirection}
-              roundingInterval={roundingInterval}
+              timerRoundingSettings={timerRoundingSettings}
             />
           </Tabs.Panel>
         </Tabs>

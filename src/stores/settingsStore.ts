@@ -2,10 +2,12 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Currency, RoundingDirection, Locale } from "@/types/settings.types";
 import * as actions from "@/actions";
 
 import { SettingsTab } from "@/components/Settings/SettingsModal";
+
+import { Currency, RoundingDirection, Locale } from "@/types/settings.types";
+import { TimerRoundingSettings } from "@/types/timeTracker.types";
 
 interface SettingsState {
   isModalOpen: boolean;
@@ -15,16 +17,13 @@ interface SettingsState {
   defaultSalaryAmount: number;
   defaultFinanceCurrency: Currency;
   defaultProjectHourlyPayment: boolean;
+  timerRoundingSettings: TimerRoundingSettings;
   showCalendarTime: boolean;
-  roundingDirection: RoundingDirection;
-  roundingInterval: number;
   defaultGroupColor: string | null;
   isAsideOpen: boolean;
   isNavbarOpen: boolean;
   isFetching: boolean;
   lastFetch: Date | null;
-  roundInTimeFragments: boolean;
-  timeFragmentInterval: number;
   automaticlyStopOtherTimer: boolean;
   locale: Locale;
   format24h: boolean;
@@ -65,6 +64,12 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       defaultProjectHourlyPayment: true,
       roundingDirection: "up",
       roundingInterval: 1,
+      timerRoundingSettings: {
+        roundingInterval: 1,
+        roundingDirection: "up",
+        roundInTimeFragments: false,
+        timeFragmentInterval: 10,
+      },
       defaultSalaryAmount: 0,
       defaultGroupColor: null,
       showCalendarTime: true,
@@ -87,16 +92,18 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
           defaultSalaryAmount: 0,
           defaultFinanceCurrency: "USD",
           defaultProjectHourlyPayment: true,
-          roundingDirection: "up",
-          roundingInterval: 1,
+          timerRoundingSettings: {
+            roundingInterval: 1,
+            roundingDirection: "up",
+            roundInTimeFragments: false,
+            timeFragmentInterval: 10,
+          },
           defaultGroupColor: null,
           showCalendarTime: true,
           isAsideOpen: false,
           isNavbarOpen: false,
           isFetching: true,
           lastFetch: null,
-          roundInTimeFragments: false,
-          timeFragmentInterval: 10,
           automaticlyStopOtherTimer: false,
           locale: "en-US",
           format24h: false,
@@ -111,11 +118,13 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
             defaultFinanceCurrency: data.default_finance_currency,
             defaultProjectHourlyPayment: data.default_project_hourly_payment,
             showCalendarTime: data.show_calendar_time,
-            roundingDirection: data.rounding_direction,
-            roundingInterval: data.rounding_interval,
+            timerRoundingSettings: {
+              roundingInterval: data.rounding_interval,
+              roundingDirection: data.rounding_direction,
+              roundInTimeFragments: data.round_in_time_sections,
+              timeFragmentInterval: data.time_section_interval,
+            },
             defaultGroupColor: data.default_group_color,
-            roundInTimeFragments: data.round_in_time_sections,
-            timeFragmentInterval: data.time_section_interval,
             automaticlyStopOtherTimer: data.automaticly_stop_other_timer,
             locale: data.locale,
             format24h: data.format_24h,
@@ -165,18 +174,30 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       },
 
       setRoundingDirection: async (roundingDirection: RoundingDirection) => {
+        const { timerRoundingSettings } = get();
         await actions.updateSettings({
           id: get().settingsId ?? "",
           rounding_direction: roundingDirection,
         });
-        set({ roundingDirection: roundingDirection });
+        set({
+          timerRoundingSettings: {
+            ...timerRoundingSettings,
+            roundingDirection: roundingDirection,
+          },
+        });
       },
       setRoundingInterval: async (roundingInterval: number) => {
+        const { timerRoundingSettings } = get();
         await actions.updateSettings({
           id: get().settingsId ?? "",
           rounding_interval: roundingInterval,
         });
-        set({ roundingInterval: roundingInterval });
+        set({
+          timerRoundingSettings: {
+            ...timerRoundingSettings,
+            roundingInterval: roundingInterval,
+          },
+        });
       },
 
       setDefaultFinanceCurrency: async (financeCurrency: Currency) => {
@@ -197,18 +218,30 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
         set({ isAsideOpen: isAsideOpen });
       },
       setRoundInTimeFragments: async (roundInTimeSections: boolean) => {
+        const { timerRoundingSettings } = get();
         await actions.updateSettings({
           id: get().settingsId ?? "",
           round_in_time_sections: roundInTimeSections,
         });
-        set({ roundInTimeFragments: roundInTimeSections });
+        set({
+          timerRoundingSettings: {
+            ...timerRoundingSettings,
+            roundInTimeFragments: roundInTimeSections,
+          },
+        });
       },
       setTimeFragmentInterval: async (timeSectionInterval: number) => {
+        const { timerRoundingSettings } = get();
         await actions.updateSettings({
           id: get().settingsId ?? "",
           time_section_interval: timeSectionInterval,
         });
-        set({ timeFragmentInterval: timeSectionInterval });
+        set({
+          timerRoundingSettings: {
+            ...timerRoundingSettings,
+            timeFragmentInterval: timeSectionInterval,
+          },
+        });
       },
       setAutomaticlyStopOtherTimer: async (
         automaticlyStopOtherTimer: boolean

@@ -12,7 +12,7 @@ import {
   Button,
   Collapse,
 } from "@mantine/core";
-import { TimerState } from "@/types/timeTracker.types";
+import { TimerRoundingSettings, TimerState } from "@/types/timeTracker.types";
 import TimeTrackerRow from "../TimeTrackerRow";
 import {
   IconCurrencyEuro,
@@ -22,7 +22,7 @@ import {
   IconX,
   IconNotes,
 } from "@tabler/icons-react";
-import { Currency, RoundingDirection } from "@/types/settings.types";
+import { Currency } from "@/types/settings.types";
 import { getStatusColor } from "@/utils/workHelperFunctions";
 import ModifyTimeTrackerModal from "../ModifyTimeTracker/ModifyTimeTrackerModal";
 import TimeTrackerInfoHoverCard from "../TimeTrackerInfoHoverCard";
@@ -39,8 +39,7 @@ interface TimeTrackerComponentBigMaxProps {
   moneyEarned: string;
   storedActiveSeconds: number;
   storedPausedSeconds: number;
-  roundingDirection: RoundingDirection;
-  roundingInterval: number;
+  timerRoundingSettings: TimerRoundingSettings;
   currency: Currency;
   salary: number;
   hourlyPayment: boolean;
@@ -53,9 +52,8 @@ interface TimeTrackerComponentBigMaxProps {
   submitTimer: () => void;
   cancelTimer: () => void;
   removeTimer: () => void;
-  setTimerRounding: (
-    roundingInterval: number,
-    roundingDirection: RoundingDirection
+  setTempTimerRounding: (
+    timerRoundingSettings: TimerRoundingSettings
   ) => void;
   modifyActiveSeconds: (delta: number) => void;
   modifyPausedSeconds: (delta: number) => void;
@@ -73,8 +71,7 @@ export default function TimeTrackerComponentBigMax({
   moneyEarned,
   storedActiveSeconds,
   storedPausedSeconds,
-  roundingDirection,
-  roundingInterval,
+  timerRoundingSettings,
   currency,
   salary,
   hourlyPayment,
@@ -86,11 +83,11 @@ export default function TimeTrackerComponentBigMax({
   cancelTimer,
   modifyActiveSeconds,
   modifyPausedSeconds,
-  setTimerRounding,
+  setTempTimerRounding,
   removeTimer,
   setMemo,
 }: TimeTrackerComponentBigMaxProps) {
-  const { roundInTimeFragments: roundInTimeSections, locale } =
+  const { locale } =
     useSettingsStore();
 
   const getLocaleState = () => {
@@ -122,19 +119,17 @@ export default function TimeTrackerComponentBigMax({
               activeTime={activeTime}
               pausedTime={pausedTime}
               state={state}
-              roundingDirection={roundingDirection}
+              timerRoundingSettings={timerRoundingSettings}
               activeSeconds={activeSeconds}
               storedActiveSeconds={storedActiveSeconds}
               storedPausedSeconds={storedPausedSeconds}
-              roundingInterval={roundingInterval}
               modifyActiveSeconds={modifyActiveSeconds}
               modifyPausedSeconds={modifyPausedSeconds}
-              setTimerRounding={setTimerRounding}
+              setTempTimerRounding={setTempTimerRounding}
             />
             <TimeTrackerInfoHoverCard
               currency={currency}
-              roundingDirection={roundingDirection}
-              roundingInterval={roundingInterval}
+              timerRoundingSettings={timerRoundingSettings}
               projectTitle={projectTitle}
               salary={salary}
               hourlyPayment={hourlyPayment}

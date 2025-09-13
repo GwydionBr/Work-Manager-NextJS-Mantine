@@ -15,11 +15,11 @@ import {
 } from "@tabler/icons-react";
 import { formatMoney } from "@/utils/formatFunctions";
 import InfoActionIcon from "@/components/UI/ActionIcons/InfoActionIcon";
+import { TimerRoundingSettings } from "@/types/timeTracker.types";
 
 interface TimeTrackerInfoHoverCardProps {
   currency: Currency;
-  roundingDirection: RoundingDirection;
-  roundingInterval: number;
+  timerRoundingSettings: TimerRoundingSettings;
   projectTitle: string;
   salary: number;
   hourlyPayment: boolean;
@@ -27,8 +27,7 @@ interface TimeTrackerInfoHoverCardProps {
 
 export default function TimeTrackerInfoHoverCard({
   currency,
-  roundingDirection,
-  roundingInterval,
+  timerRoundingSettings,
   projectTitle,
   salary,
   hourlyPayment,
@@ -42,13 +41,13 @@ export default function TimeTrackerInfoHoverCard({
     );
   };
 
-  const formatRoundingInterval = (seconds: number) => {
-    if (seconds < 60) return `${seconds}s`;
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}min`;
-    return `${Math.floor(seconds / 3600)}h`;
-  };
-
-  const getRoundingDirectionLabel = (direction: RoundingDirection) => {
+  const getRoundingDirectionLabel = (
+    direction: RoundingDirection,
+    roundInTimeFragments: boolean
+  ) => {
+    if (roundInTimeFragments) {
+      return locale === "de-DE" ? "Fragmentweise" : "Fragment-wise";
+    }
     switch (direction) {
       case "up":
         return locale === "de-DE" ? "Aufrunden" : "Round Up";
@@ -131,7 +130,9 @@ export default function TimeTrackerInfoHoverCard({
           <Group>
             <IconSettings size={16} color="var(--mantine-color-orange-6)" />
             <Text size="sm" fw={600} c="orange">
-              {locale === "de-DE" ? "Rundungs-Einstellungen" : "Rounding Settings"}
+              {locale === "de-DE"
+                ? "Rundungs-Einstellungen"
+                : "Rounding Settings"}
             </Text>
           </Group>
 
@@ -140,7 +141,10 @@ export default function TimeTrackerInfoHoverCard({
               {locale === "de-DE" ? "Modus" : "Mode"}
             </Text>
             <Badge color="orange" variant="light" size="sm">
-              {getRoundingDirectionLabel(roundingDirection)}
+              {getRoundingDirectionLabel(
+                timerRoundingSettings.roundingDirection,
+                timerRoundingSettings.roundInTimeFragments
+              )}
             </Badge>
           </Group>
 
@@ -152,7 +156,10 @@ export default function TimeTrackerInfoHoverCard({
               </Text>
             </Group>
             <Text size="sm" fw={600}>
-              {formatRoundingInterval(roundingInterval)}
+              {timerRoundingSettings.roundInTimeFragments
+                ? timerRoundingSettings.timeFragmentInterval
+                : timerRoundingSettings.roundingInterval}{" "}
+              min
             </Text>
           </Group>
         </Stack>

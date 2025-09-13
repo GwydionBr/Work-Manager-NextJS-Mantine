@@ -11,17 +11,14 @@ import {
   Text,
   Transition,
 } from "@mantine/core";
-import { TimerState } from "@/types/timeTracker.types";
+import { TimerRoundingSettings, TimerState } from "@/types/timeTracker.types";
 import StartActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/StartActionIcons";
 import StopActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/StopActionIcon";
 import CancelActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/CancelActionIcon";
 import XActionIcon from "@/components/UI/ActionIcons/XActionIcon";
 import ModifyTimeTrackerModal from "@/components/TimeTracker/ModifyTimeTracker/ModifyTimeTrackerModal";
 import TimeTrackerInfoHoverCard from "@/components/TimeTracker/TimeTrackerInfoHoverCard";
-import {
-  Currency,
-  RoundingDirection,
-} from "@/types/settings.types";
+import { Currency } from "@/types/settings.types";
 
 interface TimeTrackerComponentBigMinProps {
   projectTitle: string;
@@ -31,8 +28,7 @@ interface TimeTrackerComponentBigMinProps {
   pausedTime: string;
   roundedActiveTime: string;
   isSubmitting: boolean;
-  roundingDirection: RoundingDirection;
-  roundingInterval: number;
+  timerRoundingSettings: TimerRoundingSettings;
   currency: Currency;
   salary: number;
   hourlyPayment: boolean;
@@ -42,10 +38,7 @@ interface TimeTrackerComponentBigMinProps {
   backgroundColor: string;
   modifyActiveSeconds: (delta: number) => void;
   modifyPausedSeconds: (delta: number) => void;
-  setTimerRounding: (
-    roundingInterval: number,
-    roundingDirection: RoundingDirection
-  ) => void;
+  setTempTimerRounding: (timerRoundingSettings: TimerRoundingSettings) => void;
   startTimer: () => void;
   pauseTimer: () => void;
   resumeTimer: () => void;
@@ -64,14 +57,13 @@ export default function TimeTrackerComponentBigMin({
   isSubmitting,
   storedActiveSeconds,
   storedPausedSeconds,
-  roundingDirection,
-  roundingInterval,
+  timerRoundingSettings,
   currency,
   salary,
   hourlyPayment,
   modifyActiveSeconds,
   modifyPausedSeconds,
-  setTimerRounding,
+  setTempTimerRounding,
   startTimer,
   submitTimer,
   cancelTimer,
@@ -79,8 +71,7 @@ export default function TimeTrackerComponentBigMin({
   color,
   backgroundColor,
 }: TimeTrackerComponentBigMinProps) {
-  const { locale, roundInTimeFragments: roundInTimeSections } =
-    useSettingsStore();
+  const { locale } = useSettingsStore();
 
   return (
     <Card
@@ -98,19 +89,17 @@ export default function TimeTrackerComponentBigMin({
           activeTime={activeTime}
           pausedTime={pausedTime}
           state={state}
-          roundingDirection={roundingDirection}
+          timerRoundingSettings={timerRoundingSettings}
           activeSeconds={activeSeconds}
           storedActiveSeconds={storedActiveSeconds}
           storedPausedSeconds={storedPausedSeconds}
-          roundingInterval={roundingInterval}
           modifyActiveSeconds={modifyActiveSeconds}
           modifyPausedSeconds={modifyPausedSeconds}
-          setTimerRounding={setTimerRounding}
+          setTempTimerRounding={setTempTimerRounding}
         />
         <TimeTrackerInfoHoverCard
           currency={currency}
-          roundingDirection={roundingDirection}
-          roundingInterval={roundingInterval}
+          timerRoundingSettings={timerRoundingSettings}
           projectTitle={projectTitle}
           salary={salary}
           hourlyPayment={hourlyPayment}
@@ -135,7 +124,7 @@ export default function TimeTrackerComponentBigMin({
             <Text size="xs" c="dimmed">
               {locale === "de-DE" ? "Aktiv" : "Active"}
             </Text>
-            {!roundInTimeSections ? (
+            {!timerRoundingSettings?.roundInTimeFragments ? (
               <Stack>
                 <Text size="xs" fw={state === "running" ? 700 : 400}>
                   {activeTime}

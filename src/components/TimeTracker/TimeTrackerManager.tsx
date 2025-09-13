@@ -9,7 +9,7 @@ import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Alert, Stack, Text } from "@mantine/core";
-import { TimerState } from "@/types/timeTracker.types";
+import { TimerRoundingSettings, TimerState } from "@/types/timeTracker.types";
 import TimeTrackerInstance from "./TimeTrackerInstance";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import { Currency } from "@/types/settings.types";
@@ -29,14 +29,9 @@ export default function TimerManager({
 }: TimerManagerProps) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isClient, setIsClient] = useState(false);
-  const {
-    getAllTimers,
-    addTimer,
-    timers: timerData,
-    isTimerRunning,
-  } = useTimeTrackerManager();
+  const { getAllTimers, addTimer, timers: timerData } = useTimeTrackerManager();
   const { activeProjectId } = useWorkStore();
-  const { roundingInterval, roundingDirection, locale } = useSettingsStore();
+  const { timerRoundingSettings, locale } = useSettingsStore();
   const activeProject = useWorkStore((state) =>
     state.projects.find((p) => p.project.id === activeProjectId)
   );
@@ -57,7 +52,8 @@ export default function TimerManager({
     currency: Currency,
     salary: number,
     hourlyPayment: boolean,
-    userId: string
+    userId: string,
+    timerRoundingSettings: TimerRoundingSettings
   ) => {
     const result = addTimer({
       projectId: projectId,
@@ -66,8 +62,7 @@ export default function TimerManager({
       salary: salary,
       hourlyPayment: hourlyPayment,
       userId: userId,
-      roundingInterval: roundingInterval,
-      roundingDirection: roundingDirection,
+      timerRoundingSettings: timerRoundingSettings,
       state: TimerState.Stopped,
       activeSeconds: 0,
       pausedSeconds: 0,
@@ -110,8 +105,20 @@ export default function TimerManager({
         salary: activeProject.project.salary,
         hourlyPayment: activeProject.project.hourly_payment,
         userId: activeProject.project.user_id,
-        roundingInterval: roundingInterval,
-        roundingDirection: roundingDirection,
+        timerRoundingSettings: {
+          roundingDirection:
+            activeProject.project.rounding_direction ??
+            timerRoundingSettings.roundingDirection,
+          roundingInterval:
+            activeProject.project.rounding_interval ??
+            timerRoundingSettings.roundingInterval,
+          roundInTimeFragments:
+            activeProject.project.round_in_time_fragments ??
+            timerRoundingSettings.roundInTimeFragments,
+          timeFragmentInterval:
+            activeProject.project.time_fragment_interval ??
+            timerRoundingSettings.timeFragmentInterval,
+        },
         state: TimerState.Stopped,
         activeSeconds: 0,
         pausedSeconds: 0,
@@ -190,7 +197,21 @@ export default function TimerManager({
             activeProject.project.currency,
             activeProject.project.salary,
             activeProject.project.hourly_payment,
-            activeProject.project.user_id
+            activeProject.project.user_id,
+            {
+              roundingDirection:
+                activeProject.project.rounding_direction ??
+                timerRoundingSettings.roundingDirection,
+              roundingInterval:
+                activeProject.project.rounding_interval ??
+                timerRoundingSettings.roundingInterval,
+              roundInTimeFragments:
+                activeProject.project.round_in_time_fragments ??
+                timerRoundingSettings.roundInTimeFragments,
+              timeFragmentInterval:
+                activeProject.project.time_fragment_interval ??
+                timerRoundingSettings.timeFragmentInterval,
+            }
           );
         }}
       />

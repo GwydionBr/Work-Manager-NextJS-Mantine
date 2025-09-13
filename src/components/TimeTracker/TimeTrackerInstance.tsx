@@ -38,8 +38,7 @@ export default function TimeTrackerInstance({
     useTimeTrackerManager();
   const { addTimerSession, projects } = useWorkStore();
   const {
-    timeFragmentInterval,
-    roundInTimeFragments,
+    timerRoundingSettings: settingsTimerRoundingSettings,
     automaticlyStopOtherTimer,
     locale,
     format24h,
@@ -76,8 +75,8 @@ export default function TimeTrackerInstance({
     tempStartTime,
     storedActiveSeconds,
     storedPausedSeconds,
-    roundingDirection,
-    roundingInterval,
+    timerRoundingSettings,
+    tempTimerRoundingSettings,
     modifyActiveSeconds,
     modifyPausedSeconds,
     getCurrentSession,
@@ -88,7 +87,7 @@ export default function TimeTrackerInstance({
     cancelTimer,
     restoreTimer,
     setTimerRounding,
-    setRoundInTimeSections,
+    setTempTimerRounding,
   } = useTimeTracker({
     projectId: timer.projectId,
     projectTitle: timer.projectTitle,
@@ -96,8 +95,7 @@ export default function TimeTrackerInstance({
     salary: timer.salary,
     hourlyPayment: timer.hourlyPayment,
     userId: timer.userId,
-    roundingInterval: timer.roundingInterval,
-    roundingDirection: timer.roundingDirection,
+    timerRoundingSettings: timer.timerRoundingSettings,
     moneyEarned: timer.moneyEarned,
     activeTime: timer.activeTime,
     roundedActiveTime: timer.roundedActiveTime,
@@ -109,13 +107,8 @@ export default function TimeTrackerInstance({
     tempStartTime: timer.tempStartTime,
     storedActiveSeconds: timer.storedActiveSeconds,
     storedPausedSeconds: timer.storedPausedSeconds,
-    timeSectionInterval: timeFragmentInterval,
-    roundInTimeSections: roundInTimeFragments,
     memo: timer.memo,
   });
-
-  // console.log("rounded Time", roundedActiveTime);
-  // console.log("rounding interval ", roundingInterval);
 
   // Sync Hook state mit Store
   useEffect(() => {
@@ -128,6 +121,7 @@ export default function TimeTrackerInstance({
       pausedSeconds,
       startTime,
       tempStartTime,
+      timerRoundingSettings,
       storedActiveSeconds,
       storedPausedSeconds,
       memo,
@@ -145,6 +139,7 @@ export default function TimeTrackerInstance({
     pausedSeconds,
     startTime,
     tempStartTime,
+    timerRoundingSettings,
     storedActiveSeconds,
     storedPausedSeconds,
     memo,
@@ -158,11 +153,13 @@ export default function TimeTrackerInstance({
     startTimer();
   }, [stopOtherRunningTimers, startTimer, automaticlyStopOtherTimer]);
 
+  // Restore Timer
   useEffect(() => {
     restoreTimer();
     setIsClient(true);
   }, []);
 
+  // Force End Timer
   useEffect(() => {
     if (forceEndTimer) {
       submitTimer();
@@ -170,9 +167,27 @@ export default function TimeTrackerInstance({
     }
   }, [forceEndTimer]);
 
+  // Set Timer Rounding
   useEffect(() => {
-    setRoundInTimeSections(roundInTimeFragments, timeFragmentInterval);
-  }, [roundInTimeFragments, timeFragmentInterval, setRoundInTimeSections]);
+    if (project) {
+      setTimerRounding({
+        roundingDirection:
+          project.project.rounding_direction ??
+          settingsTimerRoundingSettings.roundingDirection,
+        roundingInterval:
+          project.project.rounding_interval ??
+          settingsTimerRoundingSettings.roundingInterval,
+        roundInTimeFragments:
+          project.project.round_in_time_fragments !== null
+            ? project.project.round_in_time_fragments
+            : settingsTimerRoundingSettings.roundInTimeFragments,
+        timeFragmentInterval:
+          project.project.time_fragment_interval ??
+          settingsTimerRoundingSettings.timeFragmentInterval,
+      });
+    }
+    setTimerRounding(settingsTimerRoundingSettings);
+  }, [settingsTimerRoundingSettings, setTimerRounding, project]);
 
   if (!isClient) return null;
 
@@ -183,18 +198,17 @@ export default function TimeTrackerInstance({
       ...getCurrentSession(),
       memo: memo === "" ? null : memo,
     };
-    console.log("newSession", newSession);
 
-    console.log("start addTimerSession");
     const { createdSessions, overlappingSessions, completeOverlap } =
       await addTimerSession(
         newSession,
-        roundInTimeFragments,
-        timeFragmentInterval
+        tempTimerRoundingSettings
+          ? tempTimerRoundingSettings.roundInTimeFragments
+          : timerRoundingSettings.roundInTimeFragments,
+        tempTimerRoundingSettings
+          ? tempTimerRoundingSettings.timeFragmentInterval
+          : timerRoundingSettings.timeFragmentInterval
       );
-    console.log("createdSessions", createdSessions);
-    console.log("overlappingSessions", overlappingSessions);
-    console.log("completeOverlap", completeOverlap);
 
     SessionNotification({
       originalSession: newSession,
@@ -211,7 +225,6 @@ export default function TimeTrackerInstance({
         stopTimer();
       },
     });
-    console.log("SessionNotification finished");
 
     setIsSubmitting(false);
   }
@@ -244,8 +257,9 @@ export default function TimeTrackerInstance({
               activeTime={activeTime}
               pausedTime={pausedTime}
               activeSeconds={activeSeconds}
-              roundingDirection={roundingDirection}
-              roundingInterval={roundingInterval}
+              timerRoundingSettings={
+                tempTimerRoundingSettings ?? timerRoundingSettings
+              }
               salary={timer.salary}
               storedActiveSeconds={storedActiveSeconds}
               storedPausedSeconds={storedPausedSeconds}
@@ -260,7 +274,7 @@ export default function TimeTrackerInstance({
               submitTimer={submitTimer}
               modifyActiveSeconds={modifyActiveSeconds}
               modifyPausedSeconds={modifyPausedSeconds}
-              setTimerRounding={setTimerRounding}
+              setTempTimerRounding={setTempTimerRounding}
             />
           </div>
         )}
@@ -285,8 +299,9 @@ export default function TimeTrackerInstance({
               activeTime={activeTime}
               pausedTime={pausedTime}
               activeSeconds={activeSeconds}
-              roundingDirection={roundingDirection}
-              roundingInterval={roundingInterval}
+              timerRoundingSettings={
+                tempTimerRoundingSettings ?? timerRoundingSettings
+              }
               projectTitle={timer.projectTitle}
               salary={timer.salary}
               currency={timer.currency}
@@ -295,7 +310,7 @@ export default function TimeTrackerInstance({
               storedPausedSeconds={storedPausedSeconds}
               modifyActiveSeconds={modifyActiveSeconds}
               modifyPausedSeconds={modifyPausedSeconds}
-              setTimerRounding={setTimerRounding}
+              setTempTimerRounding={setTempTimerRounding}
               showSmall={showSmall}
               setShowSmall={setShowSmall}
               isSubmitting={isSubmitting}

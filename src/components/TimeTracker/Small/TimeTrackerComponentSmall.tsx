@@ -17,7 +17,7 @@ import CancelActionIcon from "../TimeTrackerActionIcons/CancelActionIcon";
 import TimeTrackerInfoHoverCard from "../TimeTrackerInfoHoverCard";
 import ModifyTimeTrackerModal from "../ModifyTimeTracker/ModifyTimeTrackerModal";
 
-import { TimerState } from "@/types/timeTracker.types";
+import { TimerRoundingSettings, TimerState } from "@/types/timeTracker.types";
 import { Currency, RoundingDirection } from "@/types/settings.types";
 
 interface TimeTrackerComponentSmallProps {
@@ -28,8 +28,7 @@ interface TimeTrackerComponentSmallProps {
   activeTime: string;
   pausedTime: string;
   activeSeconds: number;
-  roundingDirection: RoundingDirection;
-  roundingInterval: number;
+  timerRoundingSettings: TimerRoundingSettings;
   projectTitle: string;
   salary: number;
   currency: Currency;
@@ -46,9 +45,8 @@ interface TimeTrackerComponentSmallProps {
   cancelTimer: () => void;
   modifyActiveSeconds: (delta: number) => void;
   modifyPausedSeconds: (delta: number) => void;
-  setTimerRounding: (
-    roundingInterval: number,
-    roundingDirection: RoundingDirection
+  setTempTimerRounding: (
+    timerRoundingSettings: TimerRoundingSettings
   ) => void;
 }
 
@@ -60,8 +58,7 @@ export default function TimeTrackerComponentSmall({
   activeTime,
   pausedTime,
   activeSeconds,
-  roundingDirection,
-  roundingInterval,
+  timerRoundingSettings,
   projectTitle,
   salary,
   currency,
@@ -78,9 +75,9 @@ export default function TimeTrackerComponentSmall({
   cancelTimer,
   modifyActiveSeconds,
   modifyPausedSeconds,
-  setTimerRounding,
+  setTempTimerRounding,
 }: TimeTrackerComponentSmallProps) {
-  const { locale, roundInTimeFragments: roundInTimeSections } =
+  const { locale } =
     useSettingsStore();
 
   return (
@@ -103,20 +100,18 @@ export default function TimeTrackerComponentSmall({
             <ModifyTimeTrackerModal
               modifyActiveSeconds={modifyActiveSeconds}
               modifyPausedSeconds={modifyPausedSeconds}
-              setTimerRounding={setTimerRounding}
+              setTempTimerRounding={setTempTimerRounding}
               activeTime={activeTime}
               pausedTime={pausedTime}
               state={state}
               activeSeconds={activeSeconds}
-              roundingDirection={roundingDirection}
-              roundingInterval={roundingInterval}
+              timerRoundingSettings={timerRoundingSettings}
               storedActiveSeconds={storedActiveSeconds}
               storedPausedSeconds={storedPausedSeconds}
             />
             <TimeTrackerInfoHoverCard
               currency={currency}
-              roundingDirection={roundingDirection}
-              roundingInterval={roundingInterval}
+              timerRoundingSettings={timerRoundingSettings}
               projectTitle={projectTitle}
               salary={salary}
               hourlyPayment={hourlyPayment}

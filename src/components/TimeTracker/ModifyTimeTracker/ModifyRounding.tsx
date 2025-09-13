@@ -25,36 +25,39 @@ import {
 import { getRoundingModes } from "@/constants/settings";
 import { RoundingDirection } from "@/types/settings.types";
 import { getRoundedSeconds } from "@/utils/workHelperFunctions";
+import { TimerRoundingSettings } from "@/types/timeTracker.types";
 
 interface ModifyRoundingProps {
-  setTimerRounding: (
-    roundingInterval: number,
-    roundingDirection: RoundingDirection
-  ) => void;
+  setTempTimerRounding: (timerRoundingSettings: TimerRoundingSettings) => void;
   activeSeconds: number;
-  roundingDirection: RoundingDirection;
-  roundingInterval: number;
+  timerRoundingSettings: TimerRoundingSettings;
 }
 
 export default function ModifyRounding({
-  setTimerRounding,
+  setTempTimerRounding,
   activeSeconds,
-  roundingDirection,
-  roundingInterval,
+  timerRoundingSettings,
 }: ModifyRoundingProps) {
   const { locale } = useSettingsStore();
   const [selectedRoundingInterval, setSelectedRoundingInterval] =
-    useState<number>(roundingInterval);
+    useState<number>(timerRoundingSettings.roundingInterval);
   const [selectedRoundingDirection, setSelectedRoundingDirection] =
-    useState<RoundingDirection>(roundingDirection as RoundingDirection);
+    useState<RoundingDirection>(
+      timerRoundingSettings.roundingDirection as RoundingDirection
+    );
   const [loading, setLoading] = useState(false);
   const [previewRoundedSeconds, setPreviewRoundedSeconds] = useState(0);
 
   useEffect(() => {
     // Initialize with current time tracker settings
-    setSelectedRoundingInterval(roundingInterval);
-    setSelectedRoundingDirection(roundingDirection as RoundingDirection);
-  }, [roundingInterval, roundingDirection]);
+    setSelectedRoundingInterval(timerRoundingSettings.roundingInterval);
+    setSelectedRoundingDirection(
+      timerRoundingSettings.roundingDirection as RoundingDirection
+    );
+  }, [
+    timerRoundingSettings.roundingInterval,
+    timerRoundingSettings.roundingDirection,
+  ]);
 
   // Calculate preview of rounded seconds
   useEffect(() => {
@@ -70,7 +73,12 @@ export default function ModifyRounding({
     setLoading(true);
 
     // Update time tracker rounding settings only
-    setTimerRounding(selectedRoundingInterval, selectedRoundingDirection);
+    setTempTimerRounding({
+      roundingInterval: selectedRoundingInterval,
+      roundingDirection: selectedRoundingDirection,
+      roundInTimeFragments: timerRoundingSettings.roundInTimeFragments,
+      timeFragmentInterval: timerRoundingSettings.timeFragmentInterval,
+    });
 
     setLoading(false);
   }
@@ -90,8 +98,8 @@ export default function ModifyRounding({
   };
 
   const hasChanges =
-    selectedRoundingInterval !== roundingInterval ||
-    selectedRoundingDirection !== roundingDirection
+    selectedRoundingInterval !== timerRoundingSettings.roundingInterval ||
+    selectedRoundingDirection !== timerRoundingSettings.roundingDirection;
 
   return (
     <Stack gap="lg">
@@ -111,7 +119,7 @@ export default function ModifyRounding({
             <Text size="sm" c="dimmed" mb="xs">
               {locale === "de-DE" ? "Aktuelle Rundung" : "Current Rounding"}
             </Text>
-            <Text fw={600}>{roundingInterval} min</Text>
+            <Text fw={600}>{timerRoundingSettings.roundingInterval} min</Text>
           </Box>
 
           <Box>
@@ -121,7 +129,7 @@ export default function ModifyRounding({
             <Text fw={600}>
               {
                 getRoundingModes(locale).find(
-                  (r) => r.value === roundingDirection
+                  (r) => r.value === timerRoundingSettings.roundingDirection
                 )?.label
               }
             </Text>
