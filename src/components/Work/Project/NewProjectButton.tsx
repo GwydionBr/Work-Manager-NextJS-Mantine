@@ -38,9 +38,12 @@ export default function NewProjectButton({
     cash_flow_category_id?: string | null;
   }) {
     setSubmitting(true);
-    const success = await addProject({
-      ...values,
-    });
+    const success = await addProject(
+      {
+        ...values,
+      },
+      true
+    );
     if (success) {
       close();
     }

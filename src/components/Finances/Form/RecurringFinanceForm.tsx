@@ -143,7 +143,6 @@ export default function RecurringFinanceForm({
             onClick={form.onSubmit(handleFormSubmit)}
             loading={isLoading}
             variant="filled"
-            title={locale === "de-DE" ? "Speichern" : "Save"}
           />
         ) : (
           <CreateButton
@@ -151,7 +150,6 @@ export default function RecurringFinanceForm({
             onClick={form.onSubmit(handleFormSubmit)}
             loading={isLoading}
             variant="filled"
-            title={locale === "de-DE" ? "Erstellen" : "Create"}
           />
         )}
       </Stack>

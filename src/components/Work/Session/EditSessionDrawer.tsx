@@ -13,9 +13,11 @@ import { Tables } from "@/types/db.types";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
+import ProjectForm from "../Project/ProjectForm";
 
 interface TimerSessionModalProps {
   timerSession: Tables<"timer_session">;
+  project: Tables<"timer_project">;
   opened: boolean;
   onClose: () => void;
 }
@@ -24,12 +26,21 @@ export default function EditSessionDrawer({
   timerSession,
   opened,
   onClose,
+  project,
 }: TimerSessionModalProps) {
   const { locale } = useSettingsStore();
-  const { updateTimerSession, projects, deleteTimerSessions } = useWorkStore();
+  const { updateTimerSession, deleteTimerSessions, addProject } =
+    useWorkStore();
   const [submitting, setSubmitting] = useState(false);
+  const [submittingProject, setSubmittingProject] = useState(false);
+  const [currentProject, setCurrentProject] =
+    useState<Tables<"timer_project">>(project);
 
-  const drawerStack = useDrawersStack(["edit-session", "delete-session"]);
+  const drawerStack = useDrawersStack([
+    "edit-session",
+    "delete-session",
+    "add-project",
+  ]);
 
   // Sync external opened state with internal drawer stack
   useEffect(() => {
@@ -38,13 +49,7 @@ export default function EditSessionDrawer({
     } else {
       drawerStack.closeAll();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [opened]);
-
-  // Find the project for this session
-  const project = projects.find(
-    (p) => p.project.id === timerSession.project_id
-  )?.project;
 
   function handleClose() {
     drawerStack.closeAll();
@@ -85,6 +90,29 @@ export default function EditSessionDrawer({
     }
   }
 
+  async function handleProjectSubmit(values: {
+    color: string | null;
+    title: string;
+    description: string;
+    salary: number;
+    currency: Currency;
+    payment_per_project: boolean;
+    cash_flow_category_id?: string | null;
+  }) {
+    setSubmittingProject(true);
+    const { createdProject } = await addProject(
+      {
+        ...values,
+      },
+      false
+    );
+    if (createdProject) {
+      setCurrentProject(createdProject);
+      drawerStack.close("add-project");
+    }
+    setSubmittingProject(false);
+  }
+
   return (
     <Box>
       <Drawer.Stack>
@@ -119,23 +147,54 @@ export default function EditSessionDrawer({
                 end_time: timerSession.end_time,
                 active_seconds: timerSession.active_seconds,
                 paused_seconds: timerSession.paused_seconds,
-                currency: project?.hourly_payment
-                  ? timerSession.currency
-                  : project?.currency || timerSession.currency,
-                salary: project?.hourly_payment ? timerSession.salary : 0,
+                currency: timerSession.currency,
+                salary: timerSession.salary,
                 memo: timerSession.memo || undefined,
               }}
               onSubmit={handleSubmit}
               onCancel={handleClose}
+              onOpenProjectForm={() => drawerStack.open("add-project")}
+              onProjectChange={setCurrentProject}
               newSession={false}
-              project={project}
+              project={currentProject}
               submitting={submitting}
             />
           </Flex>
         </Drawer>
         <Drawer
+          {...drawerStack.register("add-project")}
+          onClose={() => drawerStack.close("add-project")}
+          title={
+            <Group>
+              <Text>
+                {locale === "de-DE" ? "Projekt hinzufügen" : "Add Project"}
+              </Text>
+            </Group>
+          }
+        >
+          <ProjectForm
+            initialValues={{
+              color: null,
+              title: "",
+              description: "",
+              salary: 0,
+              currency: "USD",
+              hourly_payment: false,
+              cash_flow_category_id: null,
+              rounding_interval: null,
+              rounding_direction: null,
+              round_in_time_fragments: null,
+              time_fragment_interval: null,
+            }}
+            onSubmit={handleProjectSubmit}
+            onCancel={() => drawerStack.close("add-project")}
+            newProject
+            submitting={submittingProject}
+          />
+        </Drawer>
+        <Drawer
           {...drawerStack.register("delete-session")}
-          onClose={handleClose}
+          onClose={() => drawerStack.close("delete-session")}
           title={
             <Group>
               <IconExclamationMark size={25} color="red" />

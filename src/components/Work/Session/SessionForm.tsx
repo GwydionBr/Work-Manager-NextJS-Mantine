@@ -34,7 +34,7 @@ interface SessionFormProps {
   newSession: boolean;
   project?: Tables<"timer_project">;
   submitting?: boolean;
-  onProjectChange?: (value: Tables<"timer_project"> | undefined) => void;
+  onProjectChange?: (value: Tables<"timer_project">) => void;
   onSubmit: (values: NewSession) => void;
   onCancel: () => void;
   onOpenProjectForm?: () => void;
@@ -316,7 +316,6 @@ export default function SessionForm({
             type="submit"
             loading={submitting}
             mt="md"
-            title={locale === "de-DE" ? "Sitzung erstellen" : "Create Session"}
           />
         ) : (
           <UpdateButton
@@ -324,9 +323,6 @@ export default function SessionForm({
             type="submit"
             loading={submitting}
             mt="md"
-            title={
-              locale === "de-DE" ? "Sitzung aktualisieren" : "Update Session"
-            }
           />
         )}
         {onCancel && <CancelButton onClick={onCancel} />}

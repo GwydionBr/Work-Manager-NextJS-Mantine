@@ -111,15 +111,19 @@ export default function NewSessionModal({
     cash_flow_category_id?: string | null;
   }) {
     setSubmittingProject(true);
-    const { createdProject } = await addProject({
-      ...values,
-    });
+    const { createdProject } = await addProject(
+      {
+        ...values,
+      },
+      true
+    );
     if (createdProject) {
       setCurrentProject(createdProject);
       stack.close("project-form");
     }
     setSubmittingProject(false);
   }
+
   return (
     <Modal.Stack>
       <Modal
@@ -161,7 +165,7 @@ export default function NewSessionModal({
       <Modal
         size="lg"
         {...stack.register("project-form")}
-        title="Add project"
+        title={locale === "de-DE" ? "Projekt hinzufügen" : "Add Project"}
         transitionProps={{ transition: "fade-right", duration: 400 }}
       >
         <ProjectForm
@@ -169,9 +173,9 @@ export default function NewSessionModal({
             color: null,
             title: "",
             description: "",
-            salary: 0,
-            currency: "USD",
-            hourly_payment: false,
+            salary: defaultSalaryAmount,
+            currency: defaultSalaryCurrency,
+            hourly_payment: defaultProjectHourlyPayment,
             cash_flow_category_id: null,
             rounding_interval: null,
             rounding_direction: null,

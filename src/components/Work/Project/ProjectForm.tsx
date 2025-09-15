@@ -129,14 +129,9 @@ export default function ProjectForm({
           ? roundInTimeFragments
           : initialValues.round_in_time_fragments,
       time_fragment_interval:
-        initialValues.time_fragment_interval ||
-        timeFragmentInterval,
-      rounding_interval:
-        initialValues.rounding_interval ||
-        roundingInterval,
-      rounding_direction:
-        initialValues.rounding_direction ||
-        roundingDirection,
+        initialValues.time_fragment_interval || timeFragmentInterval,
+      rounding_interval: initialValues.rounding_interval || roundingInterval,
+      rounding_direction: initialValues.rounding_direction || roundingDirection,
     },
     validate: zodResolver(schema),
   });
@@ -169,14 +164,8 @@ export default function ProjectForm({
       closeDefaultRounding();
       form.setFieldValue("rounding_interval", roundingInterval);
       form.setFieldValue("rounding_direction", roundingDirection);
-      form.setFieldValue(
-        "round_in_time_fragments",
-        roundInTimeFragments
-      );
-      form.setFieldValue(
-        "time_fragment_interval",
-        timeFragmentInterval
-      );
+      form.setFieldValue("round_in_time_fragments", roundInTimeFragments);
+      form.setFieldValue("time_fragment_interval", timeFragmentInterval);
     }
   };
 
@@ -529,7 +518,6 @@ export default function ProjectForm({
             type="submit"
             loading={submitting}
             mt="md"
-            title={locale === "de-DE" ? "Projekt erstellen" : "Create Project"}
           />
         ) : (
           <UpdateButton
@@ -537,9 +525,6 @@ export default function ProjectForm({
             type="submit"
             loading={submitting}
             mt="md"
-            title={
-              locale === "de-DE" ? "Projekt aktualisieren" : "Update Project"
-            }
           />
         )}
         {onCancel && <CancelButton onClick={onCancel} />}

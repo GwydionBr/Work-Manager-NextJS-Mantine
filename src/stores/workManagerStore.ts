@@ -38,7 +38,8 @@ interface WorkStoreActions {
   ) => void;
   setActiveProjectId: (id: string | null) => void;
   addProject: (
-    project: TablesInsert<"timer_project">
+    project: TablesInsert<"timer_project">,
+    setActiveProjectId: boolean
   ) => Promise<{ createdProject: Tables<"timer_project"> | null }>;
   addTimerSession: (
     session: TablesInsert<"timer_session">,
@@ -252,7 +253,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         return true;
       },
 
-      async addProject(project) {
+      async addProject(project, setActiveProjectId) {
         const { updateStore, timerSessions, handleChangedNodes, projectTree } =
           get();
 
@@ -279,8 +280,10 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         );
         set({
           projectTree: tree,
-          activeProjectId: newProject.data.id,
         });
+        if (setActiveProjectId) {
+          set({ activeProjectId: newProject.data.id });
+        }
         handleChangedNodes(changedNodes);
         return { createdProject: newProject.data };
       },
