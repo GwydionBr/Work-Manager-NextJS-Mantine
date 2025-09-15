@@ -6,7 +6,16 @@ import { useWorkStore } from "@/stores/workManagerStore";
 import { useProjectFiltering } from "@/hooks/useProjectFiltering";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Box, Collapse, Group, Loader, Stack, Text, Grid } from "@mantine/core";
+import {
+  Box,
+  Collapse,
+  Group,
+  Loader,
+  Stack,
+  Text,
+  Grid,
+  ActionIcon,
+} from "@mantine/core";
 import EditProjectDrawer from "@/components/Work/Project/EditProjectDrawer";
 import Header from "@/components/Header/Header";
 import WorkAnalysis from "@/components/Work/Analysis/WorkAnalysis";
@@ -25,6 +34,8 @@ import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import NewSessionModal from "@/components/Work/Session/NewSessionModal";
 import AddActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import SessionSelector from "@/components/Work/Session/SessionSelector";
+import DelayedTooltip from "@/components/UI/DelayedTooltip";
+import { IconClockPlus } from "@tabler/icons-react";
 
 export default function WorkPage() {
   const [oldActiveProjectId, setOldActiveProjectId] = useState<string | null>(
@@ -302,12 +313,13 @@ export default function WorkPage() {
                 opened={payoutOpened}
               />
             </Group>
-            <AddActionIcon
-              onClick={openSessionForm}
-              tooltipLabel={
-                locale === "de-DE" ? "Sitzung hinzufügen" : "Add Session"
-              }
-            />
+            <DelayedTooltip
+              label={locale === "de-DE" ? "Sitzung hinzufügen" : "Add Session"}
+            >
+              <ActionIcon onClick={openSessionForm} size="md" variant="subtle">
+                <IconClockPlus />
+              </ActionIcon>
+            </DelayedTooltip>
             <NewSessionModal
               opened={sessionFormOpened}
               onClose={closeSessionForm}
