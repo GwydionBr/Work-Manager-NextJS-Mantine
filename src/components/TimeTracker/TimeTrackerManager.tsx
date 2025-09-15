@@ -44,14 +44,21 @@ export default function TimerManager({
 
   useEffect(() => {
     const allTimers = getAllTimers();
-    allTimers.forEach((timer) => {
+    const newTimers = allTimers.map((timer) => {
       if (timer.timerRoundingSettings === undefined) {
         updateTimer(timer.id, {
           timerRoundingSettings: timerRoundingSettings,
         });
+        const newTimer = {
+          ...timer,
+          timerRoundingSettings: timerRoundingSettings,
+        };
+        return newTimer;
       }
+      return timer;
     });
-    setTimers(allTimers);
+
+    setTimers(newTimers);
   }, [timerData, getAllTimers]);
 
   // Client-side hydration
