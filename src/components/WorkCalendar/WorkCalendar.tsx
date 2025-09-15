@@ -35,6 +35,8 @@ export default function WorkCalendar() {
     setReferenceDate,
     selectedSession,
     setSelectedSession,
+    selectedProject,
+    setSelectedProject,
     dateRange,
     setDateRange,
     currentDateRange,
@@ -201,8 +203,10 @@ export default function WorkCalendar() {
 
   function handleSessionClick(sessionId: string) {
     const session = timerSessions.find((s) => s.id === sessionId);
-    if (session) {
+    const project = projects.find((p) => p.id === session?.project_id);
+    if (session && project) {
       setSelectedSession(session);
+      setSelectedProject(project);
       open();
     }
   }
@@ -283,11 +287,16 @@ export default function WorkCalendar() {
         visibleProjects={visibleProjects}
         handleScrollToNow={handleScrollToNow}
       />
-      {selectedSession && (
+      {selectedSession && selectedProject && (
         <EditSessionDrawer
           timerSession={selectedSession}
+          project={selectedProject}
           opened={drawerOpened}
-          onClose={close}
+          onClose={() => {
+            close();
+            setSelectedSession(null);
+            setSelectedProject(null);
+          }}
         />
       )}
     </ScrollArea>

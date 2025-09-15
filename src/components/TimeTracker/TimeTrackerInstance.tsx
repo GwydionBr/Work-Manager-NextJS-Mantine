@@ -202,12 +202,7 @@ export default function TimeTrackerInstance({
     const { createdSessions, overlappingSessions, completeOverlap } =
       await addTimerSession(
         newSession,
-        tempTimerRoundingSettings
-          ? tempTimerRoundingSettings.roundInTimeFragments
-          : timerRoundingSettings.roundInTimeFragments,
-        tempTimerRoundingSettings
-          ? tempTimerRoundingSettings.timeFragmentInterval
-          : timerRoundingSettings.timeFragmentInterval
+        tempTimerRoundingSettings ?? timerRoundingSettings
       );
 
     SessionNotification({

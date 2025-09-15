@@ -17,6 +17,7 @@ import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { TimerProject, ProjectTreeItem } from "@/types/work.types";
 import { Currency } from "@/types/settings.types";
 import { ErrorResponse, SuccessPayoutResponse } from "@/types/action.types";
+import { TimerRoundingSettings } from "@/types/timeTracker.types";
 
 interface WorkStoreState {
   projectTree: ProjectTreeItem[];
@@ -43,8 +44,7 @@ interface WorkStoreActions {
   ) => Promise<{ createdProject: Tables<"timer_project"> | null }>;
   addTimerSession: (
     session: TablesInsert<"timer_session">,
-    roundInTimeFragments: boolean,
-    timeFragmentInterval: number
+    roundingSettings: TimerRoundingSettings
   ) => Promise<{
     createdSessions: Tables<"timer_session">[] | null;
     completeOverlap: boolean;
@@ -52,7 +52,8 @@ interface WorkStoreActions {
   }>;
   updateProject: (project: TablesUpdate<"timer_project">) => Promise<boolean>;
   updateTimerSession: (
-    session: TablesUpdate<"timer_session">
+    session: TablesUpdate<"timer_session">,
+    roundingSettings: TimerRoundingSettings
   ) => Promise<boolean>;
   updateMultipleTimerSessions: (
     sessionIds: string[],
@@ -288,11 +289,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         return { createdProject: newProject.data };
       },
 
-      async addTimerSession(
-        session,
-        roundInTimeFragments,
-        timeFragmentInterval
-      ) {
+      async addTimerSession(session, roundingSettings) {
         const { updateStore, projects, timerSessions } = get();
 
         // Find project
@@ -311,8 +308,11 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
 
         let newSession: TablesInsert<"timer_session"> = { ...session };
 
-        if (roundInTimeFragments) {
-          newSession = getTimeFragmentSession(timeFragmentInterval, newSession);
+        if (roundingSettings.roundInTimeFragments) {
+          newSession = getTimeFragmentSession(
+            roundingSettings.timeFragmentInterval,
+            newSession
+          );
         }
 
         // Filter out existing sessions that overlap with the new session
@@ -378,7 +378,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         return true;
       },
 
-      async updateTimerSession(session) {
+      async updateTimerSession(session, roundingSettings) {
         const { updateStore, projects, timerSessions } = get();
         const project = projects.find(
           (p) => p.project.id === session.project_id

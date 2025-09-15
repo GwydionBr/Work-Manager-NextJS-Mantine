@@ -211,11 +211,17 @@ export default function SessionRow({
             : "Are you sure you want to delete this session? This action cannot be undone."
         }
       />
-      <EditSessionDrawer
-        timerSession={session}
-        opened={editDrawerOpened}
-        onClose={() => editDrawerHandler.close()}
-      />
+      {
+        project && (
+          <EditSessionDrawer
+            timerSession={session}
+            project={project}
+            opened={editDrawerOpened}
+            onClose={() => editDrawerHandler.close()}
+          />
+        )
+      }
+      
     </Box>
   );
 }

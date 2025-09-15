@@ -12,6 +12,7 @@ import { startOfWeek, endOfWeek } from "date-fns";
 interface CalendarStoreState {
   activeTimer: TimerData | null;
   appointments: Tables<"appointment">[];
+  selectedProject: Tables<"timer_project"> | null;
   selectedSession: Tables<"timer_session"> | null;
   dateRange: [Date | null, Date | null];
   currentDateRange: [Date, Date];
@@ -41,6 +42,7 @@ interface CalendarStoreActions {
   deleteAppointment: (id: string) => Promise<boolean>;
   setViewMode: (viewMode: ViewMode) => void;
   changeZoomIndex: (delta: number) => void;
+  setSelectedProject: (selectedProject: Tables<"timer_project"> | null) => void;
   setSelectedSession: (selectedSession: Tables<"timer_session"> | null) => void;
   setDateRange: (dateRange: [Date | null, Date | null]) => void;
   setCurrentDateRange: (currentDateRange: [Date, Date]) => void;
@@ -67,6 +69,7 @@ export const useCalendarStore = create<
       eventIsHovered: false,
       eventIsSelected: false,
       addingMode: false,
+      selectedProject: null,
       selectedSession: null,
       dateRange: [
         startOfWeek(new Date(), { weekStartsOn: 1 }),
@@ -92,6 +95,7 @@ export const useCalendarStore = create<
           eventIsHovered: false,
           eventIsSelected: false,
           addingMode: false,
+          selectedProject: null,
           selectedSession: null,
           dateRange: [
             startOfWeek(new Date(), { weekStartsOn: 1 }),
@@ -158,6 +162,8 @@ export const useCalendarStore = create<
         set({ eventIsSelected: isSelected }),
       setAddingMode: (isAddingMode: boolean) =>
         set({ addingMode: isAddingMode }),
+      setSelectedProject: (selectedProject: Tables<"timer_project"> | null) =>
+        set({ selectedProject }),
       setSelectedSession: (selectedSession: Tables<"timer_session"> | null) =>
         set({ selectedSession }),
       setDateRange: (dateRange: [Date | null, Date | null]) =>

@@ -41,7 +41,7 @@ export default function WorkInitializer() {
     setSubmitting(true);
     const success = await addProject({
       ...values,
-    });
+    }, true);
     if (success) {
       close();
     }

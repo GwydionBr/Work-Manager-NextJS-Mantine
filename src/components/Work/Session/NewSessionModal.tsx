@@ -12,6 +12,7 @@ import SessionNotification from "./SessionNotification";
 import ProjectForm from "../Project/ProjectForm";
 import { IconClockPlus } from "@tabler/icons-react";
 import { NewSession } from "@/types/timerSession.types";
+import { TimerRoundingSettings } from "@/types/timeTracker.types";
 
 interface NewSessionModalProps {
   opened: boolean;
@@ -76,15 +77,24 @@ export default function NewSessionModal({
       memo: values.memo || null,
     };
 
-    const { createdSessions, overlappingSessions, completeOverlap } =
-      await addTimerSession(
-        newSession,
+    const roundingSettings: TimerRoundingSettings = {
+      roundInTimeFragments:
         currentProject.round_in_time_fragments !== null
           ? currentProject.round_in_time_fragments
           : timerRoundingSettings.roundInTimeFragments,
+      timeFragmentInterval:
         currentProject.time_fragment_interval ??
-          timerRoundingSettings.timeFragmentInterval
-      );
+        timerRoundingSettings.timeFragmentInterval,
+      roundingInterval:
+        currentProject.rounding_interval ??
+        timerRoundingSettings.roundingInterval,
+      roundingDirection:
+        currentProject.rounding_direction ??
+        timerRoundingSettings.roundingDirection,
+    };
+
+    const { createdSessions, overlappingSessions, completeOverlap } =
+      await addTimerSession(newSession, roundingSettings);
 
     SessionNotification({
       originalSession: newSession,

@@ -14,6 +14,7 @@ import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 import ProjectForm from "../Project/ProjectForm";
+import { TimerRoundingSettings } from "@/types/timeTracker.types";
 
 interface TimerSessionModalProps {
   timerSession: Tables<"timer_session">;
@@ -33,6 +34,7 @@ export default function EditSessionDrawer({
     defaultSalaryCurrency,
     defaultSalaryAmount,
     defaultProjectHourlyPayment,
+    timerRoundingSettings,
   } = useSettingsStore();
   const { updateTimerSession, deleteTimerSessions, addProject } =
     useWorkStore();
@@ -82,7 +84,23 @@ export default function EditSessionDrawer({
       memo: values.memo || null,
     };
 
-    const success = await updateTimerSession(newSession);
+    const roundingSettings: TimerRoundingSettings = {
+      roundInTimeFragments:
+        currentProject.round_in_time_fragments !== null
+          ? currentProject.round_in_time_fragments
+          : timerRoundingSettings.roundInTimeFragments,
+      timeFragmentInterval:
+        currentProject.time_fragment_interval ??
+        timerRoundingSettings.timeFragmentInterval,
+      roundingInterval:
+        currentProject.rounding_interval ??
+        timerRoundingSettings.roundingInterval,
+      roundingDirection:
+        currentProject.rounding_direction ??
+        timerRoundingSettings.roundingDirection,
+    };
+
+    const success = await updateTimerSession(newSession, roundingSettings);
     if (success) {
       handleClose();
     }
