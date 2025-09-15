@@ -57,7 +57,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const newVersion = useCheckNewVersion(30000, profile);
 
   useEffect(() => {
-    console.log("newVersion", newVersion);
     if (newVersion) {
       notifications.show({
         id: "new-version",

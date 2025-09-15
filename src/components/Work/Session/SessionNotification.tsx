@@ -49,6 +49,9 @@ export default function SessionNotification({
   } else if (createdSessions) {
     if (overlappingSessions) {
       notifications.show({
+        style: {
+          maxHeight: "600px",
+        },
         title:
           locale === "de-DE" ? "Überschneidung Erkannnt" : "Overlap detected",
         message: (

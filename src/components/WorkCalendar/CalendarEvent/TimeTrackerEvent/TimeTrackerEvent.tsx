@@ -21,7 +21,7 @@ export default function TimeTrackerEvent({
   const { isTimerRunning, getRunningTimer } = useTimeTrackerManager();
   const { projects } = useWorkStore();
   const timer = getRunningTimer();
-  const { locale } = useSettingsStore();
+  const { locale, format24h } = useSettingsStore();
 
   const project = projects.find((p) => p.project.id === timer?.projectId);
 
@@ -76,6 +76,7 @@ export default function TimeTrackerEvent({
           {currentTime.toLocaleTimeString(locale, {
             hour: "2-digit",
             minute: "2-digit",
+            hour12: !format24h,
           })}
         </Text>
       </Stack>

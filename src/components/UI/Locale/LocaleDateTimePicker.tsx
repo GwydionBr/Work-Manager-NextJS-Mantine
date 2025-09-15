@@ -11,15 +11,17 @@ export default function LocaleDateTimePicker({
   error,
   ...props
 }: DateTimePickerProps) {
-  const { locale } = useSettingsStore();
+  const { locale, format24h } = useSettingsStore();
 
   return (
     <DateTimePicker
       valueFormat={
-        locale === "de-DE" ? "DD. MMMM YYYY HH:mm" : "MMM DD, YYYY hh:mm A"
+        locale === "de-DE"
+          ? `DD. MMMM YYYY ${format24h ? "HH:mm" : "hh:mm A"}`
+          : `MMM DD, YYYY ${format24h ? "HH:mm" : "hh:mm A"}`
       }
       timePickerProps={{
-        format: locale === "de-DE" ? "24h" : "12h",
+        format: format24h ? "24h" : "12h",
       }}
       label={label}
       value={value}

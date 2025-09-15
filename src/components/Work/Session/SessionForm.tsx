@@ -50,7 +50,7 @@ export default function SessionForm({
   projectId,
   onProjectChange,
 }: SessionFormProps) {
-  const { locale } = useSettingsStore();
+  const { locale, format24h } = useSettingsStore();
   const { projects: timerProjects } = useWorkStore();
   const [userChangedStartTime, setUserChangedStartTime] = useState(false);
   const [userChangedEndTime, setUserChangedEndTime] = useState(false);
@@ -304,7 +304,7 @@ export default function SessionForm({
           data-autofocus={true}
           isOpen={true}
         />
-        <TimeInput
+        {/* <TimeInput
           label={locale === "de-DE" ? "Pausierte Zeit" : "Paused Time"}
           isOpen={true}
           value={form.values.paused_seconds}
@@ -312,7 +312,7 @@ export default function SessionForm({
           error={form.errors.paused_seconds}
           icon={<IconPlayerPause size={18} />}
           color="orange"
-        />
+        /> */}
         <LocaleDateTimePicker
           withAsterisk
           label={locale === "de-DE" ? "Startzeit" : "Start Time"}
