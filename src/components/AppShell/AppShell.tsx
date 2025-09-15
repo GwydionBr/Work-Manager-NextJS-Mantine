@@ -16,13 +16,14 @@ import { useCalendarStore } from "@/stores/calendarStore";
 import { useCheckNewVersion } from "@/hooks/useCheckNewVersion";
 import { notifications } from "@mantine/notifications";
 
-import classes from "./AppShell.module.css";
 
 import { AppShell, Burger, Button, Group, Stack, Text } from "@mantine/core";
+import { IconInfoCircle, IconRefresh } from "@tabler/icons-react";
 import { DatesProvider } from "@mantine/dates";
 import Navbar from "@/components/Navbar/Navbar";
 import Aside from "./Aside";
-import { IconRefresh } from "@tabler/icons-react";
+
+import classes from "./AppShell.module.css";
 
 enum FetchPriority {
   Settings = "settings",
@@ -58,27 +59,44 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (newVersion) {
       notifications.show({
-        title:
-          locale === "de-DE"
-            ? "Neue Version verfügbar"
-            : "New version available",
-        message: (
-          <Stack align="center">
-            <Text>
+        id: "new-version",
+        title: (
+          <Group gap="xs">
+            <IconInfoCircle size={16} />
+            <Text fw={600}>
               {locale === "de-DE"
-                ? "Bitte aktualisieren Sie die Seite, um die neueste Version zu erhalten."
-                : "Please refresh the page to get the latest version."}
+                ? "Neue Version verfügbar"
+                : "New Version available"}
             </Text>
-            <Button
-              onClick={() => window.location.reload()}
-              leftSection={<IconRefresh />}
-            >
-              {locale === "de-DE" ? "Aktualisieren" : "Refresh"}
-            </Button>
+          </Group>
+        ),
+        message: (
+          <Stack>
+            <Text ml={26} c="dimmed" size="sm">
+              {locale === "de-DE"
+                ? "Aktualisiere um die neuesten Änderungen zu sehen."
+                : "Refresh to see the latest changes."}
+            </Text>
+            <Group justify="flex-end">
+              <Button
+                variant="outline"
+                onClick={() => notifications.hide("new-version")}
+              >
+                {locale === "de-DE" ? "Nicht jetzt" : "Not now"}
+              </Button>
+              <Button
+                onClick={() => window.location.reload()}
+                leftSection={<IconRefresh />}
+              >
+                {locale === "de-DE" ? "Aktualisieren" : "Refresh"}
+              </Button>
+            </Group>
           </Stack>
         ),
         color: "yellow",
         autoClose: false,
+        withBorder: true,
+        withCloseButton: false,
       });
     }
   }, [newVersion]);
