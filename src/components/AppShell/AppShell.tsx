@@ -19,6 +19,7 @@ import { notifications } from "@mantine/notifications";
 
 import { AppShell, Burger, Button, Group, Stack, Text } from "@mantine/core";
 import { IconInfoCircle, IconRefresh } from "@tabler/icons-react";
+
 import { DatesProvider } from "@mantine/dates";
 import Navbar from "@/components/Navbar/Navbar";
 import Aside from "./Aside";
