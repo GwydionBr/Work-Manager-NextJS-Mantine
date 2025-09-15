@@ -186,9 +186,7 @@ export default function SessionForm({
     form.setFieldValue("start_time", value);
 
     const startTime = new Date(value);
-    const endTime = userChangedEndTime
-      ? new Date(form.values.end_time)
-      : new Date();
+    const endTime = new Date(form.values.end_time);
     const totalSeconds = Math.floor(
       (endTime.getTime() - startTime.getTime()) / 1000
     );
