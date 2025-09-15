@@ -29,7 +29,12 @@ export default function TimerManager({
 }: TimerManagerProps) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isClient, setIsClient] = useState(false);
-  const { getAllTimers, addTimer, timers: timerData } = useTimeTrackerManager();
+  const {
+    getAllTimers,
+    addTimer,
+    timers: timerData,
+    updateTimer,
+  } = useTimeTrackerManager();
   const { activeProjectId } = useWorkStore();
   const { timerRoundingSettings, locale } = useSettingsStore();
   const activeProject = useWorkStore((state) =>
@@ -38,7 +43,15 @@ export default function TimerManager({
   const [timers, setTimers] = useState<TimerData[]>([]);
 
   useEffect(() => {
-    setTimers(getAllTimers());
+    const allTimers = getAllTimers();
+    allTimers.forEach((timer) => {
+      if (timer.timerRoundingSettings === undefined) {
+        updateTimer(timer.id, {
+          timerRoundingSettings: timerRoundingSettings,
+        });
+      }
+    });
+    setTimers(allTimers);
   }, [timerData, getAllTimers]);
 
   // Client-side hydration
