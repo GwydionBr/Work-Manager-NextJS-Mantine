@@ -28,7 +28,12 @@ export default function EditSessionDrawer({
   onClose,
   project,
 }: TimerSessionModalProps) {
-  const { locale } = useSettingsStore();
+  const {
+    locale,
+    defaultSalaryCurrency,
+    defaultSalaryAmount,
+    defaultProjectHourlyPayment,
+  } = useSettingsStore();
   const { updateTimerSession, deleteTimerSessions, addProject } =
     useWorkStore();
   const [submitting, setSubmitting] = useState(false);
@@ -177,9 +182,9 @@ export default function EditSessionDrawer({
               color: null,
               title: "",
               description: "",
-              salary: 0,
-              currency: "USD",
-              hourly_payment: false,
+              salary: defaultSalaryAmount,
+              currency: defaultSalaryCurrency,
+              hourly_payment: defaultProjectHourlyPayment,
               cash_flow_category_id: null,
               rounding_interval: null,
               rounding_direction: null,
