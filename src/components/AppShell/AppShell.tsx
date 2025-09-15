@@ -16,7 +16,6 @@ import { useCalendarStore } from "@/stores/calendarStore";
 import { useCheckNewVersion } from "@/hooks/useCheckNewVersion";
 import { notifications } from "@mantine/notifications";
 
-
 import { AppShell, Burger, Button, Group, Stack, Text } from "@mantine/core";
 import { IconInfoCircle, IconRefresh } from "@tabler/icons-react";
 
@@ -38,7 +37,7 @@ enum FetchPriority {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { fetchGroupData, lastFetch: lastGroupFetch } = useGroupStore();
-  const { fetchUserData, lastFetch: lastUserFetch } = useUserStore();
+  const { fetchUserData, lastFetch: lastUserFetch, profile } = useUserStore();
   const { fetchFinanceData, lastFetch: lastFinanceFetch } = useFinanceStore();
   const { fetchCalendarData, lastFetch: lastCalendarFetch } =
     useCalendarStore();
@@ -55,9 +54,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     fetchSettings,
     lastFetch: lastSettingsFetch,
   } = useSettingsStore();
-  const newVersion = useCheckNewVersion();
+  const newVersion = useCheckNewVersion(30000, profile);
 
   useEffect(() => {
+    console.log("newVersion", newVersion);
     if (newVersion) {
       notifications.show({
         id: "new-version",
