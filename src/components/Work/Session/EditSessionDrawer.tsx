@@ -5,7 +5,7 @@ import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Drawer, Flex, Group, Text, useDrawersStack, Box } from "@mantine/core";
-import { IconExclamationMark } from "@tabler/icons-react";
+import { IconAlertCircle, IconExclamationMark } from "@tabler/icons-react";
 import SessionForm from "@/components/Work/Session/SessionForm";
 
 import { Currency } from "@/types/settings.types";
@@ -15,6 +15,7 @@ import CancelButton from "@/components/UI/Buttons/CancelButton";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 import ProjectForm from "../Project/ProjectForm";
 import { TimerRoundingSettings } from "@/types/timeTracker.types";
+import { notifications } from "@mantine/notifications";
 
 interface TimerSessionModalProps {
   timerSession: Tables<"timer_session">;
@@ -100,9 +101,27 @@ export default function EditSessionDrawer({
         timerRoundingSettings.roundingDirection,
     };
 
-    const success = await updateTimerSession(newSession, roundingSettings);
+    const { success, overlapDetected } = await updateTimerSession(
+      timerSession,
+      newSession,
+      roundingSettings
+    );
     if (success) {
       handleClose();
+    }
+    if (overlapDetected) {
+      notifications.show({
+        title:
+          locale === "de-DE" ? "Überschneidung erkannt" : "Overlap detected",
+        message:
+          locale === "de-DE"
+            ? "Die Sitzung hat Überschneidungen und wurde nicht gespeichert."
+            : "The session has overlaps and was not saved.",
+        color: "red",
+        autoClose: false,
+        withBorder: true,
+        icon: <IconAlertCircle />,
+      });
     }
     setSubmitting(false);
   }

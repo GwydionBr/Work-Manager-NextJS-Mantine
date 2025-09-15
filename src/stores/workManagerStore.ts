@@ -16,7 +16,11 @@ import { getTimeFragmentSession, resolveSessionOverlaps } from "@/utils/helper";
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { TimerProject, ProjectTreeItem } from "@/types/work.types";
 import { Currency } from "@/types/settings.types";
-import { ErrorResponse, SuccessPayoutResponse } from "@/types/action.types";
+import {
+  ApiResponseSingle,
+  ErrorResponse,
+  SuccessPayoutResponse,
+} from "@/types/action.types";
 import { TimerRoundingSettings } from "@/types/timeTracker.types";
 
 interface WorkStoreState {
@@ -52,9 +56,13 @@ interface WorkStoreActions {
   }>;
   updateProject: (project: TablesUpdate<"timer_project">) => Promise<boolean>;
   updateTimerSession: (
-    session: TablesUpdate<"timer_session">,
+    oldSession: Tables<"timer_session">,
+    newSession: Tables<"timer_session">,
     roundingSettings: TimerRoundingSettings
-  ) => Promise<boolean>;
+  ) => Promise<{
+    success: boolean;
+    overlapDetected: boolean;
+  }>;
   updateMultipleTimerSessions: (
     sessionIds: string[],
     update: TablesUpdate<"timer_session">
@@ -378,31 +386,66 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         return true;
       },
 
-      async updateTimerSession(session, roundingSettings) {
+      async updateTimerSession(oldSession, newSession, roundingSettings) {
         const { updateStore, projects, timerSessions } = get();
         const project = projects.find(
-          (p) => p.project.id === session.project_id
+          (p) => p.project.id === newSession.project_id
         );
         if (!project) {
-          return false;
+          return {
+            success: false,
+            overlapDetected: false,
+          };
         }
 
-        const updatedSession = await actions.updateSession({ session });
+        let sessionToUpdate: Tables<"timer_session"> = { ...newSession };
+
+        if (
+          oldSession.start_time !== newSession.start_time ||
+          oldSession.end_time !== newSession.end_time
+        ) {
+          let updatedSession: TablesInsert<"timer_session"> = { ...newSession };
+          if (roundingSettings.roundInTimeFragments) {
+            updatedSession = getTimeFragmentSession(
+              roundingSettings.timeFragmentInterval,
+              newSession
+            );
+          }
+          const { adjustedTimeSpans, overlappingSessions } =
+            resolveSessionOverlaps(project.sessions, updatedSession);
+          if (!adjustedTimeSpans || overlappingSessions.length > 0) {
+            return {
+              success: false,
+              overlapDetected: true,
+            };
+          }
+          sessionToUpdate = adjustedTimeSpans[0] as Tables<"timer_session">;
+        }
+
+        const updatedSession = await actions.updateSession({
+          session: sessionToUpdate,
+        });
         if (!updatedSession.success) {
-          return false;
+          return {
+            success: false,
+            overlapDetected: false,
+          };
         }
 
         const updatedSessions = timerSessions.map((s) =>
-          s.id === session.id ? updatedSession.data : s
+          s.id === newSession.id ? updatedSession.data : s
         );
         const updatedProjects = projects.map((p) => ({
           project: p.project,
           sessions: p.sessions.map((s) =>
-            s.id === session.id ? updatedSession.data : s
+            s.id === newSession.id ? updatedSession.data : s
           ),
         }));
         updateStore(updatedProjects, updatedSessions);
-        return true;
+        return {
+          success: true,
+          overlapDetected: false,
+        };
       },
 
       async updateMultipleTimerSessions(sessionIds, update) {
