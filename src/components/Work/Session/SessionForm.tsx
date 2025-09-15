@@ -13,8 +13,10 @@ import {
   Group,
   Button,
   Text,
+  Collapse,
+  Fieldset,
 } from "@mantine/core";
-import { IconPlayerPlay, IconPlayerPause, IconPlus } from "@tabler/icons-react";
+import { IconPlayerPlay, IconPlus } from "@tabler/icons-react";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { currencies } from "@/constants/settings";
@@ -32,8 +34,7 @@ interface SessionFormProps {
   newSession: boolean;
   project?: Tables<"timer_project">;
   submitting?: boolean;
-  projectId?: string;
-  onProjectChange?: (value: string | null) => void;
+  onProjectChange?: (value: Tables<"timer_project"> | undefined) => void;
   onSubmit: (values: NewSession) => void;
   onCancel: () => void;
   onOpenProjectForm?: () => void;
@@ -47,16 +48,14 @@ export default function SessionForm({
   onSubmit,
   onCancel,
   onOpenProjectForm,
-  projectId,
   onProjectChange,
 }: SessionFormProps) {
-  const { locale, format24h } = useSettingsStore();
+  const { locale } = useSettingsStore();
   const { projects: timerProjects } = useWorkStore();
   const [userChangedStartTime, setUserChangedStartTime] = useState(false);
   const [userChangedEndTime, setUserChangedEndTime] = useState(false);
   const [formInitialized, setFormInitialized] = useState(false);
-  const [showPaymentFields, setShowPaymentFields] = useState(false);
-  // Create conditional schema based on hourly_payment
+
   const schema = z.object({
     project_id: z.string(),
     start_time: z.string().transform((str) => new Date(str).toISOString()),
@@ -67,36 +66,25 @@ export default function SessionForm({
           ? "Aktive Zeit muss größer als 0 sein"
           : "Active time must be greater than 0",
     }),
-    paused_seconds: z.number().min(0, {
+    memo: z.string().optional(),
+    currency: z.string().min(1, {
       message:
         locale === "de-DE"
-          ? "Pausierte Zeit muss positiv oder 0 sein"
-          : "Paused time must be positive or 0",
+          ? "Währung ist erforderlich"
+          : "Currency is required",
     }),
-    memo: z.string().optional(),
-    currency: showPaymentFields
-      ? z.string().min(1, {
-          message:
-            locale === "de-DE"
-              ? "Währung ist erforderlich"
-              : "Currency is required",
-        })
-      : z.string().optional(),
-    salary: showPaymentFields
-      ? z.number().min(0, {
-          message:
-            locale === "de-DE"
-              ? "Gehalt muss positiv sein"
-              : "Salary must be positive",
-        })
-      : z.number().optional(),
+    salary: z.number().min(0, {
+      message:
+        locale === "de-DE"
+          ? "Gehalt muss positiv sein"
+          : "Salary must be positive",
+    }),
   });
 
   const form = useForm<NewSession>({
     initialValues: {
       ...initialValues,
-      project_id:
-        initialValues.project_id || projectId || project?.id || undefined,
+      project_id: initialValues.project_id || project?.id || undefined,
       start_time: (() => {
         const d = new Date(initialValues.start_time);
         d.setSeconds(0, 0);
@@ -114,8 +102,7 @@ export default function SessionForm({
   // Initialize form - when form opens, adjust start_time based on active/paused time
   useEffect(() => {
     if (!formInitialized) {
-      const totalSeconds =
-        form.values.active_seconds + form.values.paused_seconds;
+      const totalSeconds = form.values.active_seconds;
       const endTime = new Date(form.values.end_time);
       const startTime = new Date(endTime.getTime() - totalSeconds * 1000);
       form.setFieldValue("start_time", startTime.toISOString());
@@ -124,17 +111,12 @@ export default function SessionForm({
   }, [formInitialized, form]);
 
   useEffect(() => {
-    if (project) {
-      setShowPaymentFields(project.hourly_payment);
+    if (project && project.id !== form.values.project_id) {
+      form.setFieldValue("project_id", project.id);
+      form.setFieldValue("currency", project.currency);
+      form.setFieldValue("salary", project.salary);
     }
   }, [project]);
-
-  // Update project_id when projectId prop changes
-  useEffect(() => {
-    if (projectId && projectId !== form.values.project_id) {
-      form.setFieldValue("project_id", projectId);
-    }
-  }, [projectId, form]);
 
   const projects = useMemo(() => {
     return (
@@ -149,26 +131,7 @@ export default function SessionForm({
   const handleActiveSecondsChange = (value: number) => {
     form.setFieldValue("active_seconds", value);
 
-    const totalSeconds = value + form.values.paused_seconds;
-
-    // If both start and end time have been manually changed by user, keep start_time fixed
-    if (userChangedStartTime) {
-      const startTime = new Date(form.values.start_time);
-      const endTime = new Date(startTime.getTime() + totalSeconds * 1000);
-      form.setFieldValue("end_time", endTime.toISOString());
-    } else {
-      // Otherwise, adjust start_time based on end_time (initial behavior)
-      const endTime = new Date(form.values.end_time);
-      const startTime = new Date(endTime.getTime() - totalSeconds * 1000);
-      form.setFieldValue("start_time", startTime.toISOString());
-    }
-  };
-
-  // Handle paused_seconds changes and update end_time accordingly
-  const handlePausedSecondsChange = (value: number) => {
-    form.setFieldValue("paused_seconds", value);
-
-    const totalSeconds = form.values.active_seconds + value;
+    const totalSeconds = value;
 
     // If both start and end time have been manually changed by user, keep start_time fixed
     if (userChangedStartTime) {
@@ -198,7 +161,7 @@ export default function SessionForm({
 
     if (totalSeconds > 0) {
       // Calculate active seconds by subtracting paused seconds
-      const activeSeconds = totalSeconds - form.values.paused_seconds;
+      const activeSeconds = totalSeconds;
 
       if (activeSeconds > 0) {
         // Round to nearest minute (60 seconds)
@@ -206,7 +169,7 @@ export default function SessionForm({
         form.setFieldValue("active_seconds", roundedSeconds);
 
         // Update end_time to match the rounded active seconds + paused seconds
-        const newTotalSeconds = roundedSeconds + form.values.paused_seconds;
+        const newTotalSeconds = roundedSeconds;
         const newEndTime = new Date(
           startTime.getTime() + newTotalSeconds * 1000
         );
@@ -234,7 +197,7 @@ export default function SessionForm({
 
     if (totalSeconds > 0) {
       // Calculate active seconds by subtracting paused seconds
-      const activeSeconds = totalSeconds - form.values.paused_seconds;
+      const activeSeconds = totalSeconds;
 
       if (activeSeconds > 0) {
         // Round to nearest minute
@@ -242,7 +205,7 @@ export default function SessionForm({
         form.setFieldValue("active_seconds", roundedSeconds);
 
         // Update end_time to match the rounded active seconds + paused seconds
-        const newTotalSeconds = roundedSeconds + form.values.paused_seconds;
+        const newTotalSeconds = roundedSeconds;
         const newEndTime = new Date(
           startTime.getTime() + newTotalSeconds * 1000
         );
@@ -253,87 +216,76 @@ export default function SessionForm({
 
   function handleProjectChange(value: string | null) {
     if (!value) return;
-    if (onProjectChange) {
-      onProjectChange(value);
-    }
-    const project = timerProjects.find((p) => p.project.id === value);
+    const project = timerProjects.find((p) => p.project.id === value)?.project;
     if (project) {
-      form.setFieldValue("project_id", value);
-      form.setFieldValue("currency", project.project.currency);
-      form.setFieldValue("salary", project.project.salary);
-      form.setFieldValue("hourly_payment", project.project.hourly_payment);
-      setShowPaymentFields(project.project.hourly_payment);
+      if (onProjectChange) {
+        onProjectChange(project);
+      }
     }
   }
 
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
-      <Stack gap="lg">
-        <Stack gap={0}>
-          <Group justify="flex-end">
-            <Button onClick={onOpenProjectForm} fw={500} variant="subtle">
-              <Group gap={4} p={0} m={0}>
-                <IconPlus size={14} />
-                <Text fz="xs" c="dimmed">
-                  {locale === "de-DE" ? "Neues Projekt" : "Add Project"}
-                </Text>
-              </Group>
-            </Button>
-          </Group>
-          <Select
-            withAsterisk
-            allowDeselect={false}
-            label={locale === "de-DE" ? "Projekt" : "Project"}
-            value={form.values.project_id}
-            error={form.errors.project_id}
-            placeholder={
-              locale === "de-DE" ? "Projekt auswählen" : "Select project"
-            }
-            data={projects}
-            searchable
-            onChange={handleProjectChange}
-          />
-        </Stack>
-        <TimeInput
-          label={locale === "de-DE" ? "Aktive Zeit" : "Active Time"}
-          value={form.values.active_seconds}
-          onChange={handleActiveSecondsChange}
-          error={form.errors.active_seconds}
-          icon={<IconPlayerPlay size={18} />}
-          color="green"
-          data-autofocus={true}
-          isOpen={true}
-        />
-        {/* <TimeInput
-          label={locale === "de-DE" ? "Pausierte Zeit" : "Paused Time"}
-          isOpen={true}
-          value={form.values.paused_seconds}
-          onChange={handlePausedSecondsChange}
-          error={form.errors.paused_seconds}
-          icon={<IconPlayerPause size={18} />}
-          color="orange"
-        /> */}
-        <LocaleDateTimePicker
-          withAsterisk
-          label={locale === "de-DE" ? "Startzeit" : "Start Time"}
-          value={form.values.start_time}
-          onChange={handleStartTimeChange}
-          error={form.errors.start_time}
-        />
-        <LocaleDateTimePicker
-          withAsterisk
-          label={locale === "de-DE" ? "Endzeit" : "End Time"}
-          value={form.values.end_time}
-          onChange={handleEndTimeChange}
-          error={form.errors.end_time}
-        />
-        <Textarea
-          label={locale === "de-DE" ? "Notiz" : "Memo"}
-          placeholder={locale === "de-DE" ? "Notiz eingeben" : "Memo"}
-          {...form.getInputProps("memo")}
-        />
-        {showPaymentFields ? (
-          <>
+      <Stack>
+        <Fieldset legend={locale === "de-DE" ? "Projekt" : "Project"}>
+          <Stack gap={0}>
+            <Group justify="flex-end">
+              <Button onClick={onOpenProjectForm} fw={500} variant="subtle">
+                <Group gap={4} p={0} m={0}>
+                  <IconPlus size={14} />
+                  <Text fz="xs" c="dimmed">
+                    {locale === "de-DE" ? "Neues Projekt" : "Add Project"}
+                  </Text>
+                </Group>
+              </Button>
+            </Group>
+            <Select
+              withAsterisk
+              allowDeselect={false}
+              label={locale === "de-DE" ? "Projekt" : "Project"}
+              value={form.values.project_id}
+              error={form.errors.project_id}
+              placeholder={
+                locale === "de-DE" ? "Projekt auswählen" : "Select project"
+              }
+              data={projects}
+              searchable
+              onChange={handleProjectChange}
+            />
+          </Stack>
+        </Fieldset>
+        <Fieldset legend={locale === "de-DE" ? "Zeit" : "Time"}>
+          <Stack>
+            <TimeInput
+              label={locale === "de-DE" ? "Aktive Zeit" : "Active Time"}
+              value={form.values.active_seconds}
+              onChange={handleActiveSecondsChange}
+              error={form.errors.active_seconds}
+              icon={<IconPlayerPlay size={18} />}
+              color="green"
+              data-autofocus={true}
+              isOpen={true}
+            />
+            <Group grow>
+              <LocaleDateTimePicker
+                withAsterisk
+                label={locale === "de-DE" ? "Startzeit" : "Start Time"}
+                value={form.values.start_time}
+                onChange={handleStartTimeChange}
+                error={form.errors.start_time}
+              />
+              <LocaleDateTimePicker
+                withAsterisk
+                label={locale === "de-DE" ? "Endzeit" : "End Time"}
+                value={form.values.end_time}
+                onChange={handleEndTimeChange}
+                error={form.errors.end_time}
+              />
+            </Group>
+          </Stack>
+        </Fieldset>
+        <Fieldset legend={locale === "de-DE" ? "Finanzen" : "Finances"}>
+          <Collapse in={project?.hourly_payment !== false}>
             <NumberInput
               label={locale === "de-DE" ? "Gehalt" : "Salary"}
               min={0}
@@ -348,14 +300,16 @@ export default function SessionForm({
               data={currencies}
               {...form.getInputProps("currency")}
             />
-          </>
-        ) : (
-          // Hidden fields for non-hourly payment projects
-          <>
-            <input type="hidden" {...form.getInputProps("salary")} />
-            <input type="hidden" {...form.getInputProps("currency")} />
-          </>
-        )}
+          </Collapse>
+          <Collapse in={project?.hourly_payment === false}>
+            <Text>Hobby</Text>
+          </Collapse>
+        </Fieldset>
+        <Textarea
+          label={locale === "de-DE" ? "Notiz" : "Memo"}
+          placeholder={locale === "de-DE" ? "Notiz eingeben" : "Memo"}
+          {...form.getInputProps("memo")}
+        />
         {newSession ? (
           <CreateButton
             onClick={form.onSubmit(onSubmit)}

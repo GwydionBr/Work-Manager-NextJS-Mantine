@@ -56,7 +56,6 @@ export default function EditSessionDrawer({
     start_time: string;
     end_time: string;
     active_seconds: number;
-    paused_seconds: number;
     currency: Currency;
     salary: number;
     memo?: string;
@@ -64,25 +63,13 @@ export default function EditSessionDrawer({
     setSubmitting(true);
 
     const newSession: Tables<"timer_session"> = {
+      ...timerSession,
       ...values,
-      real_start_time: timerSession.real_start_time,
-      true_end_time: timerSession.true_end_time,
-      created_at: new Date().toISOString(),
-      id: timerSession.id,
-      project_id: values.project_id || timerSession.project_id,
-      user_id: timerSession.user_id,
       start_time: new Date(values.start_time).toISOString(),
-      hourly_payment: timerSession.hourly_payment,
       end_time: new Date(values.end_time).toISOString(),
-      payed: false,
-      // If project doesn't have hourly payment, set salary to 0 and currency to project currency
-      salary: project?.hourly_payment ? values.salary : 0,
-      currency: project?.hourly_payment
-        ? values.currency
-        : project?.currency || timerSession.currency,
-      payout_id: null,
+      true_end_time: new Date(values.end_time).toISOString(),
+      paused_seconds: 0,
       memo: values.memo || null,
-      time_fragments_interval: timerSession.time_fragments_interval,
     };
 
     const success = await updateTimerSession(newSession);

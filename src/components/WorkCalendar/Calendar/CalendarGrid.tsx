@@ -9,7 +9,7 @@ import { Grid, Stack, Group, Box, Text } from "@mantine/core";
 import { DayColumn } from "@/components/WorkCalendar/DayColumn";
 import { TimeColumn } from "@/components/WorkCalendar/TimeColumn";
 import ColumnHeader from "@/components/WorkCalendar/Calendar/ColumnHeader";
-import SessionFormModal from "@/components/Work/Session/SessionFormModal";
+import NewSessionModal from "@/components/Work/Session/NewSessionModal";
 import { clamp } from "@/components/WorkCalendar/calendarUtils";
 
 import { getStartOfDay } from "@/components/WorkCalendar/calendarUtils";
@@ -293,7 +293,7 @@ export default function CalendarGrid({
         </Group>
       </Stack>
 
-      <SessionFormModal
+      <NewSessionModal
         opened={sessionFormModalOpened}
         onClose={() => {
           closeSessionFormModal();

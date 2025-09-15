@@ -1,40 +1,50 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import useSettingsStore from "@/stores/settingsStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 import { useWorkStore } from "@/stores/workManagerStore";
 
 import { Group, Modal, Text, useModalsStack } from "@mantine/core";
 import SessionForm from "./SessionForm";
-import { TablesInsert } from "@/types/db.types";
+import { Tables, TablesInsert } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
-import { getTimeFragmentSession } from "@/utils/helper/getTimeFragmentSession";
 import SessionNotification from "./SessionNotification";
 import ProjectForm from "../Project/ProjectForm";
 import { IconClockPlus } from "@tabler/icons-react";
 import { NewSession } from "@/types/timerSession.types";
 
-interface SessionFormModalProps {
+interface NewSessionModalProps {
   opened: boolean;
   onClose: () => void;
   initialValues?: NewSession;
+  project?: Tables<"timer_project">;
 }
 
-export default function SessionFormModal({
+export default function NewSessionModal({
   opened,
   onClose,
   initialValues,
-}: SessionFormModalProps) {
+  project,
+}: NewSessionModalProps) {
   const stack = useModalsStack(["session-form", "project-form"]);
-  const { locale, timerRoundingSettings, format24h } =
-    useSettingsStore();
-  const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
-  const { activeProjectId, addTimerSession, addProject } = useWorkStore();
-  const activeProject = useWorkStore((state) =>
-    state.projects.find((p) => p.project.id === activeProjectId)
-  );
+  const {
+    locale,
+    timerRoundingSettings,
+    format24h,
+    defaultSalaryAmount,
+    defaultSalaryCurrency,
+    defaultProjectHourlyPayment,
+  } = useSettingsStore();
+  const [currentProject, setCurrentProject] = useState<
+    Tables<"timer_project"> | undefined
+  >(project);
+  const { addTimerSession, addProject } = useWorkStore();
   const [submittingSession, setSubmittingSession] = useState(false);
   const [submittingProject, setSubmittingProject] = useState(false);
+
+  useEffect(() => {
+    setCurrentProject(project);
+  }, [project]);
 
   useEffect(() => {
     if (opened) {
@@ -48,39 +58,32 @@ export default function SessionFormModal({
     start_time: string;
     end_time: string;
     active_seconds: number;
-    paused_seconds: number;
     currency: Currency;
     salary: number;
     memo?: string;
   }) {
-    if (!activeProject) {
+    if (!currentProject) {
       return;
     }
     setSubmittingSession(true);
 
     let newSession: TablesInsert<"timer_session"> = {
       ...values,
-      user_id: activeProject.project.user_id,
       start_time: new Date(values.start_time).toISOString(),
       end_time: new Date(values.end_time).toISOString(),
       true_end_time: new Date(values.end_time).toISOString(),
+      paused_seconds: 0,
       memo: values.memo || null,
-      hourly_payment: activeProject.project.hourly_payment,
-      salary: activeProject.project.hourly_payment ? values.salary : 0,
-      currency: activeProject.project.hourly_payment
-        ? values.currency
-        : activeProject.project.currency,
     };
-
-    if (timerRoundingSettings.roundInTimeFragments) {
-      newSession = getTimeFragmentSession(timerRoundingSettings.timeFragmentInterval, newSession);
-    }
 
     const { createdSessions, overlappingSessions, completeOverlap } =
       await addTimerSession(
         newSession,
-        timerRoundingSettings.roundInTimeFragments,
-        timerRoundingSettings.timeFragmentInterval
+        currentProject.round_in_time_fragments !== null
+          ? currentProject.round_in_time_fragments
+          : timerRoundingSettings.roundInTimeFragments,
+        currentProject.time_fragment_interval ??
+          timerRoundingSettings.timeFragmentInterval
       );
 
     SessionNotification({
@@ -112,7 +115,7 @@ export default function SessionFormModal({
       ...values,
     });
     if (createdProject) {
-      setCurrentProjectId(createdProject.id);
+      setCurrentProject(createdProject);
       stack.close("project-form");
     }
     setSubmittingProject(false);
@@ -120,6 +123,7 @@ export default function SessionFormModal({
   return (
     <Modal.Stack>
       <Modal
+        size="lg"
         {...stack.register("session-form")}
         onClose={onClose}
         title={
@@ -135,29 +139,27 @@ export default function SessionFormModal({
         <SessionForm
           initialValues={
             initialValues ?? {
-              project_id: activeProject?.project.id,
+              project_id: undefined,
               start_time: new Date(new Date().setSeconds(0, 0)).toISOString(),
               end_time: new Date(new Date().setSeconds(0, 0)).toISOString(),
               active_seconds: 0,
               paused_seconds: 0,
-              currency: activeProject?.project.currency || "USD",
-              salary: activeProject?.project.hourly_payment
-                ? activeProject?.project.salary || 0
-                : 0,
+              currency: project?.currency ?? defaultSalaryCurrency,
+              salary: project?.salary ?? defaultSalaryAmount,
             }
           }
+          newSession={true}
           onSubmit={handleSessionSubmit}
-          projectId={currentProjectId ?? undefined}
-          onProjectChange={setCurrentProjectId}
+          onProjectChange={setCurrentProject}
           onOpenProjectForm={() => stack.open("project-form")}
           onCancel={onClose}
-          newSession
-          project={activeProject?.project}
           submitting={submittingSession}
+          project={currentProject}
         />
       </Modal>
 
       <Modal
+        size="lg"
         {...stack.register("project-form")}
         title="Add project"
         transitionProps={{ transition: "fade-right", duration: 400 }}

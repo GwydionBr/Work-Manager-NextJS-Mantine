@@ -22,7 +22,7 @@ import { groupSessions } from "@/utils/sessionHelperFunctions";
 import NewHourlyPayoutCard from "@/components/Payout/NewHourlyPayoutCard";
 import NewProjectPayoutCard from "@/components/Payout/NewProjectPayoutCard";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
-import SessionFormModal from "@/components/Work/Session/SessionFormModal";
+import NewSessionModal from "@/components/Work/Session/NewSessionModal";
 import AddActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import SessionSelector from "@/components/Work/Session/SessionSelector";
 
@@ -308,9 +308,10 @@ export default function WorkPage() {
                 locale === "de-DE" ? "Sitzung hinzufügen" : "Add Session"
               }
             />
-            <SessionFormModal
+            <NewSessionModal
               opened={sessionFormOpened}
               onClose={closeSessionForm}
+              project={activeProject.project}
             />
             <SelectActionIcon
               disabled={selectableSessions.length === 0}

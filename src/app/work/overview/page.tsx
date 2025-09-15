@@ -15,7 +15,7 @@ import SessionFilter from "@/components/Work/Session/BulkSelectionControl";
 import WorkAnalysis from "@/components/Work/Analysis/WorkAnalysis";
 import AnalysisActionIcon from "@/components/UI/ActionIcons/AnalysisActionIcon";
 import FilterActionIcon from "@/components/UI/ActionIcons/FilterActionIcon";
-import SessionFormModal from "@/components/Work/Session/SessionFormModal";
+import NewSessionModal from "@/components/Work/Session/NewSessionModal";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
 import PayoutCard from "@/components/Payout/PayoutCard";
 
@@ -81,7 +81,7 @@ export default function WorkOverviewPage() {
             tooltipLabel={locale === "de-DE" ? "Filter" : "Filter"}
             filled={filterOpened}
           /> */}
-          <SessionFormModal
+          <NewSessionModal
             opened={sessionFormOpened}
             onClose={closeSessionForm}
           />

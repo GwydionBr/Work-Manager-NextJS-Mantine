@@ -53,7 +53,7 @@ export default function NewProjectButton({
         opened={opened}
         onClose={close}
         title={locale === "de-DE" ? "Neues Projekt" : "New Project"}
-        size="md"
+        size="lg"
         padding="md"
       >
         <Flex direction="column" gap="xl">

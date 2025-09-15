@@ -213,7 +213,7 @@ export default function ProjectForm({
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
-      <Stack gap="xl">
+      <Stack>
         <Fieldset
           legend={locale === "de-DE" ? "Projekt Details" : "Project details"}
         >
