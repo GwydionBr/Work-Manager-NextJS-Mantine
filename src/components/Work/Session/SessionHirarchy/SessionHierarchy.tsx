@@ -55,7 +55,8 @@ export default function SessionHierarchy({
     const selectedCount = groupIds.filter((id) =>
       selectedSessions.includes(id)
     ).length;
-    if (selectedCount === groupIds.length) return "light-dark(var(--mantine-color-blue-0), var(--mantine-color-dark-6))";
+    if (selectedCount === groupIds.length)
+      return "light-dark(var(--mantine-color-blue-0), var(--mantine-color-dark-6))";
     if (selectedCount === 0) return undefined;
   };
 

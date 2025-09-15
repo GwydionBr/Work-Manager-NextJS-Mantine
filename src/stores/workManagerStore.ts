@@ -412,19 +412,24 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
             );
           }
           const { adjustedTimeSpans, overlappingSessions } =
-            resolveSessionOverlaps(project.sessions, updatedSession);
+            resolveSessionOverlaps(
+              project.sessions.filter((s) => s.id !== newSession.id),
+              updatedSession
+            );
           if (!adjustedTimeSpans || overlappingSessions.length > 0) {
             return {
               success: false,
               overlapDetected: true,
             };
           }
+          console.log("adjustedTimeSpans", adjustedTimeSpans);
           sessionToUpdate = adjustedTimeSpans[0] as Tables<"timer_session">;
         }
 
         const updatedSession = await actions.updateSession({
           session: sessionToUpdate,
         });
+        console.log("updatedSession", updatedSession);
         if (!updatedSession.success) {
           return {
             success: false,

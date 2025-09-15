@@ -44,6 +44,8 @@ export default function SessionRow({
 
   const { hovered, ref } = useHover();
 
+  const { index, ...cleanedSession } = session;
+
   async function handleDelete() {
     const success = await deleteTimerSessions([session.id]);
     if (success) {
@@ -211,17 +213,14 @@ export default function SessionRow({
             : "Are you sure you want to delete this session? This action cannot be undone."
         }
       />
-      {
-        project && (
-          <EditSessionDrawer
-            timerSession={session}
-            project={project}
-            opened={editDrawerOpened}
-            onClose={() => editDrawerHandler.close()}
-          />
-        )
-      }
-      
+      {project && (
+        <EditSessionDrawer
+          timerSession={cleanedSession}
+          project={project}
+          opened={editDrawerOpened}
+          onClose={() => editDrawerHandler.close()}
+        />
+      )}
     </Box>
   );
 }

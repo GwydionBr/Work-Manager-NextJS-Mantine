@@ -32,7 +32,6 @@ import NewHourlyPayoutCard from "@/components/Payout/NewHourlyPayoutCard";
 import NewProjectPayoutCard from "@/components/Payout/NewProjectPayoutCard";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import NewSessionModal from "@/components/Work/Session/NewSessionModal";
-import AddActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import SessionSelector from "@/components/Work/Session/SessionSelector";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import { IconClockPlus } from "@tabler/icons-react";
