@@ -8,6 +8,7 @@ import {
   mantineHtmlProps,
   MantineProvider,
 } from "@mantine/core";
+import { Analytics } from "@vercel/analytics/next";
 // import Script from "next/script";
 import { ContextMenuProvider } from "mantine-contextmenu";
 import { Notifications } from "@mantine/notifications";
@@ -52,6 +53,7 @@ export default function RootLayout({ children }: { children: any }) {
         <MantineProvider defaultColorScheme="auto" theme={mantineTheme}>
           <ContextMenuProvider>
             <Layout>
+              <Analytics />
               <Notifications />
               {children}
             </Layout>
