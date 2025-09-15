@@ -13,14 +13,12 @@ export function useCheckNewVersion(
 
     // Skip checks when there is no authenticated user/profile
     if (!profile) {
-      console.log("no profile");
       setNewVersion(null);
       return;
     }
 
     const check = async () => {
       try {
-        console.log("checking version");
         const res = await fetch("/api/version", { cache: "no-store" });
         const contentType = res.headers.get("content-type") || "";
         if (!res.ok || !contentType.includes("application/json")) {
