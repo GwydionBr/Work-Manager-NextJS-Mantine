@@ -56,18 +56,14 @@ export default function FinanceSection({
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 3);
 
-  const backgroundColor =
-    title === "Income" || title === "Einnahmen"
-      ? alpha("var(--mantine-color-green-8)", 0.3)
-      : alpha("var(--mantine-color-red-8)", 0.3);
+  const isIncome = title === "Income" || title === "Einnahmen";
 
-  const borderColor =
-    title === "Income" || title === "Einnahmen"
-      ? "var(--mantine-color-green-8)"
-      : "var(--mantine-color-red-8)";
+  const borderColor = isIncome
+    ? "var(--mantine-color-green-8)"
+    : "var(--mantine-color-red-8)";
 
   return (
-    <Container className={classes.financeSection} bg={backgroundColor}>
+    <Container className={classes.financeSection}>
       <Group
         p="xs"
         justify="center"
@@ -77,10 +73,10 @@ export default function FinanceSection({
           borderBottom: `1px solid light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-1))`,
         }}
       >
-        {title === "Income" || title === "Einnahmen" ? (
-          <IconCashMove />
+        {isIncome ? (
+          <IconCashMove color={borderColor} />
         ) : (
-          <IconCashMoveBack />
+          <IconCashMoveBack color={borderColor} />
         )}
         <Text ta="center" fz="lg" fw={700}>
           {title}

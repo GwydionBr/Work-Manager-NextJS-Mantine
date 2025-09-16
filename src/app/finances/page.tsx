@@ -13,7 +13,7 @@ export default function FinancesPage() {
 
   return (
     <ScrollArea px="xl" h="100vh" type="scroll">
-      <Header headerTitle={locale === "de-DE" ? "Finanzen" : "Finances"} />
+      {/* <Header headerTitle={locale === "de-DE" ? "Finanzen" : "Finances"} /> */}
       {isFetching ? (
         <Center>
           <Loader />
