@@ -7,8 +7,8 @@ import { Box, Tabs, Text } from "@mantine/core";
 import {
   IconReload,
   IconCircleDashedNumber1,
-  IconMenuDeep,
   IconBriefcase,
+  IconPresentationAnalytics,
 } from "@tabler/icons-react";
 import FinanceOverview from "./Overview/FinanceOverview";
 import FinanceRecurring from "./Recurring/FinanceRecurring";
@@ -35,10 +35,12 @@ export default function FinancesTab() {
     <Tabs defaultValue="Projects" w="100%">
       <Tabs.List grow my="xl">
         <Tabs.Tab
-          leftSection={<IconMenuDeep color="light-dark(blue, cyan)" />}
-          value="Overview"
+          leftSection={
+            <IconPresentationAnalytics color="light-dark(blue, cyan)" />
+          }
+          value="Analysis"
         >
-          {locale === "de-DE" ? "Übersicht" : "Overview"}
+          {locale === "de-DE" ? "Analyse" : "Analysis"}
         </Tabs.Tab>
         <Tabs.Tab
           value="Projects"
@@ -62,7 +64,7 @@ export default function FinancesTab() {
         </Tabs.Tab>
       </Tabs.List>
 
-      <Tabs.Panel value="Overview">
+      <Tabs.Panel value="Analysis">
         <FinanceOverview />
       </Tabs.Panel>
       <Tabs.Panel value="Projects">

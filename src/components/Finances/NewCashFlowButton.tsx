@@ -3,9 +3,10 @@
 import { useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Box, Flex, Modal } from "@mantine/core";
+import { ActionIcon, Box, Flex, Modal } from "@mantine/core";
 import FinanceForm from "@/components/Finances/Form/FinanceForm";
-import AddActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
+import { IconCashPlus } from "@tabler/icons-react";
+import DelayedTooltip from "../UI/DelayedTooltip";
 
 interface NewCashFlowButtonProps {
   isSingle?: boolean;
@@ -31,18 +32,24 @@ export default function NewCashFlowButton({
           <FinanceForm onClose={close} isSingle={isSingle} />
         </Flex>
       </Modal>
-
-      <AddActionIcon
-        aria-label={
-          locale === "de-DE" ? "Cashflow hinzufügen" : "Add cash flow"
-        }
-        onClick={open}
-        size="md"
-        tooltipLabel={
+      <DelayedTooltip
+        label={
           tooltipLabel ||
           (locale === "de-DE" ? "Cashflow hinzufügen" : "Add cash flow")
         }
-      />
+      >
+        <ActionIcon
+          onClick={open}
+          size="md"
+          variant="subtle"
+          aria-label={
+            tooltipLabel ||
+            (locale === "de-DE" ? "Cashflow hinzufügen" : "Add cash flow")
+          }
+        >
+          <IconCashPlus />
+        </ActionIcon>
+      </DelayedTooltip>
     </Box>
   );
 }

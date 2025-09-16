@@ -5,7 +5,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Table, Group, Text, ScrollArea } from "@mantine/core";
+import { Table, Group, Text, ScrollArea, Stack } from "@mantine/core";
 import EditCashFlowDrawer from "../EditCashFlowDrawer";
 import NewCashFlowButton from "../NewCashFlowButton";
 import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
@@ -29,68 +29,75 @@ export default function FinanceSingle() {
 
   return (
     <ScrollArea mb="md">
-      <NewCashFlowButton
-        isSingle={true}
-        tooltipLabel={
-          locale === "de-DE"
-            ? "Einmalzahlung hinzufügen"
-            : "Add Single Cash Flow"
-        }
-      />
-      <Table>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>{locale === "de-DE" ? "Datum" : "Date"}</Table.Th>
-            <Table.Th>{locale === "de-DE" ? "Betrag" : "Amount"}</Table.Th>
-            <Table.Th>{locale === "de-DE" ? "Name" : "Name"}</Table.Th>
-            <Table.Th>{locale === "de-DE" ? "Kategorie" : "Category"}</Table.Th>
-            <Table.Th></Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {sortedSingleCashFlows.map((cashFlow) => {
-            return (
-              <Table.Tr key={cashFlow.id}>
-                <Table.Td>
-                  <Group>
-                    {cashFlow.type === "expense" ? (
-                      <IconCashMoveBack color="red" />
-                    ) : (
-                      <IconCashMove color="green" />
-                    )}
-                    {formatDate(new Date(cashFlow.date), locale)}
-                  </Group>
-                </Table.Td>
-                <Table.Td>
-                  <Text
-                    size="sm"
-                    fw={600}
-                    c={cashFlow.type === "expense" ? "red" : "green"}
-                  >
-                    {formatMoney(cashFlow.amount, cashFlow.currency, locale)}
-                  </Text>
-                </Table.Td>
-                <Table.Td>{cashFlow.title}</Table.Td>
-                <Table.Td>
-                  {
-                    financeCategories.find(
-                      (category) => category.id === cashFlow.category_id
-                    )?.title
-                  }
-                </Table.Td>
-                <Table.Td>
-                  <EditActionIcon
-                    onClick={() => {
-                      setSelectedCashFlow(cashFlow);
-                      openEditCashFlow();
-                    }}
-                  />
-                </Table.Td>
-              </Table.Tr>
-            );
-          })}
-        </Table.Tbody>
-      </Table>
+      <Stack>
+        <Group justify="center">
+          <NewCashFlowButton
+            isSingle={true}
+            tooltipLabel={
+              locale === "de-DE"
+                ? "Einmalzahlung hinzufügen"
+                : "Add Single Cash Flow"
+            }
+          />
+        </Group>
+        <Table>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>{locale === "de-DE" ? "Datum" : "Date"}</Table.Th>
+              <Table.Th>{locale === "de-DE" ? "Betrag" : "Amount"}</Table.Th>
+              <Table.Th>{locale === "de-DE" ? "Name" : "Name"}</Table.Th>
+              <Table.Th>
+                {locale === "de-DE" ? "Kategorie" : "Category"}
+              </Table.Th>
+              <Table.Th></Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {sortedSingleCashFlows.map((cashFlow) => {
+              return (
+                <Table.Tr key={cashFlow.id}>
+                  <Table.Td>
+                    <Group>
+                      {cashFlow.type === "expense" ? (
+                        <IconCashMoveBack color="red" />
+                      ) : (
+                        <IconCashMove color="green" />
+                      )}
+                      {formatDate(new Date(cashFlow.date), locale)}
+                    </Group>
+                  </Table.Td>
+                  <Table.Td>
+                    <Text
+                      size="sm"
+                      fw={600}
+                      c={cashFlow.type === "expense" ? "red" : "green"}
+                    >
+                      {formatMoney(cashFlow.amount, cashFlow.currency, locale)}
+                    </Text>
+                  </Table.Td>
+                  <Table.Td>{cashFlow.title}</Table.Td>
+                  <Table.Td>
+                    {
+                      financeCategories.find(
+                        (category) => category.id === cashFlow.category_id
+                      )?.title
+                    }
+                  </Table.Td>
+                  <Table.Td>
+                    <EditActionIcon
+                      onClick={() => {
+                        setSelectedCashFlow(cashFlow);
+                        openEditCashFlow();
+                      }}
+                    />
+                  </Table.Td>
+                </Table.Tr>
+              );
+            })}
+          </Table.Tbody>
+        </Table>
+      </Stack>
+
       {selectedCashFlow && (
         <EditCashFlowDrawer
           cashFlow={selectedCashFlow}
