@@ -23,8 +23,6 @@ import Navbar from "@/components/Navbar/Navbar";
 import Aside from "./Aside";
 import InitializeProfile from "@/components/Account/InitializeProfile";
 
-import classes from "./AppShell.module.css";
-
 enum FetchPriority {
   Settings = "settings",
   Finance = "finance",
@@ -214,7 +212,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       }}
     >
       <AppShell
-        className={classes.appShell}
+        bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))"
         disabled={isHome || isAuth}
         navbar={{
           width: 65,
@@ -241,8 +239,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <AppShell.Navbar>
           <Navbar />
         </AppShell.Navbar>
-        <AppShell.Main className={classes.main}>{children}</AppShell.Main>
-        <AppShell.Aside className={classes.aside}>
+        <AppShell.Main style={{ transition: "0.4s ease-in" }}>
+          {children}
+        </AppShell.Main>
+        <AppShell.Aside
+          bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
+          style={{ transition: "width 0.4s ease-in", overflow: "hidden" }}
+        >
           <Aside toggleAside={toggleAside} isAsideOpen={isAsideOpen} />
         </AppShell.Aside>
       </AppShell>

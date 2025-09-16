@@ -264,7 +264,6 @@ export default function WorkCalendar() {
       viewportRef={viewport}
       h="100vh"
       type="never"
-      scrollHideDelay={100}
       scrollbars="y"
     >
       <Stack>

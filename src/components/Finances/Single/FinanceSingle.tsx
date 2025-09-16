@@ -5,14 +5,14 @@ import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Box, Table, alpha } from "@mantine/core";
+import { Table, Group, Text, ScrollArea } from "@mantine/core";
 import EditCashFlowDrawer from "../EditCashFlowDrawer";
 import NewCashFlowButton from "../NewCashFlowButton";
 import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
 
-import classes from "./FinanceSingle.module.css";
 import { formatDate, formatMoney } from "@/utils/formatFunctions";
 import { Tables } from "@/types/db.types";
+import { IconCashMove, IconCashMoveBack } from "@tabler/icons-react";
 
 export default function FinanceSingle() {
   const { singleCashFlows, financeCategories } = useFinanceStore();
@@ -28,7 +28,7 @@ export default function FinanceSingle() {
   );
 
   return (
-    <Box className={classes.financeSingleContainer} mb="md">
+    <ScrollArea mb="md">
       <NewCashFlowButton
         isSingle={true}
         tooltipLabel={
@@ -41,8 +41,8 @@ export default function FinanceSingle() {
         <Table.Thead>
           <Table.Tr>
             <Table.Th>{locale === "de-DE" ? "Datum" : "Date"}</Table.Th>
-            <Table.Th>{locale === "de-DE" ? "Name" : "Name"}</Table.Th>
             <Table.Th>{locale === "de-DE" ? "Betrag" : "Amount"}</Table.Th>
+            <Table.Th>{locale === "de-DE" ? "Name" : "Name"}</Table.Th>
             <Table.Th>{locale === "de-DE" ? "Kategorie" : "Category"}</Table.Th>
             <Table.Th></Table.Th>
           </Table.Tr>
@@ -50,21 +50,27 @@ export default function FinanceSingle() {
         <Table.Tbody>
           {sortedSingleCashFlows.map((cashFlow) => {
             return (
-              <Table.Tr
-                key={cashFlow.id}
-                bg={
-                  cashFlow.type === "expense"
-                    ? alpha("var(--mantine-color-red-5)", 0.4)
-                    : alpha("var(--mantine-color-green-5)", 0.4)
-                }
-              >
+              <Table.Tr key={cashFlow.id}>
                 <Table.Td>
-                  {formatDate(new Date(cashFlow.date), locale)}
+                  <Group>
+                    {cashFlow.type === "expense" ? (
+                      <IconCashMoveBack color="red" />
+                    ) : (
+                      <IconCashMove color="green" />
+                    )}
+                    {formatDate(new Date(cashFlow.date), locale)}
+                  </Group>
+                </Table.Td>
+                <Table.Td>
+                  <Text
+                    size="sm"
+                    fw={600}
+                    c={cashFlow.type === "expense" ? "red" : "green"}
+                  >
+                    {formatMoney(cashFlow.amount, cashFlow.currency, locale)}
+                  </Text>
                 </Table.Td>
                 <Table.Td>{cashFlow.title}</Table.Td>
-                <Table.Td>
-                  {formatMoney(cashFlow.amount, cashFlow.currency, locale)}
-                </Table.Td>
                 <Table.Td>
                   {
                     financeCategories.find(
@@ -92,6 +98,6 @@ export default function FinanceSingle() {
           onClose={closeEditCashFlow}
         />
       )}
-    </Box>
+    </ScrollArea>
   );
 }

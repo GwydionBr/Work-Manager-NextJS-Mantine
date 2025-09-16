@@ -9,13 +9,11 @@ import {
   ScrollArea,
   Stack,
   Text,
-  Kbd,
 } from "@mantine/core";
 import { IconArrowBarLeft } from "@tabler/icons-react";
 import NotificationAside from "../Notification/NotificationAside";
 import TimeTrackerManager from "../TimeTracker/TimeTrackerManager";
 
-import classes from "./AppShell.module.css";
 import TransitionDivider from "../UI/TransitionDivider";
 import DelayedTooltip from "../UI/DelayedTooltip";
 import Shortcut from "../UI/Shortcut";
@@ -60,8 +58,7 @@ export default function Aside({ toggleAside, isAsideOpen }: AsideProps) {
               variant="transparent"
             >
               <IconArrowBarLeft
-                className={classes.icon}
-                style={{ transform: isAsideOpen ? "rotate(180deg)" : "none" }}
+                style={{ transform: isAsideOpen ? "rotate(180deg)" : "none", transition: "transform 0.4s linear" }}
               />
             </ActionIcon>
           </DelayedTooltip>
