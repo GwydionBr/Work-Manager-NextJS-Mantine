@@ -10,9 +10,9 @@ import {
   Text,
   Skeleton,
   Group,
-  Popover,
   Collapse,
   List,
+  Modal,
 } from "@mantine/core";
 import FinanceCategoryRow from "./FinanceCategoryRow";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
@@ -21,7 +21,7 @@ import { useCallback, useMemo, useState } from "react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
-import { IconCategory } from "@tabler/icons-react";
+import { IconCategory, IconCategoryPlus } from "@tabler/icons-react";
 
 export default function FinanceCategorySettings() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -151,24 +151,27 @@ export default function FinanceCategorySettings() {
     <Group w="100%">
       <Stack align="center" w="100%">
         <Group justify="space-between" w="100%">
-          <Popover
+          <PlusActionIcon onClick={openCategoryForm} disabled={isFetching} />
+          <Modal
             opened={isCategoryFormOpen}
             onClose={closeCategoryForm}
             closeOnClickOutside
             withOverlay
             trapFocus
             returnFocus
+            title={
+              <Group>
+                <IconCategoryPlus />
+                <Text>
+                  {locale === "de-DE" ? "Kategorie hinzufügen" : "Add category"}
+                </Text>
+              </Group>
+            }
+            size="md"
+            padding="md"
           >
-            <Popover.Target>
-              <PlusActionIcon
-                onClick={openCategoryForm}
-                disabled={isFetching}
-              />
-            </Popover.Target>
-            <Popover.Dropdown>
-              <FinanceCategoryForm onClose={closeCategoryForm} />
-            </Popover.Dropdown>
-          </Popover>
+            <FinanceCategoryForm onClose={closeCategoryForm} />
+          </Modal>
           <Group
             align="center"
             gap="xs"

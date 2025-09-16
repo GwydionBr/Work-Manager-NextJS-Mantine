@@ -10,9 +10,9 @@ import {
   Text,
   Skeleton,
   Group,
-  Popover,
   Collapse,
   List,
+  Modal,
 } from "@mantine/core";
 import FinanceClientRow from "./FinanceClientRow";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
@@ -21,7 +21,7 @@ import { useCallback, useMemo, useState } from "react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
-import { IconUsers } from "@tabler/icons-react";
+import { IconUserPlus, IconUsers } from "@tabler/icons-react";
 
 export default function FinanceClientSettings() {
   const [selectedClients, setSelectedClients] = useState<string[]>([]);
@@ -149,21 +149,25 @@ export default function FinanceClientSettings() {
     <Group w="100%">
       <Stack align="center" w="100%">
         <Group justify="space-between" w="100%">
-          <Popover
+          <PlusActionIcon onClick={openClientForm} disabled={isFetching} />
+          <Modal
             opened={isClientFormOpen}
             onClose={closeClientForm}
             closeOnClickOutside
             withOverlay
             trapFocus
             returnFocus
+            title={<Group>
+              <IconUserPlus />
+              <Text>
+                {locale === "de-DE" ? "Kunde hinzufügen" : "Add Client"}
+              </Text>
+            </Group>}
+            size="md"
+            padding="md"
           >
-            <Popover.Target>
-              <PlusActionIcon onClick={openClientForm} disabled={isFetching} />
-            </Popover.Target>
-            <Popover.Dropdown>
-              <FinanceClientForm onClose={closeClientForm} />
-            </Popover.Dropdown>
-          </Popover>
+            <FinanceClientForm onClose={closeClientForm} />
+          </Modal>
           <Group
             align="center"
             gap="xs"
