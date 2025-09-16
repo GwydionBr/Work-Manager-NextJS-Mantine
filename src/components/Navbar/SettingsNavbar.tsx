@@ -6,6 +6,7 @@ interface SettingsNavbarItem {
   title: string;
   icon?: React.ReactNode;
   onClick: () => void;
+  active?: boolean;
 }
 
 interface SettingsNavbarProps {
@@ -29,7 +30,7 @@ export default function SettingsNavbar({ items }: SettingsNavbarProps) {
           key={item.title}
           leftSection={item.icon}
           onClick={item.onClick}
-          variant="subtle"
+          variant={item.active ? "filled" : "subtle"}
           w="100%"
         >
           {item.title}

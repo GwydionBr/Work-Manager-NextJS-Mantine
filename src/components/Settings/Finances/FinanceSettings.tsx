@@ -36,16 +36,19 @@ export default function FinanceSettings() {
             {
               title: locale === "de-DE" ? "Standard" : "Default",
               onClick: () => setActiveSetting(FinanceSettingType.DEFAULT),
+              active: activeSetting === FinanceSettingType.DEFAULT,
             },
             {
               title: locale === "de-DE" ? "Kategorien" : "Categories",
               icon: <IconCategory size={20} />,
               onClick: () => setActiveSetting(FinanceSettingType.CATEGORIES),
+              active: activeSetting === FinanceSettingType.CATEGORIES,
             },
             {
               title: locale === "de-DE" ? "Kunden" : "Clients",
               icon: <IconUsers size={20} />,
               onClick: () => setActiveSetting(FinanceSettingType.CLIENTS),
+              active: activeSetting === FinanceSettingType.CLIENTS,
             },
             // {
             //   title: locale === "de-DE" ? "Regeln" : "Rules",
