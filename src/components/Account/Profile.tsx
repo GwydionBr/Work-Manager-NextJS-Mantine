@@ -8,6 +8,7 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import {
   Button,
   Card,
+  Center,
   Collapse,
   Group,
   Loader,
@@ -71,7 +72,11 @@ export default function Profile() {
   }, [profile]);
 
   if (isLoading) {
-    return <Loader />;
+    return (
+      <Center w="100%" h={250}>
+        <Loader />
+      </Center>
+    );
   }
 
   if (!profile) {
@@ -111,63 +116,77 @@ export default function Profile() {
           <LogoutButton size="md" />
         </Group>
 
-        <Group justify="space-between" align="center">
-          <Stack gap="xs">
-            <Text size="sm" c="dimmed">
-              {locale === "de-DE" ? "Benutzername" : "Username"}
-            </Text>
-            <Text size="lg" fw={500}>
-              {profile.username}
-            </Text>
-          </Stack>
-          <PencilActionIcon onClick={() => setIsOpen(!isOpen)} />
-        </Group>
+        <Stack align="center">
+          <Card w={350} withBorder radius="md" shadow="md">
+            <Stack w="100%">
+              <Group justify="space-between" gap="xl" align="center">
+                <Stack gap="xs">
+                  <Text size="sm" c="dimmed">
+                    {locale === "de-DE" ? "Benutzername" : "Username"}
+                  </Text>
+                  <Text size="lg" fw={500}>
+                    {profile.username}
+                  </Text>
+                </Stack>
+                <PencilActionIcon onClick={() => setIsOpen(!isOpen)} />
+              </Group>
 
-        <Collapse in={isOpen}>
-          <Card withBorder radius="md" shadow="sm" p="md">
-            <form onSubmit={form.onSubmit(handleSubmit)}>
-              <Stack gap="md">
-                <TextInput
-                  label={
-                    locale === "de-DE" ? "Neuer Benutzername" : "New Username"
-                  }
-                  placeholder={
-                    locale === "de-DE"
-                      ? "Gib einen neuen Benutzernamen ein (min. 3 Zeichen)"
-                      : "Enter new username (min. 3 characters)"
-                  }
-                  {...form.getInputProps("username")}
-                  rightSection={
-                    isUsernameValid && !isOldUsername ? (
-                      <IconCheck
-                        size={16}
-                        style={{ color: "var(--mantine-color-green-6)" }}
-                      />
-                    ) : null
-                  }
-                />
-                <Group justify="flex-end" gap="sm">
-                  <CancelButton onClick={closeForm} />
-                  <Button
-                    type="submit"
-                    disabled={!isUsernameValid || isUpdating || isOldUsername}
-                    loading={isUpdating}
-                  >
-                    {locale === "de-DE"
-                      ? "Änderungen speichern"
-                      : "Save Changes"}
-                  </Button>
+              <Collapse in={isOpen}>
+                <Group justify="flex-start">
+                  <Card withBorder radius="md" shadow="sm" p="md">
+                    <form onSubmit={form.onSubmit(handleSubmit)}>
+                      <Stack gap="md">
+                        <TextInput
+                          label={
+                            locale === "de-DE"
+                              ? "Neuer Benutzername"
+                              : "New Username"
+                          }
+                          placeholder={
+                            locale === "de-DE"
+                              ? "Gib einen neuen Benutzernamen ein (min. 3 Zeichen)"
+                              : "Enter new username (min. 3 characters)"
+                          }
+                          {...form.getInputProps("username")}
+                          rightSection={
+                            isUsernameValid && !isOldUsername ? (
+                              <IconCheck
+                                size={16}
+                                style={{
+                                  color: "var(--mantine-color-green-6)",
+                                }}
+                              />
+                            ) : null
+                          }
+                        />
+                        <Group justify="flex-end" gap="sm">
+                          <CancelButton onClick={closeForm} />
+                          <Button
+                            type="submit"
+                            disabled={
+                              !isUsernameValid || isUpdating || isOldUsername
+                            }
+                            loading={isUpdating}
+                          >
+                            {locale === "de-DE"
+                              ? "Änderungen speichern"
+                              : "Save Changes"}
+                          </Button>
+                        </Group>
+                      </Stack>
+                    </form>
+                  </Card>
                 </Group>
-              </Stack>
-            </form>
-          </Card>
-        </Collapse>
+              </Collapse>
 
-        <Stack gap="xs">
-          <Text size="sm" c="dimmed">
-            {locale === "de-DE" ? "E-Mail" : "Email"}
-          </Text>
-          <Text size="lg">{profile.email}</Text>
+              <Stack gap="xs" align="flex-start">
+                <Text size="sm" c="dimmed">
+                  {locale === "de-DE" ? "E-Mail" : "Email"}
+                </Text>
+                <Text size="lg">{profile.email}</Text>
+              </Stack>
+            </Stack>
+          </Card>
         </Stack>
       </Stack>
     </Card>
