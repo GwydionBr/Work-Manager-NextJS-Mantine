@@ -4,7 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { ApiResponseList } from "@/types/action.types";
 
 export async function getAllFinanceClients(): Promise<
-  ApiResponseList<"client">
+  ApiResponseList<"finance_client">
 > {
   const supabase = await createClient();
 
@@ -17,7 +17,7 @@ export async function getAllFinanceClients(): Promise<
   }
 
   const { data, error } = await supabase
-    .from("client")
+    .from("finance_client")
     .select("*")
     .eq("user_id", user.id)
     .order("name", { ascending: true });

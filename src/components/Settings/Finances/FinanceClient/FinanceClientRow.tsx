@@ -14,7 +14,7 @@ import { IconPencil } from "@tabler/icons-react";
 import FinanceClientForm from "@/components/Finances/FinanceClient/FinanceClientForm";
 
 interface FinanceClientRowProps {
-  client: Tables<"client">;
+  client: Tables<"finance_client">;
   selectedModeActive: boolean;
   isSelected?: boolean;
   onToggleSelected?: (e: React.MouseEvent<HTMLButtonElement>) => void;
@@ -105,7 +105,7 @@ export default function FinanceClientRow({
               <Text fz="xs" c="dimmed">
                 {client.phone}
               </Text>
-            )}
+            )}  
             {client.address && (
               <Text fz="xs" c="dimmed">
                 {client.address}

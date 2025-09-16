@@ -83,7 +83,31 @@ export type Database = {
           },
         ];
       };
-      client: {
+      finance_category: {
+        Row: {
+          created_at: string;
+          description: string | null;
+          id: string;
+          title: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          title: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          title?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      finance_client: {
         Row: {
           address: string | null;
           created_at: string;
@@ -115,30 +139,6 @@ export type Database = {
           id?: string;
           name?: string;
           phone?: string | null;
-          user_id?: string;
-        };
-        Relationships: [];
-      };
-      finance_category: {
-        Row: {
-          created_at: string;
-          description: string | null;
-          id: string;
-          title: string;
-          user_id: string;
-        };
-        Insert: {
-          created_at?: string;
-          description?: string | null;
-          id?: string;
-          title: string;
-          user_id?: string;
-        };
-        Update: {
-          created_at?: string;
-          description?: string | null;
-          id?: string;
-          title?: string;
           user_id?: string;
         };
         Relationships: [];
@@ -182,7 +182,7 @@ export type Database = {
             foreignKeyName: "finance_project_client_id_fkey";
             columns: ["client_id"];
             isOneToOne: false;
-            referencedRelation: "client";
+            referencedRelation: "finance_client";
             referencedColumns: ["id"];
           },
           {
@@ -227,7 +227,7 @@ export type Database = {
             foreignKeyName: "finance_project_adjustment_client_id_fkey";
             columns: ["client_id"];
             isOneToOne: false;
-            referencedRelation: "client";
+            referencedRelation: "finance_client";
             referencedColumns: ["id"];
           },
           {

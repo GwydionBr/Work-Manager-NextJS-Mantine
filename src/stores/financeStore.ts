@@ -11,7 +11,7 @@ interface FinanceStoreState {
   futureSingleCashFlows: Tables<"single_cash_flow">[];
   recurringCashFlows: Tables<"recurring_cash_flow">[];
   financeCategories: Tables<"finance_category">[];
-  financeClients: Tables<"client">[];
+  financeClients: Tables<"finance_client">[];
   financeProjects: FinanceProject[];
   financeRules: FinanceRule[];
   isFetching: boolean;
@@ -22,11 +22,11 @@ interface FinanceStoreActions {
   resetStore: () => void;
   fetchFinanceData: () => Promise<void>;
   addFinanceClient: (
-    client: TablesInsert<"client">
-  ) => Promise<Tables<"client"> | null>;
+    client: TablesInsert<"finance_client">
+  ) => Promise<Tables<"finance_client"> | null>;
   updateFinanceClient: (
-    client: TablesUpdate<"client">
-  ) => Promise<Tables<"client"> | null>;
+    client: TablesUpdate<"finance_client">
+  ) => Promise<Tables<"finance_client"> | null>;
   deleteFinanceClients: (ids: string[]) => Promise<boolean>;
   addFinanceProject: (
     project: TablesInsert<"finance_project">

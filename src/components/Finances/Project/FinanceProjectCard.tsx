@@ -1,16 +1,16 @@
 "use client";
 
-import { useDisclosure, useHover } from "@mantine/hooks";
+import { useDisclosure, useClickOutside } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useFinanceStore } from "@/stores/financeStore";
 
-import { Card, Group, Stack, Text } from "@mantine/core";
+import { Card, Collapse, Group, HoverCard, Stack, Text } from "@mantine/core";
 
 import { FinanceProject } from "@/types/finance.types";
 import { formatDate, formatMoney } from "@/utils/formatFunctions";
-import AddActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import FinanceAdjustmentForm from "./FinanceAdjustmentForm";
 import FinanceAdjustmentRow from "./FinanceAdjustmentRow";
+import FinanceClientCard from "../FinanceClient/FinanceClientCard";
 
 interface FinanceProjectCardProps {
   project: FinanceProject;
@@ -21,15 +21,24 @@ export default function FinanceProjectCard({
 }: FinanceProjectCardProps) {
   const { locale } = useSettingsStore();
   const { financeCategories, financeClients } = useFinanceStore();
-  const { hovered, ref } = useHover();
   const [
     isAdjustmentFormOpen,
     { open: openAdjustmentForm, close: closeAdjustmentForm },
   ] = useDisclosure(false);
-
+  const ref = useClickOutside(() => {
+    closeAdjustmentForm();
+  });
   const totalAmount = project.adjustments.reduce(
     (acc, adjustment) => acc + adjustment.amount,
     project.start_amount
+  );
+
+  const financeClient = financeClients.find(
+    (client) => client.id === project.client_id
+  );
+
+  const financeCategory = financeCategories.find(
+    (category) => category.id === project.finance_category_id
   );
 
   return (
@@ -41,6 +50,10 @@ export default function FinanceProjectCard({
       maw={800}
       shadow="md"
       w="100%"
+      style={{ cursor: "pointer" }}
+      onClick={() => {
+        openAdjustmentForm();
+      }}
       ref={ref}
     >
       <Stack>
@@ -67,22 +80,23 @@ export default function FinanceProjectCard({
           </Group>
           <Stack>
             <Text c="dimmed" size="xs">
-              {
-                financeCategories.find(
-                  (category) => category.id === project.finance_category_id
-                )?.title
-              }
+              {financeCategory?.title}
             </Text>
-            <Group>
-              <Text> {locale === "de-DE" ? "Kunde" : "Client"}: </Text>
-              <Text c="dimmed" size="xs">
-                {
-                  financeClients.find(
-                    (client) => client.id === project.client_id
-                  )?.name
-                }
-              </Text>
-            </Group>
+            {financeClient && (
+              <HoverCard>
+                <HoverCard.Target>
+                  <Group>
+                    <Text> {locale === "de-DE" ? "Kunde" : "Client"}: </Text>
+                    <Text c="dimmed" size="xs">
+                      {financeClient?.name}
+                    </Text>
+                  </Group>
+                </HoverCard.Target>
+                <HoverCard.Dropdown>
+                  <FinanceClientCard client={financeClient!} />
+                </HoverCard.Dropdown>
+              </HoverCard>
+            )}
           </Stack>
         </Group>
         <Group align="flex-start">
@@ -100,15 +114,12 @@ export default function FinanceProjectCard({
           </Stack>
         </Group>
         <Group justify="center">
-          {hovered && !isAdjustmentFormOpen && (
-            <AddActionIcon onClick={openAdjustmentForm} />
-          )}
-          {isAdjustmentFormOpen && (
+          <Collapse in={isAdjustmentFormOpen}>
             <FinanceAdjustmentForm
               onClose={closeAdjustmentForm}
               projectId={project.id}
             />
-          )}
+          </Collapse>
         </Group>
       </Stack>
     </Card>

@@ -5,15 +5,15 @@ import { ApiResponseSingle } from "@/types/action.types";
 import { TablesUpdate } from "@/types/db.types";
 
 export async function updateFinanceClient(
-  client: TablesUpdate<"client">
-): Promise<ApiResponseSingle<"client">> {
+  client: TablesUpdate<"finance_client">
+): Promise<ApiResponseSingle<"finance_client">> {
   if (!client.id) {
     return { success: false, data: null, error: "Client id is required" };
   }
 
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("client")
+    .from("finance_client")
     .update(client)
     .eq("id", client.id)
     .select()

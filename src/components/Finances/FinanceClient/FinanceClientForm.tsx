@@ -30,8 +30,8 @@ const schema = z.object({
 
 interface FinanceClientFormProps {
   onClose: () => void;
-  onSuccess?: (client: Tables<"client">) => void;
-  client?: Tables<"client">;
+  onSuccess?: (client: Tables<"finance_client">) => void;
+  client?: Tables<"finance_client">;
 }
 
 export default function FinanceClientForm({
@@ -56,7 +56,7 @@ export default function FinanceClientForm({
 
   async function handleSubmit(values: z.infer<typeof schema>) {
     setIsLoading(true);
-    let currentClient: Tables<"client"> | null = null;
+    let currentClient: Tables<"finance_client"> | null = null;
     if (client) {
       const response = await updateFinanceClient({
         ...client,

@@ -23,7 +23,7 @@ export type TableNames =
   | "payout"
   | "task"
   | "appointment"
-  | "client"
+  | "finance_client"
   | "finance_project"
   | "finance_project_adjustment";
 

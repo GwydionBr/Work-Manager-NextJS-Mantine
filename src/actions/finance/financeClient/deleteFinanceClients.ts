@@ -7,7 +7,7 @@ export async function deleteFinanceClients(
   ids: string[]
 ): Promise<SimpleResponse> {
   const supabase = await createClient();
-  const { error } = await supabase.from("client").delete().in("id", ids);
+  const { error } = await supabase.from("finance_client").delete().in("id", ids);
 
   if (error) {
     return { success: false, data: null, error: error.message };
