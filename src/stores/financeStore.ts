@@ -53,6 +53,13 @@ interface FinanceStoreActions {
   ) => Promise<boolean>;
   deleteSingleCashFlow: (id: string) => Promise<boolean>;
   deleteRecurringCashFlow: (id: string) => Promise<boolean>;
+  addFinanceAdjustment: (
+    adjustment: TablesInsert<"finance_project_adjustment">
+  ) => Promise<Tables<"finance_project_adjustment"> | null>;
+  updateFinanceAdjustment: (
+    adjustment: TablesUpdate<"finance_project_adjustment">
+  ) => Promise<Tables<"finance_project_adjustment"> | null>;
+  deleteFinanceAdjustments: (ids: string[]) => Promise<boolean>;
   addFinanceCategory: (
     category: TablesInsert<"finance_category">
   ) => Promise<Tables<"finance_category"> | null>;
@@ -142,7 +149,7 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
       if (!newClient.success) return null;
 
       const newClients = [...financeClients, newClient.data];
-      
+
       set({
         financeClients: newClients,
       });
@@ -433,6 +440,61 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
 
       set({
         financeCategories: updatedFinanceCategories,
+      });
+      return true;
+    },
+
+    async addFinanceAdjustment(adjustment) {
+      const { financeProjects } = get();
+      const newAdjustment = await actions.createFinanceAdjustment(adjustment);
+      if (!newAdjustment.success) return null;
+
+      const newFinanceProjects = [
+        ...financeProjects.map((p) =>
+          p.id === adjustment.finance_project_id
+            ? {
+                ...p,
+                adjustments: [...p.adjustments, newAdjustment.data],
+              }
+            : p
+        ),
+      ];
+      set({
+        financeProjects: newFinanceProjects,
+      });
+      return newAdjustment.data;
+    },
+
+    async updateFinanceAdjustment(adjustment) {
+      const { financeProjects } = get();
+      const updatedAdjustment =
+        await actions.updateFinanceAdjustment(adjustment);
+      if (!updatedAdjustment.success) return null;
+
+      const updatedFinanceProjects = financeProjects.map((p) =>
+        p.id === adjustment.finance_project_id
+          ? { ...p, adjustments: [...p.adjustments, updatedAdjustment.data] }
+          : p
+      );
+
+      set({
+        financeProjects: updatedFinanceProjects,
+      });
+      return updatedAdjustment.data;
+    },
+
+    async deleteFinanceAdjustments(ids) {
+      const { financeProjects } = get();
+      const deleted = await actions.deleteFinanceAdjustments(ids);
+      if (!deleted.success) return false;
+
+      const updatedFinanceProjects = financeProjects.map((p) => ({
+        ...p,
+        adjustments: p.adjustments.filter((a) => !ids.includes(a.id)),
+      }));
+
+      set({
+        financeProjects: updatedFinanceProjects,
       });
       return true;
     },

@@ -211,7 +211,7 @@ export type Database = {
           description?: string | null;
           finance_project_id: string;
           id?: string;
-          user_id: string;
+          user_id?: string;
         };
         Update: {
           amount?: number;

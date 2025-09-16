@@ -3,14 +3,17 @@
 import { useForm } from "@mantine/form";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useFinanceStore } from "@/stores/financeStore";
-import { Tables } from "@/types/db.types";
 import { z } from "zod";
-import { Group, Select, Stack } from "@mantine/core";
+import { Box, Button, Group, NumberInput, Select } from "@mantine/core";
 import { TextInput } from "@mantine/core";
 import { zodResolver } from "mantine-form-zod-resolver";
+import { notifications } from "@mantine/notifications";
+import { IconCheck, IconX } from "@tabler/icons-react";
+import CreateButton from "@/components/UI/Buttons/CreateButton";
+import { useState } from "react";
 
 const schema = z.object({
-  amount: z.number().min(0, "Amount must be greater than 0"),
+  amount: z.number(),
   description: z.string().optional(),
   client_id: z.string().optional(),
 });
@@ -25,7 +28,8 @@ export default function FinanceAdjustmentForm({
   projectId,
 }: FinanceAdjustmentFormProps) {
   const { locale } = useSettingsStore();
-  const { financeClients } = useFinanceStore();
+  const { financeClients, addFinanceAdjustment } = useFinanceStore();
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm({
     initialValues: {
       amount: 0,
@@ -34,8 +38,41 @@ export default function FinanceAdjustmentForm({
     },
     validate: zodResolver(schema),
   });
-  const handleSubmit = (values: z.infer<typeof schema>) => {
-    console.log(values);
+  const handleSubmit = async (values: z.infer<typeof schema>) => {
+    setIsLoading(true);
+    const response = await addFinanceAdjustment({
+      ...values,
+      finance_project_id: projectId,
+    });
+    if (response) {
+      notifications.show({
+        title: locale === "de-DE" ? "Erfolg" : "Success",
+        message:
+          locale === "de-DE"
+            ? "Anpassung erfolgreich erstellt"
+            : "Adjustment created successfully",
+        icon: <IconCheck />,
+        color: "green",
+        autoClose: 4000,
+        withBorder: true,
+        position: "top-center",
+      });
+      onClose();
+    } else {
+      notifications.show({
+        title: locale === "de-DE" ? "Fehler" : "Error",
+        message:
+          locale === "de-DE"
+            ? "Anpassung konnte nicht erstellt werden"
+            : "Adjustment could not be created",
+        icon: <IconX />,
+        color: "red",
+        autoClose: 4000,
+        withBorder: true,
+        position: "top-center",
+      });
+    }
+    setIsLoading(false);
   };
 
   const clientOptions = financeClients.map((client) => ({
@@ -46,10 +83,12 @@ export default function FinanceAdjustmentForm({
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <Group>
-        <TextInput
+        <NumberInput
           withAsterisk
+          allowLeadingZeros={false}
           label={locale === "de-DE" ? "Betrag" : "Amount"}
           {...form.getInputProps("amount")}
+          data-autofocus
         />
         <TextInput
           label={locale === "de-DE" ? "Beschreibung" : "Description"}
@@ -60,6 +99,12 @@ export default function FinanceAdjustmentForm({
           {...form.getInputProps("client_id")}
           data={clientOptions}
         />
+        <Box>
+          <CreateButton
+            onClick={form.onSubmit(handleSubmit)}
+            loading={isLoading}
+          />
+        </Box>
       </Group>
     </form>
   );
