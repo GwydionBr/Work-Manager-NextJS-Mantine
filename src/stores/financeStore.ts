@@ -11,7 +11,7 @@ interface FinanceStoreState {
   futureSingleCashFlows: Tables<"single_cash_flow">[];
   recurringCashFlows: Tables<"recurring_cash_flow">[];
   financeCategories: Tables<"finance_category">[];
-  clients: Tables<"client">[];
+  financeClients: Tables<"client">[];
   financeProjects: FinanceProject[];
   financeRules: FinanceRule[];
   isFetching: boolean;
@@ -27,7 +27,7 @@ interface FinanceStoreActions {
   updateFinanceClient: (
     client: TablesUpdate<"client">
   ) => Promise<Tables<"client"> | null>;
-  deleteFinanceClient: (id: string) => Promise<boolean>;
+  deleteFinanceClients: (ids: string[]) => Promise<boolean>;
   addFinanceProject: (
     project: TablesInsert<"finance_project">
   ) => Promise<Tables<"finance_project"> | null>;
@@ -68,7 +68,7 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
     futureSingleCashFlows: [],
     recurringCashFlows: [],
     financeCategories: [],
-    clients: [],
+    financeClients: [],
     financeRules: [],
     financeProjects: [],
     isFetching: true,
@@ -80,7 +80,7 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
         futureSingleCashFlows: [],
         recurringCashFlows: [],
         financeCategories: [],
-        clients: [],
+        financeClients: [],
         financeRules: [],
         isFetching: true,
         lastFetch: null,
@@ -91,7 +91,7 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
         singleCashFlows,
         recurringCashFlows,
         financeCategories,
-        clients,
+        financeClients,
         financeProjects,
       ] = await Promise.all([
         actions.getAllSingleCashFlows(),
@@ -101,14 +101,11 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
         actions.getAllFinanceProjects(),
       ]);
 
-      console.log(financeProjects);
-      console.log(clients);
-
       if (
         !singleCashFlows.success ||
         !recurringCashFlows.success ||
         !financeCategories.success ||
-        !clients.success ||
+        !financeClients.success ||
         !financeProjects.success
       ) {
         return;
@@ -130,7 +127,7 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
         futureSingleCashFlows: futureFlows,
         recurringCashFlows: recurringCashFlows.data,
         financeCategories: financeCategories.data,
-        clients: clients.data,
+        financeClients: financeClients.data,
         financeProjects: financeProjects.data,
         isFetching: false,
         lastFetch: new Date(),
@@ -138,41 +135,41 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
     },
 
     async addFinanceClient(client) {
-      const { clients } = get();
+      const { financeClients } = get();
       const newClient = await actions.createFinanceClient(client);
       if (!newClient.success) return null;
 
-      const newClients = [...clients, newClient.data];
+      const newClients = [...financeClients, newClient.data];
       set({
-        clients: newClients,
+        financeClients: newClients,
       });
 
       return newClient.data;
     },
 
     async updateFinanceClient(client) {
-      const { clients } = get();
+      const { financeClients } = get();
       const updatedClient = await actions.updateFinanceClient(client);
       if (!updatedClient.success) return null;
 
-      const updatedClients = clients.map((c) =>
+      const updatedClients = financeClients.map((c) =>
         c.id === client.id ? updatedClient.data : c
       );
       set({
-        clients: updatedClients,
+        financeClients: updatedClients,
       });
 
       return updatedClient.data;
     },
 
-    async deleteFinanceClient(id) {
-      const { clients } = get();
-      const deleted = await actions.deleteFinanceClient(id);
+    async deleteFinanceClients(ids) {
+      const { financeClients } = get();
+      const deleted = await actions.deleteFinanceClients(ids);
       if (!deleted.success) return false;
 
-      const updatedClients = clients.filter((c) => c.id !== id);
+      const updatedClients = financeClients.filter((c) => !ids.includes(c.id));
       set({
-        clients: updatedClients,
+        financeClients: updatedClients,
       });
 
       return true;

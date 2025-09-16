@@ -64,10 +64,10 @@ export { deleteSingleCashFlow } from "./finance/singleCashflow/deleteSingleCashF
 export { createMultipleSingleCashFlows } from "./finance/singleCashflow/createMultipleSingleCashFlows";
 export { updateMultipleSingleCashFlows } from "./finance/singleCashflow/updateMultipleSingleCashFlows";
 
-export { getAllFinanceClients } from "./finance/client/getAllFinanceClients";
-export { createFinanceClient } from "./finance/client/createFinanceClient";
-export { updateFinanceClient } from "./finance/client/updateFinanceClient";
-export { deleteFinanceClient } from "./finance/client/deleteFinanceClient";
+export { getAllFinanceClients } from "./finance/financeClient/getAllFinanceClients";
+export { createFinanceClient } from "./finance/financeClient/createFinanceClient";
+export { updateFinanceClient } from "./finance/financeClient/updateFinanceClient";
+export { deleteFinanceClients } from "./finance/financeClient/deleteFinanceClients";
 
 export { getAllFinanceProjects } from "./finance/financeProject/getAllFinanceProjects";
 export { createFinanceProject } from "./finance/financeProject/createFinanceProject";

@@ -1,13 +1,11 @@
 "use client";
 
-import { useHover, useDisclosure } from "@mantine/hooks";
+import { useHover } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
   Card,
   Group,
-  Modal,
-  Popover,
   Box,
   Stack,
   Text,
@@ -18,8 +16,6 @@ import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import React from "react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import PencilActionIcon from "@/components/UI/ActionIcons/PencilActionIcon";
-import FinanceCategoryForm from "@/components/Finances/Form/FinanceCategoryForm";
-import { IconPencil } from "@tabler/icons-react";
 
 interface FinanceClientRowProps {
   client: Tables<"client">;
@@ -38,10 +34,6 @@ export default function FinanceClientRow({
 }: FinanceClientRowProps) {
   const { hovered, ref } = useHover();
   const { locale } = useSettingsStore();
-  const [
-    isCategoryFormOpen,
-    { open: openCategoryForm, close: closeCategoryForm },
-  ] = useDisclosure(false);
 
   return (
     <Card
@@ -51,7 +43,7 @@ export default function FinanceClientRow({
           : "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
       }
       withBorder
-      key={category.id}
+      key={client.id}
       radius="md"
       p="md"
       shadow="md"
@@ -78,8 +70,8 @@ export default function FinanceClientRow({
                   onClick={() => {}}
                   tooltipLabel={
                     locale === "de-DE"
-                      ? "Kategorie auswählen"
-                      : "Select category"
+                      ? "Kunde auswählen"
+                      : "Select client"
                   }
                   selected={isSelected}
                   style={styles}
@@ -94,10 +86,10 @@ export default function FinanceClientRow({
             style={{ transition: "margin 0.2s ease" }}
           >
             <Text fz="sm" fw={500}>
-              {category.title}
+              {client.name}
             </Text>
             <Text fz="xs" c="dimmed">
-              {category.description}
+              {client.description}
             </Text>
           </Stack>
         </Group>
@@ -110,28 +102,13 @@ export default function FinanceClientRow({
         >
           {(styles) => (
             <Group style={styles}>
-              <PencilActionIcon onClick={openCategoryForm} />
+              <PencilActionIcon onClick={() => {}} />
 
-              <DeleteActionIcon onClick={() => onDelete([category.id])} />
+              <DeleteActionIcon onClick={() => onDelete([client.id])} />
             </Group>
           )}
         </Transition>
       </Group>
-      <Modal
-        opened={isCategoryFormOpen}
-        onClose={closeCategoryForm}
-        title={
-          <Group>
-            <IconPencil />
-            <Text>
-              {locale === "de-DE" ? "Kategorie bearbeiten" : "Edit category"}
-            </Text>
-          </Group>
-        }
-        centered
-      >
-        <FinanceCategoryForm onClose={closeCategoryForm} category={category} />
-      </Modal>
     </Card>
   );
 }
