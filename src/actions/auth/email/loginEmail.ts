@@ -4,7 +4,6 @@ import { createClient } from "@/utils/supabase/server";
 
 interface AuthFormData {
   email: string;
-  name: string;
   password: string;
   terms: boolean;
 }

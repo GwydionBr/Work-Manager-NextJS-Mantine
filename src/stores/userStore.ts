@@ -153,6 +153,7 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
 
   updateProfile: async (profile) => {
     const response = await actions.updateProfile({ profile });
+    console.log(response);
     if (response.success) {
       set({ profile: response.data });
       return true;

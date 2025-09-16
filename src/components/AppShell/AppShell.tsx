@@ -18,10 +18,10 @@ import { notifications } from "@mantine/notifications";
 
 import { AppShell, Burger, Button, Group, Stack, Text } from "@mantine/core";
 import { IconInfoCircle, IconRefresh } from "@tabler/icons-react";
-
 import { DatesProvider } from "@mantine/dates";
 import Navbar from "@/components/Navbar/Navbar";
 import Aside from "./Aside";
+import InitializeProfile from "@/components/Account/InitializeProfile";
 
 import classes from "./AppShell.module.css";
 
@@ -127,6 +127,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const fetchData = async () => {
       let priorityFetch = FetchPriority.Settings;
       // Prioritized fetching based on current route
+      if (shouldFetch(lastUserFetch)) {
+        await fetchUserData();
+      }
       if (shouldFetch(lastSettingsFetch)) {
         await fetchSettings();
       }
@@ -149,22 +152,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       } else if (pathname.startsWith("/group") && shouldFetch(lastGroupFetch)) {
         priorityFetch = FetchPriority.Group;
         await fetchGroupData();
-      } else if (
-        pathname.startsWith("/account") &&
-        shouldFetch(lastUserFetch)
-      ) {
-        priorityFetch = FetchPriority.User;
-        await fetchUserData();
       }
 
       // Background fetching for other data
       const backgroundFetch = () => {
-        if (
-          priorityFetch !== FetchPriority.User &&
-          shouldFetch(lastUserFetch)
-        ) {
-          fetchUserData();
-        }
         if (
           priorityFetch !== FetchPriority.Finance &&
           shouldFetch(lastFinanceFetch)
@@ -208,6 +199,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   function toggleAside() {
     setIsAsideOpen(!isAsideOpen);
+  }
+
+  if (profile && !profile.initialized) {
+    return <InitializeProfile />;
   }
 
   return (

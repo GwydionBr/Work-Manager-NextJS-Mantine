@@ -5,6 +5,19 @@ import {
   Locale,
 } from "@/types/settings.types";
 
+export const locales = [
+  {
+    value: "en-US",
+    label: "English",
+    flag: "US",
+  },
+  {
+    value: "de-DE",
+    label: "Deutsch",
+    flag: "DE",
+  },
+];
+
 export const currencies: { value: Currency; label: string }[] = [
   { value: "USD", label: "$ (US Dollar)" },
   { value: "EUR", label: "€ (Euro)" },

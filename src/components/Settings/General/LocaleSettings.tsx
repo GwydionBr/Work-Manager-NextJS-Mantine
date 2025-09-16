@@ -6,19 +6,7 @@ import { Group, Select, Switch, Text } from "@mantine/core";
 
 import { Locale } from "@/types/settings.types";
 import ReactCountryFlag from "react-country-flag";
-
-const locales = [
-  {
-    value: "en-US",
-    label: "English",
-    flag: "US",
-  },
-  {
-    value: "de-DE",
-    label: "German",
-    flag: "DE",
-  },
-] as const;
+import { locales } from "@/constants/settings";
 
 export default function LocaleSettings() {
   const { locale, setLocale, format24h, setFormat24h } = useSettingsStore();

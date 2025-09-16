@@ -83,6 +83,39 @@ export type Database = {
           },
         ];
       };
+      client: {
+        Row: {
+          address: string | null;
+          created_at: string;
+          currency: Database["public"]["Enums"]["currency"] | null;
+          description: string | null;
+          email: string | null;
+          id: string;
+          name: string;
+          tel_number: string | null;
+        };
+        Insert: {
+          address?: string | null;
+          created_at?: string;
+          currency?: Database["public"]["Enums"]["currency"] | null;
+          description?: string | null;
+          email?: string | null;
+          id?: string;
+          name: string;
+          tel_number?: string | null;
+        };
+        Update: {
+          address?: string | null;
+          created_at?: string;
+          currency?: Database["public"]["Enums"]["currency"] | null;
+          description?: string | null;
+          email?: string | null;
+          id?: string;
+          name?: string;
+          tel_number?: string | null;
+        };
+        Relationships: [];
+      };
       finance_category: {
         Row: {
           created_at: string;
@@ -106,6 +139,79 @@ export type Database = {
           user_id?: string;
         };
         Relationships: [];
+      };
+      finance_project: {
+        Row: {
+          client_id: string | null;
+          created_at: string;
+          currency: Database["public"]["Enums"]["currency"];
+          due_date: string | null;
+          id: string;
+          start_amount: number;
+          user_id: string;
+        };
+        Insert: {
+          client_id?: string | null;
+          created_at?: string;
+          currency: Database["public"]["Enums"]["currency"];
+          due_date?: string | null;
+          id?: string;
+          start_amount: number;
+          user_id?: string;
+        };
+        Update: {
+          client_id?: string | null;
+          created_at?: string;
+          currency?: Database["public"]["Enums"]["currency"];
+          due_date?: string | null;
+          id?: string;
+          start_amount?: number;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "finance_project_client_id_fkey";
+            columns: ["client_id"];
+            isOneToOne: false;
+            referencedRelation: "client";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      finance_project_adjustment: {
+        Row: {
+          amount: number;
+          client_id: string | null;
+          created_at: string;
+          description: string | null;
+          id: string;
+          user_id: string;
+        };
+        Insert: {
+          amount: number;
+          client_id?: string | null;
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          user_id: string;
+        };
+        Update: {
+          amount?: number;
+          client_id?: string | null;
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "finance_project_adjustment_client_id_fkey";
+            columns: ["client_id"];
+            isOneToOne: false;
+            referencedRelation: "client";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       finance_rule: {
         Row: {
@@ -503,6 +609,7 @@ export type Database = {
           email: string;
           full_name: string | null;
           id: string;
+          initialized: boolean;
           updated_at: string | null;
           username: string;
           website: string | null;
@@ -513,6 +620,7 @@ export type Database = {
           email?: string;
           full_name?: string | null;
           id: string;
+          initialized?: boolean;
           updated_at?: string | null;
           username?: string;
           website?: string | null;
@@ -523,6 +631,7 @@ export type Database = {
           email?: string;
           full_name?: string | null;
           id?: string;
+          initialized?: boolean;
           updated_at?: string | null;
           username?: string;
           website?: string | null;

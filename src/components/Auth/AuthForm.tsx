@@ -71,7 +71,6 @@ export default function AuthenticationForm({
   const form = useForm({
     initialValues: {
       email: "",
-      name: "",
       password: "",
       confirmPassword: "",
       terms: false,
@@ -113,18 +112,6 @@ export default function AuthenticationForm({
       <Divider label="Or continue with email" labelPosition="center" my="lg" />
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack>
-          {type === "register" && (
-            <TextInput
-              label="Name"
-              placeholder="Your name"
-              value={form.values.name}
-              onChange={(event) =>
-                form.setFieldValue("name", event.currentTarget.value)
-              }
-              radius="md"
-              size="md"
-            />
-          )}
           <TextInput
             required
             label="Email"
