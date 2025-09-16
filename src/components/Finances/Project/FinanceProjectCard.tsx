@@ -97,16 +97,18 @@ export default function FinanceProjectCard({
                 currency={project.currency}
               />
             ))}
-            {hovered && !isAdjustmentFormOpen && (
-              <AddActionIcon onClick={openAdjustmentForm} />
-            )}
-            {isAdjustmentFormOpen && (
-              <FinanceAdjustmentForm
-                onClose={closeAdjustmentForm}
-                projectId={project.id}
-              />
-            )}
           </Stack>
+        </Group>
+        <Group justify="center">
+          {hovered && !isAdjustmentFormOpen && (
+            <AddActionIcon onClick={openAdjustmentForm} />
+          )}
+          {isAdjustmentFormOpen && (
+            <FinanceAdjustmentForm
+              onClose={closeAdjustmentForm}
+              projectId={project.id}
+            />
+          )}
         </Group>
       </Stack>
     </Card>

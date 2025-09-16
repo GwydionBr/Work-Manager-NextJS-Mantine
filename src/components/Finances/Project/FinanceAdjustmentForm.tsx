@@ -99,7 +99,7 @@ export default function FinanceAdjustmentForm({
           {...form.getInputProps("client_id")}
           data={clientOptions}
         />
-        <Box>
+        <Box mt="lg">
           <CreateButton
             onClick={form.onSubmit(handleSubmit)}
             loading={isLoading}

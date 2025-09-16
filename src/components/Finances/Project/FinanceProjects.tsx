@@ -4,11 +4,11 @@ import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Stack } from "@mantine/core";
-import AddActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
+import { ActionIcon, Stack } from "@mantine/core";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import FinanceProjectFormModal from "./FinanceProjectFormModal";
 import FinanceProjectCard from "./FinanceProjectCard";
+import { IconMoneybagPlus } from "@tabler/icons-react";
 
 export default function FinanceProjects() {
   const { financeProjects } = useFinanceStore();
@@ -26,7 +26,17 @@ export default function FinanceProjects() {
             : "Add Finance Project"
         }
       >
-        <AddActionIcon onClick={toggleAddProjectModal} />
+        <DelayedTooltip
+          label={
+            locale === "de-DE"
+              ? "Finanz Projekt hinzufügen"
+              : "Add Finance Project"
+          }
+        >
+          <ActionIcon onClick={toggleAddProjectModal} variant="subtle">
+            <IconMoneybagPlus />
+          </ActionIcon>
+        </DelayedTooltip>
       </DelayedTooltip>
       <Stack w="100%" align="center">
         {financeProjects.map((project) => (
