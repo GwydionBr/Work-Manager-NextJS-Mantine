@@ -1,8 +1,6 @@
 "use client";
 
-import { Box, Button } from "@mantine/core";
-
-import classes from "./Navbar.module.css";
+import { Button, Stack } from "@mantine/core";
 
 interface SettingsNavbarItem {
   title: string;
@@ -16,12 +14,27 @@ interface SettingsNavbarProps {
 
 export default function SettingsNavbar({ items }: SettingsNavbarProps) {
   return (
-    <Box className={classes.settingsNavbarContainer}>
+    <Stack
+      h="70vh"
+      gap="xs"
+      justify="flex-start"
+      align="flex-start"
+      style={{
+        borderRight:
+          "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+      }}
+    >
       {items.map((item) => (
-        <Button key={item.title} onClick={item.onClick} variant="subtle">
+        <Button
+          key={item.title}
+          leftSection={item.icon}
+          onClick={item.onClick}
+          variant="subtle"
+          w="100%"
+        >
           {item.title}
         </Button>
       ))}
-    </Box>
+    </Stack>
   );
 }

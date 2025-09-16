@@ -21,6 +21,7 @@ import { useCallback, useMemo, useState } from "react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
+import { IconCategory } from "@tabler/icons-react";
 
 export default function FinanceCategorySettings() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -168,9 +169,20 @@ export default function FinanceCategorySettings() {
               <FinanceCategoryForm onClose={closeCategoryForm} />
             </Popover.Dropdown>
           </Popover>
-          <Text fw={500} mb="md">
-            {locale === "de-DE" ? "Alle Kategorien" : "All Categories"}
-          </Text>
+          <Group
+            align="center"
+            gap="xs"
+            mb="md"
+            style={{
+              borderBottom:
+                "1px solid light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-3))",
+            }}
+          >
+            <IconCategory size={20} />
+            <Text fw={500} fz="lg">
+              {locale === "de-DE" ? "Finanz Kategorien" : "Finance Categories"}
+            </Text>
+          </Group>
           <SelectActionIcon
             disabled={isFetching || financeCategories.length === 0}
             tooltipLabel={

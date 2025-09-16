@@ -8,11 +8,14 @@ import SettingsNavbar from "@/components/Navbar/SettingsNavbar";
 import FinanceCategorySettings from "./FinanceCategory/FinanceCategorySettings";
 import FinanceRuleSettings from "./FinanceRuleSettings";
 import FinanceDefaultSettings from "./FinanceDefaultSettings";
+import FinanceClientSettings from "./FinanceClient/FinanceClientSettings";
+import { IconCategory, IconUsers } from "@tabler/icons-react";
 
 enum FinanceSettingType {
   DEFAULT = "default",
   CATEGORIES = "categories",
   RULES = "rules",
+  CLIENTS = "clients",
 }
 
 export default function FinanceSettings() {
@@ -23,7 +26,11 @@ export default function FinanceSettings() {
 
   return (
     <Grid align="flex-start" h="100%" w="100%">
-      <Grid.Col span={{ base: 4, sm: 3, lg: 2 }}>
+      <Grid.Col
+        span={{ base: 4, sm: 3, lg: 2 }}
+        h="100%"
+        style={{ position: "sticky", top: 60, zIndex: 100 }}
+      >
         <SettingsNavbar
           items={[
             {
@@ -32,12 +39,18 @@ export default function FinanceSettings() {
             },
             {
               title: locale === "de-DE" ? "Kategorien" : "Categories",
+              icon: <IconCategory size={20} />,
               onClick: () => setActiveSetting(FinanceSettingType.CATEGORIES),
             },
             {
-              title: locale === "de-DE" ? "Regeln" : "Rules",
-              onClick: () => setActiveSetting(FinanceSettingType.RULES),
+              title: locale === "de-DE" ? "Kunden" : "Clients",
+              icon: <IconUsers size={20} />,
+              onClick: () => setActiveSetting(FinanceSettingType.CLIENTS),
             },
+            // {
+            //   title: locale === "de-DE" ? "Regeln" : "Rules",
+            //   onClick: () => setActiveSetting(FinanceSettingType.RULES),
+            // },
           ]}
         />
       </Grid.Col>
@@ -48,9 +61,10 @@ export default function FinanceSettings() {
         {activeSetting === FinanceSettingType.CATEGORIES && (
           <FinanceCategorySettings />
         )}
-        {activeSetting === FinanceSettingType.RULES && (
-          <FinanceRuleSettings />
+        {activeSetting === FinanceSettingType.CLIENTS && (
+          <FinanceClientSettings />
         )}
+        {activeSetting === FinanceSettingType.RULES && <FinanceRuleSettings />}
       </Grid.Col>
     </Grid>
   );

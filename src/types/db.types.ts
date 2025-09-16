@@ -152,6 +152,7 @@ export type Database = {
           finance_category_id: string | null;
           id: string;
           start_amount: number;
+          title: string;
           user_id: string;
         };
         Insert: {
@@ -162,6 +163,7 @@ export type Database = {
           finance_category_id?: string | null;
           id?: string;
           start_amount: number;
+          title: string;
           user_id?: string;
         };
         Update: {
@@ -172,6 +174,7 @@ export type Database = {
           finance_category_id?: string | null;
           id?: string;
           start_amount?: number;
+          title?: string;
           user_id?: string;
         };
         Relationships: [

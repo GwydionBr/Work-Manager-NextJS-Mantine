@@ -101,6 +101,9 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
         actions.getAllFinanceProjects(),
       ]);
 
+      console.log(financeProjects);
+      console.log(clients);
+
       if (
         !singleCashFlows.success ||
         !recurringCashFlows.success ||
