@@ -3,19 +3,13 @@
 import { useHover } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import {
-  Card,
-  Group,
-  Box,
-  Stack,
-  Text,
-  Transition,
-} from "@mantine/core";
+import { Card, Group, Box, Stack, Text, Transition } from "@mantine/core";
 import { Tables } from "@/types/db.types";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import React from "react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import PencilActionIcon from "@/components/UI/ActionIcons/PencilActionIcon";
+import { getCurrencySymbol } from "@/utils/formatFunctions";
 
 interface FinanceClientRowProps {
   client: Tables<"client">;
@@ -69,9 +63,7 @@ export default function FinanceClientRow({
                 <SelectActionIcon
                   onClick={() => {}}
                   tooltipLabel={
-                    locale === "de-DE"
-                      ? "Kunde auswählen"
-                      : "Select client"
+                    locale === "de-DE" ? "Kunde auswählen" : "Select client"
                   }
                   selected={isSelected}
                   style={styles}
@@ -85,12 +77,36 @@ export default function FinanceClientRow({
             ml={selectedModeActive ? 40 : 0}
             style={{ transition: "margin 0.2s ease" }}
           >
-            <Text fz="sm" fw={500}>
-              {client.name}
-            </Text>
-            <Text fz="xs" c="dimmed">
-              {client.description}
-            </Text>
+            <Group>
+              <Text fz="sm" fw={500}>
+                {client.name}
+              </Text>
+              {client.currency && (
+                <Text fz="xs" c="dimmed">
+                  {getCurrencySymbol(client.currency)}
+                </Text>
+              )}
+            </Group>
+            {client.description && (
+              <Text fz="xs" c="dimmed">
+                {client.description}
+              </Text>
+            )}
+            {client.email && (
+              <Text fz="xs" c="dimmed">
+                {client.email}
+              </Text>
+            )}
+            {client.phone && (
+              <Text fz="xs" c="dimmed">
+                {client.phone}
+              </Text>
+            )}
+            {client.address && (
+              <Text fz="xs" c="dimmed">
+                {client.address}
+              </Text>
+            )}
           </Stack>
         </Group>
         <Transition
