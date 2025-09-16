@@ -73,6 +73,10 @@ export { getAllFinanceProjects } from "./finance/financeProject/getAllFinancePro
 export { createFinanceProject } from "./finance/financeProject/createFinanceProject";
 export { deleteFinanceProject } from "./finance/financeProject/deleteFinanceProject";
 
+export { createFinanceAdjustment } from "./finance/financeAdjustment/createfinanceAdjustment";
+export { updateFinanceAdjustment } from "./finance/financeAdjustment/updateFinanceAdjustment";
+export { deleteFinanceAdjustments } from "./finance/financeAdjustment/deletefinanceAdjustments";
+
 export {
   getAllRecurringCashFlows,
   createRecurringCashFlow,

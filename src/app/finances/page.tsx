@@ -3,7 +3,7 @@
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Loader, ScrollArea } from "@mantine/core";
+import { Center, Loader, ScrollArea } from "@mantine/core";
 import FinancesTab from "@/components/Finances/FinancesTab";
 import Header from "@/components/Header/Header";
 
@@ -14,7 +14,13 @@ export default function FinancesPage() {
   return (
     <ScrollArea px="xl" h="100vh" type="scroll">
       <Header headerTitle={locale === "de-DE" ? "Finanzen" : "Finances"} />
-      {isFetching ? <Loader /> : <FinancesTab />}
+      {isFetching ? (
+        <Center>
+          <Loader />
+        </Center>
+      ) : (
+        <FinancesTab />
+      )}
     </ScrollArea>
   );
 }
