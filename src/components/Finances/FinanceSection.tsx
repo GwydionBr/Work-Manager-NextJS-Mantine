@@ -1,6 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFinanceStore } from "@/stores/financeStore";
 
 import {
   Container,
@@ -13,6 +16,7 @@ import {
   alpha,
   Card,
   Grid,
+  Group,
 } from "@mantine/core";
 import { formatDistanceToNow } from "date-fns";
 import { enUS, de } from "date-fns/locale";
@@ -21,6 +25,7 @@ import { Tables } from "@/types/db.types";
 
 import classes from "./Finances.module.css";
 import { formatMoney } from "@/utils/formatFunctions";
+import EditCashFlowDrawer from "@/components/Finances/EditCashFlowDrawer";
 
 interface FinanceSectionProps {
   title: string;
@@ -34,6 +39,18 @@ export default function FinanceSection({
   isFetching,
 }: FinanceSectionProps) {
   const { locale } = useSettingsStore();
+  const { financeCategories } = useFinanceStore();
+  const [selectedCashFlow, setSelectedCashFlow] =
+    useState<Tables<"single_cash_flow"> | null>(null);
+  const [
+    editCashFlowOpened,
+    { open: openEditCashFlow, close: closeEditCashFlow },
+  ] = useDisclosure(false);
+  useEffect(() => {
+    if (cashFlows.length > 0) {
+      setSelectedCashFlow(cashFlows[0]);
+    }
+  }, [cashFlows]);
   // Sort cash flows by date (most recent first) and take only the 4 most recent ones
   const recentCashFlows = [...cashFlows]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -75,23 +92,50 @@ export default function FinanceSection({
                 bg={backgroundColor}
                 radius="md"
                 p="xs"
+                onClick={() => {
+                  setSelectedCashFlow(cashFlow);
+                  openEditCashFlow();
+                }}
+                style={{ cursor: "pointer" }}
               >
+                <Group justify="center">
+                  <Text size="sm" fw={700}>
+                    {
+                      financeCategories.find(
+                        (category) => category.id === cashFlow.category_id
+                      )?.title
+                    }
+                  </Text>
+                </Group>
                 <Grid gutter="xs" align="center">
-                  <Grid.Col span={6}>
+                  <Grid.Col span={7}>
                     <Text p="xs" fz={12}>
                       {cashFlow.title}
                     </Text>
                   </Grid.Col>
-                  <Grid.Col span={6}>
-                    <Text p="xs" ta="right">
-                      {formatMoney(cashFlow.amount, cashFlow.currency, locale)}
-                    </Text>
+                  <Grid.Col span={5}>
+                    <Group justify="flex-end">
+                      <Text p="xs">
+                        {formatMoney(
+                          cashFlow.amount,
+                          cashFlow.currency,
+                          locale
+                        )}
+                      </Text>
+                    </Group>
                   </Grid.Col>
                 </Grid>
               </Card>
             </Box>
           ))}
         </ScrollArea>
+      )}
+      {selectedCashFlow && (
+        <EditCashFlowDrawer
+          cashFlow={selectedCashFlow}
+          opened={editCashFlowOpened}
+          onClose={closeEditCashFlow}
+        />
       )}
     </Container>
   );

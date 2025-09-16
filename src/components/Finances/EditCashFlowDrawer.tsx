@@ -11,17 +11,18 @@ import {
   Flex,
   SegmentedControl,
   Select,
-  Tooltip,
+  Group,
+  Text,
+  useDrawersStack,
 } from "@mantine/core";
 import SingleCashFlowForm from "@/components/Finances/Form/SingleFinanceForm";
 import RecurringCashFlowForm from "@/components/Finances/Form/RecurringFinanceForm";
-import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
 import UpdateRecurringCashFlowsModal from "@/components/Finances/Recurring/UpdateRecurringCashFlowsModal";
 
 import { Tables } from "@/types/db.types";
-import { IconMinus, IconPlus } from "@tabler/icons-react";
+import { IconMinus, IconPlus, IconCashMove } from "@tabler/icons-react";
 import { CashFlowType } from "@/types/settings.types";
 
 // Type guard to distinguish between single and recurring cash flows
@@ -33,11 +34,14 @@ function isSingleCashFlow(
 
 export default function EditCashFlowButton({
   cashFlow,
+  opened,
+  onClose,
 }: {
   cashFlow: Tables<"single_cash_flow"> | Tables<"recurring_cash_flow">;
+  opened: boolean;
+  onClose: () => void;
 }) {
   const { locale } = useSettingsStore();
-  const [opened, { open, close }] = useDisclosure(false);
   const [isLoading, setIsLoading] = useState(false);
   const [type, setType] = useState<CashFlowType>(
     cashFlow.type === "income" ? "income" : "expense"
@@ -62,7 +66,7 @@ export default function EditCashFlowButton({
     deleteSingleCashFlow,
     deleteRecurringCashFlow,
   } = useFinanceStore();
-
+  const drawerStack = useDrawersStack(["edit-cash-flow", ]);
   async function handleSubmit(values: any) {
     setIsLoading(true);
     let success = false;
@@ -75,7 +79,7 @@ export default function EditCashFlowButton({
         ...values,
       });
       if (success) {
-        close();
+        onClose();
       }
     } else {
       // For recurring cash flows, check if any fields that affect single cash flows have changed
@@ -104,7 +108,7 @@ export default function EditCashFlowButton({
           ...values,
         });
         if (success) {
-          close();
+          onClose();
         }
       }
     }
@@ -120,7 +124,7 @@ export default function EditCashFlowButton({
     }
     if (success) {
       closeDeleteModal();
-      close();
+      onClose();
     }
   }
 
@@ -149,7 +153,7 @@ export default function EditCashFlowButton({
 
       if (singleSuccess) {
         closeUpdateModal();
-        close();
+        onClose();
       }
     }
 
@@ -163,7 +167,7 @@ export default function EditCashFlowButton({
     const success = await updateRecurringCashFlow(pendingValues);
     if (success) {
       closeUpdateModal();
-      close();
+      onClose();
     }
     setIsLoading(false);
   }
@@ -172,8 +176,15 @@ export default function EditCashFlowButton({
     <>
       <Drawer
         opened={opened}
-        onClose={close}
-        title={locale === "de-DE" ? "Cashflow bearbeiten" : "Edit Cash Flow"}
+        onClose={onClose}
+        title={
+          <Group>
+            <IconCashMove />
+            <Text>
+              {locale === "de-DE" ? "Cashflow bearbeiten" : "Edit Cash Flow"}
+            </Text>
+          </Group>
+        }
         size="md"
         padding="md"
       >
@@ -261,18 +272,6 @@ export default function EditCashFlowButton({
         onCancel={handleUpdateRecurringOnly}
         isLoading={isLoading}
       />
-
-      <Tooltip
-        label={locale === "de-DE" ? "Cashflow bearbeiten" : "Edit cash flow"}
-      >
-        <EditActionIcon
-          aria-label={
-            locale === "de-DE" ? "Cashflow bearbeiten" : "Edit cash flow"
-          }
-          onClick={open}
-          size="sm"
-        />
-      </Tooltip>
     </>
   );
 }

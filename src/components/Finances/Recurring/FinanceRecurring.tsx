@@ -1,5 +1,6 @@
 "use client";
 
+import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -15,15 +16,19 @@ import {
 } from "@mantine/core";
 
 import classes from "./FinanceRecurring.module.css";
-import EditCashFlowButton from "../EditCashFlowButton";
+import EditCashFlowButton from "../EditCashFlowDrawer";
 import NewCashFlowButton from "../NewCashFlowButton";
 import { formatDate, formatMoney } from "@/utils/formatFunctions";
 import { FinanceInterval } from "@/types/settings.types";
-
+import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
+  
 export default function FinanceRecurring() {
   const { recurringCashFlows } = useFinanceStore();
   const { locale, defaultFinanceCurrency } = useSettingsStore();
-
+  const [
+    editCashFlowOpened,
+    { open: openEditCashFlow, close: closeEditCashFlow },
+  ] = useDisclosure(false);
   // Filter active and completed recurring cash flows
   const today = new Date();
   const activeCashFlows = recurringCashFlows.filter((cashFlow) => {
@@ -181,7 +186,12 @@ export default function FinanceRecurring() {
                 </Table.Td>
               )}
               <Table.Td>
-                <EditCashFlowButton cashFlow={cashFlow} />
+                <EditActionIcon onClick={openEditCashFlow} />
+                <EditCashFlowButton
+                  cashFlow={cashFlow}
+                  opened={editCashFlowOpened}
+                  onClose={closeEditCashFlow}
+                />
               </Table.Td>
             </Table.Tr>
           ))}

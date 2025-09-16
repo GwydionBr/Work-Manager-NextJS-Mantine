@@ -1,19 +1,28 @@
 "use client";
 
+import { useState } from "react";
+import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Box, Table, alpha } from "@mantine/core";
-import EditCashFlowButton from "../EditCashFlowButton";
+import EditCashFlowDrawer from "../EditCashFlowDrawer";
 import NewCashFlowButton from "../NewCashFlowButton";
+import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
 
 import classes from "./FinanceSingle.module.css";
 import { formatDate, formatMoney } from "@/utils/formatFunctions";
+import { Tables } from "@/types/db.types";
 
 export default function FinanceSingle() {
   const { singleCashFlows, financeCategories } = useFinanceStore();
   const { locale } = useSettingsStore();
-
+  const [
+    editCashFlowOpened,
+    { open: openEditCashFlow, close: closeEditCashFlow },
+  ] = useDisclosure(false);
+  const [selectedCashFlow, setSelectedCashFlow] =
+    useState<Tables<"single_cash_flow"> | null>(singleCashFlows[0] ?? null);
   const sortedSingleCashFlows = singleCashFlows.sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
@@ -64,13 +73,25 @@ export default function FinanceSingle() {
                   }
                 </Table.Td>
                 <Table.Td>
-                  <EditCashFlowButton cashFlow={cashFlow} />
+                  <EditActionIcon
+                    onClick={() => {
+                      setSelectedCashFlow(cashFlow);
+                      openEditCashFlow();
+                    }}
+                  />
                 </Table.Td>
               </Table.Tr>
             );
           })}
         </Table.Tbody>
       </Table>
+      {selectedCashFlow && (
+        <EditCashFlowDrawer
+          cashFlow={selectedCashFlow}
+          opened={editCashFlowOpened}
+          onClose={closeEditCashFlow}
+        />
+      )}
     </Box>
   );
 }
