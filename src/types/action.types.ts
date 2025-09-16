@@ -22,8 +22,10 @@ export type TableNames =
   | "timer_project_folder"
   | "payout"
   | "task"
-  | "appointment";
-
+  | "appointment"
+  | "client"
+  | "finance_project"
+  | "finance_project_adjustment";
 
 // Response after an error occurs
 export interface ErrorResponse {

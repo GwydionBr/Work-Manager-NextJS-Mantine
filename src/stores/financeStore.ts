@@ -4,13 +4,15 @@ import { create } from "zustand";
 import * as actions from "@/actions";
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { processRecurringCashFlows } from "@/utils/financeHelperFunction";
-import { FinanceRule } from "@/types/finance.types";
+import { FinanceProject, FinanceRule } from "@/types/finance.types";
 
 interface FinanceStoreState {
   singleCashFlows: Tables<"single_cash_flow">[];
   futureSingleCashFlows: Tables<"single_cash_flow">[];
   recurringCashFlows: Tables<"recurring_cash_flow">[];
   financeCategories: Tables<"finance_category">[];
+  clients: Tables<"client">[];
+  financeProjects: FinanceProject[];
   financeRules: FinanceRule[];
   isFetching: boolean;
   lastFetch: Date | null;
@@ -19,6 +21,17 @@ interface FinanceStoreState {
 interface FinanceStoreActions {
   resetStore: () => void;
   fetchFinanceData: () => Promise<void>;
+  addFinanceClient: (
+    client: TablesInsert<"client">
+  ) => Promise<Tables<"client"> | null>;
+  updateFinanceClient: (
+    client: TablesUpdate<"client">
+  ) => Promise<Tables<"client"> | null>;
+  deleteFinanceClient: (id: string) => Promise<boolean>;
+  addFinanceProject: (
+    project: TablesInsert<"finance_project">
+  ) => Promise<Tables<"finance_project"> | null>;
+  deleteFinanceProject: (id: string) => Promise<boolean>;
   addSingleCashFlow: (
     singleCashFlow: TablesInsert<"single_cash_flow">
   ) => Promise<boolean>;
@@ -55,7 +68,9 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
     futureSingleCashFlows: [],
     recurringCashFlows: [],
     financeCategories: [],
+    clients: [],
     financeRules: [],
+    financeProjects: [],
     isFetching: true,
     lastFetch: null,
 
@@ -65,22 +80,33 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
         futureSingleCashFlows: [],
         recurringCashFlows: [],
         financeCategories: [],
+        clients: [],
         financeRules: [],
         isFetching: true,
         lastFetch: null,
+        financeProjects: [],
       }),
     async fetchFinanceData() {
-      const [singleCashFlows, recurringCashFlows, financeCategories] =
-        await Promise.all([
-          actions.getAllSingleCashFlows(),
-          actions.getAllRecurringCashFlows(),
-          actions.getAllFinanceCategories(),
-        ]);
+      const [
+        singleCashFlows,
+        recurringCashFlows,
+        financeCategories,
+        clients,
+        financeProjects,
+      ] = await Promise.all([
+        actions.getAllSingleCashFlows(),
+        actions.getAllRecurringCashFlows(),
+        actions.getAllFinanceCategories(),
+        actions.getAllFinanceClients(),
+        actions.getAllFinanceProjects(),
+      ]);
 
       if (
         !singleCashFlows.success ||
         !recurringCashFlows.success ||
-        !financeCategories.success
+        !financeCategories.success ||
+        !clients.success ||
+        !financeProjects.success
       ) {
         return;
       }
@@ -101,9 +127,81 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
         futureSingleCashFlows: futureFlows,
         recurringCashFlows: recurringCashFlows.data,
         financeCategories: financeCategories.data,
+        clients: clients.data,
+        financeProjects: financeProjects.data,
         isFetching: false,
         lastFetch: new Date(),
       });
+    },
+
+    async addFinanceClient(client) {
+      const { clients } = get();
+      const newClient = await actions.createFinanceClient(client);
+      if (!newClient.success) return null;
+
+      const newClients = [...clients, newClient.data];
+      set({
+        clients: newClients,
+      });
+
+      return newClient.data;
+    },
+
+    async updateFinanceClient(client) {
+      const { clients } = get();
+      const updatedClient = await actions.updateFinanceClient(client);
+      if (!updatedClient.success) return null;
+
+      const updatedClients = clients.map((c) =>
+        c.id === client.id ? updatedClient.data : c
+      );
+      set({
+        clients: updatedClients,
+      });
+
+      return updatedClient.data;
+    },
+
+    async deleteFinanceClient(id) {
+      const { clients } = get();
+      const deleted = await actions.deleteFinanceClient(id);
+      if (!deleted.success) return false;
+
+      const updatedClients = clients.filter((c) => c.id !== id);
+      set({
+        clients: updatedClients,
+      });
+
+      return true;
+    },
+
+    async addFinanceProject(project) {
+      const { financeProjects } = get();
+      const newProject = await actions.createFinanceProject(project);
+      if (!newProject.success) return null;
+
+      const newFinanceProjects = [
+        ...financeProjects,
+        { ...newProject.data, adjustments: [] },
+      ];
+      set({
+        financeProjects: newFinanceProjects,
+      });
+
+      return newProject.data;
+    },
+
+    async deleteFinanceProject(id) {
+      const { financeProjects } = get();
+      const deleted = await actions.deleteFinanceProject(id);
+      if (!deleted.success) return false;
+
+      const updatedFinanceProjects = financeProjects.filter((p) => p.id !== id);
+      set({
+        financeProjects: updatedFinanceProjects,
+      });
+
+      return true;
     },
 
     async addSingleCashFlow(singleCashFlow) {

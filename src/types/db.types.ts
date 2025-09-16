@@ -93,6 +93,7 @@ export type Database = {
           id: string;
           name: string;
           tel_number: string | null;
+          user_id: string;
         };
         Insert: {
           address?: string | null;
@@ -103,6 +104,7 @@ export type Database = {
           id?: string;
           name: string;
           tel_number?: string | null;
+          user_id?: string;
         };
         Update: {
           address?: string | null;
@@ -113,6 +115,7 @@ export type Database = {
           id?: string;
           name?: string;
           tel_number?: string | null;
+          user_id?: string;
         };
         Relationships: [];
       };
@@ -146,6 +149,7 @@ export type Database = {
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
           due_date: string | null;
+          finance_category_id: string | null;
           id: string;
           start_amount: number;
           user_id: string;
@@ -155,6 +159,7 @@ export type Database = {
           created_at?: string;
           currency: Database["public"]["Enums"]["currency"];
           due_date?: string | null;
+          finance_category_id?: string | null;
           id?: string;
           start_amount: number;
           user_id?: string;
@@ -164,6 +169,7 @@ export type Database = {
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           due_date?: string | null;
+          finance_category_id?: string | null;
           id?: string;
           start_amount?: number;
           user_id?: string;
@@ -176,6 +182,13 @@ export type Database = {
             referencedRelation: "client";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "finance_project_finance_category_id_fkey";
+            columns: ["finance_category_id"];
+            isOneToOne: false;
+            referencedRelation: "finance_category";
+            referencedColumns: ["id"];
+          },
         ];
       };
       finance_project_adjustment: {
@@ -184,6 +197,7 @@ export type Database = {
           client_id: string | null;
           created_at: string;
           description: string | null;
+          finance_project_id: string;
           id: string;
           user_id: string;
         };
@@ -192,6 +206,7 @@ export type Database = {
           client_id?: string | null;
           created_at?: string;
           description?: string | null;
+          finance_project_id: string;
           id?: string;
           user_id: string;
         };
@@ -200,6 +215,7 @@ export type Database = {
           client_id?: string | null;
           created_at?: string;
           description?: string | null;
+          finance_project_id?: string;
           id?: string;
           user_id?: string;
         };
@@ -209,6 +225,13 @@ export type Database = {
             columns: ["client_id"];
             isOneToOne: false;
             referencedRelation: "client";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "finance_project_adjustment_finance_project_id_fkey";
+            columns: ["finance_project_id"];
+            isOneToOne: false;
+            referencedRelation: "finance_project";
             referencedColumns: ["id"];
           },
         ];

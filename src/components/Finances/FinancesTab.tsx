@@ -8,10 +8,12 @@ import {
   IconReload,
   IconCircleDashedNumber1,
   IconMenuDeep,
+  IconBriefcase,
 } from "@tabler/icons-react";
 import FinanceOverview from "./Overview/FinanceOverview";
 import FinanceRecurring from "./Recurring/FinanceRecurring";
 import FinanceSingle from "./Single/FinanceSingle";
+import FinanceProjects from "./Project/FinanceProjects";
 
 export default function FinancesTab() {
   const { locale } = useSettingsStore();
@@ -30,13 +32,19 @@ export default function FinancesTab() {
   }
 
   return (
-    <Tabs defaultValue="Overview" w="100%">
+    <Tabs defaultValue="Projects" w="100%">
       <Tabs.List grow my="xl">
         <Tabs.Tab
           leftSection={<IconMenuDeep color="light-dark(blue, cyan)" />}
           value="Overview"
         >
           {locale === "de-DE" ? "Übersicht" : "Overview"}
+        </Tabs.Tab>
+        <Tabs.Tab
+          value="Projects"
+          leftSection={<IconBriefcase color="light-dark(blue, cyan)" />}
+        >
+          {locale === "de-DE" ? "Projekte" : "Projects"}
         </Tabs.Tab>
         <Tabs.Tab
           leftSection={
@@ -56,6 +64,9 @@ export default function FinancesTab() {
 
       <Tabs.Panel value="Overview">
         <FinanceOverview />
+      </Tabs.Panel>
+      <Tabs.Panel value="Projects">
+        <FinanceProjects />
       </Tabs.Panel>
       <Tabs.Panel value="Single">
         <FinanceSingle />

@@ -57,26 +57,35 @@ export { getSettings, updateSettings } from "./settings/settingsActions";
 
 // Finance Actions
 
-export { getAllSingleCashFlows } from "./finance/getAllSingleCashFlows";
-export { createSingleCashFlow } from "./finance/createSingleCashFlow";
-export { updateSingleCashFlow } from "./finance/updateSingleCashFlow";
-export { deleteSingleCashFlow } from "./finance/deleteSingleCashFlow";
-export { createMultipleSingleCashFlows } from "./finance/createMultipleSingleCashFlows";
-export { updateMultipleSingleCashFlows } from "./finance/updateMultipleSingleCashFlows";
+export { getAllSingleCashFlows } from "./finance/singleCashflow/getAllSingleCashFlows";
+export { createSingleCashFlow } from "./finance/singleCashflow/createSingleCashFlow";
+export { updateSingleCashFlow } from "./finance/singleCashflow/updateSingleCashFlow";
+export { deleteSingleCashFlow } from "./finance/singleCashflow/deleteSingleCashFlow";
+export { createMultipleSingleCashFlows } from "./finance/singleCashflow/createMultipleSingleCashFlows";
+export { updateMultipleSingleCashFlows } from "./finance/singleCashflow/updateMultipleSingleCashFlows";
+
+export { getAllFinanceClients } from "./finance/client/getAllFinanceClients";
+export { createFinanceClient } from "./finance/client/createFinanceClient";
+export { updateFinanceClient } from "./finance/client/updateFinanceClient";
+export { deleteFinanceClient } from "./finance/client/deleteFinanceClient";
+
+export { getAllFinanceProjects } from "./finance/financeProject/getAllFinanceProjects";
+export { createFinanceProject } from "./finance/financeProject/createFinanceProject";
+export { deleteFinanceProject } from "./finance/financeProject/deleteFinanceProject";
 
 export {
   getAllRecurringCashFlows,
   createRecurringCashFlow,
   updateRecurringCashFlow,
   deleteRecurringCashFlow,
-} from "./finance/recurringCashFlowActions";
+} from "./finance/recurringCashflow/recurringCashFlowActions";
 
 export {
   getAllFinanceCategories,
   createFinanceCategory,
   updateFinanceCategory,
   deleteFinanceCategories,
-} from "./finance/financeCategoryActions";
+} from "./finance/financeCategory/financeCategoryActions";
 
 // Group Actions
 
