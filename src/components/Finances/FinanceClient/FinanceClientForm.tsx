@@ -14,6 +14,8 @@ import UpdateButton from "@/components/UI/Buttons/UpdateButton";
 import { Tables } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
+import { IconCheck, IconX } from "@tabler/icons-react";
+import { notifications } from "@mantine/notifications";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -28,17 +30,18 @@ const schema = z.object({
 
 interface FinanceClientFormProps {
   onClose: () => void;
+  onSuccess?: (client: Tables<"client">) => void;
   client?: Tables<"client">;
 }
 
 export default function FinanceClientForm({
   onClose,
+  onSuccess,
   client,
 }: FinanceClientFormProps) {
   const { locale } = useSettingsStore();
-  const { addFinanceClient } = useFinanceStore();
+  const { addFinanceClient, updateFinanceClient } = useFinanceStore();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const form = useForm({
     initialValues: {
       name: client?.name || "",
@@ -53,20 +56,50 @@ export default function FinanceClientForm({
 
   async function handleSubmit(values: z.infer<typeof schema>) {
     setIsLoading(true);
-    const success = await addFinanceClient({
-      ...values,
-      currency: values.currency as Currency,
-    });
-    if (!success) {
-      setError(
-        locale === "de-DE"
-          ? "Fehler beim Hinzufügen des Kunden. Bitte versuchen Sie es erneut."
-          : "Failed to add finance client. Please try again."
-      );
-      setIsLoading(false);
+    let currentClient: Tables<"client"> | null = null;
+    if (client) {
+      const response = await updateFinanceClient({
+        ...client,
+        ...values,
+        currency: values.currency as Currency,
+      });
+      currentClient = response;
     } else {
-      setIsLoading(false);
+      const response = await addFinanceClient({
+        ...values,
+        currency: values.currency as Currency,
+      });
+      currentClient = response;
+    }
+    if (currentClient) {
+      form.reset();
       onClose();
+      onSuccess?.(currentClient);
+      notifications.show({
+        title: locale === "de-DE" ? "Erfolg" : "Success",
+        message:
+          locale === "de-DE"
+            ? `Kunde erfolgreich ${client ? "bearbeitet" : "erstellt"}`
+            : `Client ${client ? "edited" : "created"} successfully`,
+        icon: <IconCheck />,
+        color: "green",
+        autoClose: 4000,
+        withBorder: true,
+        position: "top-center",
+      });
+    } else {
+      notifications.show({
+        title: locale === "de-DE" ? "Fehler" : "Error",
+        message:
+          locale === "de-DE"
+            ? `Kunde konnte nicht ${client ? "bearbeitet" : "erstellt"} werden`
+            : `Client could not ${client ? "edited" : "created"}`,
+        icon: <IconX />,
+        color: "red",
+        autoClose: 4000,
+        position: "top-center",
+        withBorder: true,
+      });
     }
   }
 

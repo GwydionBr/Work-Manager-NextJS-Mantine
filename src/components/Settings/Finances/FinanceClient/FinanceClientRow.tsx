@@ -1,15 +1,17 @@
 "use client";
 
-import { useHover } from "@mantine/hooks";
+import { useHover, useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Card, Group, Box, Stack, Text, Transition } from "@mantine/core";
+import { Card, Group, Box, Stack, Text, Transition, Modal } from "@mantine/core";
 import { Tables } from "@/types/db.types";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import React from "react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import PencilActionIcon from "@/components/UI/ActionIcons/PencilActionIcon";
 import { getCurrencySymbol } from "@/utils/formatFunctions";
+import { IconPencil } from "@tabler/icons-react";
+import FinanceClientForm from "@/components/Finances/FinanceClient/FinanceClientForm";
 
 interface FinanceClientRowProps {
   client: Tables<"client">;
@@ -28,6 +30,8 @@ export default function FinanceClientRow({
 }: FinanceClientRowProps) {
   const { hovered, ref } = useHover();
   const { locale } = useSettingsStore();
+  const [isClientFormOpen, { open: openClientForm, close: closeClientForm }] =
+    useDisclosure(false);
 
   return (
     <Card
@@ -118,13 +122,25 @@ export default function FinanceClientRow({
         >
           {(styles) => (
             <Group style={styles}>
-              <PencilActionIcon onClick={() => {}} />
+              <PencilActionIcon onClick={openClientForm} />
 
               <DeleteActionIcon onClick={() => onDelete([client.id])} />
             </Group>
           )}
         </Transition>
       </Group>
+      <Modal
+        opened={isClientFormOpen}
+        onClose={closeClientForm}
+        title={<Group>
+          <IconPencil />
+          <Text>
+            {locale === "de-DE" ? "Kunde bearbeiten" : "Edit client"}
+          </Text>
+        </Group>}
+      >
+        <FinanceClientForm onClose={closeClientForm} client={client} />
+      </Modal>
     </Card>
   );
 }

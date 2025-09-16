@@ -157,12 +157,14 @@ export default function FinanceClientSettings() {
             withOverlay
             trapFocus
             returnFocus
-            title={<Group>
-              <IconUserPlus />
-              <Text>
-                {locale === "de-DE" ? "Kunde hinzufügen" : "Add Client"}
-              </Text>
-            </Group>}
+            title={
+              <Group>
+                <IconUserPlus />
+                <Text>
+                  {locale === "de-DE" ? "Kunde hinzufügen" : "Add Client"}
+                </Text>
+              </Group>
+            }
             size="md"
             padding="md"
           >

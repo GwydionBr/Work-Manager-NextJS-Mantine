@@ -71,14 +71,11 @@ export default function FinanceCategoryForm({
       onClose();
       onSuccess?.(currentCategory);
       notifications.show({
-        title:
-          locale === "de-DE"
-            ? "Kategorie erfolgreich erstellt"
-            : "Category created successfully",
+        title: locale === "de-DE" ? "Erfolg" : "Success",
         message:
           locale === "de-DE"
-            ? "Kategorie erfolgreich erstellt"
-            : "Category created successfully",
+            ? `Kategorie erfolgreich ${category ? "bearbeitet" : "erstellt"}`
+            : `Category ${category ? "edited" : "created"} successfully`,
         icon: <IconCheck />,
         color: "green",
         autoClose: 4000,
@@ -87,14 +84,11 @@ export default function FinanceCategoryForm({
       });
     } else {
       notifications.show({
-        title:
-          locale === "de-DE"
-            ? "Kategorie konnte nicht erstellt werden"
-            : "Category could not be created",
+        title: locale === "de-DE" ? "Fehler" : "Error",
         message:
           locale === "de-DE"
-            ? "Kategorie konnte nicht erstellt werden"
-            : "Category could not be created",
+            ? `Kategorie konnte nicht ${category ? "bearbeitet" : "erstellt"} werden`
+            : `Category could not ${category ? "edited" : "created"}`,
         icon: <IconX />,
         color: "red",
         autoClose: 4000,

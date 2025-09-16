@@ -136,10 +136,13 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
 
     async addFinanceClient(client) {
       const { financeClients } = get();
+
       const newClient = await actions.createFinanceClient(client);
+
       if (!newClient.success) return null;
 
       const newClients = [...financeClients, newClient.data];
+      
       set({
         financeClients: newClients,
       });
@@ -149,12 +152,15 @@ export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
 
     async updateFinanceClient(client) {
       const { financeClients } = get();
+
       const updatedClient = await actions.updateFinanceClient(client);
+
       if (!updatedClient.success) return null;
 
       const updatedClients = financeClients.map((c) =>
         c.id === client.id ? updatedClient.data : c
       );
+
       set({
         financeClients: updatedClients,
       });
