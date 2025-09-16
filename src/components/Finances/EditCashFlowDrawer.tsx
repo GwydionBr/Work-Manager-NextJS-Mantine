@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useDisclosure } from "@mantine/hooks";
+import { useState, useEffect } from "react";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -14,16 +13,24 @@ import {
   Group,
   Text,
   useDrawersStack,
+  Button,
+  Stack,
 } from "@mantine/core";
 import SingleCashFlowForm from "@/components/Finances/Form/SingleFinanceForm";
 import RecurringCashFlowForm from "@/components/Finances/Form/RecurringFinanceForm";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
-import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
-import UpdateRecurringCashFlowsModal from "@/components/Finances/Recurring/UpdateRecurringCashFlowsModal";
 
 import { Tables } from "@/types/db.types";
-import { IconMinus, IconPlus, IconCashMove } from "@tabler/icons-react";
+import {
+  IconMinus,
+  IconPlus,
+  IconCashMove,
+  IconAlertHexagonFilled,
+  IconAlertTriangle,
+} from "@tabler/icons-react";
 import { CashFlowType } from "@/types/settings.types";
+import CancelButton from "../UI/Buttons/CancelButton";
+import DeleteActionIcon from "../UI/ActionIcons/DeleteActionIcon";
 
 // Type guard to distinguish between single and recurring cash flows
 function isSingleCashFlow(
@@ -32,7 +39,7 @@ function isSingleCashFlow(
   return "date" in cashFlow && !("interval" in cashFlow);
 }
 
-export default function EditCashFlowButton({
+export default function EditCashFlowDrawer({
   cashFlow,
   opened,
   onClose,
@@ -49,14 +56,6 @@ export default function EditCashFlowButton({
   const [categoryId, setCategoryId] = useState<string | null>(
     cashFlow.category_id ?? null
   );
-  const [
-    deleteModalOpened,
-    { open: openDeleteModal, close: closeDeleteModal },
-  ] = useDisclosure(false);
-  const [
-    updateModalOpened,
-    { open: openUpdateModal, close: closeUpdateModal },
-  ] = useDisclosure(false);
   const [pendingValues, setPendingValues] = useState<any>(null);
   const {
     financeCategories,
@@ -66,7 +65,20 @@ export default function EditCashFlowButton({
     deleteSingleCashFlow,
     deleteRecurringCashFlow,
   } = useFinanceStore();
-  const drawerStack = useDrawersStack(["edit-cash-flow", ]);
+  const drawerStack = useDrawersStack([
+    "edit-cash-flow",
+    "delete-cash-flow",
+    "update-cash-flow",
+  ]);
+
+  useEffect(() => {
+    if (opened) {
+      drawerStack.open("edit-cash-flow");
+    } else {
+      drawerStack.closeAll();
+    }
+  }, [opened]);
+
   async function handleSubmit(values: any) {
     setIsLoading(true);
     let success = false;
@@ -98,7 +110,7 @@ export default function EditCashFlowButton({
           category_id: categoryId,
           ...values,
         });
-        openUpdateModal();
+        drawerStack.open("update-cash-flow");
       } else {
         // No changes that affect single cash flows, just update the recurring cash flow
         success = await updateRecurringCashFlow({
@@ -123,7 +135,6 @@ export default function EditCashFlowButton({
       success = await deleteRecurringCashFlow(cashFlow.id);
     }
     if (success) {
-      closeDeleteModal();
       onClose();
     }
   }
@@ -152,7 +163,7 @@ export default function EditCashFlowButton({
       );
 
       if (singleSuccess) {
-        closeUpdateModal();
+        drawerStack.close("update-cash-flow");
         onClose();
       }
     }
@@ -166,23 +177,28 @@ export default function EditCashFlowButton({
     setIsLoading(true);
     const success = await updateRecurringCashFlow(pendingValues);
     if (success) {
-      closeUpdateModal();
       onClose();
     }
     setIsLoading(false);
   }
 
   return (
-    <>
+    <Drawer.Stack>
       <Drawer
-        opened={opened}
+        {...drawerStack.register("edit-cash-flow")}
         onClose={onClose}
         title={
           <Group>
-            <IconCashMove />
+            <DeleteActionIcon
+              tooltipLabel={
+                locale === "de-DE" ? "Cashflow löschen" : "Delete Cash Flow"
+              }
+              onClick={() => drawerStack.open("delete-cash-flow")}
+            />
             <Text>
               {locale === "de-DE" ? "Cashflow bearbeiten" : "Edit Cash Flow"}
             </Text>
+            <IconCashMove />
           </Group>
         }
         size="md"
@@ -249,29 +265,78 @@ export default function EditCashFlowButton({
               cashFlow={cashFlow}
             />
           )}
-          <DeleteButton onClick={openDeleteModal} />
+          <CancelButton
+            onClick={onClose}
+            tooltipLabel={locale === "de-DE" ? "Abbrechen" : "Cancel"}
+          />
         </Flex>
       </Drawer>
 
-      <ConfirmDeleteModal
-        opened={deleteModalOpened}
-        onClose={closeDeleteModal}
-        onDelete={handleDelete}
-        title={locale === "de-DE" ? "Cashflow löschen" : "Delete Cash Flow"}
-        message={
-          locale === "de-DE"
-            ? "Sind Sie sicher, dass Sie diesen Cashflow löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
-            : "Are you sure you want to delete this cash flow? This action cannot be undone."
+      <Drawer
+        {...drawerStack.register("delete-cash-flow")}
+        onClose={() => drawerStack.close("delete-cash-flow")}
+        title={
+          <Group>
+            <IconAlertHexagonFilled size={25} color="red" />
+            <Text>
+              {locale === "de-DE" ? "Cashflow löschen" : "Delete Cash Flow"}
+            </Text>
+          </Group>
         }
-      />
+      >
+        <Text>
+          {locale === "de-DE"
+            ? "Sind Sie sicher, dass Sie diesen Cashflow löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+            : "Are you sure you want to delete this cash flow? This action cannot be undone."}
+        </Text>
+        <Group mt="md" justify="flex-end" gap="sm">
+          <CancelButton
+            onClick={() => drawerStack.close("delete-cash-flow")}
+            color="teal"
+          />
+          <DeleteButton onClick={handleDelete} />
+        </Group>
+      </Drawer>
 
-      <UpdateRecurringCashFlowsModal
-        opened={updateModalOpened}
-        onClose={closeUpdateModal}
-        onConfirm={handleUpdateAll}
-        onCancel={handleUpdateRecurringOnly}
-        isLoading={isLoading}
-      />
-    </>
+      <Drawer
+        {...drawerStack.register("update-cash-flow")}
+        onClose={() => drawerStack.close("update-cash-flow")}
+        title={
+          locale === "de-DE"
+            ? "Bestehende Cashflows aktualisieren"
+            : "Update Existing Cash Flows"
+        }
+      >
+        <Stack gap="md">
+          <Group gap="sm">
+            <IconAlertTriangle size={24} color="orange" />
+            <Text size="sm" c="dimmed">
+              {locale === "de-DE"
+                ? "Sie haben Änderungen an einem wiederkehrenden Cashflow vorgenommen. Möchten Sie alle bestehenden Einmalzahlungen, die aus diesem Wiederholungsmuster erstellt wurden, aktualisieren?"
+                : "You've made changes to a recurring cash flow. Would you like to update all existing single cash flows that were created from this recurring pattern?"}
+            </Text>
+          </Group>
+
+          <Text size="sm" c="dimmed">
+            {locale === "de-DE"
+              ? "Dies wird den Titel, den Betrag, die Währung und die Kategorie aller vergangenen und aktuellen Cashflows aktualisieren, die aus diesem Wiederholungsmuster generiert wurden. Zukünftige Cashflows werden automatisch die neuen Einstellungen verwenden."
+              : "This will update the title, amount, currency, and category of all past and current cash flows that were generated from this recurring pattern. Future cash flows will automatically use the new settings."}
+          </Text>
+
+          <Group justify="flex-end" gap="sm">
+            <Button
+              variant="outline"
+              onClick={handleUpdateRecurringOnly}
+              disabled={isLoading}
+            >
+              {locale === "de-DE" ? "Nein, beibehalten" : "No, keep existing"}
+            </Button>
+            <Button color="blue" onClick={handleUpdateAll} loading={isLoading}>
+              {locale === "de-DE" ? "Ja, aktualisieren" : "Yes, update all"}
+            </Button>
+          </Group>
+        </Stack>
+      </Drawer>
+    </Drawer.Stack>
   );
 }

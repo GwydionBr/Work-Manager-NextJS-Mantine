@@ -20,7 +20,7 @@ import {
 } from "@mantine/core";
 import { formatDistanceToNow } from "date-fns";
 import { enUS, de } from "date-fns/locale";
-
+import { IconCashMove, IconCashMoveBack } from "@tabler/icons-react";
 import { Tables } from "@/types/db.types";
 
 import classes from "./Finances.module.css";
@@ -58,14 +58,34 @@ export default function FinanceSection({
 
   const backgroundColor =
     title === "Income" || title === "Einnahmen"
-      ? alpha("var(--mantine-color-green-8)", 0.4)
-      : alpha("var(--mantine-color-red-8)", 0.4);
+      ? alpha("var(--mantine-color-green-8)", 0.3)
+      : alpha("var(--mantine-color-red-8)", 0.3);
+
+  const borderColor =
+    title === "Income" || title === "Einnahmen"
+      ? "var(--mantine-color-green-8)"
+      : "var(--mantine-color-red-8)";
 
   return (
     <Container className={classes.financeSection} bg={backgroundColor}>
-      <Text ta="center" fz="lg" p="xs" className={classes.financeSectionTitle}>
-        {title}
-      </Text>
+      <Group
+        p="xs"
+        justify="center"
+        align="center"
+        gap="xs"
+        style={{
+          borderBottom: `1px solid light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-1))`,
+        }}
+      >
+        {title === "Income" || title === "Einnahmen" ? (
+          <IconCashMove />
+        ) : (
+          <IconCashMoveBack />
+        )}
+        <Text ta="center" fz="lg" fw={700}>
+          {title}
+        </Text>
+      </Group>
       {isFetching ? (
         <Stack>
           <Skeleton height={30} mt="md" />
@@ -89,14 +109,16 @@ export default function FinanceSection({
                 my="xs"
                 withBorder
                 shadow="md"
-                bg={backgroundColor}
                 radius="md"
                 p="xs"
+                style={{
+                  border: `2px solid ${borderColor}`,
+                  cursor: "pointer",
+                }}
                 onClick={() => {
                   setSelectedCashFlow(cashFlow);
                   openEditCashFlow();
                 }}
-                style={{ cursor: "pointer" }}
               >
                 <Group justify="center">
                   <Text size="sm" fw={700}>

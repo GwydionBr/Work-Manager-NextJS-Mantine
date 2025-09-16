@@ -13,12 +13,6 @@
   flex-direction: column;
 }
 
-.financeSectionTitle {
-  width: 100%;
-  border-bottom: 1px solid
-    light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-2));
-}
-
 .cashFlowBox {
   display: flex;
   align-items: center;

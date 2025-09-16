@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
@@ -21,14 +22,23 @@ import NewCashFlowButton from "../NewCashFlowButton";
 import { formatDate, formatMoney } from "@/utils/formatFunctions";
 import { FinanceInterval } from "@/types/settings.types";
 import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
-  
+import { Tables } from "@/types/db.types";
+
 export default function FinanceRecurring() {
   const { recurringCashFlows } = useFinanceStore();
   const { locale, defaultFinanceCurrency } = useSettingsStore();
+  const [selectedCashFlow, setSelectedCashFlow] =
+    useState<Tables<"recurring_cash_flow"> | null>(null);
   const [
     editCashFlowOpened,
     { open: openEditCashFlow, close: closeEditCashFlow },
   ] = useDisclosure(false);
+
+  useEffect(() => {
+    if (recurringCashFlows.length > 0) {
+      setSelectedCashFlow(recurringCashFlows[0]);
+    }
+  }, [recurringCashFlows]);
   // Filter active and completed recurring cash flows
   const today = new Date();
   const activeCashFlows = recurringCashFlows.filter((cashFlow) => {
@@ -186,17 +196,24 @@ export default function FinanceRecurring() {
                 </Table.Td>
               )}
               <Table.Td>
-                <EditActionIcon onClick={openEditCashFlow} />
-                <EditCashFlowButton
-                  cashFlow={cashFlow}
-                  opened={editCashFlowOpened}
-                  onClose={closeEditCashFlow}
+                <EditActionIcon
+                  onClick={() => {
+                    setSelectedCashFlow(cashFlow);
+                    openEditCashFlow();
+                  }}
                 />
               </Table.Td>
             </Table.Tr>
           ))}
         </Table.Tbody>
       </Table>
+      {selectedCashFlow && (
+        <EditCashFlowButton
+          cashFlow={selectedCashFlow}
+          opened={editCashFlowOpened}
+          onClose={closeEditCashFlow}
+        />
+      )}
     </Box>
   );
 
