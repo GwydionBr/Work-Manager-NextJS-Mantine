@@ -1,11 +1,17 @@
 "use client";
 
-import { useDisclosure, useClickOutside } from "@mantine/hooks";
+import {
+  useDisclosure,
+  useClickOutside,
+  useHover,
+  mergeRefs,
+} from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useFinanceStore } from "@/stores/financeStore";
 
 import {
   Card,
+  CardProps,
   Collapse,
   Group,
   HoverCard,
@@ -26,7 +32,7 @@ import { IconArrowDown, IconSquareRoundedCheck } from "@tabler/icons-react";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 
-interface FinanceProjectCardProps {
+interface FinanceProjectCardProps extends CardProps {
   project: FinanceProject;
   selectedModeActive: boolean;
   isSelected: boolean;
@@ -40,6 +46,7 @@ export default function FinanceProjectCard({
   isSelected,
   onToggleSelected,
   onDelete,
+  ...props
 }: FinanceProjectCardProps) {
   const { locale } = useSettingsStore();
   const { financeCategories, financeClients } = useFinanceStore();
@@ -47,9 +54,11 @@ export default function FinanceProjectCard({
     isAdjustmentFormOpen,
     { open: openAdjustmentForm, close: closeAdjustmentForm },
   ] = useDisclosure(false);
+  const { hovered, ref: hoverRef } = useHover();
   const ref = useClickOutside(() => {
     closeAdjustmentForm();
   });
+  const mergedRef = mergeRefs(ref, hoverRef);
   const totalAmount = project.adjustments.reduce(
     (acc, adjustment) => acc + adjustment.amount,
     project.start_amount
@@ -68,15 +77,17 @@ export default function FinanceProjectCard({
       withBorder
       radius="lg"
       p="md"
+      w="100%"
       h="100%"
       bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
-      miw={400}
-      maw={800}
       shadow="md"
-      w="100%"
       style={{
         cursor: isAdjustmentFormOpen ? "default" : "pointer",
-        border: isSelected ? "2px solid var(--mantine-color-blue-5)" : "",
+        border: isSelected
+          ? "2px solid var(--mantine-color-blue-5)"
+          : hovered || isAdjustmentFormOpen
+            ? "1px solid light-dark(var(--mantine-color-blue-5), var(--mantine-color-blue-8))"
+            : "",
         flexDirection: "row",
         alignItems: "center",
       }}
@@ -87,7 +98,8 @@ export default function FinanceProjectCard({
           openAdjustmentForm();
         }
       }}
-      ref={ref}
+      ref={mergedRef}
+      {...props}
     >
       <Box w={0}>
         <Transition
@@ -165,7 +177,7 @@ export default function FinanceProjectCard({
               </Text>
             </Stack>
           </Group>
-          <Group align="flex-start" >
+          <Group align="flex-start">
             {project.adjustments.length > 0 && (
               <Text fw={600} c={project.start_amount > 0 ? "green" : "red"}>
                 {formatMoney(project.start_amount, project.currency, locale)}

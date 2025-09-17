@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useHover } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -17,22 +17,23 @@ import {
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import FinanceProjectFormModal from "./FinanceProjectFormModal";
 import FinanceProjectCard from "./FinanceProjectCard";
-import { IconMoneybagPlus } from "@tabler/icons-react";
+import {
+  IconCalendarEvent,
+  IconList,
+  IconMoneybagPlus,
+  IconSquareRoundedCheck,
+} from "@tabler/icons-react";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
-import FinanceProjectNavbar, {
-  FinanceProjectNavbarTab,
-} from "./FinanceProjectNavbar";
-import { formatDate } from "@/utils/formatFunctions";
+import FinanceProjectNavbar from "./FinanceProjectNavbar";
+import { formatDate, formatMoney } from "@/utils/formatFunctions";
 import { isToday } from "date-fns";
-
-export interface TotalAmounts {
-  totalAmount: number;
-  upcomingTotalAmount: number;
-  overdueTotalAmount: number;
-  paidTotalAmount: number;
-}
+import {
+  FinanceNavbarItem,
+  FinanceNavbarItems,
+  FinanceProjectNavbarTab,
+} from "@/types/finance.types";
 
 export default function FinanceProjects() {
   const { financeProjects, isFetching } = useFinanceStore();
@@ -53,7 +54,15 @@ export default function FinanceProjects() {
     FinanceProjectNavbarTab.All
   );
 
-  const totalAmounts = useMemo<TotalAmounts>(() => {
+  const navbarItems = useMemo<FinanceNavbarItems>(() => {
+    const items: FinanceNavbarItems = {
+      all: { totalAmount: 0, projectCount: 0 },
+      upcoming: { totalAmount: 0, projectCount: 0 },
+      overdue: { totalAmount: 0, projectCount: 0 },
+      paid: { totalAmount: 0, projectCount: 0 },
+    };
+
+    // All
     const totalAmount = financeProjects.reduce((acc, project) => {
       return (
         acc +
@@ -62,56 +71,76 @@ export default function FinanceProjects() {
         }, project.start_amount)
       );
     }, 0);
-    const upcomingTotalAmount = financeProjects
-      .filter((project) => {
-        return (
-          (project.due_date && project.due_date > new Date().toISOString()) ||
-          !project.due_date ||
-          isToday(new Date(project.due_date))
-        );
-      })
-      .reduce((acc, project) => {
-        return (
-          acc +
-          project.adjustments.reduce((acc, adjustment) => {
-            return acc + adjustment.amount;
-          }, project.start_amount)
-        );
-      }, 0);
-    const overdueTotalAmount = financeProjects
-      .filter((project) => {
-        return (
-          project.due_date &&
-          project.due_date < new Date().toISOString() &&
-          !isToday(new Date(project.due_date))
-        );
-      })
-      .reduce((acc, project) => {
+    items.all = { totalAmount, projectCount: financeProjects.length };
+
+    // Upcoming
+    const upcomingFilteredProjects = financeProjects.filter((project) => {
+      return (
+        (project.due_date && project.due_date > new Date().toISOString()) ||
+        !project.due_date ||
+        isToday(new Date(project.due_date))
+      );
+    });
+    const upcomingTotalAmount = upcomingFilteredProjects.reduce(
+      (acc, project) => {
         return (
           acc +
           project.adjustments.reduce((acc, adjustment) => {
             return acc + adjustment.amount;
           }, project.start_amount)
         );
-      }, 0);
-    const paidTotalAmount = financeProjects
-      .filter((project) => {
-        return project.paid;
-      })
-      .reduce((acc, project) => {
-        return (
-          acc +
-          project.adjustments.reduce((acc, adjustment) => {
-            return acc + adjustment.amount;
-          }, project.start_amount)
-        );
-      }, 0);
-    return {
-      totalAmount,
-      upcomingTotalAmount,
-      overdueTotalAmount,
-      paidTotalAmount,
+      },
+      0
+    );
+    items.upcoming = {
+      totalAmount: upcomingTotalAmount,
+      projectCount: upcomingFilteredProjects.length,
     };
+
+    // Overdue
+    const overdueFilteredProjects = financeProjects.filter((project) => {
+      return (
+        project.due_date &&
+        project.due_date < new Date().toISOString() &&
+        !isToday(new Date(project.due_date))
+      );
+    });
+
+    const overdueTotalAmount = overdueFilteredProjects.reduce(
+      (acc, project) => {
+        return (
+          acc +
+          project.adjustments.reduce((acc, adjustment) => {
+            return acc + adjustment.amount;
+          }, project.start_amount)
+        );
+      },
+      0
+    );
+    items.overdue = {
+      totalAmount: overdueTotalAmount,
+      projectCount: overdueFilteredProjects.length,
+    };
+
+    // Paid
+    const paidFilteredProjects = financeProjects.filter((project) => {
+      return project.paid;
+    });
+
+    const paidTotalAmount = paidFilteredProjects.reduce((acc, project) => {
+      return (
+        acc +
+        project.adjustments.reduce((acc, adjustment) => {
+          return acc + adjustment.amount;
+        }, project.start_amount)
+      );
+    }, 0);
+    items.paid = {
+      totalAmount: paidTotalAmount,
+      projectCount: paidFilteredProjects.length,
+    };
+
+    return items;
   }, [financeProjects]);
 
   const sortedFinanceProjects = useMemo(() => {
@@ -180,23 +209,19 @@ export default function FinanceProjects() {
     if (selectedFinanceProjects.length > 0) {
       setSelectedFinanceProjects([]);
     } else {
-      setSelectedFinanceProjects(financeProjects.map((c) => c.id));
+      setSelectedFinanceProjects(filteredFinanceProjects.map((c) => c.id));
     }
-  }, [financeProjects, selectedFinanceProjects]);
+  }, [filteredFinanceProjects, selectedFinanceProjects]);
 
   const onDelete = (ids: string[]) => {
     console.log(ids);
   };
 
   return (
-    <Group align="flex-start" w="100%">
-      <FinanceProjectNavbar
-        tab={tab}
-        setTab={setTab}
-        totalAmounts={totalAmounts}
-      />
-      <Stack w="100%" maw={800}>
-        <Group justify="space-between" w="100%" maw={800} px="md">
+    <Group align="flex-start" w="100%" wrap="nowrap" mb="xl">
+      <FinanceProjectNavbar tab={tab} setTab={setTab} items={navbarItems} />
+      <Stack w="100%" maw={900}>
+        <Group justify="space-between" w="100%" px="md">
           <Box w={20} />
           <DelayedTooltip
             label={
@@ -259,7 +284,11 @@ export default function FinanceProjects() {
                   <Divider
                     size="md"
                     label={
-                      <Text size="sm" fw={500}>
+                      <Text
+                        size="sm"
+                        fw={500}
+                        c="light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-4))"
+                      >
                         {project.due_date
                           ? formatDate(new Date(project.due_date), locale)
                           : locale === "de-DE"
@@ -270,15 +299,17 @@ export default function FinanceProjects() {
                     labelPosition="left"
                   />
                 )}
-                <FinanceProjectCard
-                  project={project}
-                  selectedModeActive={selectedModeActive}
-                  isSelected={selectedFinanceProjects.includes(project.id)}
-                  onToggleSelected={(e) =>
-                    toggleProjectSelection(project.id, index, e.shiftKey)
-                  }
-                  onDelete={onDelete}
-                />
+                <Box ml="xl">
+                  <FinanceProjectCard
+                    project={project}
+                    selectedModeActive={selectedModeActive}
+                    isSelected={selectedFinanceProjects.includes(project.id)}
+                    onToggleSelected={(e) =>
+                      toggleProjectSelection(project.id, index, e.shiftKey)
+                    }
+                    onDelete={onDelete}
+                  />
+                </Box>
               </Stack>
             ))}
           </Stack>
