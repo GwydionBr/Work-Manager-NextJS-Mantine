@@ -30,8 +30,13 @@ import Shortcut from "../UI/Shortcut";
 export default function ProjectNavbar() {
   const { isFetching, setActiveProjectId } = useWorkStore();
 
-  const { locale, setSelectedTab, setIsModalOpen, isNavbarOpen, toggleNavbar } =
-    useSettingsStore();
+  const {
+    locale,
+    setSelectedTab,
+    setIsModalOpen,
+    isWorkNavbarOpen,
+    toggleWorkNavbar,
+  } = useSettingsStore();
   const router = useRouter();
   const pathname = usePathname();
   const [isOverview, setIsOverview] = useState<boolean>(false);
@@ -40,13 +45,13 @@ export default function ProjectNavbar() {
     setIsOverview(pathname === "/work/overview");
   }, [pathname]);
 
-  useHotkeys([["mod + J", () => toggleNavbar()]]);
+  useHotkeys([["mod + J", () => toggleWorkNavbar()]]);
 
   return (
-    <Box className={classes.main} w={isNavbarOpen ? 250 : 60}>
+    <Box className={classes.main} w={isWorkNavbarOpen ? 250 : 60}>
       <Group className={classes.title} align="center" justify="space-between">
         <Transition
-          mounted={!isNavbarOpen}
+          mounted={!isWorkNavbarOpen}
           transition="fade"
           duration={200}
           enterDelay={200}
@@ -61,7 +66,7 @@ export default function ProjectNavbar() {
               }
             >
               <ActionIcon
-                onClick={() => toggleNavbar()}
+                onClick={() => toggleWorkNavbar()}
                 aria-label="Toggle navbar"
                 variant="light"
                 style={styles}
@@ -72,7 +77,7 @@ export default function ProjectNavbar() {
           )}
         </Transition>
         <Transition
-          mounted={isNavbarOpen}
+          mounted={isWorkNavbarOpen}
           transition="fade"
           duration={200}
           enterDelay={200}
@@ -86,7 +91,7 @@ export default function ProjectNavbar() {
         {!isFetching && (
           <>
             <Transition
-              mounted={isNavbarOpen}
+              mounted={isWorkNavbarOpen}
               transition="fade"
               duration={200}
               enterDelay={200}
@@ -112,7 +117,7 @@ export default function ProjectNavbar() {
               )}
             </Transition>
             <Transition
-              mounted={!isNavbarOpen}
+              mounted={!isWorkNavbarOpen}
               transition="fade"
               duration={200}
               enterDelay={200}
@@ -142,7 +147,7 @@ export default function ProjectNavbar() {
       </Group>
 
       <Transition
-        mounted={isNavbarOpen}
+        mounted={isWorkNavbarOpen}
         transition="fade"
         duration={200}
         enterDelay={200}
@@ -164,7 +169,7 @@ export default function ProjectNavbar() {
         )}
       </Transition>
       <Transition
-        mounted={isNavbarOpen}
+        mounted={isWorkNavbarOpen}
         transition="fade"
         duration={200}
         enterDelay={200}
@@ -185,7 +190,7 @@ export default function ProjectNavbar() {
       </Transition>
 
       <Transition
-        mounted={isNavbarOpen}
+        mounted={isWorkNavbarOpen}
         transition="fade"
         duration={200}
         enterDelay={200}
@@ -229,14 +234,14 @@ export default function ProjectNavbar() {
           }
         >
           <ActionIcon
-            onClick={() => toggleNavbar()}
+            onClick={() => toggleWorkNavbar()}
             aria-label="Toggle navbar"
             variant="light"
           >
             <IconArrowBarRight
               size={22}
               style={{
-                transform: isNavbarOpen ? "rotate(180deg)" : "none",
+                transform: isWorkNavbarOpen ? "rotate(180deg)" : "none",
                 transition: "transform 0.4s linear",
               }}
             />

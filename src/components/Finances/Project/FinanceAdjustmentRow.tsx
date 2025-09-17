@@ -19,10 +19,17 @@ export default function FinanceAdjustmentRow({
 }: FinanceAdjustmentRowProps) {
   const { locale } = useSettingsStore();
   const { financeClients } = useFinanceStore();
+  const isIncome = adjustment.amount > 0;
   return (
     <Group>
-      <IconArrowRight color="light-dark(var(--mantine-color-teal-6), var(--mantine-color-teal-4))" />
-      <Text c={adjustment.amount > 0 ? "green" : "red"}>
+      <IconArrowRight
+        color={
+          isIncome
+            ? "var(--mantine-color-green-6)"
+            : "var(--mantine-color-red-6)"
+        }
+      />
+      <Text c={isIncome ? "green" : "red"}>
         {formatMoney(adjustment.amount, currency, locale)}
       </Text>
       <Text>{adjustment.description}</Text>

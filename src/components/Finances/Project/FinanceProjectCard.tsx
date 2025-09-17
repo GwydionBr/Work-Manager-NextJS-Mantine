@@ -10,6 +10,7 @@ import {
   Group,
   HoverCard,
   Stack,
+  Button,
   Text,
   Box,
   Transition,
@@ -21,6 +22,9 @@ import FinanceAdjustmentForm from "./FinanceAdjustmentForm";
 import FinanceAdjustmentRow from "./FinanceAdjustmentRow";
 import FinanceClientCard from "../FinanceClient/FinanceClientCard";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
+import { IconArrowDown, IconSquareRoundedCheck } from "@tabler/icons-react";
+import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
+import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 
 interface FinanceProjectCardProps {
   project: FinanceProject;
@@ -62,6 +66,7 @@ export default function FinanceProjectCard({
   return (
     <Card
       withBorder
+      radius="lg"
       p="md"
       h="100%"
       miw={400}
@@ -69,8 +74,10 @@ export default function FinanceProjectCard({
       shadow="md"
       w="100%"
       style={{
-        cursor: "pointer",
-        border: isSelected ? "2px solid var(--mantine-color-blue-5)" : "none",
+        cursor: isAdjustmentFormOpen ? "default" : "pointer",
+        border: isSelected ? "2px solid var(--mantine-color-blue-5)" : "",
+        flexDirection: "row",
+        alignItems: "center",
       }}
       onClick={(e) => {
         if (selectedModeActive) {
@@ -81,29 +88,47 @@ export default function FinanceProjectCard({
       }}
       ref={ref}
     >
-      <Group gap={0} w="100%">
-        <Box w={0}>
-          <Transition
-            mounted={selectedModeActive}
-            transition="fade-right"
-            duration={200}
-          >
-            {(styles) => (
-              <SelectActionIcon
-                style={styles}
-                onClick={() => {
-                  onToggleSelected;
-                }}
-                selected={isSelected}
-              />
-            )}
-          </Transition>
-        </Box>
-        <Stack
-          ml={selectedModeActive ? 60 : 0}
-          style={{ transition: "margin 0.2s ease" }}
-          w="100%"
+      <Box w={0}>
+        <Transition
+          mounted={selectedModeActive}
+          transition="fade-right"
+          duration={200}
         >
+          {(styles) => (
+            <SelectActionIcon
+              style={styles}
+              onClick={() => {
+                onToggleSelected;
+              }}
+              selected={isSelected}
+            />
+          )}
+        </Transition>
+      </Box>
+      <Stack
+        ml={selectedModeActive ? 60 : 0}
+        style={{ transition: "margin 0.2s ease" }}
+        w="100%"
+        gap={0}
+      >
+        <Collapse in={isAdjustmentFormOpen}>
+          <Group
+            justify="space-between"
+            style={{
+              borderBottom:
+                "1px solid light-dark(var(--mantine-color-dark-5), var(--mantine-color-gray-6))",
+            }}
+            pb="xs"
+            mb="xs"
+          >
+            <PayoutActionIcon onClick={() => {}} />
+            <Button leftSection={<IconSquareRoundedCheck />} variant="outline">
+              {locale === "de-DE" ? "Bezahlt markieren" : "Mark as paid"}
+            </Button>
+            <DeleteActionIcon onClick={() => {}} />
+          </Group>
+        </Collapse>
+        <Stack>
           <Group justify="space-between">
             <Group>
               <Text c="dimmed" size="xs">
@@ -126,9 +151,6 @@ export default function FinanceProjectCard({
               </Text>
             </Group>
             <Stack>
-              <Text c="dimmed" size="xs">
-                {financeCategory?.title}
-              </Text>
               {financeClient && (
                 <HoverCard>
                   <HoverCard.Target>
@@ -144,32 +166,42 @@ export default function FinanceProjectCard({
                   </HoverCard.Dropdown>
                 </HoverCard>
               )}
+              <Text c="dimmed" size="xs">
+                {financeCategory?.title}
+              </Text>
             </Stack>
           </Group>
           <Group align="flex-start">
             <Text fw={600} c={project.start_amount > 0 ? "green" : "red"}>
               {formatMoney(project.start_amount, project.currency, locale)}
             </Text>
-            <Stack>
-              {project.adjustments.map((adjustment) => (
-                <FinanceAdjustmentRow
-                  key={adjustment.id}
-                  adjustment={adjustment}
-                  currency={project.currency}
-                />
-              ))}
+            <Stack gap={0}>
+              <Stack gap="xs">
+                {project.adjustments.map((adjustment) => (
+                  <FinanceAdjustmentRow
+                    key={adjustment.id}
+                    adjustment={adjustment}
+                    currency={project.currency}
+                  />
+                ))}
+              </Stack>
+              <Collapse in={isAdjustmentFormOpen}>
+                <Box mt="xs">
+                  <IconArrowDown color="light-dark(var(--mantine-color-teal-6), var(--mantine-color-teal-4))" />
+                </Box>
+              </Collapse>
             </Stack>
           </Group>
-          <Group justify="center">
-            <Collapse in={isAdjustmentFormOpen}>
-              <FinanceAdjustmentForm
-                onClose={closeAdjustmentForm}
-                projectId={project.id}
-              />
-            </Collapse>
-          </Group>
         </Stack>
-      </Group>
+        <Collapse in={isAdjustmentFormOpen}>
+          <Stack align="center">
+            <FinanceAdjustmentForm
+              onClose={closeAdjustmentForm}
+              projectId={project.id}
+            />
+          </Stack>
+        </Collapse>
+      </Stack>
     </Card>
   );
 }

@@ -33,7 +33,7 @@ export default function FinancesTab() {
 
   return (
     <Tabs defaultValue="Projects" w="100%">
-      <Tabs.List grow my="xl">
+      <Tabs.List grow mb="xl">
         <Tabs.Tab
           leftSection={
             <IconPresentationAnalytics color="light-dark(blue, cyan)" />

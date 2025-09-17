@@ -21,7 +21,8 @@ interface SettingsState {
   showCalendarTime: boolean;
   defaultGroupColor: string | null;
   isAsideOpen: boolean;
-  isNavbarOpen: boolean;
+  isWorkNavbarOpen: boolean;
+  isFinanceNavbarOpen: boolean;
   isFetching: boolean;
   lastFetch: Date | null;
   automaticlyStopOtherTimer: boolean;
@@ -34,7 +35,8 @@ interface SettingsActions {
   fetchSettings: () => Promise<void>;
   setSelectedTab: (tab: SettingsTab) => void;
   setIsModalOpen: (isModalOpen: boolean) => void;
-  toggleNavbar: () => void;
+  toggleWorkNavbar: () => void;
+  toggleFinanceNavbar: () => void;
   setDefaultSalaryCurrency: (currency: Currency) => void;
   setDefaultSalaryAmount: (salaryAmount: number) => void;
   setDefaultFinanceCurrency: (financeCurrency: Currency) => void;
@@ -74,7 +76,8 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       defaultGroupColor: null,
       showCalendarTime: true,
       isAsideOpen: false,
-      isNavbarOpen: false,
+      isWorkNavbarOpen: false,
+      isFinanceNavbarOpen: false,
       isFetching: true,
       lastFetch: null,
       roundInTimeFragments: false,
@@ -101,7 +104,8 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
           defaultGroupColor: null,
           showCalendarTime: true,
           isAsideOpen: false,
-          isNavbarOpen: false,
+          isWorkNavbarOpen: false,
+          isFinanceNavbarOpen: false,
           isFetching: true,
           lastFetch: null,
           automaticlyStopOtherTimer: false,
@@ -138,11 +142,11 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       setIsModalOpen: (isModalOpen: boolean) => {
         set({ isModalOpen: isModalOpen });
       },
-      toggleNavbar: () => {
-        set({ isNavbarOpen: !get().isNavbarOpen });
+      toggleWorkNavbar: () => {
+        set({ isWorkNavbarOpen: !get().isWorkNavbarOpen });
       },
-      setIsNavbarOpen: (isNavbarOpen: boolean) => {
-        set({ isNavbarOpen: isNavbarOpen });
+      toggleFinanceNavbar: () => {
+        set({ isFinanceNavbarOpen: !get().isFinanceNavbarOpen });
       },
       setDefaultSalaryCurrency: async (currency: Currency) => {
         await actions.updateSettings({

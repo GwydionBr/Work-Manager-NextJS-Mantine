@@ -151,6 +151,7 @@ export type Database = {
           due_date: string | null;
           finance_category_id: string | null;
           id: string;
+          paid: boolean;
           start_amount: number;
           title: string;
           user_id: string;
@@ -162,6 +163,7 @@ export type Database = {
           due_date?: string | null;
           finance_category_id?: string | null;
           id?: string;
+          paid?: boolean;
           start_amount: number;
           title: string;
           user_id?: string;
@@ -173,6 +175,7 @@ export type Database = {
           due_date?: string | null;
           finance_category_id?: string | null;
           id?: string;
+          paid?: boolean;
           start_amount?: number;
           title?: string;
           user_id?: string;
@@ -835,6 +838,8 @@ export type Database = {
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
           date: string;
+          finance_project_adjustment_id: string | null;
+          finance_project_id: string | null;
           id: string;
           is_active: boolean;
           recurring_cash_flow_id: string | null;
@@ -849,6 +854,8 @@ export type Database = {
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           date: string;
+          finance_project_adjustment_id?: string | null;
+          finance_project_id?: string | null;
           id?: string;
           is_active?: boolean;
           recurring_cash_flow_id?: string | null;
@@ -863,6 +870,8 @@ export type Database = {
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           date?: string;
+          finance_project_adjustment_id?: string | null;
+          finance_project_id?: string | null;
           id?: string;
           is_active?: boolean;
           recurring_cash_flow_id?: string | null;
@@ -876,6 +885,20 @@ export type Database = {
             columns: ["category_id"];
             isOneToOne: false;
             referencedRelation: "finance_category";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "single_cash_flow_finance_project_adjustment_id_fkey";
+            columns: ["finance_project_adjustment_id"];
+            isOneToOne: false;
+            referencedRelation: "finance_project_adjustment";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "single_cash_flow_finance_project_id_fkey";
+            columns: ["finance_project_id"];
+            isOneToOne: false;
+            referencedRelation: "finance_project";
             referencedColumns: ["id"];
           },
           {

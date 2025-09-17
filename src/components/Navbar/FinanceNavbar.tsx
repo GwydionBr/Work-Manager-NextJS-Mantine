@@ -25,10 +25,15 @@ import Shortcut from "../UI/Shortcut";
 
 export default function FinanceNavbar() {
   const { singleCashFlows, isFetching } = useFinanceStore();
-  const { setSelectedTab, setIsModalOpen, locale, isNavbarOpen, toggleNavbar } =
-    useSettingsStore();
+  const {
+    setSelectedTab,
+    setIsModalOpen,
+    locale,
+    isFinanceNavbarOpen,
+    toggleFinanceNavbar,
+  } = useSettingsStore();
 
-  useHotkeys([["mod + J", () => toggleNavbar()]]);
+  useHotkeys([["mod + J", () => toggleFinanceNavbar()]]);
 
   const incomeCashFlows = singleCashFlows.filter(
     (cashFlow) => cashFlow.type === "income"
@@ -39,10 +44,10 @@ export default function FinanceNavbar() {
   );
 
   return (
-    <Box className={classes.main} w={isNavbarOpen ? 250 : 60}>
+    <Box className={classes.main} w={isFinanceNavbarOpen ? 250 : 60}>
       <Group className={classes.title} align="center" justify="space-between">
         <Transition
-          mounted={!isNavbarOpen}
+          mounted={!isFinanceNavbarOpen}
           transition="fade"
           duration={200}
           enterDelay={200}
@@ -57,7 +62,7 @@ export default function FinanceNavbar() {
               }
             >
               <ActionIcon
-                onClick={() => toggleNavbar()}
+                onClick={() => toggleFinanceNavbar()}
                 aria-label="Toggle navbar"
                 variant="light"
                 style={styles}
@@ -68,7 +73,7 @@ export default function FinanceNavbar() {
           )}
         </Transition>
         <Transition
-          mounted={isNavbarOpen}
+          mounted={isFinanceNavbarOpen}
           transition="fade"
           duration={200}
           enterDelay={200}
@@ -82,7 +87,7 @@ export default function FinanceNavbar() {
         {!isFetching && (
           <>
             <Transition
-              mounted={isNavbarOpen}
+              mounted={isFinanceNavbarOpen}
               transition="fade"
               duration={200}
               enterDelay={200}
@@ -108,7 +113,7 @@ export default function FinanceNavbar() {
               )}
             </Transition>
             <Transition
-              mounted={!isNavbarOpen}
+              mounted={!isFinanceNavbarOpen}
               transition="fade"
               duration={200}
               enterDelay={200}
@@ -138,7 +143,7 @@ export default function FinanceNavbar() {
       </Group>
 
       <Transition
-        mounted={isNavbarOpen}
+        mounted={isFinanceNavbarOpen}
         transition="fade"
         duration={200}
         enterDelay={200}
@@ -182,14 +187,14 @@ export default function FinanceNavbar() {
           }
         >
           <ActionIcon
-            onClick={() => toggleNavbar()}
+            onClick={() => toggleFinanceNavbar()}
             aria-label="Toggle navbar"
-            variant={isNavbarOpen ? "filled" : "light"}
+            variant={isFinanceNavbarOpen ? "filled" : "light"}
           >
             <IconArrowBarRight
               size={22}
               style={{
-                transform: isNavbarOpen ? "rotate(180deg)" : "none",
+                transform: isFinanceNavbarOpen ? "rotate(180deg)" : "none",
                 transition: "transform 0.4s linear",
               }}
             />

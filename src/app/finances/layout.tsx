@@ -14,7 +14,7 @@ export default function FinanceLayout({
 }) {
   const { isFetching, singleCashFlows, recurringCashFlows } = useFinanceStore();
 
-  const { isNavbarOpen } = useSettingsStore();
+  const { isFinanceNavbarOpen } = useSettingsStore();
 
   if (
     !isFetching &&
@@ -28,7 +28,7 @@ export default function FinanceLayout({
     <Box>
       <FinanceNavbar />
       <Box
-        ml={isNavbarOpen ? 250 : 60}
+        ml={isFinanceNavbarOpen ? 250 : 60}
         style={{ transition: "margin 0.4s ease-in-out" }}
       >
         {children}

@@ -14,7 +14,7 @@ export default function WorkLayout({
 }) {
   const { projects, isFetching } = useWorkStore();
 
-  const { isNavbarOpen } = useSettingsStore();
+  const { isWorkNavbarOpen } = useSettingsStore();
   if (projects.length === 0 && !isFetching) {
     return <WorkInitializer />;
   }
@@ -23,7 +23,7 @@ export default function WorkLayout({
     <Box>
       <ProjectNavbar />
       <Box
-        ml={isNavbarOpen ? 250 : 60}
+        ml={isWorkNavbarOpen ? 250 : 60}
         style={{ transition: "margin 0.4s ease-in-out" }}
       >
         {children}

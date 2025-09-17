@@ -25,7 +25,7 @@ export async function getAllFinanceProjects(): Promise<
     .from("finance_project")
     .select("*")
     .eq("user_id", user.id)
-    .order("title", { ascending: true });
+    .order("due_date", { ascending: true });
 
   if (error) {
     return { success: false, data: null, error: error.message };

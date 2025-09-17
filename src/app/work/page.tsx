@@ -336,11 +336,17 @@ export default function WorkPage() {
                 disabled={selectableSessions.length === 0}
                 onClick={handleSelectionToggle}
                 tooltipLabel={
-                  locale === "de-DE" ? "Auswahlmodus" : "Selected Mode"
+                  selectedModeActive
+                    ? locale === "de-DE"
+                      ? "Auswahlmodus deaktivieren"
+                      : "Deactivate selection mode"
+                    : locale === "de-DE"
+                      ? "Auswahlmodus aktivieren"
+                      : "Activate selection mode"
                 }
                 size="md"
                 selected={selectedModeActive}
-                filled={selectedModeActive}
+                mainControl={true}
               />
             </Group>
             <Grid>
