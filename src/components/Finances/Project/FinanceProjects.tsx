@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { useDisclosure, useHover } from "@mantine/hooks";
+import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -17,20 +17,14 @@ import {
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import FinanceProjectFormModal from "./FinanceProjectFormModal";
 import FinanceProjectCard from "./FinanceProjectCard";
-import {
-  IconCalendarEvent,
-  IconList,
-  IconMoneybagPlus,
-  IconSquareRoundedCheck,
-} from "@tabler/icons-react";
+import { IconMoneybagPlus } from "@tabler/icons-react";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
 import FinanceProjectNavbar from "./FinanceProjectNavbar";
-import { formatDate, formatMoney } from "@/utils/formatFunctions";
+import { formatDate } from "@/utils/formatFunctions";
 import { isToday } from "date-fns";
 import {
-  FinanceNavbarItem,
   FinanceNavbarItems,
   FinanceProjectNavbarTab,
 } from "@/types/finance.types";
@@ -147,6 +141,17 @@ export default function FinanceProjects() {
     return [...financeProjects].sort((a, b) => {
       const aHasDueDate = Boolean(a.due_date);
       const bHasDueDate = Boolean(b.due_date);
+      const aIsOverdue =
+        a.due_date &&
+        a.due_date < new Date().toISOString() &&
+        !isToday(new Date(a.due_date));
+      const bIsOverdue =
+        b.due_date &&
+        b.due_date < new Date().toISOString() &&
+        !isToday(new Date(b.due_date));
+
+      if (aIsOverdue && !bIsOverdue) return -1;
+      if (!aIsOverdue && bIsOverdue) return 1;
 
       if (!aHasDueDate && bHasDueDate) return -1; // nulls first
       if (aHasDueDate && !bHasDueDate) return 1; // dated after nulls
@@ -277,41 +282,54 @@ export default function FinanceProjects() {
             </Group>
           </Collapse>
           <Stack w="100%" align="center">
-            {filteredFinanceProjects.map((project, index) => (
-              <Stack key={project.id} w="100%">
-                {filteredFinanceProjects[index - 1]?.due_date !==
-                  project.due_date && (
-                  <Divider
-                    size="md"
-                    label={
-                      <Text
-                        size="sm"
-                        fw={500}
-                        c="light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-4))"
-                      >
-                        {project.due_date
-                          ? formatDate(new Date(project.due_date), locale)
-                          : locale === "de-DE"
-                            ? "Kein Fälligkeitsdatum"
-                            : "No due date"}
-                      </Text>
-                    }
-                    labelPosition="left"
-                  />
-                )}
-                <Box ml="xl">
-                  <FinanceProjectCard
-                    project={project}
-                    selectedModeActive={selectedModeActive}
-                    isSelected={selectedFinanceProjects.includes(project.id)}
-                    onToggleSelected={(e) =>
-                      toggleProjectSelection(project.id, index, e.shiftKey)
-                    }
-                    onDelete={onDelete}
-                  />
-                </Box>
-              </Stack>
-            ))}
+            {filteredFinanceProjects.map((project, index) => {
+              const isOverdue =
+                project.due_date &&
+                project.due_date < new Date().toISOString() &&
+                !isToday(new Date(project.due_date));
+              const noDueDate = !project.due_date;
+              return (
+                <Stack key={project.id} w="100%">
+                  {filteredFinanceProjects[index - 1]?.due_date !==
+                    project.due_date && (
+                    <Divider
+                      size="md"
+                      label={
+                        <Text
+                          size="sm"
+                          fw={500}
+                          c={
+                            isOverdue
+                              ? "red"
+                              : noDueDate
+                                ? "yellow"
+                                : "light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-4))"
+                          }
+                        >
+                          {project.due_date
+                            ? formatDate(new Date(project.due_date), locale)
+                            : locale === "de-DE"
+                              ? "Kein Fälligkeitsdatum"
+                              : "No due date"}
+                        </Text>
+                      }
+                      labelPosition="left"
+                    />
+                  )}
+                  <Box ml="xl">
+                    <FinanceProjectCard
+                      project={project}
+                      selectedModeActive={selectedModeActive}
+                      isSelected={selectedFinanceProjects.includes(project.id)}
+                      onToggleSelected={(e) =>
+                        toggleProjectSelection(project.id, index, e.shiftKey)
+                      }
+                      onDelete={onDelete}
+                    />
+                  </Box>
+                </Stack>
+              );
+            })}
           </Stack>
         </Stack>
         <FinanceProjectFormModal

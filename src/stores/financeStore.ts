@@ -1,10 +1,11 @@
 "use client";
 
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import * as actions from "@/actions";
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { processRecurringCashFlows } from "@/utils/financeHelperFunction";
-import { FinanceProject, FinanceRule } from "@/types/finance.types";
+import { FinanceProject, FinanceRule, FinanceTab } from "@/types/finance.types";
 
 interface FinanceStoreState {
   singleCashFlows: Tables<"single_cash_flow">[];
@@ -16,6 +17,7 @@ interface FinanceStoreState {
   financeRules: FinanceRule[];
   isFetching: boolean;
   lastFetch: Date | null;
+  activeTab: FinanceTab;
 }
 
 interface FinanceStoreActions {
@@ -67,436 +69,461 @@ interface FinanceStoreActions {
     category: TablesUpdate<"finance_category">
   ) => Promise<Tables<"finance_category"> | null>;
   deleteFinanceCategories: (ids: string[]) => Promise<boolean>;
+  setActiveTab: (tab: FinanceTab) => void;
 }
 
-export const useFinanceStore = create<FinanceStoreState & FinanceStoreActions>(
-  (set, get) => ({
-    singleCashFlows: [],
-    futureSingleCashFlows: [],
-    recurringCashFlows: [],
-    financeCategories: [],
-    financeClients: [],
-    financeRules: [],
-    financeProjects: [],
-    isFetching: true,
-    lastFetch: null,
+export const useFinanceStore = create<
+  FinanceStoreState & FinanceStoreActions
+>()(
+  persist(
+    (set, get) => ({
+      singleCashFlows: [],
+      futureSingleCashFlows: [],
+      recurringCashFlows: [],
+      financeCategories: [],
+      financeClients: [],
+      financeRules: [],
+      financeProjects: [],
+      isFetching: true,
+      lastFetch: null,
+      activeTab: FinanceTab.Single,
+      resetStore: () =>
+        set({
+          singleCashFlows: [],
+          futureSingleCashFlows: [],
+          recurringCashFlows: [],
+          financeCategories: [],
+          financeClients: [],
+          financeRules: [],
+          isFetching: true,
+          lastFetch: null,
+          financeProjects: [],
+          activeTab: FinanceTab.Single,
+        }),
+      async fetchFinanceData() {
+        const [
+          singleCashFlows,
+          recurringCashFlows,
+          financeCategories,
+          financeClients,
+          financeProjects,
+        ] = await Promise.all([
+          actions.getAllSingleCashFlows(),
+          actions.getAllRecurringCashFlows(),
+          actions.getAllFinanceCategories(),
+          actions.getAllFinanceClients(),
+          actions.getAllFinanceProjects(),
+        ]);
 
-    resetStore: () =>
-      set({
-        singleCashFlows: [],
-        futureSingleCashFlows: [],
-        recurringCashFlows: [],
-        financeCategories: [],
-        financeClients: [],
-        financeRules: [],
-        isFetching: true,
-        lastFetch: null,
-        financeProjects: [],
-      }),
-    async fetchFinanceData() {
-      const [
-        singleCashFlows,
-        recurringCashFlows,
-        financeCategories,
-        financeClients,
-        financeProjects,
-      ] = await Promise.all([
-        actions.getAllSingleCashFlows(),
-        actions.getAllRecurringCashFlows(),
-        actions.getAllFinanceCategories(),
-        actions.getAllFinanceClients(),
-        actions.getAllFinanceProjects(),
-      ]);
-
-      if (
-        !singleCashFlows.success ||
-        !recurringCashFlows.success ||
-        !financeCategories.success ||
-        !financeClients.success ||
-        !financeProjects.success
-      ) {
-        return;
-      }
-
-      const { pastAndCurrentFlows, futureFlows } = processRecurringCashFlows(
-        recurringCashFlows.data,
-        singleCashFlows.data
-      );
-
-      const newSingleCashFlows = await actions.createMultipleSingleCashFlows({
-        cashFlows: pastAndCurrentFlows,
-      });
-
-      if (!newSingleCashFlows.success) return;
-
-      set({
-        singleCashFlows: [...singleCashFlows.data, ...newSingleCashFlows.data],
-        futureSingleCashFlows: futureFlows,
-        recurringCashFlows: recurringCashFlows.data,
-        financeCategories: financeCategories.data,
-        financeClients: financeClients.data,
-        financeProjects: financeProjects.data,
-        isFetching: false,
-        lastFetch: new Date(),
-      });
-    },
-
-    async addFinanceClient(client) {
-      const { financeClients } = get();
-
-      const newClient = await actions.createFinanceClient(client);
-
-      if (!newClient.success) return null;
-
-      const newClients = [...financeClients, newClient.data];
-
-      set({
-        financeClients: newClients,
-      });
-
-      return newClient.data;
-    },
-
-    async updateFinanceClient(client) {
-      const { financeClients } = get();
-
-      const updatedClient = await actions.updateFinanceClient(client);
-
-      if (!updatedClient.success) return null;
-
-      const updatedClients = financeClients.map((c) =>
-        c.id === client.id ? updatedClient.data : c
-      );
-
-      set({
-        financeClients: updatedClients,
-      });
-
-      return updatedClient.data;
-    },
-
-    async deleteFinanceClients(ids) {
-      const { financeClients } = get();
-      const deleted = await actions.deleteFinanceClients(ids);
-      if (!deleted.success) return false;
-
-      const updatedClients = financeClients.filter((c) => !ids.includes(c.id));
-      set({
-        financeClients: updatedClients,
-      });
-
-      return true;
-    },
-
-    async addFinanceProject(project) {
-      const { financeProjects } = get();
-      const newProject = await actions.createFinanceProject(project);
-      if (!newProject.success) return null;
-
-      const newFinanceProjects = [
-        ...financeProjects,
-        { ...newProject.data, adjustments: [] },
-      ];
-      set({
-        financeProjects: newFinanceProjects,
-      });
-
-      return newProject.data;
-    },
-
-    async deleteFinanceProject(id) {
-      const { financeProjects } = get();
-      const deleted = await actions.deleteFinanceProject(id);
-      if (!deleted.success) return false;
-
-      const updatedFinanceProjects = financeProjects.filter((p) => p.id !== id);
-      set({
-        financeProjects: updatedFinanceProjects,
-      });
-
-      return true;
-    },
-
-    async addSingleCashFlow(singleCashFlow) {
-      const { singleCashFlows } = get();
-
-      const newSingleCashFlow = await actions.createSingleCashFlow({
-        cashFlow: singleCashFlow,
-      });
-      if (!newSingleCashFlow.success) return false;
-
-      const newSingleCashFlows = [...singleCashFlows, newSingleCashFlow.data];
-
-      set({
-        singleCashFlows: newSingleCashFlows,
-      });
-
-      return true;
-    },
-
-    addExistingSingleCashFlow(singleCashFlow) {
-      const { singleCashFlows } = get();
-      const newSingleCashFlows = [...singleCashFlows, singleCashFlow];
-      set({
-        singleCashFlows: newSingleCashFlows,
-      });
-      return true;
-    },
-
-    async addRecurringCashFlow(recurringCashFlow) {
-      const { recurringCashFlows, futureSingleCashFlows, singleCashFlows } =
-        get();
-
-      const newRecurringCashFlow = await actions.createRecurringCashFlow({
-        cashFlow: recurringCashFlow,
-      });
-      if (!newRecurringCashFlow.success) return false;
-
-      const newRecurringCashFlows = [
-        ...recurringCashFlows,
-        newRecurringCashFlow.data,
-      ];
-
-      set({
-        recurringCashFlows: newRecurringCashFlows,
-      });
-
-      const { pastAndCurrentFlows, futureFlows } = processRecurringCashFlows(
-        [newRecurringCashFlow.data],
-        []
-      );
-
-      const {
-        data: newSingleCashFlowsData,
-        success: newSingleCashFlowsSuccess,
-      } = await actions.createMultipleSingleCashFlows({
-        cashFlows: pastAndCurrentFlows,
-      });
-
-      if (!newSingleCashFlowsSuccess) return false;
-
-      const newFutureSingleCashFlows = [
-        ...futureSingleCashFlows,
-        ...futureFlows,
-      ];
-
-      const newSingleCashFlows = [
-        ...singleCashFlows,
-        ...newSingleCashFlowsData,
-      ];
-
-      set({
-        singleCashFlows: newSingleCashFlows,
-        futureSingleCashFlows: newFutureSingleCashFlows,
-      });
-
-      return true;
-    },
-
-    async updateRecurringCashFlow(recurringCashFlow) {
-      const { recurringCashFlows } = get();
-
-      const updatedRecurringCashFlow = await actions.updateRecurringCashFlow({
-        updateRecurringCashFlow: recurringCashFlow,
-      });
-
-      console.log(updatedRecurringCashFlow);
-
-      if (!updatedRecurringCashFlow.success) return false;
-
-      const updatedRecurringCashFlows = recurringCashFlows.map((c) =>
-        c.id === recurringCashFlow.id ? updatedRecurringCashFlow.data : c
-      );
-
-      set({
-        recurringCashFlows: updatedRecurringCashFlows,
-      });
-      return true;
-    },
-
-    async updateSingleCashFlow(singleCashFlow) {
-      const { singleCashFlows } = get();
-
-      const updatedSingleCashFlow = await actions.updateSingleCashFlow({
-        updateSingleCashFlow: singleCashFlow,
-      });
-      console.log(updatedSingleCashFlow);
-      if (!updatedSingleCashFlow.success) return false;
-
-      const updatedSingleCashFlows = singleCashFlows.map((c) =>
-        c.id === singleCashFlow.id ? updatedSingleCashFlow.data : c
-      );
-
-      set({
-        singleCashFlows: updatedSingleCashFlows,
-      });
-      return true;
-    },
-
-    async updateMultipleSingleCashFlows(recurringCashFlowId, updates) {
-      const { singleCashFlows } = get();
-
-      const result = await actions.updateMultipleSingleCashFlows({
-        recurringCashFlowId,
-        updates,
-      });
-
-      if (!result.success) return false;
-
-      // Update all single cash flows that belong to this recurring cash flow
-      const updatedSingleCashFlows = singleCashFlows.map((flow) => {
-        if (flow.recurring_cash_flow_id === recurringCashFlowId) {
-          return { ...flow, ...updates };
+        if (
+          !singleCashFlows.success ||
+          !recurringCashFlows.success ||
+          !financeCategories.success ||
+          !financeClients.success ||
+          !financeProjects.success
+        ) {
+          return;
         }
-        return flow;
-      });
 
-      set({
-        singleCashFlows: updatedSingleCashFlows,
-      });
-      return true;
-    },
+        const { pastAndCurrentFlows, futureFlows } = processRecurringCashFlows(
+          recurringCashFlows.data,
+          singleCashFlows.data
+        );
 
-    async deleteRecurringCashFlow(id) {
-      const { recurringCashFlows } = get();
+        const newSingleCashFlows = await actions.createMultipleSingleCashFlows({
+          cashFlows: pastAndCurrentFlows,
+        });
 
-      const deleted = await actions.deleteRecurringCashFlow({
-        recurringCashFlowId: id,
-      });
-      if (!deleted.success) return false;
+        if (!newSingleCashFlows.success) return;
 
-      const updatedRecurringCashFlows = recurringCashFlows.filter(
-        (c) => c.id !== id
-      );
+        set({
+          singleCashFlows: [
+            ...singleCashFlows.data,
+            ...newSingleCashFlows.data,
+          ],
+          futureSingleCashFlows: futureFlows,
+          recurringCashFlows: recurringCashFlows.data,
+          financeCategories: financeCategories.data,
+          financeClients: financeClients.data,
+          financeProjects: financeProjects.data,
+          isFetching: false,
+          lastFetch: new Date(),
+        });
+      },
 
-      set({
-        recurringCashFlows: updatedRecurringCashFlows,
-      });
-      return true;
-    },
+      async addFinanceClient(client) {
+        const { financeClients } = get();
 
-    async deleteSingleCashFlow(id) {
-      const { singleCashFlows } = get();
+        const newClient = await actions.createFinanceClient(client);
 
-      const deleted = await actions.deleteSingleCashFlow({
-        singleCashFlowId: id,
-      });
-      if (!deleted.success) return false;
+        if (!newClient.success) return null;
 
-      const updatedSingleCashFlows = singleCashFlows.filter((c) => c.id !== id);
+        const newClients = [...financeClients, newClient.data];
 
-      set({
-        singleCashFlows: updatedSingleCashFlows,
-      });
-      return true;
-    },
+        set({
+          financeClients: newClients,
+        });
 
-    async addFinanceCategory(category) {
-      const { financeCategories } = get();
+        return newClient.data;
+      },
 
-      const newCategory = await actions.createFinanceCategory({
-        category,
-      });
-      if (!newCategory.success) return null;
+      async updateFinanceClient(client) {
+        const { financeClients } = get();
 
-      const newFinanceCategories = [...financeCategories, newCategory.data];
+        const updatedClient = await actions.updateFinanceClient(client);
 
-      set({
-        financeCategories: newFinanceCategories,
-      });
+        if (!updatedClient.success) return null;
 
-      return newCategory.data;
-    },
+        const updatedClients = financeClients.map((c) =>
+          c.id === client.id ? updatedClient.data : c
+        );
 
-    async updateFinanceCategory(category) {
-      const { financeCategories } = get();
+        set({
+          financeClients: updatedClients,
+        });
 
-      const updatedCategory = await actions.updateFinanceCategory({
-        category,
-      });
-      if (!updatedCategory.success) return null;
+        return updatedClient.data;
+      },
 
-      const updatedFinanceCategories = financeCategories.map((c) =>
-        c.id === category.id ? updatedCategory.data : c
-      );
+      async deleteFinanceClients(ids) {
+        const { financeClients } = get();
+        const deleted = await actions.deleteFinanceClients(ids);
+        if (!deleted.success) return false;
 
-      set({
-        financeCategories: updatedFinanceCategories,
-      });
-      return updatedCategory.data;
-    },
+        const updatedClients = financeClients.filter(
+          (c) => !ids.includes(c.id)
+        );
+        set({
+          financeClients: updatedClients,
+        });
 
-    async deleteFinanceCategories(ids) {
-      const { financeCategories } = get();
+        return true;
+      },
 
-      const deleted = await actions.deleteFinanceCategories({
-        categoryIds: ids,
-      });
-      if (!deleted.success) return false;
+      async addFinanceProject(project) {
+        const { financeProjects } = get();
+        const newProject = await actions.createFinanceProject(project);
+        if (!newProject.success) return null;
 
-      const updatedFinanceCategories = financeCategories.filter(
-        (c) => !ids.includes(c.id)
-      );
+        const newFinanceProjects = [
+          ...financeProjects,
+          { ...newProject.data, adjustments: [] },
+        ];
+        set({
+          financeProjects: newFinanceProjects,
+        });
 
-      set({
-        financeCategories: updatedFinanceCategories,
-      });
-      return true;
-    },
+        return newProject.data;
+      },
 
-    async addFinanceAdjustment(adjustment) {
-      const { financeProjects } = get();
-      const newAdjustment = await actions.createFinanceAdjustment(adjustment);
-      if (!newAdjustment.success) return null;
+      async deleteFinanceProject(id) {
+        const { financeProjects } = get();
+        const deleted = await actions.deleteFinanceProject(id);
+        if (!deleted.success) return false;
 
-      const newFinanceProjects = [
-        ...financeProjects.map((p) =>
+        const updatedFinanceProjects = financeProjects.filter(
+          (p) => p.id !== id
+        );
+        set({
+          financeProjects: updatedFinanceProjects,
+        });
+
+        return true;
+      },
+
+      async addSingleCashFlow(singleCashFlow) {
+        const { singleCashFlows } = get();
+
+        const newSingleCashFlow = await actions.createSingleCashFlow({
+          cashFlow: singleCashFlow,
+        });
+        if (!newSingleCashFlow.success) return false;
+
+        const newSingleCashFlows = [...singleCashFlows, newSingleCashFlow.data];
+
+        set({
+          singleCashFlows: newSingleCashFlows,
+        });
+
+        return true;
+      },
+
+      addExistingSingleCashFlow(singleCashFlow) {
+        const { singleCashFlows } = get();
+        const newSingleCashFlows = [...singleCashFlows, singleCashFlow];
+        set({
+          singleCashFlows: newSingleCashFlows,
+        });
+        return true;
+      },
+
+      async addRecurringCashFlow(recurringCashFlow) {
+        const { recurringCashFlows, futureSingleCashFlows, singleCashFlows } =
+          get();
+
+        const newRecurringCashFlow = await actions.createRecurringCashFlow({
+          cashFlow: recurringCashFlow,
+        });
+        if (!newRecurringCashFlow.success) return false;
+
+        const newRecurringCashFlows = [
+          ...recurringCashFlows,
+          newRecurringCashFlow.data,
+        ];
+
+        set({
+          recurringCashFlows: newRecurringCashFlows,
+        });
+
+        const { pastAndCurrentFlows, futureFlows } = processRecurringCashFlows(
+          [newRecurringCashFlow.data],
+          []
+        );
+
+        const {
+          data: newSingleCashFlowsData,
+          success: newSingleCashFlowsSuccess,
+        } = await actions.createMultipleSingleCashFlows({
+          cashFlows: pastAndCurrentFlows,
+        });
+
+        if (!newSingleCashFlowsSuccess) return false;
+
+        const newFutureSingleCashFlows = [
+          ...futureSingleCashFlows,
+          ...futureFlows,
+        ];
+
+        const newSingleCashFlows = [
+          ...singleCashFlows,
+          ...newSingleCashFlowsData,
+        ];
+
+        set({
+          singleCashFlows: newSingleCashFlows,
+          futureSingleCashFlows: newFutureSingleCashFlows,
+        });
+
+        return true;
+      },
+
+      async updateRecurringCashFlow(recurringCashFlow) {
+        const { recurringCashFlows } = get();
+
+        const updatedRecurringCashFlow = await actions.updateRecurringCashFlow({
+          updateRecurringCashFlow: recurringCashFlow,
+        });
+
+        console.log(updatedRecurringCashFlow);
+
+        if (!updatedRecurringCashFlow.success) return false;
+
+        const updatedRecurringCashFlows = recurringCashFlows.map((c) =>
+          c.id === recurringCashFlow.id ? updatedRecurringCashFlow.data : c
+        );
+
+        set({
+          recurringCashFlows: updatedRecurringCashFlows,
+        });
+        return true;
+      },
+
+      async updateSingleCashFlow(singleCashFlow) {
+        const { singleCashFlows } = get();
+
+        const updatedSingleCashFlow = await actions.updateSingleCashFlow({
+          updateSingleCashFlow: singleCashFlow,
+        });
+        console.log(updatedSingleCashFlow);
+        if (!updatedSingleCashFlow.success) return false;
+
+        const updatedSingleCashFlows = singleCashFlows.map((c) =>
+          c.id === singleCashFlow.id ? updatedSingleCashFlow.data : c
+        );
+
+        set({
+          singleCashFlows: updatedSingleCashFlows,
+        });
+        return true;
+      },
+
+      async updateMultipleSingleCashFlows(recurringCashFlowId, updates) {
+        const { singleCashFlows } = get();
+
+        const result = await actions.updateMultipleSingleCashFlows({
+          recurringCashFlowId,
+          updates,
+        });
+
+        if (!result.success) return false;
+
+        // Update all single cash flows that belong to this recurring cash flow
+        const updatedSingleCashFlows = singleCashFlows.map((flow) => {
+          if (flow.recurring_cash_flow_id === recurringCashFlowId) {
+            return { ...flow, ...updates };
+          }
+          return flow;
+        });
+
+        set({
+          singleCashFlows: updatedSingleCashFlows,
+        });
+        return true;
+      },
+
+      async deleteRecurringCashFlow(id) {
+        const { recurringCashFlows } = get();
+
+        const deleted = await actions.deleteRecurringCashFlow({
+          recurringCashFlowId: id,
+        });
+        if (!deleted.success) return false;
+
+        const updatedRecurringCashFlows = recurringCashFlows.filter(
+          (c) => c.id !== id
+        );
+
+        set({
+          recurringCashFlows: updatedRecurringCashFlows,
+        });
+        return true;
+      },
+
+      async deleteSingleCashFlow(id) {
+        const { singleCashFlows } = get();
+
+        const deleted = await actions.deleteSingleCashFlow({
+          singleCashFlowId: id,
+        });
+        if (!deleted.success) return false;
+
+        const updatedSingleCashFlows = singleCashFlows.filter(
+          (c) => c.id !== id
+        );
+
+        set({
+          singleCashFlows: updatedSingleCashFlows,
+        });
+        return true;
+      },
+
+      async addFinanceCategory(category) {
+        const { financeCategories } = get();
+
+        const newCategory = await actions.createFinanceCategory({
+          category,
+        });
+        if (!newCategory.success) return null;
+
+        const newFinanceCategories = [...financeCategories, newCategory.data];
+
+        set({
+          financeCategories: newFinanceCategories,
+        });
+
+        return newCategory.data;
+      },
+
+      async updateFinanceCategory(category) {
+        const { financeCategories } = get();
+
+        const updatedCategory = await actions.updateFinanceCategory({
+          category,
+        });
+        if (!updatedCategory.success) return null;
+
+        const updatedFinanceCategories = financeCategories.map((c) =>
+          c.id === category.id ? updatedCategory.data : c
+        );
+
+        set({
+          financeCategories: updatedFinanceCategories,
+        });
+        return updatedCategory.data;
+      },
+
+      async deleteFinanceCategories(ids) {
+        const { financeCategories } = get();
+
+        const deleted = await actions.deleteFinanceCategories({
+          categoryIds: ids,
+        });
+        if (!deleted.success) return false;
+
+        const updatedFinanceCategories = financeCategories.filter(
+          (c) => !ids.includes(c.id)
+        );
+
+        set({
+          financeCategories: updatedFinanceCategories,
+        });
+        return true;
+      },
+
+      async addFinanceAdjustment(adjustment) {
+        const { financeProjects } = get();
+        const newAdjustment = await actions.createFinanceAdjustment(adjustment);
+        if (!newAdjustment.success) return null;
+
+        const newFinanceProjects = [
+          ...financeProjects.map((p) =>
+            p.id === adjustment.finance_project_id
+              ? {
+                  ...p,
+                  adjustments: [...p.adjustments, newAdjustment.data],
+                }
+              : p
+          ),
+        ];
+        set({
+          financeProjects: newFinanceProjects,
+        });
+        return newAdjustment.data;
+      },
+
+      async updateFinanceAdjustment(adjustment) {
+        const { financeProjects } = get();
+        const updatedAdjustment =
+          await actions.updateFinanceAdjustment(adjustment);
+        if (!updatedAdjustment.success) return null;
+
+        const updatedFinanceProjects = financeProjects.map((p) =>
           p.id === adjustment.finance_project_id
-            ? {
-                ...p,
-                adjustments: [...p.adjustments, newAdjustment.data],
-              }
+            ? { ...p, adjustments: [...p.adjustments, updatedAdjustment.data] }
             : p
-        ),
-      ];
-      set({
-        financeProjects: newFinanceProjects,
-      });
-      return newAdjustment.data;
-    },
+        );
 
-    async updateFinanceAdjustment(adjustment) {
-      const { financeProjects } = get();
-      const updatedAdjustment =
-        await actions.updateFinanceAdjustment(adjustment);
-      if (!updatedAdjustment.success) return null;
+        set({
+          financeProjects: updatedFinanceProjects,
+        });
+        return updatedAdjustment.data;
+      },
 
-      const updatedFinanceProjects = financeProjects.map((p) =>
-        p.id === adjustment.finance_project_id
-          ? { ...p, adjustments: [...p.adjustments, updatedAdjustment.data] }
-          : p
-      );
+      async deleteFinanceAdjustments(ids) {
+        const { financeProjects } = get();
+        const deleted = await actions.deleteFinanceAdjustments(ids);
+        if (!deleted.success) return false;
 
-      set({
-        financeProjects: updatedFinanceProjects,
-      });
-      return updatedAdjustment.data;
-    },
+        const updatedFinanceProjects = financeProjects.map((p) => ({
+          ...p,
+          adjustments: p.adjustments.filter((a) => !ids.includes(a.id)),
+        }));
 
-    async deleteFinanceAdjustments(ids) {
-      const { financeProjects } = get();
-      const deleted = await actions.deleteFinanceAdjustments(ids);
-      if (!deleted.success) return false;
+        set({
+          financeProjects: updatedFinanceProjects,
+        });
+        return true;
+      },
 
-      const updatedFinanceProjects = financeProjects.map((p) => ({
-        ...p,
-        adjustments: p.adjustments.filter((a) => !ids.includes(a.id)),
-      }));
-
-      set({
-        financeProjects: updatedFinanceProjects,
-      });
-      return true;
-    },
-  })
+      setActiveTab(tab) {
+        set({ activeTab: tab });
+      },
+    }),
+    {
+      name: "finance-store",
+      partialize: (state) => ({
+        activeTab: state.activeTab,
+      }),
+    }
+  )
 );

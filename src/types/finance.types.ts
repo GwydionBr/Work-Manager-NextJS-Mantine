@@ -24,3 +24,10 @@ export enum FinanceProjectNavbarTab {
   Overdue = "overdue",
   Paid = "paid",
 }
+
+export enum FinanceTab {
+  Analysis = "Analysis",
+  Projects = "Projects",
+  Single = "Single",
+  Recurring = "Recurring",
+}

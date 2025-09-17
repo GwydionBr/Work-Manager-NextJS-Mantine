@@ -14,10 +14,12 @@ import FinanceOverview from "./Overview/FinanceOverview";
 import FinanceRecurring from "./Recurring/FinanceRecurring";
 import FinanceSingle from "./Single/FinanceSingle";
 import FinanceProjects from "./Project/FinanceProjects";
+import { FinanceTab } from "@/types/finance.types";
 
 export default function FinancesTab() {
   const { locale } = useSettingsStore();
-  const { singleCashFlows, recurringCashFlows } = useFinanceStore();
+  const { singleCashFlows, recurringCashFlows, activeTab, setActiveTab } =
+    useFinanceStore();
 
   if (singleCashFlows.length === 0 && recurringCashFlows.length === 0) {
     return (
@@ -32,7 +34,12 @@ export default function FinancesTab() {
   }
 
   return (
-    <Tabs defaultValue="Projects" w="100%">
+    <Tabs
+      defaultValue={activeTab}
+      w="100%"
+      value={activeTab}
+      onChange={(value) => setActiveTab(value as FinanceTab)}
+    >
       <Tabs.List grow mb="xl">
         <Tabs.Tab
           leftSection={
