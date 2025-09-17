@@ -25,6 +25,7 @@ import FinanceProjectNavbar, {
   FinanceProjectNavbarTab,
 } from "./FinanceProjectNavbar";
 import { formatDate } from "@/utils/formatFunctions";
+import { isToday } from "date-fns";
 
 export interface TotalAmounts {
   totalAmount: number;
@@ -63,7 +64,11 @@ export default function FinanceProjects() {
     }, 0);
     const upcomingTotalAmount = financeProjects
       .filter((project) => {
-        return project.due_date && project.due_date > new Date().toISOString();
+        return (
+          (project.due_date && project.due_date > new Date().toISOString()) ||
+          !project.due_date ||
+          isToday(new Date(project.due_date))
+        );
       })
       .reduce((acc, project) => {
         return (
@@ -75,7 +80,11 @@ export default function FinanceProjects() {
       }, 0);
     const overdueTotalAmount = financeProjects
       .filter((project) => {
-        return project.due_date && project.due_date < new Date().toISOString();
+        return (
+          project.due_date &&
+          project.due_date < new Date().toISOString() &&
+          !isToday(new Date(project.due_date))
+        );
       })
       .reduce((acc, project) => {
         return (
@@ -125,9 +134,17 @@ export default function FinanceProjects() {
     return sortedFinanceProjects.filter((project) => {
       if (tab === FinanceProjectNavbarTab.All) return true;
       if (tab === FinanceProjectNavbarTab.Upcoming)
-        return project.due_date && project.due_date > new Date().toISOString();
+        return (
+          (project.due_date && project.due_date > new Date().toISOString()) ||
+          !project.due_date ||
+          isToday(new Date(project.due_date))
+        );
       if (tab === FinanceProjectNavbarTab.Overdue)
-        return project.due_date && project.due_date < new Date().toISOString();
+        return (
+          project.due_date &&
+          project.due_date < new Date().toISOString() &&
+          !isToday(new Date(project.due_date))
+        );
       if (tab === FinanceProjectNavbarTab.Paid) return project.paid;
     });
   }, [sortedFinanceProjects, tab]);
