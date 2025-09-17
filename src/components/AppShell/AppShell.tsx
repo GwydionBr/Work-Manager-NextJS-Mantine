@@ -239,7 +239,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <AppShell.Navbar>
           <Navbar />
         </AppShell.Navbar>
-        <AppShell.Main style={{ transition: "0.4s ease-in" }}>
+        <AppShell.Main style={{ transition: "0.4s ease-in" }} bg="var(--mantine-color-body)">
           {children}
         </AppShell.Main>
         <AppShell.Aside

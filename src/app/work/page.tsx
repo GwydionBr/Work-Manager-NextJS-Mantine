@@ -250,7 +250,7 @@ export default function WorkPage() {
     : activeProject.project.salary > activeProject.project.total_payout;
 
   return (
-    <ScrollArea px="xl" h="100vh" type="scroll" bg="var(--mantine-color-body)">
+    <ScrollArea px="xl" h="100vh" type="scroll">
       <Stack align="center" w="100%" px="xl">
         <Collapse in={!analysisOpened} transitionDuration={300} w="100%">
           <Header
