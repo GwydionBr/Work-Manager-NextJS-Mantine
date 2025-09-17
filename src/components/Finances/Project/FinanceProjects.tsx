@@ -26,6 +26,13 @@ import FinanceProjectNavbar, {
 } from "./FinanceProjectNavbar";
 import { formatDate } from "@/utils/formatFunctions";
 
+export interface TotalAmounts {
+  totalAmount: number;
+  upcomingTotalAmount: number;
+  overdueTotalAmount: number;
+  paidTotalAmount: number;
+}
+
 export default function FinanceProjects() {
   const { financeProjects, isFetching } = useFinanceStore();
   const { locale } = useSettingsStore();
@@ -44,6 +51,59 @@ export default function FinanceProjects() {
   const [tab, setTab] = useState<FinanceProjectNavbarTab>(
     FinanceProjectNavbarTab.All
   );
+
+  const totalAmounts = useMemo<TotalAmounts>(() => {
+    const totalAmount = financeProjects.reduce((acc, project) => {
+      return (
+        acc +
+        project.adjustments.reduce((acc, adjustment) => {
+          return acc + adjustment.amount;
+        }, project.start_amount)
+      );
+    }, 0);
+    const upcomingTotalAmount = financeProjects
+      .filter((project) => {
+        return project.due_date && project.due_date > new Date().toISOString();
+      })
+      .reduce((acc, project) => {
+        return (
+          acc +
+          project.adjustments.reduce((acc, adjustment) => {
+            return acc + adjustment.amount;
+          }, project.start_amount)
+        );
+      }, 0);
+    const overdueTotalAmount = financeProjects
+      .filter((project) => {
+        return project.due_date && project.due_date < new Date().toISOString();
+      })
+      .reduce((acc, project) => {
+        return (
+          acc +
+          project.adjustments.reduce((acc, adjustment) => {
+            return acc + adjustment.amount;
+          }, project.start_amount)
+        );
+      }, 0);
+    const paidTotalAmount = financeProjects
+      .filter((project) => {
+        return project.paid;
+      })
+      .reduce((acc, project) => {
+        return (
+          acc +
+          project.adjustments.reduce((acc, adjustment) => {
+            return acc + adjustment.amount;
+          }, project.start_amount)
+        );
+      }, 0);
+    return {
+      totalAmount,
+      upcomingTotalAmount,
+      overdueTotalAmount,
+      paidTotalAmount,
+    };
+  }, [financeProjects]);
 
   const sortedFinanceProjects = useMemo(() => {
     return [...financeProjects].sort((a, b) => {
@@ -113,7 +173,11 @@ export default function FinanceProjects() {
 
   return (
     <Group align="flex-start" w="100%">
-      <FinanceProjectNavbar tab={tab} setTab={setTab} />
+      <FinanceProjectNavbar
+        tab={tab}
+        setTab={setTab}
+        totalAmounts={totalAmounts}
+      />
       <Stack w="100%" maw={800}>
         <Group justify="space-between" w="100%" maw={800} px="md">
           <Box w={20} />
@@ -176,12 +240,15 @@ export default function FinanceProjects() {
                 {filteredFinanceProjects[index - 1]?.due_date !==
                   project.due_date && (
                   <Divider
+                    size="md"
                     label={
-                      project.due_date
-                        ? formatDate(new Date(project.due_date), locale)
-                        : locale === "de-DE"
-                          ? "Kein Fälligkeitsdatum"
-                          : "No due date"
+                      <Text size="sm" fw={500}>
+                        {project.due_date
+                          ? formatDate(new Date(project.due_date), locale)
+                          : locale === "de-DE"
+                            ? "Kein Fälligkeitsdatum"
+                            : "No due date"}
+                      </Text>
                     }
                     labelPosition="left"
                   />

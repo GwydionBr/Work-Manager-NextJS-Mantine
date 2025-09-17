@@ -69,6 +69,7 @@ export default function FinanceProjectCard({
       radius="lg"
       p="md"
       h="100%"
+      bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
       miw={400}
       maw={800}
       shadow="md"
@@ -130,26 +131,19 @@ export default function FinanceProjectCard({
         </Collapse>
         <Stack>
           <Group justify="space-between">
-            <Group>
-              <Text c="dimmed" size="xs">
-                {project.due_date
-                  ? formatDate(new Date(project.due_date), locale)
-                  : locale === "de-DE"
-                    ? "Kein Fälligkeitsdatum"
-                    : "No due date"}
-              </Text>
-            </Group>
-            <Group
-              px="md"
-              style={{
-                borderBottom: `1px solid light-dark(var(--mantine-color-dark-5), var(--mantine-color-gray-6))`,
-              }}
+            <Card
+              withBorder
+              radius="lg"
+              p="xs"
+              bg="light-dark(var(--mantine-color-white), var(--mantine-color-dark-9))"
             >
-              <Text fw={700}>{project.title}</Text>
-              <Text c={totalAmount > 0 ? "green" : "red"} fw={600}>
-                {formatMoney(totalAmount, project.currency, locale)}
-              </Text>
-            </Group>
+              <Group>
+                <Text c={totalAmount > 0 ? "green" : "red"} fw={600}>
+                  {formatMoney(totalAmount, project.currency, locale)}
+                </Text>
+                <Text fw={700}>{project.title}</Text>
+              </Group>
+            </Card>
             <Stack>
               {financeClient && (
                 <HoverCard>
@@ -171,10 +165,12 @@ export default function FinanceProjectCard({
               </Text>
             </Stack>
           </Group>
-          <Group align="flex-start">
-            <Text fw={600} c={project.start_amount > 0 ? "green" : "red"}>
-              {formatMoney(project.start_amount, project.currency, locale)}
-            </Text>
+          <Group align="flex-start" >
+            {project.adjustments.length > 0 && (
+              <Text fw={600} c={project.start_amount > 0 ? "green" : "red"}>
+                {formatMoney(project.start_amount, project.currency, locale)}
+              </Text>
+            )}
             <Stack gap={0}>
               <Stack gap="xs">
                 {project.adjustments.map((adjustment) => (
