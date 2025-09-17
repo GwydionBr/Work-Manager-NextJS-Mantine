@@ -191,7 +191,7 @@ export default function FinanceClientSettings() {
                 ? "Aktiviere Mehrfachauswahl"
                 : "Activate bulk select"
             }
-            filled={selectedModeActive}
+            mainControl
             selected={selectedModeActive}
             onClick={toggleSelectedMode}
           />
