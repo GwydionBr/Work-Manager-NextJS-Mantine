@@ -16,6 +16,7 @@ import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 import ProjectForm from "../Project/ProjectForm";
 import { TimerRoundingSettings } from "@/types/timeTracker.types";
 import { notifications } from "@mantine/notifications";
+import FinanceCategoryForm from "@/components/Finances/Form/FinanceCategoryForm";
 
 interface TimerSessionModalProps {
   timerSession: Tables<"timer_session">;
@@ -30,17 +31,11 @@ export default function EditSessionDrawer({
   onClose,
   project,
 }: TimerSessionModalProps) {
-  const {
-    locale,
-    defaultSalaryCurrency,
-    defaultSalaryAmount,
-    defaultProjectHourlyPayment,
-    timerRoundingSettings,
-  } = useSettingsStore();
+  const { locale, timerRoundingSettings } = useSettingsStore();
   const { updateTimerSession, deleteTimerSessions, addProject } =
     useWorkStore();
   const [submitting, setSubmitting] = useState(false);
-  const [submittingProject, setSubmittingProject] = useState(false);
+  const [categoryId, setCategoryId] = useState<string | null>(null);
   const [currentProject, setCurrentProject] =
     useState<Tables<"timer_project">>(project);
 
@@ -48,6 +43,7 @@ export default function EditSessionDrawer({
     "edit-session",
     "delete-session",
     "add-project",
+    "category-form",
   ]);
 
   // Sync external opened state with internal drawer stack
@@ -132,29 +128,6 @@ export default function EditSessionDrawer({
     }
   }
 
-  async function handleProjectSubmit(values: {
-    color: string | null;
-    title: string;
-    description: string;
-    salary: number;
-    currency: Currency;
-    payment_per_project: boolean;
-    cash_flow_category_id?: string | null;
-  }) {
-    setSubmittingProject(true);
-    const { createdProject } = await addProject(
-      {
-        ...values,
-      },
-      false
-    );
-    if (createdProject) {
-      setCurrentProject(createdProject);
-      drawerStack.close("add-project");
-    }
-    setSubmittingProject(false);
-  }
-
   return (
     <Box>
       <Drawer.Stack>
@@ -216,23 +189,21 @@ export default function EditSessionDrawer({
           size="lg"
         >
           <ProjectForm
-            initialValues={{
-              color: null,
-              title: "",
-              description: "",
-              salary: defaultSalaryAmount,
-              currency: defaultSalaryCurrency,
-              hourly_payment: defaultProjectHourlyPayment,
-              cash_flow_category_id: null,
-              rounding_interval: null,
-              rounding_direction: null,
-              round_in_time_fragments: null,
-              time_fragment_interval: null,
-            }}
-            onSubmit={handleProjectSubmit}
             onCancel={() => drawerStack.close("add-project")}
-            newProject
-            submitting={submittingProject}
+            categoryId={categoryId}
+            setCategoryId={setCategoryId}
+            onSuccess={(project) => setCurrentProject(project)}
+            onOpenCategoryForm={() => drawerStack.open("category-form")}
+          />
+        </Drawer>
+        <Drawer
+          {...drawerStack.register("category-form")}
+          onClose={() => drawerStack.close("category-form")}
+          title={locale === "de-DE" ? "Kategorie hinzufügen" : "Add Category"}
+        >
+          <FinanceCategoryForm
+            onClose={() => drawerStack.close("category-form")}
+            onSuccess={(category) => setCategoryId(category.id)}
           />
         </Drawer>
         <Drawer

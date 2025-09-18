@@ -101,6 +101,7 @@ export const useFinanceStore = create<
           activeTab: FinanceTab.Single,
         }),
       async fetchFinanceData() {
+        console.log("fetching finance data");
         const [
           singleCashFlows,
           recurringCashFlows,
@@ -115,6 +116,8 @@ export const useFinanceStore = create<
           actions.getAllFinanceProjects(),
         ]);
 
+        console.log("finance data fetched");
+
         if (
           !singleCashFlows.success ||
           !recurringCashFlows.success ||
@@ -122,6 +125,7 @@ export const useFinanceStore = create<
           !financeClients.success ||
           !financeProjects.success
         ) {
+          console.error("error fetching finance data");
           return;
         }
 
@@ -129,12 +133,17 @@ export const useFinanceStore = create<
           recurringCashFlows.data,
           singleCashFlows.data
         );
+        console.log("pastAndCurrentFlows");
 
         const newSingleCashFlows = await actions.createMultipleSingleCashFlows({
           cashFlows: pastAndCurrentFlows,
         });
 
+        console.log("newSingleCashFlows");
+
         if (!newSingleCashFlows.success) return;
+
+        console.log("setting finance data");
 
         set({
           singleCashFlows: [
@@ -149,6 +158,7 @@ export const useFinanceStore = create<
           isFetching: false,
           lastFetch: new Date(),
         });
+        console.log("finance data set");
       },
 
       async addFinanceClient(client) {

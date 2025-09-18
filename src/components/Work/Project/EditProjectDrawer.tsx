@@ -16,9 +16,12 @@ import ProjectForm from "@/components/Work/Project/ProjectForm";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
-import { IconExclamationMark } from "@tabler/icons-react";
-
-import { Currency } from "@/types/settings.types";
+import { IconAlertTriangleFilled, IconCategoryPlus } from "@tabler/icons-react";
+import FinanceCategoryForm from "@/components/Finances/Form/FinanceCategoryForm";
+import {
+  showActionErrorNotification,
+  showActionSuccessNotification,
+} from "@/utils/notificationFunctions";
 
 interface EditProjectDrawerProps {
   opened: boolean;
@@ -30,12 +33,23 @@ export default function EditProjectDrawer({
   onClose,
 }: EditProjectDrawerProps) {
   const { locale } = useSettingsStore();
-  const { activeProjectId, updateProject, deleteProject } = useWorkStore();
+  const { activeProjectId, deleteProject } = useWorkStore();
   const activeProject = useWorkStore((state) =>
     state.projects.find((p) => p.project.id === activeProjectId)
   );
-  const [submitting, setSubmitting] = useState(false);
-  const drawersStack = useDrawersStack(["edit-project", "delete-project"]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const drawersStack = useDrawersStack([
+    "edit-project",
+    "delete-project",
+    "category-form",
+  ]);
+
+  useEffect(() => {
+    if (activeProject) {
+      setCategoryId(activeProject.project.cash_flow_category_id);
+    }
+  }, [activeProject]);
 
   useEffect(() => {
     if (opened) {
@@ -50,36 +64,28 @@ export default function EditProjectDrawer({
     onClose();
   }
 
-  async function handleSubmit(values: {
-    color: string | null;
-    title: string;
-    description: string | null;
-    salary: number;
-    currency: Currency;
-    hourly_payment: boolean;
-    cash_flow_category_id?: string | null;
-  }) {
-    if (!activeProject) {
-      return;
-    }
-    setSubmitting(true);
-    const success = await updateProject({
-      id: activeProject.project.id,
-      ...values,
-    });
-    if (success) {
-      handleClose();
-    }
-    setSubmitting(false);
-  }
-
   async function handleDelete() {
+    setIsLoading(true);
     if (activeProject) {
-      const result = await deleteProject(activeProject.project.id);
-      if (result) {
+      const success = await deleteProject(activeProject.project.id);
+      if (success) {
         handleClose();
+        showActionSuccessNotification(
+          locale === "de-DE"
+            ? "Projekt erfolgreich gelöscht"
+            : "Project deleted successfully",
+          locale
+        );
+      } else {
+        showActionErrorNotification(
+          locale === "de-DE"
+            ? "Projekt konnte nicht gelöscht werden"
+            : "Project could not be deleted",
+          locale
+        );
       }
     }
+    setIsLoading(false);
   }
 
   if (!activeProject) {
@@ -110,26 +116,12 @@ export default function EditProjectDrawer({
         >
           <Stack justify="flex-start" gap="xl">
             <ProjectForm
-              initialValues={{
-                color: activeProject.project.color,
-                title: activeProject.project.title,
-                description: activeProject.project.description,
-                salary: activeProject.project.salary,
-                currency: activeProject.project.currency ?? "",
-                hourly_payment: activeProject.project.hourly_payment,
-                cash_flow_category_id:
-                  activeProject.project.cash_flow_category_id,
-                rounding_interval: activeProject.project.rounding_interval,
-                rounding_direction: activeProject.project.rounding_direction,
-                round_in_time_fragments:
-                  activeProject.project.round_in_time_fragments,
-                time_fragment_interval:
-                  activeProject.project.time_fragment_interval,
-              }}
-              onSubmit={handleSubmit}
+              project={activeProject.project}
               onCancel={handleClose}
-              newProject={false}
-              submitting={submitting}
+              onClose={handleClose}
+              categoryId={categoryId}
+              setCategoryId={setCategoryId}
+              onOpenCategoryForm={() => drawersStack.open("category-form")}
             />
           </Stack>
         </Drawer>
@@ -139,7 +131,7 @@ export default function EditProjectDrawer({
           onClose={() => drawersStack.close("delete-project")}
           title={
             <Group>
-              <IconExclamationMark size={25} color="red" />
+              <IconAlertTriangleFilled size={25} color="red" />
               <Text>
                 {locale === "de-DE" ? "Projekt löschen" : "Delete Project"}
               </Text>
@@ -163,8 +155,27 @@ export default function EditProjectDrawer({
               tooltipLabel={
                 locale === "de-DE" ? "Projekt löschen" : "Delete Project"
               }
+              loading={isLoading}
             />
           </Group>
+        </Drawer>
+        <Drawer
+          size="md"
+          {...drawersStack.register("category-form")}
+          onClose={() => drawersStack.close("category-form")}
+          title={
+            <Group>
+              <IconCategoryPlus />
+              <Text>
+                {locale === "de-DE" ? "Kategorie hinzufügen" : "Add Category"}
+              </Text>
+            </Group>
+          }
+        >
+          <FinanceCategoryForm
+            onClose={() => drawersStack.close("category-form")}
+            onSuccess={(category) => setCategoryId(category.id)}
+          />
         </Drawer>
       </Drawer.Stack>
     </Box>

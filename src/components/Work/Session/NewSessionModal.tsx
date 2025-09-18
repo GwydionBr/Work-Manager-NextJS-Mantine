@@ -13,6 +13,7 @@ import ProjectForm from "../Project/ProjectForm";
 import { IconClockPlus } from "@tabler/icons-react";
 import { NewSession } from "@/types/timerSession.types";
 import { TimerRoundingSettings } from "@/types/timeTracker.types";
+import FinanceCategoryForm from "@/components/Finances/Form/FinanceCategoryForm";
 
 interface NewSessionModalProps {
   opened: boolean;
@@ -27,21 +28,24 @@ export default function NewSessionModal({
   initialValues,
   project,
 }: NewSessionModalProps) {
-  const stack = useModalsStack(["session-form", "project-form"]);
+  const stack = useModalsStack([
+    "session-form",
+    "project-form",
+    "category-form",
+  ]);
   const {
     locale,
     timerRoundingSettings,
     format24h,
     defaultSalaryAmount,
     defaultSalaryCurrency,
-    defaultProjectHourlyPayment,
   } = useSettingsStore();
   const [currentProject, setCurrentProject] = useState<
     Tables<"timer_project"> | undefined
   >(project);
-  const { addTimerSession, addProject } = useWorkStore();
+  const { addTimerSession } = useWorkStore();
+  const [categoryId, setCategoryId] = useState<string | null>(null);
   const [submittingSession, setSubmittingSession] = useState(false);
-  const [submittingProject, setSubmittingProject] = useState(false);
 
   useEffect(() => {
     setCurrentProject(project);
@@ -111,29 +115,6 @@ export default function NewSessionModal({
     setSubmittingSession(false);
   }
 
-  async function handleProjectSubmit(values: {
-    color: string | null;
-    title: string;
-    description: string;
-    salary: number;
-    currency: Currency;
-    payment_per_project: boolean;
-    cash_flow_category_id?: string | null;
-  }) {
-    setSubmittingProject(true);
-    const { createdProject } = await addProject(
-      {
-        ...values,
-      },
-      true
-    );
-    if (createdProject) {
-      setCurrentProject(createdProject);
-      stack.close("project-form");
-    }
-    setSubmittingProject(false);
-  }
-
   return (
     <Modal.Stack>
       <Modal
@@ -179,23 +160,23 @@ export default function NewSessionModal({
         transitionProps={{ transition: "fade-right", duration: 400 }}
       >
         <ProjectForm
-          initialValues={{
-            color: null,
-            title: "",
-            description: "",
-            salary: defaultSalaryAmount,
-            currency: defaultSalaryCurrency,
-            hourly_payment: defaultProjectHourlyPayment,
-            cash_flow_category_id: null,
-            rounding_interval: null,
-            rounding_direction: null,
-            round_in_time_fragments: null,
-            time_fragment_interval: null,
-          }}
-          onSubmit={handleProjectSubmit}
           onCancel={() => stack.close("project-form")}
-          newProject
-          submitting={submittingProject}
+          onClose={() => stack.close("project-form")}
+          categoryId={categoryId}
+          setCategoryId={setCategoryId}
+          onOpenCategoryForm={() => stack.open("category-form")}
+          onSuccess={(project) => setCurrentProject(project)}
+        />
+      </Modal>
+      <Modal
+        size="lg"
+        {...stack.register("category-form")}
+        onClose={() => stack.close("category-form")}
+        title={locale === "de-DE" ? "Kategorie hinzufügen" : "Add Category"}
+      >
+        <FinanceCategoryForm
+          onClose={() => stack.close("category-form")}
+          onSuccess={(category) => setCategoryId(category.id)}
         />
       </Modal>
     </Modal.Stack>

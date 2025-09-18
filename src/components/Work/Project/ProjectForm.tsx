@@ -2,7 +2,7 @@
 
 import { useForm } from "@mantine/form";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useDisclosure, useClickOutside } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useWorkStore } from "@/stores/workManagerStore";
@@ -40,7 +40,6 @@ import {
   IconPalette,
   IconPlus,
 } from "@tabler/icons-react";
-import FinanceCategoryForm from "@/components/Finances/Form/FinanceCategoryForm";
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { Currency, RoundingDirection } from "@/types/settings.types";
 import {
@@ -89,6 +88,7 @@ export default function ProjectForm({
     timerRoundingSettings,
     defaultSalaryCurrency,
     defaultSalaryAmount,
+    defaultProjectHourlyPayment,
   } = useSettingsStore();
   const { addProject, updateProject } = useWorkStore();
   const {
@@ -129,7 +129,7 @@ export default function ProjectForm({
       title: project?.title || "",
       description: project?.description || "",
       salary: project?.salary || defaultSalaryAmount,
-      hourly_payment: project?.hourly_payment || false,
+      hourly_payment: project?.hourly_payment || defaultProjectHourlyPayment,
       currency: project?.currency || defaultSalaryCurrency,
       cash_flow_category_id: project?.cash_flow_category_id || null,
       round_in_time_fragments:
@@ -145,19 +145,13 @@ export default function ProjectForm({
     validate: zodResolver(schema),
   });
 
-  const { financeCategories, fetchFinanceData, isFetching } = useFinanceStore();
+  const { financeCategories } = useFinanceStore();
 
   useEffect(() => {
     if (categoryId) {
       form.setFieldValue("cash_flow_category_id", categoryId);
     }
   }, [categoryId]);
-
-  useEffect(() => {
-    if (financeCategories.length === 0 && !isFetching) {
-      fetchFinanceData();
-    }
-  }, [financeCategories.length, isFetching, fetchFinanceData]);
 
   // Handle hobby toggle
   const handleHobbyToggle = (checked: boolean) => {
@@ -265,10 +259,12 @@ export default function ProjectForm({
     setSubmitting(false);
   };
 
-  const categoryOptions = financeCategories.map((category) => ({
-    value: category.id,
-    label: category.title,
-  }));
+  const categoryOptions = useMemo(() => {
+    return financeCategories.map((category) => ({
+      value: category.id,
+      label: category.title,
+    }));
+  }, [financeCategories]);
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>

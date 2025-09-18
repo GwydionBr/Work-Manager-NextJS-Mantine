@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useHotkeys } from "@mantine/hooks";
+import { useHotkeys, useDisclosure } from "@mantine/hooks";
 import { useRouter, usePathname } from "next/navigation";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
@@ -16,16 +16,17 @@ import {
   Text,
   Transition,
 } from "@mantine/core";
-import NewProjectButton from "@/components/Work/Project/NewProjectButton";
+import NewProjectModal from "@/components/Work/Project/NewProjectModal";
 import ProjectTree from "@/components/Work/Project/ProjectTree";
 import NewFolderButton from "@/components/Work/Project/NewFolderButton";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 import { SettingsTab } from "@/components/Settings/SettingsModal";
-import { IconArrowBarRight } from "@tabler/icons-react";
+import { IconArrowBarRight, IconFilePlus } from "@tabler/icons-react";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 
 import classes from "./Navbar.module.css";
 import Shortcut from "../UI/Shortcut";
+import PlusActionIcon from "../UI/ActionIcons/PlusActionIcon";
 
 export default function ProjectNavbar() {
   const { isFetching, setActiveProjectId } = useWorkStore();
@@ -40,7 +41,10 @@ export default function ProjectNavbar() {
   const router = useRouter();
   const pathname = usePathname();
   const [isOverview, setIsOverview] = useState<boolean>(false);
-
+  const [
+    isProjectModalOpen,
+    { open: openProjectModal, close: closeProjectModal },
+  ] = useDisclosure(false);
   useEffect(() => {
     setIsOverview(pathname === "/work/overview");
   }, [pathname]);
@@ -112,7 +116,12 @@ export default function ProjectNavbar() {
                       setSelectedTab(SettingsTab.WORK);
                     }}
                   />
-                  <NewProjectButton />
+                  <PlusActionIcon
+                    onClick={openProjectModal}
+                    tooltipLabel={
+                      locale === "de-DE" ? "Neues Projekt" : "New Project"
+                    }
+                  />
                 </Group>
               )}
             </Transition>
@@ -124,7 +133,12 @@ export default function ProjectNavbar() {
             >
               {(styles) => (
                 <Stack gap={8} style={styles} align="center" mt={10}>
-                  <NewProjectButton />
+                  <PlusActionIcon
+                    onClick={openProjectModal}
+                    tooltipLabel={
+                      locale === "de-DE" ? "Neues Projekt" : "New Project"
+                    }
+                  />
                   <AdjustmentActionIcon
                     aria-label="Adjust project settings"
                     tooltipLabel={
@@ -183,7 +197,15 @@ export default function ProjectNavbar() {
             px={10}
             style={styles}
           >
-            {!isFetching && <NewProjectButton plusIcon={false} />}
+            {!isFetching && (
+              <DelayedTooltip
+                label={locale === "de-DE" ? "Neues Projekt" : "New Project"}
+              >
+                <ActionIcon onClick={openProjectModal} variant="subtle">
+                  <IconFilePlus size={20} />
+                </ActionIcon>
+              </DelayedTooltip>
+            )}
             {!isFetching && <NewFolderButton />}
           </Group>
         )}
@@ -248,6 +270,10 @@ export default function ProjectNavbar() {
           </ActionIcon>
         </DelayedTooltip>
       </Group>
+      <NewProjectModal
+        opened={isProjectModalOpen}
+        onClose={closeProjectModal}
+      />
     </Box>
   );
 }
