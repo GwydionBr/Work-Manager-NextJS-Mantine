@@ -148,16 +148,16 @@ export default function TimeTrackerInstance({
         ...timerRoundingSettings,
         roundingDirection:
           project.project.rounding_direction ??
-          timerRoundingSettings.roundingDirection,
+          settingsTimerRoundingSettings.roundingDirection,
         roundingInterval:
           project.project.rounding_interval ??
-          timerRoundingSettings.roundingInterval,
+          settingsTimerRoundingSettings.roundingInterval,
         roundInTimeFragments:
           project.project.round_in_time_fragments ??
-          timerRoundingSettings.roundInTimeFragments,
+          settingsTimerRoundingSettings.roundInTimeFragments,
         timeFragmentInterval:
           project.project.time_fragment_interval ??
-          timerRoundingSettings.timeFragmentInterval,
+          settingsTimerRoundingSettings.timeFragmentInterval,
       };
       updateTimer(timer.id, {
         projectTitle: project.project.title,
@@ -165,7 +165,7 @@ export default function TimeTrackerInstance({
       });
       setTimerRounding(newTimerRoundingSettings);
     }
-  }, [project]);
+  }, [project, settingsTimerRoundingSettings]);
 
   // Erweiterte startTimer Funktion, die andere Timer beendet
   const startTimerWithStopOthers = useCallback(() => {
