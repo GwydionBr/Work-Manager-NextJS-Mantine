@@ -334,7 +334,7 @@ export default function ProjectForm({
         <Fieldset
           legend={locale === "de-DE" ? "Konfiguration" : "Configuration"}
         >
-          <Group wrap="nowrap" justify="space-between">
+          <Stack>
             <Popover
               opened={isColorPickerOpen}
               onClose={close}
@@ -362,43 +362,9 @@ export default function ProjectForm({
                 />
               </Popover.Dropdown>
             </Popover>
-            <Stack gap={0}>
-              <Group justify="flex-end">
-                <Popover
-                  opened={isCategoryFormOpen}
-                  onClose={closeCategoryForm}
-                  onOpen={openCategoryForm}
-                  closeOnClickOutside
-                  trapFocus
-                  returnFocus
-                  withOverlay
-                >
-                  <Popover.Target>
-                    <Button
-                      onClick={openCategoryForm}
-                      fw={500}
-                      variant="subtle"
-                    >
-                      <Group gap={4} p={0} m={0}>
-                        <IconPlus size={14} />
-                        <Text fz="xs" c="dimmed">
-                          {locale === "de-DE"
-                            ? "Neue Kategorie"
-                            : "Add Category"}
-                        </Text>
-                      </Group>
-                    </Button>
-                  </Popover.Target>
-                  <Popover.Dropdown>
-                    <FinanceCategoryForm
-                      onClose={closeCategoryForm}
-                      category={null}
-                      onSuccess={handleAddCategory}
-                    />
-                  </Popover.Dropdown>
-                </Popover>
-              </Group>
+            <Group wrap="nowrap">
               <Select
+                w="100%"
                 label={locale === "de-DE" ? "Kategorie" : "Category"}
                 placeholder={
                   locale === "de-DE"
@@ -415,8 +381,40 @@ export default function ProjectForm({
                 }
                 {...form.getInputProps("cash_flow_category_id")}
               />
-            </Stack>
-          </Group>
+              <Popover
+                opened={isCategoryFormOpen}
+                onClose={closeCategoryForm}
+                onOpen={openCategoryForm}
+                closeOnClickOutside
+                trapFocus
+                returnFocus
+                withOverlay
+              >
+                <Popover.Target>
+                  <Button
+                    mt={25}
+                    w={180}
+                    p={0}
+                    onClick={openCategoryForm}
+                    fw={500}
+                    variant="subtle"
+                    leftSection={<IconPlus size={20} />}
+                  >
+                    <Text fz="xs" c="dimmed">
+                      {locale === "de-DE" ? "Neue Kategorie" : "Add Category"}
+                    </Text>
+                  </Button>
+                </Popover.Target>
+                <Popover.Dropdown>
+                  <FinanceCategoryForm
+                    onClose={closeCategoryForm}
+                    category={null}
+                    onSuccess={handleAddCategory}
+                  />
+                </Popover.Dropdown>
+              </Popover>
+            </Group>
+          </Stack>
         </Fieldset>
         <Fieldset
           legend={locale === "de-DE" ? "Zeit Rundung" : "Time Rounding"}
@@ -527,7 +525,6 @@ export default function ProjectForm({
             mt="md"
           />
         )}
-        {onCancel && <CancelButton onClick={onCancel} />}
       </Stack>
     </form>
   );

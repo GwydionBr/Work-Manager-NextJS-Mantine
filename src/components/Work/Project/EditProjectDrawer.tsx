@@ -105,7 +105,7 @@ export default function EditProjectDrawer({
               </Text>
             </Group>
           }
-          size="md"
+          size="lg"
           padding="md"
         >
           <Stack justify="flex-start" gap="xl">
@@ -134,8 +134,9 @@ export default function EditProjectDrawer({
           </Stack>
         </Drawer>
         <Drawer
+          size="md"
           {...drawersStack.register("delete-project")}
-          onClose={handleClose}
+          onClose={() => drawersStack.close("delete-project")}
           title={
             <Group>
               <IconExclamationMark size={25} color="red" />
@@ -152,7 +153,7 @@ export default function EditProjectDrawer({
           </Text>
           <Group mt="md" justify="flex-end" gap="sm">
             <CancelButton
-              onClick={handleClose}
+              onClick={() => drawersStack.close("delete-project")}
               color="teal"
               tooltipLabel={locale === "de-DE" ? "Abbrechen" : "Cancel"}
             />

@@ -178,7 +178,7 @@ export default function EditSessionDrawer({
               </Text>
             </Group>
           }
-          size="md"
+          size="lg"
           padding="md"
         >
           <Flex direction="column" gap="xl">
@@ -213,6 +213,7 @@ export default function EditSessionDrawer({
               </Text>
             </Group>
           }
+          size="lg"
         >
           <ProjectForm
             initialValues={{
@@ -245,6 +246,7 @@ export default function EditSessionDrawer({
               </Text>
             </Group>
           }
+          size="md"
         >
           <Text>
             {locale === "de-DE"

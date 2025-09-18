@@ -13,6 +13,7 @@ import {
   Stack,
   Text,
   Divider,
+  Button,
 } from "@mantine/core";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import FinanceProjectFormModal from "./FinanceProjectFormModal";
@@ -282,54 +283,75 @@ export default function FinanceProjects() {
             </Group>
           </Collapse>
           <Stack w="100%" align="center">
-            {filteredFinanceProjects.map((project, index) => {
-              const isOverdue =
-                project.due_date &&
-                project.due_date < new Date().toISOString() &&
-                !isToday(new Date(project.due_date));
-              const noDueDate = !project.due_date;
-              return (
-                <Stack key={project.id} w="100%">
-                  {filteredFinanceProjects[index - 1]?.due_date !==
-                    project.due_date && (
-                    <Divider
-                      size="md"
-                      label={
-                        <Text
-                          size="sm"
-                          fw={500}
-                          c={
-                            isOverdue
-                              ? "red"
-                              : noDueDate
-                                ? "yellow"
-                                : "light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-4))"
-                          }
-                        >
-                          {project.due_date
-                            ? formatDate(new Date(project.due_date), locale)
-                            : locale === "de-DE"
-                              ? "Kein Fälligkeitsdatum"
-                              : "No due date"}
-                        </Text>
-                      }
-                      labelPosition="left"
-                    />
-                  )}
-                  <Box ml="xl">
-                    <FinanceProjectCard
-                      project={project}
-                      selectedModeActive={selectedModeActive}
-                      isSelected={selectedFinanceProjects.includes(project.id)}
-                      onToggleSelected={(e) =>
-                        toggleProjectSelection(project.id, index, e.shiftKey)
-                      }
-                      onDelete={onDelete}
-                    />
-                  </Box>
-                </Stack>
-              );
-            })}
+            {filteredFinanceProjects.length > 0 ? (
+              filteredFinanceProjects.map((project, index) => {
+                const isOverdue =
+                  project.due_date &&
+                  project.due_date < new Date().toISOString() &&
+                  !isToday(new Date(project.due_date));
+                const noDueDate = !project.due_date;
+                return (
+                  <Stack key={project.id} w="100%">
+                    {filteredFinanceProjects[index - 1]?.due_date !==
+                      project.due_date && (
+                      <Divider
+                        size="md"
+                        label={
+                          <Text
+                            size="sm"
+                            fw={500}
+                            c={
+                              isOverdue
+                                ? "red"
+                                : noDueDate
+                                  ? "yellow"
+                                  : "light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-4))"
+                            }
+                          >
+                            {project.due_date
+                              ? formatDate(new Date(project.due_date), locale)
+                              : locale === "de-DE"
+                                ? "Kein Fälligkeitsdatum"
+                                : "No due date"}
+                          </Text>
+                        }
+                        labelPosition="left"
+                      />
+                    )}
+                    <Box ml="xl">
+                      <FinanceProjectCard
+                        project={project}
+                        selectedModeActive={selectedModeActive}
+                        isSelected={selectedFinanceProjects.includes(
+                          project.id
+                        )}
+                        onToggleSelected={(e) =>
+                          toggleProjectSelection(project.id, index, e.shiftKey)
+                        }
+                        onDelete={onDelete}
+                      />
+                    </Box>
+                  </Stack>
+                );
+              })
+            ) : (
+              <Stack mt="xl">
+                <Text size="sm" c="dimmed" ta="center">
+                  {locale === "de-DE"
+                    ? "Keine Finanzprojekte gefunden"
+                    : "No finance projects found"}
+                </Text>
+                <Button
+                  variant="filled"
+                  leftSection={<IconMoneybagPlus />}
+                  onClick={toggleAddProjectModal}
+                >
+                  {locale === "de-DE"
+                    ? "Erstes Finanzprojekt hinzufügen"
+                    : "Add first finance project"}
+                </Button>
+              </Stack>
+            )}
           </Stack>
         </Stack>
         <FinanceProjectFormModal

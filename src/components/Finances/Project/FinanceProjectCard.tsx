@@ -28,7 +28,7 @@ import FinanceAdjustmentForm from "./FinanceAdjustmentForm";
 import FinanceAdjustmentRow from "./FinanceAdjustmentRow";
 import FinanceClientCard from "../FinanceClient/FinanceClientCard";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
-import { IconArrowDown, IconSquareRoundedCheck } from "@tabler/icons-react";
+import { IconArrowDown, IconLinkPlus } from "@tabler/icons-react";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 
@@ -135,11 +135,11 @@ export default function FinanceProjectCard({
             mb="xs"
           >
             <PayoutActionIcon onClick={() => {}} />
-            <Button leftSection={<IconSquareRoundedCheck />} variant="outline">
-              {locale === "de-DE" ? "Bezahlt markieren" : "Mark as paid"}
+            <Button variant="outline" leftSection={<IconLinkPlus />} size="xs">
+              Link with Work Project
             </Button>
             <DeleteActionIcon onClick={() => {}} />
-          </Group>
+          </Group>w
         </Collapse>
         <Stack>
           <Group justify="space-between">

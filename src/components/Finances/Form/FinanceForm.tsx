@@ -146,37 +146,9 @@ export default function FinanceForm({
           <IconReload size={16} />
           <Text>{locale === "de-DE" ? "Wiederkehrend" : "Recurring"}</Text>
         </Group>
-        <Stack gap={0}>
-          <Group justify="flex-end">
-            <Popover
-              opened={isCategoryFormOpen}
-              onClose={closeCategoryForm}
-              onOpen={openCategoryForm}
-              closeOnClickOutside
-              trapFocus
-              returnFocus
-              withOverlay
-            >
-              <Popover.Target>
-                <Button onClick={openCategoryForm} fw={500} variant="subtle" size="xs">
-                  <Group gap={4} p={0} m={0}>
-                    <IconPlus size={14} />
-                    <Text fz="xs" c="dimmed">
-                      {locale === "de-DE" ? "Neue Kategorie" : "Add Category"}
-                    </Text>
-                  </Group>
-                </Button>
-              </Popover.Target>
-              <Popover.Dropdown>
-                <FinanceCategoryForm
-                  onClose={closeCategoryForm}
-                  category={null}
-                  onSuccess={handleAddCategory}
-                />
-              </Popover.Dropdown>
-            </Popover>
-          </Group>
+        <Group wrap="nowrap">
           <Select
+            w="100%"
             data={financeCategories.map((category) => ({
               label: category.title,
               value: category.id,
@@ -196,7 +168,40 @@ export default function FinanceForm({
             }
             size="sm"
           />
-        </Stack>
+          <Popover
+            opened={isCategoryFormOpen}
+            onClose={closeCategoryForm}
+            onOpen={openCategoryForm}
+            closeOnClickOutside
+            trapFocus
+            returnFocus
+            withOverlay
+          >
+            <Popover.Target>
+              <Button
+                mt={25}
+                w={180}
+                p={0}
+                onClick={openCategoryForm}
+                fw={500}
+                variant="subtle"
+                size="xs"
+                leftSection={<IconPlus size={20} />}
+              >
+                <Text fz="xs" c="dimmed">
+                  {locale === "de-DE" ? "Neue Kategorie" : "Add Category"}
+                </Text>
+              </Button>
+            </Popover.Target>
+            <Popover.Dropdown>
+              <FinanceCategoryForm
+                onClose={closeCategoryForm}
+                category={null}
+                onSuccess={handleAddCategory}
+              />
+            </Popover.Dropdown>
+          </Popover>
+        </Group>
       </Stack>
       {isRecurring ? (
         <RecurringFinanceForm

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -15,6 +16,7 @@ import {
   useDrawersStack,
   Button,
   Stack,
+  Popover,
 } from "@mantine/core";
 import SingleCashFlowForm from "@/components/Finances/Form/SingleFinanceForm";
 import RecurringCashFlowForm from "@/components/Finances/Form/RecurringFinanceForm";
@@ -31,6 +33,7 @@ import {
 import { CashFlowType } from "@/types/settings.types";
 import CancelButton from "../UI/Buttons/CancelButton";
 import DeleteActionIcon from "../UI/ActionIcons/DeleteActionIcon";
+import FinanceCategoryForm from "./Form/FinanceCategoryForm";
 
 // Type guard to distinguish between single and recurring cash flows
 function isSingleCashFlow(
@@ -70,7 +73,10 @@ export default function EditCashFlowDrawer({
     "delete-cash-flow",
     "update-cash-flow",
   ]);
-
+  const [
+    isCategoryFormOpen,
+    { open: openCategoryForm, close: closeCategoryForm },
+  ] = useDisclosure(false);
   useEffect(() => {
     if (opened) {
       drawerStack.open("edit-cash-flow");
@@ -182,6 +188,10 @@ export default function EditCashFlowDrawer({
     setIsLoading(false);
   }
 
+  const handleAddCategory = (category: Tables<"finance_category">) => {
+    setCategoryId(category.id);
+  };
+
   return (
     <Drawer.Stack>
       <Drawer
@@ -230,26 +240,62 @@ export default function EditCashFlowDrawer({
               },
             ]}
           />
-          <Select
-            data={financeCategories.map((category) => ({
-              label: category.title,
-              value: category.id,
-            }))}
-            label={locale === "de-DE" ? "Kategorie" : "Category"}
-            placeholder={
-              locale === "de-DE" ? "Kategorie auswählen" : "Select a category"
-            }
-            value={categoryId}
-            onChange={(value) => setCategoryId(value)}
-            searchable
-            clearable
-            nothingFoundMessage={
-              locale === "de-DE"
-                ? "Keine Kategorien gefunden"
-                : "No categories found"
-            }
-            size="sm"
-          />
+          <Group wrap="nowrap">
+            <Select
+              w="100%"
+              data={financeCategories.map((category) => ({
+                label: category.title,
+                value: category.id,
+              }))}
+              label={locale === "de-DE" ? "Kategorie" : "Category"}
+              placeholder={
+                locale === "de-DE" ? "Kategorie auswählen" : "Select a category"
+              }
+              value={categoryId}
+              onChange={(value) => setCategoryId(value)}
+              searchable
+              clearable
+              nothingFoundMessage={
+                locale === "de-DE"
+                  ? "Keine Kategorien gefunden"
+                  : "No categories found"
+              }
+              size="sm"
+            />
+            <Popover
+              opened={isCategoryFormOpen}
+              onClose={closeCategoryForm}
+              onOpen={openCategoryForm}
+              closeOnClickOutside
+              trapFocus
+              returnFocus
+              withOverlay
+            >
+              <Popover.Target>
+                <Button
+                  mt={25}
+                  w={180}
+                  p={0}
+                  onClick={openCategoryForm}
+                  fw={500}
+                  variant="subtle"
+                  size="xs"
+                  leftSection={<IconPlus size={20} />}
+                >
+                  <Text fz="xs" c="dimmed">
+                    {locale === "de-DE" ? "Neue Kategorie" : "Add Category"}
+                  </Text>
+                </Button>
+              </Popover.Target>
+              <Popover.Dropdown>
+                <FinanceCategoryForm
+                  onClose={closeCategoryForm}
+                  category={null}
+                  onSuccess={handleAddCategory}
+                />
+              </Popover.Dropdown>
+            </Popover>
+          </Group>
           {isSingleCashFlow(cashFlow) ? (
             <SingleCashFlowForm
               financeCurrency={cashFlow.currency}

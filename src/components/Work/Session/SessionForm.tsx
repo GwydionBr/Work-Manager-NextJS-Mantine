@@ -224,18 +224,9 @@ export default function SessionForm({
     <form onSubmit={form.onSubmit(onSubmit)}>
       <Stack>
         <Fieldset legend={locale === "de-DE" ? "Projekt" : "Project"}>
-          <Stack gap={0}>
-            <Group justify="flex-end">
-              <Button onClick={onOpenProjectForm} fw={500} variant="subtle">
-                <Group gap={4} p={0} m={0}>
-                  <IconPlus size={14} />
-                  <Text fz="xs" c="dimmed">
-                    {locale === "de-DE" ? "Neues Projekt" : "Add Project"}
-                  </Text>
-                </Group>
-              </Button>
-            </Group>
+          <Group wrap="nowrap">
             <Select
+              w="100%"
               withAsterisk
               allowDeselect={false}
               label={locale === "de-DE" ? "Projekt" : "Project"}
@@ -248,7 +239,20 @@ export default function SessionForm({
               searchable
               onChange={handleProjectChange}
             />
-          </Stack>
+            <Button
+              onClick={onOpenProjectForm}
+              leftSection={<IconPlus size={18} />}
+              fw={500}
+              variant="subtle"
+              w={150}
+              mt={25}
+              p={0}
+            >
+              <Text fz="xs" c="dimmed">
+                {locale === "de-DE" ? "Neues Projekt" : "Add Project"}
+              </Text>
+            </Button>
+          </Group>
         </Fieldset>
         <Fieldset legend={locale === "de-DE" ? "Zeit" : "Time"}>
           <Stack>
@@ -321,7 +325,6 @@ export default function SessionForm({
             mt="md"
           />
         )}
-        {onCancel && <CancelButton onClick={onCancel} />}
       </Stack>
     </form>
   );
