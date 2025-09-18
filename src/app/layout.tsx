@@ -14,6 +14,7 @@ import { ContextMenuProvider } from "mantine-contextmenu";
 import { Notifications } from "@mantine/notifications";
 import Layout from "@/components/AppShell/AppShell";
 import { mantineTheme } from "@/theme";
+import { ModalsProvider } from "@mantine/modals";
 
 export const metadata = {
   title: "Work Manager",
@@ -52,11 +53,13 @@ export default function RootLayout({ children }: { children: any }) {
       <body>
         <MantineProvider defaultColorScheme="auto" theme={mantineTheme}>
           <ContextMenuProvider>
-            <Layout>
-              <Analytics />
-              <Notifications />
-              {children}
-            </Layout>
+            <ModalsProvider>
+              <Layout>
+                <Analytics />
+                <Notifications />
+                {children}
+              </Layout>
+            </ModalsProvider>
           </ContextMenuProvider>
         </MantineProvider>
         {/* {isProduction && <div id="sitetran_translate_element" />} */}

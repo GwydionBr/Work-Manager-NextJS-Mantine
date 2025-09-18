@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { modals } from "@mantine/modals";
 
 import {
   ActionIcon,
@@ -18,7 +19,7 @@ import {
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import FinanceProjectFormModal from "./FinanceProjectModal";
 import FinanceProjectCard from "./FinanceProjectCard";
-import { IconMoneybagPlus } from "@tabler/icons-react";
+import { IconAlertTriangleFilled, IconMoneybagPlus } from "@tabler/icons-react";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
@@ -29,9 +30,11 @@ import {
   FinanceNavbarItems,
   FinanceProjectNavbarTab,
 } from "@/types/finance.types";
+import { notifications } from "@mantine/notifications";
 
 export default function FinanceProjects() {
-  const { financeProjects, isFetching } = useFinanceStore();
+  const { financeProjects, isFetching, deleteFinanceProjects } =
+    useFinanceStore();
   const { locale } = useSettingsStore();
   const [selectedFinanceProjects, setSelectedFinanceProjects] = useState<
     string[]
@@ -220,13 +223,42 @@ export default function FinanceProjects() {
   }, [filteredFinanceProjects, selectedFinanceProjects]);
 
   const onDelete = (ids: string[]) => {
-    console.log(ids);
+    const isSingle = ids.length === 1;
+    modals.openConfirmModal({
+      title: (
+        <Group>
+          <IconAlertTriangleFilled size={25} color="red" />
+          <Text>
+            {locale === "de-DE"
+              ? `Finanzprojekt${isSingle ? "" : "e"} löschen`
+              : `Delete Finance Project${isSingle ? "" : "s"}`}
+          </Text>
+        </Group>
+      ),
+      children: (
+        <Text>
+          {locale === "de-DE"
+            ? `Sind Sie sicher, dass Sie diese Finanzprojekt${isSingle ? "" : "e"} löschen möchten?`
+            : `Are you sure you want to delete these finance project${isSingle ? "" : "s"}?`}
+        </Text>
+      ),
+      labels: {
+        confirm: locale === "de-DE" ? "Löschen" : "Delete",
+        cancel: locale === "de-DE" ? "Abbrechen" : "Cancel",
+      },
+      onConfirm: async () => {
+        const deleted = await deleteFinanceProjects(ids);
+        if (deleted) {
+          setSelectedFinanceProjects([]);
+        }
+      },
+    });
   };
 
   return (
     <Group align="flex-start" w="100%" wrap="nowrap" mb="xl">
       <FinanceProjectNavbar tab={tab} setTab={setTab} items={navbarItems} />
-      <Stack w="100%" maw={900}>
+      <Stack maw={900} w="100%">
         <Group justify="space-between" w="100%" px="md">
           <Box w={20} />
           <DelayedTooltip
@@ -274,7 +306,7 @@ export default function FinanceProjects() {
               </Group>
               <PayoutActionIcon
                 disabled={selectedFinanceProjects.length === 0}
-                onClick={() => onDelete(selectedFinanceProjects)}
+                onClick={() => console.log(selectedFinanceProjects)}
               />
               <DeleteActionIcon
                 disabled={selectedFinanceProjects.length === 0}
@@ -328,7 +360,7 @@ export default function FinanceProjects() {
                         onToggleSelected={(e) =>
                           toggleProjectSelection(project.id, index, e.shiftKey)
                         }
-                        onDelete={onDelete}
+                        onDelete={() => onDelete([project.id])}
                       />
                     </Box>
                   </Stack>

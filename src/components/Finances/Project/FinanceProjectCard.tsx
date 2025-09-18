@@ -37,7 +37,7 @@ interface FinanceProjectCardProps extends CardProps {
   selectedModeActive: boolean;
   isSelected: boolean;
   onToggleSelected: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  onDelete: (ids: string[]) => void;
+  onDelete: () => void;
 }
 
 export default function FinanceProjectCard({
@@ -138,8 +138,8 @@ export default function FinanceProjectCard({
             <Button variant="outline" leftSection={<IconLinkPlus />} size="xs">
               Link with Work Project
             </Button>
-            <DeleteActionIcon onClick={() => {}} />
-          </Group>w
+            <DeleteActionIcon onClick={onDelete} />
+          </Group>
         </Collapse>
         <Stack>
           <Group justify="space-between">

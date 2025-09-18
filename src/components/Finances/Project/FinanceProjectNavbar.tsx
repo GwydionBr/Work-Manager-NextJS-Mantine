@@ -2,7 +2,7 @@
 
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Card, Divider, NavLink, Text } from "@mantine/core";
+import { Card, CardProps, Divider, NavLink, Text } from "@mantine/core";
 import {
   IconCalendarEvent,
   IconList,
@@ -19,7 +19,7 @@ export enum FinanceProjectNavbarTab {
   All = "all",
 }
 
-interface FinanceProjectNavbarProps {
+interface FinanceProjectNavbarProps extends CardProps {
   tab: FinanceProjectNavbarTab;
   setTab: (tab: FinanceProjectNavbarTab) => void;
   items: FinanceNavbarItems;
@@ -29,10 +29,11 @@ export default function FinanceProjectNavbar({
   tab,
   setTab,
   items,
+  ...props
 }: FinanceProjectNavbarProps) {
   const { locale } = useSettingsStore();
   return (
-    <Card withBorder p="md" w={200} radius="lg">
+    <Card withBorder p="md" w={200} miw={190} radius="lg" {...props}>
       <NavLink
         label={locale === "de-DE" ? "Alle" : "All"}
         leftSection={<IconList />}

@@ -33,7 +33,7 @@ interface FinanceStoreActions {
   addFinanceProject: (
     project: TablesInsert<"finance_project">
   ) => Promise<Tables<"finance_project"> | null>;
-  deleteFinanceProject: (id: string) => Promise<boolean>;
+  deleteFinanceProjects: (ids: string[]) => Promise<boolean>;
   addSingleCashFlow: (
     singleCashFlow: TablesInsert<"single_cash_flow">
   ) => Promise<boolean>;
@@ -216,13 +216,13 @@ export const useFinanceStore = create<
         return newProject.data;
       },
 
-      async deleteFinanceProject(id) {
+      async deleteFinanceProjects(ids) {
         const { financeProjects } = get();
-        const deleted = await actions.deleteFinanceProject(id);
+        const deleted = await actions.deleteFinanceProjects(ids);
         if (!deleted.success) return false;
 
         const updatedFinanceProjects = financeProjects.filter(
-          (p) => p.id !== id
+          (p) => !ids.includes(p.id)
         );
         set({
           financeProjects: updatedFinanceProjects,
