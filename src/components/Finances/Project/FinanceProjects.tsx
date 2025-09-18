@@ -30,7 +30,11 @@ import {
   FinanceNavbarItems,
   FinanceProjectNavbarTab,
 } from "@/types/finance.types";
-import { notifications } from "@mantine/notifications";
+import {
+  showActionSuccessNotification,
+  showActionErrorNotification,
+  showDeleteConfirmationModal,
+} from "@/utils/notificationFunctions";
 
 export default function FinanceProjects() {
   const { financeProjects, isFetching, deleteFinanceProjects } =
@@ -224,35 +228,42 @@ export default function FinanceProjects() {
 
   const onDelete = (ids: string[]) => {
     const isSingle = ids.length === 1;
-    modals.openConfirmModal({
-      title: (
-        <Group>
-          <IconAlertTriangleFilled size={25} color="red" />
-          <Text>
-            {locale === "de-DE"
-              ? `Finanzprojekt${isSingle ? "" : "e"} löschen`
-              : `Delete Finance Project${isSingle ? "" : "s"}`}
-          </Text>
-        </Group>
-      ),
-      children: (
-        <Text>
-          {locale === "de-DE"
-            ? `Sind Sie sicher, dass Sie diese Finanzprojekt${isSingle ? "" : "e"} löschen möchten?`
-            : `Are you sure you want to delete these finance project${isSingle ? "" : "s"}?`}
-        </Text>
-      ),
-      labels: {
-        confirm: locale === "de-DE" ? "Löschen" : "Delete",
-        cancel: locale === "de-DE" ? "Abbrechen" : "Cancel",
-      },
-      onConfirm: async () => {
+    showDeleteConfirmationModal(
+      locale === "de-DE"
+        ? isSingle
+          ? "Finanzprojekt löschen"
+          : "Finanzprojekte löschen"
+        : isSingle
+          ? "Delete Finance Project"
+          : "Delete Finance Projects",
+      locale === "de-DE"
+        ? isSingle
+          ? "Sind Sie sicher, dass Sie dieses Finanzprojekt löschen möchten?"
+          : "Sind Sie sicher, dass Sie diese Finanzprojekte löschen möchten?"
+        : isSingle
+          ? "Are you sure you want to delete this finance project?"
+          : "Are you sure you want to delete these finance projects?",
+      async () => {
         const deleted = await deleteFinanceProjects(ids);
         if (deleted) {
           setSelectedFinanceProjects([]);
+          showActionSuccessNotification(
+            locale === "de-DE"
+              ? "Finanzprojekt erfolgreich gelöscht"
+              : "Finance project deleted successfully",
+            locale
+          );
+        } else {
+          showActionErrorNotification(
+            locale === "de-DE"
+              ? "Finanzprojekt konnte nicht gelöscht werden"
+              : "Finance project could not be deleted",
+            locale
+          );
         }
       },
-    });
+      locale
+    );
   };
 
   return (
