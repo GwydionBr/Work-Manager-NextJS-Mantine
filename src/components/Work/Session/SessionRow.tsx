@@ -7,7 +7,6 @@ import { useDisclosure, useHover } from "@mantine/hooks";
 import { Card, Group, Stack, Text, Box, Transition } from "@mantine/core";
 import { IconClock } from "@tabler/icons-react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
-import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
 import EditSessionDrawer from "@/components/Work/Session/EditSessionDrawer";
 
 import {
@@ -19,6 +18,11 @@ import {
 import type { Tables } from "@/types/db.types";
 import PencilActionIcon from "@/components/UI/ActionIcons/PencilActionIcon";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
+import {
+  showActionErrorNotification,
+  showActionSuccessNotification,
+  showDeleteConfirmationModal,
+} from "@/utils/notificationFunctions";
 
 interface SessionRowProps {
   session: Tables<"timer_session"> & { index: number };
@@ -38,7 +42,6 @@ export default function SessionRow({
   selectedModeActive,
 }: SessionRowProps) {
   const { locale, format24h } = useSettingsStore();
-  const [deleteModalOpened, deleteModalHandler] = useDisclosure(false);
   const [editDrawerOpened, editDrawerHandler] = useDisclosure(false);
   const { deleteTimerSessions } = useWorkStore();
 
@@ -47,10 +50,31 @@ export default function SessionRow({
   const { index, ...cleanedSession } = session;
 
   async function handleDelete() {
-    const success = await deleteTimerSessions([session.id]);
-    if (success) {
-      deleteModalHandler.close();
-    }
+    showDeleteConfirmationModal(
+      locale === "de-DE" ? "Sitzung löschen" : "Delete Session",
+      locale === "de-DE"
+        ? "Sind Sie sicher, dass Sie diese Sitzung löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+        : "Are you sure you want to delete this session? This action cannot be undone.",
+      async () => {
+        const success = await deleteTimerSessions([session.id]);
+        if (success) {
+          showActionSuccessNotification(
+            locale === "de-DE"
+              ? "Sitzung erfolgreich gelöscht"
+              : "Session deleted successfully",
+            locale
+          );
+        } else {
+          showActionErrorNotification(
+            locale === "de-DE"
+              ? "Sitzung konnte nicht gelöscht werden"
+              : "Session could not be deleted",
+            locale
+          );
+        }
+      },
+      locale
+    );
   }
 
   const earnings = Number(
@@ -173,7 +197,7 @@ export default function SessionRow({
                     }
                   />
                   <DeleteActionIcon
-                    onClick={() => deleteModalHandler.open()}
+                    onClick={() => handleDelete()}
                     tooltipLabel={
                       locale === "de-DE" ? "Sitzung löschen" : "Delete session"
                     }
@@ -201,18 +225,6 @@ export default function SessionRow({
           </Group>
         </Group>
       </Card>
-
-      <ConfirmDeleteModal
-        opened={deleteModalOpened}
-        onClose={() => deleteModalHandler.close()}
-        onDelete={handleDelete}
-        title={locale === "de-DE" ? "Sitzung löschen" : "Delete Session"}
-        message={
-          locale === "de-DE"
-            ? "Sind Sie sicher, dass Sie diese Sitzung löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
-            : "Are you sure you want to delete this session? This action cannot be undone."
-        }
-      />
       {project && (
         <EditSessionDrawer
           timerSession={cleanedSession}

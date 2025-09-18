@@ -20,8 +20,12 @@ import FinanceCategoryForm from "@/components/Finances/Form/FinanceCategoryForm"
 import { useCallback, useMemo, useState } from "react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
-import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
 import { IconCategory, IconCategoryPlus } from "@tabler/icons-react";
+import {
+  showActionErrorNotification,
+  showActionSuccessNotification,
+  showDeleteConfirmationModal,
+} from "@/utils/notificationFunctions";
 
 export default function FinanceCategorySettings() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -37,15 +41,6 @@ export default function FinanceCategorySettings() {
   ] = useDisclosure(false);
   const [selectedModeActive, { toggle: toggleSelectedMode }] =
     useDisclosure(false);
-  const [
-    deleteModalOpened,
-    { open: openDeleteModal, close: closeDeleteModal },
-  ] = useDisclosure(false);
-  const [modalInformation, setModalInformation] = useState<{
-    title: string;
-    message: React.ReactNode;
-    onDelete: () => void;
-  } | null>(null);
   useEffect(() => {
     if (!selectedModeActive) {
       setSelectedCategories([]);
@@ -65,66 +60,74 @@ export default function FinanceCategorySettings() {
     }
   }, [financeCategories, selectedCategories]);
 
-  const onDelete = useCallback(
-    (ids: string[]) => {
-      setModalInformation({
-        title: locale === "de-DE" ? "Kategorie löschen" : "Delete Category",
-        message:
-          locale === "de-DE" ? (
-            <Stack>
-              <Text>
-                Sind Sie sicher, dass Sie diese Kategorie
-                {ids.length > 1 ? "n" : ""} löschen möchten?
-              </Text>
-              <List>
-                {financeCategories
-                  .filter((category) => ids.includes(category.id))
-                  .map((category) => (
-                    <List.Item key={category.id}>
-                      <Stack gap={0}>
-                        <Text>{category.title}</Text>
-                        <Text fz="xs" c="dimmed">
-                          {category.description}
-                        </Text>
-                      </Stack>
-                    </List.Item>
-                  ))}
-              </List>
-            </Stack>
-          ) : (
-            <Stack>
-              <Text>
-                Are you sure you want to delete{" "}
-                {ids.length > 1 ? "these categories" : "this category"}?
-              </Text>
-              <List>
-                {financeCategories
-                  .filter((category) => ids.includes(category.id))
-                  .map((category) => (
-                    <List.Item key={category.id}>
-                      <Stack gap={0}>
-                        <Text>{category.title}</Text>
-                        <Text fz="xs" c="dimmed">
-                          {category.description}
-                        </Text>
-                      </Stack>
-                    </List.Item>
-                  ))}
-              </List>
-            </Stack>
-          ),
-        onDelete: async () => {
-          const deleted = await deleteFinanceCategories(ids);
-          if (deleted) {
-            setSelectedCategories([]);
-            closeDeleteModal();
-          }
-        },
-      });
-      openDeleteModal();
-    },
-    [financeCategories, locale, deleteFinanceCategories]
-  );
+  const onDelete = (ids: string[]) => {
+    showDeleteConfirmationModal(
+      locale === "de-DE" ? "Kategorie löschen" : "Delete Category",
+      locale === "de-DE" ? (
+        <Stack>
+          <Text>
+            Sind Sie sicher, dass Sie diese Kategorie
+            {ids.length > 1 ? "n" : ""} löschen möchten?
+          </Text>
+          <List>
+            {financeCategories
+              .filter((category) => ids.includes(category.id))
+              .map((category) => (
+                <List.Item key={category.id}>
+                  <Stack gap={0}>
+                    <Text>{category.title}</Text>
+                    <Text fz="xs" c="dimmed">
+                      {category.description}
+                    </Text>
+                  </Stack>
+                </List.Item>
+              ))}
+          </List>
+        </Stack>
+      ) : (
+        <Stack>
+          <Text>
+            Are you sure you want to delete{" "}
+            {ids.length > 1 ? "these categories" : "this category"}?
+          </Text>
+          <List>
+            {financeCategories
+              .filter((category) => ids.includes(category.id))
+              .map((category) => (
+                <List.Item key={category.id}>
+                  <Stack gap={0}>
+                    <Text>{category.title}</Text>
+                    <Text fz="xs" c="dimmed">
+                      {category.description}
+                    </Text>
+                  </Stack>
+                </List.Item>
+              ))}
+          </List>
+        </Stack>
+      ),
+      async () => {
+        const deleted = await deleteFinanceCategories(ids);
+        if (deleted) {
+          setSelectedCategories([]);
+          showActionSuccessNotification(
+            locale === "de-DE"
+              ? "Kategorie erfolgreich gelöscht"
+              : "Category deleted successfully",
+            locale
+          );
+        } else {
+          showActionErrorNotification(
+            locale === "de-DE"
+              ? "Kategorie konnte nicht gelöscht werden"
+              : "Category could not be deleted",
+            locale
+          );
+        }
+      },
+      locale
+    );
+  };
 
   const toggleCategorySelection = useCallback(
     (categoryId: string, index: number, range: boolean) => {
@@ -252,13 +255,6 @@ export default function FinanceCategorySettings() {
           </Stack>
         )}
       </Stack>
-      <ConfirmDeleteModal
-        opened={deleteModalOpened}
-        onClose={closeDeleteModal}
-        onDelete={modalInformation?.onDelete || (() => {})}
-        title={modalInformation?.title || ""}
-        message={modalInformation?.message || ""}
-      />
     </Group>
   );
 }

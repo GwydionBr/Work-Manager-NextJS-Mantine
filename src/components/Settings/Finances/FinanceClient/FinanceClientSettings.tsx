@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { modals } from "@mantine/modals";
 
 import {
   Stack,
@@ -20,8 +21,12 @@ import FinanceClientForm from "@/components/Finances/FinanceClient/FinanceClient
 import { useCallback, useMemo, useState } from "react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
-import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
 import { IconUserPlus, IconUsers } from "@tabler/icons-react";
+import {
+  showActionErrorNotification,
+  showActionSuccessNotification,
+  showDeleteConfirmationModal,
+} from "@/utils/notificationFunctions";
 
 export default function FinanceClientSettings() {
   const [selectedClients, setSelectedClients] = useState<string[]>([]);
@@ -35,15 +40,6 @@ export default function FinanceClientSettings() {
     useDisclosure(false);
   const [selectedModeActive, { toggle: toggleSelectedMode }] =
     useDisclosure(false);
-  const [
-    deleteModalOpened,
-    { open: openDeleteModal, close: closeDeleteModal },
-  ] = useDisclosure(false);
-  const [modalInformation, setModalInformation] = useState<{
-    title: string;
-    message: React.ReactNode;
-    onDelete: () => void;
-  } | null>(null);
   useEffect(() => {
     if (!selectedModeActive) {
       setSelectedClients([]);
@@ -63,66 +59,74 @@ export default function FinanceClientSettings() {
     }
   }, [financeClients, selectedClients]);
 
-  const onDelete = useCallback(
-    (ids: string[]) => {
-      setModalInformation({
-        title: locale === "de-DE" ? "Kunde löschen" : "Delete Client",
-        message:
-          locale === "de-DE" ? (
-            <Stack>
-              <Text>
-                Sind Sie sicher, dass Sie diese Kunden
-                {ids.length > 1 ? "n" : ""} löschen möchten?
-              </Text>
-              <List>
-                {financeClients
-                  .filter((client) => ids.includes(client.id))
-                  .map((client) => (
-                    <List.Item key={client.id}>
-                      <Stack gap={0}>
-                        <Text>{client.name}</Text>
-                        <Text fz="xs" c="dimmed">
-                          {client.description}
-                        </Text>
-                      </Stack>
-                    </List.Item>
-                  ))}
-              </List>
-            </Stack>
-          ) : (
-            <Stack>
-              <Text>
-                Are you sure you want to delete{" "}
-                {ids.length > 1 ? "these clients" : "this client"}?
-              </Text>
-              <List>
-                {financeClients
-                  .filter((client) => ids.includes(client.id))
-                  .map((client) => (
-                    <List.Item key={client.id}>
-                      <Stack gap={0}>
-                        <Text>{client.name}</Text>
-                        <Text fz="xs" c="dimmed">
-                          {client.description}
-                        </Text>
-                      </Stack>
-                    </List.Item>
-                  ))}
-              </List>
-            </Stack>
-          ),
-        onDelete: async () => {
-          const deleted = await deleteFinanceClients(ids);
-          if (deleted) {
-            setSelectedClients([]);
-            closeDeleteModal();
-          }
-        },
-      });
-      openDeleteModal();
-    },
-    [financeClients, locale, deleteFinanceClients]
-  );
+  const onDelete = (ids: string[]) => {
+    showDeleteConfirmationModal(
+      locale === "de-DE" ? "Kunde löschen" : "Delete Client",
+      locale === "de-DE" ? (
+        <Stack>
+          <Text>
+            Sind Sie sicher, dass Sie diese Kunden
+            {ids.length > 1 ? "n" : ""} löschen möchten?
+          </Text>
+          <List>
+            {financeClients
+              .filter((client) => ids.includes(client.id))
+              .map((client) => (
+                <List.Item key={client.id}>
+                  <Stack gap={0}>
+                    <Text>{client.name}</Text>
+                    <Text fz="xs" c="dimmed">
+                      {client.description}
+                    </Text>
+                  </Stack>
+                </List.Item>
+              ))}
+          </List>
+        </Stack>
+      ) : (
+        <Stack>
+          <Text>
+            Are you sure you want to delete{" "}
+            {ids.length > 1 ? "these clients" : "this client"}?
+          </Text>
+          <List>
+            {financeClients
+              .filter((client) => ids.includes(client.id))
+              .map((client) => (
+                <List.Item key={client.id}>
+                  <Stack gap={0}>
+                    <Text>{client.name}</Text>
+                    <Text fz="xs" c="dimmed">
+                      {client.description}
+                    </Text>
+                  </Stack>
+                </List.Item>
+              ))}
+          </List>
+        </Stack>
+      ),
+      async () => {
+        const deleted = await deleteFinanceClients(ids);
+        if (deleted) {
+          setSelectedClients([]);
+          showActionSuccessNotification(
+            locale === "de-DE"
+              ? "Kunde erfolgreich gelöscht"
+              : "Client deleted successfully",
+            locale
+          );
+        } else {
+          showActionErrorNotification(
+            locale === "de-DE"
+              ? "Kunde konnte nicht gelöscht werden"
+              : "Client could not be deleted",
+            locale
+          );
+        }
+      },
+      locale
+    );
+  };
 
   const toggleClientSelection = useCallback(
     (clientId: string, index: number, range: boolean) => {
@@ -243,13 +247,6 @@ export default function FinanceClientSettings() {
           </Stack>
         )}
       </Stack>
-      <ConfirmDeleteModal
-        opened={deleteModalOpened}
-        onClose={closeDeleteModal}
-        onDelete={modalInformation?.onDelete || (() => {})}
-        title={modalInformation?.title || ""}
-        message={modalInformation?.message || ""}
-      />
     </Group>
   );
 }

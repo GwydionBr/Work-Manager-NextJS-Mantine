@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { useDisclosure } from "@mantine/hooks";
 import { useUserStore } from "@/stores/userStore";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { modals } from "@mantine/modals";
 
 import { Divider, Grid, Group, Stack, Text, Box } from "@mantine/core";
 import {
@@ -12,22 +11,16 @@ import {
   IconHourglass,
   IconUserPlus,
 } from "@tabler/icons-react";
-import ConfirmDeleteModal from "../UI/ConfirmDeleteModal";
 import FriendsTable from "./FriendsTable";
 import styles from "./FriendList.module.css";
-
-interface ModalInformation {
-  title: string;
-  message: string;
-  onDelete: () => void;
-  onCancel: () => void;
-}
+import {
+  showActionErrorNotification,
+  showActionSuccessNotification,
+  showDeleteConfirmationModal,
+} from "@/utils/notificationFunctions";
 
 export default function FriendList() {
   const { locale } = useSettingsStore();
-  const [modalInformation, setModalInformation] =
-    useState<ModalInformation | null>(null);
-  const [modalOpened, modalHandler] = useDisclosure(false);
 
   const {
     friends,
@@ -40,35 +33,62 @@ export default function FriendList() {
   } = useUserStore();
 
   function handleRemoveFriend(id: string) {
-    setModalInformation({
-      title: locale === "de-DE" ? "Freund entfernen" : "Remove Friend",
-      message:
-        locale === "de-DE"
-          ? "Sind Sie sicher, dass Sie diesen Freund entfernen möchten?"
-          : "Are you sure you want to remove this friend?",
-      onDelete: () => {
-        removeFriend(id);
-        modalHandler.close();
+    showDeleteConfirmationModal(
+      locale === "de-DE" ? "Freund entfernen" : "Remove Friend",
+      locale === "de-DE"
+        ? "Sind Sie sicher, dass Sie diesen Freund entfernen möchten?"
+        : "Are you sure you want to remove this friend?",
+      async () => {
+        const success = await removeFriend(id);
+        if (success) {
+          showActionSuccessNotification(
+            locale === "de-DE"
+              ? "Freund erfolgreich entfernt"
+              : "Friend removed successfully",
+            locale
+          );
+        } else {
+          showActionErrorNotification(
+            locale === "de-DE"
+              ? "Freund konnte nicht entfernt werden"
+              : "Friend could not be removed",
+            locale
+          );
+        }
       },
-      onCancel: () => modalHandler.close(),
-    });
-    modalHandler.open();
+      locale
+    );
   }
 
   function handleDeclineFriend(id: string) {
-    setModalInformation({
-      title: locale === "de-DE" ? "Freundschaftsanfrage ablehnen" : "Decline Friend Request",
-      message:
+    modals.openConfirmModal({
+      title:
+        locale === "de-DE"
+          ? "Freundschaftsanfrage ablehnen"
+          : "Decline Friend Request",
+      children:
         locale === "de-DE"
           ? "Sind Sie sicher, dass Sie diese Freundschaftsanfrage ablehnen möchten?"
           : "Are you sure you want to decline this friend request?",
-      onDelete: () => {
-        declineFriend(id);
-        modalHandler.close();
+      onConfirm: async () => {
+        const success = await declineFriend(id);
+        if (success) {
+          showActionSuccessNotification(
+            locale === "de-DE"
+              ? "Freundschaftsanfrage erfolgreich abgelehnt"
+              : "Friend request declined successfully",
+            locale
+          );
+        } else {
+          showActionErrorNotification(
+            locale === "de-DE"
+              ? "Freundschaftsanfrage konnte nicht abgelehnt werden"
+              : "Friend request could not be declined",
+            locale
+          );
+        }
       },
-      onCancel: () => modalHandler.close(),
     });
-    modalHandler.open();
   }
 
   return (
@@ -98,7 +118,12 @@ export default function FriendList() {
           <Stack className={styles.friendRequestsSection}>
             <Group className={styles.sectionHeader}>
               <IconUserPlus color="light-dark(var(--mantine-color-blue-9), var(--mantine-color-blue-4))" />
-              <Text>{locale === "de-DE" ? "Freundschaftsanfragen" : "Friend requests"}:</Text>
+              <Text>
+                {locale === "de-DE"
+                  ? "Freundschaftsanfragen"
+                  : "Friend requests"}
+                :
+              </Text>
             </Group>
             <FriendsTable
               friends={requestedFriends}
@@ -144,13 +169,6 @@ export default function FriendList() {
             )}
           </Stack>
         </Grid.Col>
-        <ConfirmDeleteModal
-          opened={modalOpened}
-          onClose={modalHandler.close}
-          onDelete={modalInformation?.onDelete || (() => {})}
-          title={modalInformation?.title || ""}
-          message={modalInformation?.message || ""}
-        />
       </Grid>
     </Box>
   );

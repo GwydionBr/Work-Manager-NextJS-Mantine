@@ -9,7 +9,11 @@ import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import { Tables } from "@/types/db.types";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 import { IconPencil } from "@tabler/icons-react";
-import ConfirmDeleteModal from "@/components/UI/ConfirmDeleteModal";
+import {
+  showActionErrorNotification,
+  showActionSuccessNotification,
+  showDeleteConfirmationModal,
+} from "@/utils/notificationFunctions";
 
 interface SessionSelectorProps {
   selectedSessions: string[];
@@ -24,18 +28,35 @@ export default function SessionSelector({
 }: SessionSelectorProps) {
   const { locale } = useSettingsStore();
   const { deleteTimerSessions } = useWorkStore();
-  const [
-    deleteModalOpened,
-    { open: openDeleteModal, close: closeDeleteModal },
-  ] = useDisclosure(false);
   const [editModalOpened, { open: openEditModal, close: closeEditModal }] =
     useDisclosure(false);
 
-  const handleDelete = async () => {
-    const success = await deleteTimerSessions(selectedSessions);
-    if (success) {
-      closeDeleteModal();
-    }
+  const handleDelete = () => {
+    showDeleteConfirmationModal(
+      locale === "de-DE" ? "Auswahl löschen" : "Delete Selection",
+      locale === "de-DE"
+        ? "Sind Sie sicher, dass Sie diese Auswahl löschen möchten?"
+        : "Are you sure you want to delete this selection?",
+      async () => {
+        const success = await deleteTimerSessions(selectedSessions);
+        if (success) {
+          showActionSuccessNotification(
+            locale === "de-DE"
+              ? "Auswahl erfolgreich gelöscht"
+              : "Selection deleted successfully",
+            locale
+          );
+        } else {
+          showActionErrorNotification(
+            locale === "de-DE"
+              ? "Auswahl konnte nicht gelöscht werden"
+              : "Selection could not be deleted",
+            locale
+          );
+        }
+      },
+      locale
+    );
   };
 
   const handleEdit = () => {
@@ -93,22 +114,11 @@ export default function SessionSelector({
             </Text>
           </Collapse>
           <DeleteButton
-            onClick={openDeleteModal}
+            onClick={handleDelete}
             label={locale === "de-DE" ? "Auswahl löschen" : "Delete Selection"}
           />
         </Stack>
       </Collapse>
-      <ConfirmDeleteModal
-        opened={deleteModalOpened}
-        onClose={closeDeleteModal}
-        onDelete={handleDelete}
-        title={locale === "de-DE" ? "Auswahl löschen" : "Delete Selection"}
-        message={
-          locale === "de-DE"
-            ? "Sind Sie sicher, dass Sie diese Auswahl löschen möchten?"
-            : "Are you sure you want to delete this selection?"
-        }
-      />
     </Stack>
   );
 }

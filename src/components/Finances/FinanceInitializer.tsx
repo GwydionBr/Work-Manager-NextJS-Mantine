@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
@@ -11,12 +13,16 @@ import {
   ThemeIcon,
   Box,
   Anchor,
+  Modal,
 } from "@mantine/core";
 import { IconCash } from "@tabler/icons-react";
 import FinanceForm from "@/components/Finances/Form/FinanceForm";
 import { SettingsTab } from "../Settings/SettingsModal";
+import FinanceCategoryForm from "./Form/FinanceCategoryForm";
 
 export default function FinanceInitializer() {
+  const [opened, { open, close }] = useDisclosure(false);
+  const [categoryId, setCategoryId] = useState<string | null>(null);
   const { locale } = useSettingsStore();
   const { setIsModalOpen, setSelectedTab } = useSettingsStore();
   return (
@@ -73,8 +79,25 @@ export default function FinanceInitializer() {
           </Stack>
 
           <Box maw={600} w="100%" mx="auto">
-            <FinanceForm onClose={() => {}} />
+            <FinanceForm
+              onClose={() => {}}
+              onOpenCategoryForm={open}
+              categoryId={categoryId}
+              setCategoryId={setCategoryId}
+            />
           </Box>
+          <Modal
+            opened={opened}
+            onClose={close}
+            title={
+              locale === "de-DE" ? "Finanz Einstellungen" : "Finance Settings"
+            }
+          >
+            <FinanceCategoryForm
+              onClose={close}
+              onSuccess={(category) => setCategoryId(category.id)}
+            />
+          </Modal>
         </Stack>
       </Paper>
     </Container>

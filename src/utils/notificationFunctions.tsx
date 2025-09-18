@@ -11,7 +11,7 @@ import { Group, Text } from "@mantine/core";
 
 export const showDeleteConfirmationModal = (
   title: string,
-  message: string,
+  message: React.ReactNode,
   onConfirm: () => void,
   locale: Locale
 ) => {
@@ -22,21 +22,12 @@ export const showDeleteConfirmationModal = (
         <Text>{title}</Text>
       </Group>
     ),
-    children: <Text>{message}</Text>,
-    confirmProps: { color: "red" },
+    children: message,
+    confirmProps: { color: "red", leftSection: <IconTrash size={24} /> },
+    cancelProps: { variant: "outline", leftSection: <IconX size={24} /> },
     labels: {
-      confirm: (
-        <Group>
-          <IconTrash size={24} />
-          <Text>{locale === "de-DE" ? "Löschen" : "Delete"}</Text>
-        </Group>
-      ),
-      cancel: (
-        <Group>
-          <IconX size={24} />
-          <Text>{locale === "de-DE" ? "Abbrechen" : "Cancel"}</Text>
-        </Group>
-      ),
+      confirm: locale === "de-DE" ? "Löschen" : "Delete",
+      cancel: locale === "de-DE" ? "Abbrechen" : "Cancel",
     },
     onConfirm,
   });
