@@ -157,6 +157,7 @@ export default function FinanceProjectForm({
         />
         <NumberInput
           withAsterisk
+          allowLeadingZeros={false}
           label={locale === "de-DE" ? "Startbetrag" : "Start amount"}
           placeholder={
             locale === "de-DE" ? "Startbetrag eingeben" : "Enter start amount"
@@ -235,6 +236,7 @@ export default function FinanceProjectForm({
         </Group>
         <Stack mt="md">
           <CreateButton
+            type="submit"
             onClick={form.onSubmit(handleSubmit)}
             loading={isLoading}
           />
