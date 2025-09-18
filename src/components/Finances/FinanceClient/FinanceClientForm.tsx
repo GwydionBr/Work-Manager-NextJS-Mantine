@@ -29,7 +29,7 @@ const schema = z.object({
 });
 
 interface FinanceClientFormProps {
-  onClose: () => void;
+  onClose?: () => void;
   onSuccess?: (client: Tables<"finance_client">) => void;
   client?: Tables<"finance_client">;
 }
@@ -53,6 +53,11 @@ export default function FinanceClientForm({
     },
     validate: zodResolver(schema),
   });
+
+  const handleClose = () => {
+    form.reset();
+    onClose?.();
+  };
 
   async function handleSubmit(values: z.infer<typeof schema>) {
     setIsLoading(true);
@@ -85,8 +90,7 @@ export default function FinanceClientForm({
         withBorder: true,
         position: "top-center",
       });
-      onClose();
-      form.reset();
+      handleClose();
     } else {
       notifications.show({
         title: locale === "de-DE" ? "Fehler" : "Error",
@@ -156,7 +160,7 @@ export default function FinanceClientForm({
             loading={isLoading}
           />
         )}
-        <CancelButton onClick={onClose} />
+        {onClose && <CancelButton onClick={handleClose} />}
       </Stack>
     </form>
   );

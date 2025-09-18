@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useFinanceStore } from "@/stores/financeStore";
 
@@ -56,12 +56,6 @@ export default function FinanceForm({
     useSettingsStore();
   const { addSingleCashFlow, addRecurringCashFlow, financeCategories } =
     useFinanceStore();
-
-  useEffect(() => {
-    if (financeCategories.length > 0) {
-      setCategoryId(financeCategories[0].id);
-    }
-  }, []);
 
   async function handleSingleFinanceSubmit(values: SingleFinanceFormValues) {
     setIsLoading(true);

@@ -21,7 +21,7 @@ const schema = z.object({
 });
 
 interface FinanceCategoryFormProps {
-  onClose: () => void;
+  onClose?: () => void;
   onSuccess?: (category: Tables<"finance_category">) => void;
   category?: Tables<"finance_category"> | null;
 }
@@ -42,6 +42,11 @@ export default function FinanceCategoryForm({
     },
     validate: zodResolver(schema),
   });
+
+  const handleClose = () => {
+    form.reset();
+    onClose?.();
+  };
 
   async function handleFormSubmit(values: z.infer<typeof schema>) {
     setIsLoading(true);
@@ -76,8 +81,7 @@ export default function FinanceCategoryForm({
         withBorder: true,
         position: "top-center",
       });
-      onClose();
-      form.reset();
+      handleClose();
     } else {
       notifications.show({
         title: locale === "de-DE" ? "Fehler" : "Error",
@@ -129,12 +133,7 @@ export default function FinanceCategoryForm({
             loading={isLoading}
           />
         )}
-        <CancelButton
-          onClick={() => {
-            form.reset();
-            onClose();
-          }}
-        />
+        {onClose && <CancelButton onClick={handleClose} />}
       </Stack>
     </form>
   );

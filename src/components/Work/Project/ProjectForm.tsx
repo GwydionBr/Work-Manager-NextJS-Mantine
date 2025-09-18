@@ -5,6 +5,7 @@ import { useForm } from "@mantine/form";
 import { useEffect, useState } from "react";
 import { useDisclosure, useClickOutside } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
+import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
@@ -40,26 +41,23 @@ import {
   IconPlus,
 } from "@tabler/icons-react";
 import FinanceCategoryForm from "@/components/Finances/Form/FinanceCategoryForm";
-import { Tables } from "@/types/db.types";
+import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
+import { Currency, RoundingDirection } from "@/types/settings.types";
+import {
+  showActionErrorNotification,
+  showActionSuccessNotification,
+} from "@/utils/notificationFunctions";
+import CancelButton from "@/components/UI/Buttons/CancelButton";
 
 interface ProjectFormProps {
-  initialValues: {
-    color: string | null;
-    title: string;
-    description: string | null;
-    salary: number;
-    hourly_payment: boolean;
-    currency: string;
-    cash_flow_category_id?: string | null;
-    rounding_interval: number | null;
-    rounding_direction: string | null;
-    round_in_time_fragments: boolean | null;
-    time_fragment_interval: number | null;
-  };
-  onSubmit: (values: any) => void;
+  project?: Tables<"timer_project">;
+  onClose?: () => void;
+  onSuccess?: (project: Tables<"timer_project">) => void;
   onCancel?: () => void;
-  newProject: boolean;
-  submitting?: boolean;
+  categoryId: string | null;
+  setCategoryId: (categoryId: string | null) => void;
+  setActiveProjectId?: boolean;
+  onOpenCategoryForm?: () => void;
 }
 
 const schema = z.object({
@@ -77,12 +75,22 @@ const schema = z.object({
 });
 
 export default function ProjectForm({
-  initialValues,
-  onSubmit,
-  newProject,
-  submitting,
+  project,
+  onClose,
+  onSuccess,
+  categoryId,
+  setCategoryId,
+  onOpenCategoryForm,
+  setActiveProjectId = false,
+  onCancel,
 }: ProjectFormProps) {
-  const { locale, timerRoundingSettings } = useSettingsStore();
+  const {
+    locale,
+    timerRoundingSettings,
+    defaultSalaryCurrency,
+    defaultSalaryAmount,
+  } = useSettingsStore();
+  const { addProject, updateProject } = useWorkStore();
   const {
     roundingInterval,
     roundingDirection,
@@ -90,18 +98,16 @@ export default function ProjectForm({
     timeFragmentInterval,
   } = timerRoundingSettings;
   const [isColorPickerOpen, { open, close }] = useDisclosure(false);
-  const [
-    isCategoryFormOpen,
-    { open: openCategoryForm, close: closeCategoryForm },
-  ] = useDisclosure(false);
+  const [submitting, setSubmitting] = useState(false);
   const [
     isDefaultRounding,
     { open: openDefaultRounding, close: closeDefaultRounding },
   ] = useDisclosure(
-    initialValues.rounding_interval === null ||
-      initialValues.rounding_direction === null ||
-      initialValues.round_in_time_fragments === null ||
-      initialValues.time_fragment_interval === null
+    !project ||
+      project?.rounding_interval === null ||
+      project?.rounding_direction === null ||
+      project?.round_in_time_fragments === null ||
+      project?.time_fragment_interval === null
   );
   const ref = useClickOutside(() => {
     close();
@@ -109,32 +115,43 @@ export default function ProjectForm({
 
   // State to store previous work values
   const [previousWorkValues, setPreviousWorkValues] = useState({
-    salary: initialValues.salary,
-    hourly_payment: initialValues.hourly_payment,
+    salary: project?.salary,
+    hourly_payment: project?.hourly_payment,
   });
 
   const [isHobby, setIsHobby] = useState(
-    initialValues.hourly_payment === false && initialValues.salary === 0
-      ? true
-      : false
+    project?.hourly_payment === false && project?.salary === 0 ? true : false
   );
 
   const form = useForm({
     initialValues: {
-      ...initialValues,
+      color: project?.color || null,
+      title: project?.title || "",
+      description: project?.description || "",
+      salary: project?.salary || defaultSalaryAmount,
+      hourly_payment: project?.hourly_payment || false,
+      currency: project?.currency || defaultSalaryCurrency,
+      cash_flow_category_id: project?.cash_flow_category_id || null,
       round_in_time_fragments:
-        initialValues.round_in_time_fragments === null
+        project?.round_in_time_fragments === null ||
+        project?.round_in_time_fragments === undefined
           ? roundInTimeFragments
-          : initialValues.round_in_time_fragments,
+          : project?.round_in_time_fragments,
       time_fragment_interval:
-        initialValues.time_fragment_interval || timeFragmentInterval,
-      rounding_interval: initialValues.rounding_interval || roundingInterval,
-      rounding_direction: initialValues.rounding_direction || roundingDirection,
+        project?.time_fragment_interval || timeFragmentInterval,
+      rounding_interval: project?.rounding_interval || roundingInterval,
+      rounding_direction: project?.rounding_direction || roundingDirection,
     },
     validate: zodResolver(schema),
   });
 
   const { financeCategories, fetchFinanceData, isFetching } = useFinanceStore();
+
+  useEffect(() => {
+    if (categoryId) {
+      form.setFieldValue("cash_flow_category_id", categoryId);
+    }
+  }, [categoryId]);
 
   useEffect(() => {
     if (financeCategories.length === 0 && !isFetching) {
@@ -150,8 +167,11 @@ export default function ProjectForm({
       form.setFieldValue("hourly_payment", false);
     } else {
       setIsHobby(false);
-      form.setFieldValue("salary", previousWorkValues.salary);
-      form.setFieldValue("hourly_payment", previousWorkValues.hourly_payment);
+      form.setFieldValue("salary", previousWorkValues.salary || 10);
+      form.setFieldValue(
+        "hourly_payment",
+        previousWorkValues.hourly_payment || true
+      );
     }
   };
 
@@ -178,19 +198,71 @@ export default function ProjectForm({
     }
   };
 
-  const handleSubmit = (values: any) => {
-    const newValues = { ...values };
-    if (isDefaultRounding) {
-      newValues.rounding_interval = null;
-      newValues.rounding_direction = null;
-      newValues.round_in_time_fragments = null;
-      newValues.time_fragment_interval = null;
+  const handleSubmit = async (values: z.infer<typeof schema>) => {
+    setSubmitting(true);
+    if (project) {
+      const updatedProject: TablesUpdate<"timer_project"> = {
+        ...project,
+        ...values,
+        currency: values.currency as Currency,
+        rounding_direction: values.rounding_direction as RoundingDirection,
+      };
+      if (isDefaultRounding) {
+        updatedProject.rounding_interval = null;
+        updatedProject.rounding_direction = null;
+        updatedProject.round_in_time_fragments = null;
+        updatedProject.time_fragment_interval = null;
+      }
+      const success = await updateProject(updatedProject);
+      if (success) {
+        showActionSuccessNotification(
+          locale === "de-DE"
+            ? "Projekt erfolgreich bearbeitet"
+            : "Project successfully updated",
+          locale
+        );
+        onClose?.();
+        onSuccess?.(success);
+      } else {
+        showActionErrorNotification(
+          locale === "de-DE"
+            ? "Projekt konnte nicht bearbeitet werden"
+            : "Project could not be updated",
+          locale
+        );
+      }
+    } else {
+      const newProject: TablesInsert<"timer_project"> = {
+        ...values,
+        currency: values.currency as Currency,
+        rounding_direction: values.rounding_direction as RoundingDirection,
+      };
+      if (isDefaultRounding) {
+        newProject.rounding_interval = null;
+        newProject.rounding_direction = null;
+        newProject.round_in_time_fragments = null;
+        newProject.time_fragment_interval = null;
+      }
+      const success = await addProject(newProject, setActiveProjectId);
+      if (success) {
+        showActionSuccessNotification(
+          locale === "de-DE"
+            ? "Projekt erfolgreich erstellt"
+            : "Project successfully created",
+          locale
+        );
+        onClose?.();
+        onSuccess?.(success);
+      } else {
+        showActionErrorNotification(
+          locale === "de-DE"
+            ? "Projekt konnte nicht erstellt werden"
+            : "Project could not be created",
+          locale
+        );
+      }
     }
-    onSubmit(newValues);
-  };
-
-  const handleAddCategory = (category: Tables<"finance_category">) => {
-    form.setFieldValue("cash_flow_category_id", category.id);
+    setSubmitting(false);
   };
 
   const categoryOptions = financeCategories.map((category) => ({
@@ -377,40 +449,23 @@ export default function ProjectForm({
                     ? "Keine Kategorien gefunden"
                     : "No categories found"
                 }
-                {...form.getInputProps("cash_flow_category_id")}
+                value={categoryId}
+                onChange={(value) => setCategoryId(value)}
+                error={form.errors.cash_flow_category_id}
               />
-              <Popover
-                opened={isCategoryFormOpen}
-                onClose={closeCategoryForm}
-                onOpen={openCategoryForm}
-                closeOnClickOutside
-                trapFocus
-                returnFocus
-                withOverlay
+              <Button
+                mt={25}
+                w={180}
+                p={0}
+                onClick={onOpenCategoryForm}
+                fw={500}
+                variant="subtle"
+                leftSection={<IconPlus size={20} />}
               >
-                <Popover.Target>
-                  <Button
-                    mt={25}
-                    w={180}
-                    p={0}
-                    onClick={openCategoryForm}
-                    fw={500}
-                    variant="subtle"
-                    leftSection={<IconPlus size={20} />}
-                  >
-                    <Text fz="xs" c="dimmed">
-                      {locale === "de-DE" ? "Neue Kategorie" : "Add Category"}
-                    </Text>
-                  </Button>
-                </Popover.Target>
-                <Popover.Dropdown>
-                  <FinanceCategoryForm
-                    onClose={closeCategoryForm}
-                    category={null}
-                    onSuccess={handleAddCategory}
-                  />
-                </Popover.Dropdown>
-              </Popover>
+                <Text fz="xs" c="dimmed">
+                  {locale === "de-DE" ? "Neue Kategorie" : "Add Category"}
+                </Text>
+              </Button>
             </Group>
           </Stack>
         </Fieldset>
@@ -508,7 +563,7 @@ export default function ProjectForm({
             </Stack>
           </Stack>
         </Fieldset>
-        {newProject ? (
+        {project ? (
           <CreateButton
             onClick={form.onSubmit(handleSubmit)}
             type="submit"
@@ -523,6 +578,7 @@ export default function ProjectForm({
             mt="md"
           />
         )}
+        {onCancel && <CancelButton onClick={onCancel} />}
       </Stack>
     </form>
   );

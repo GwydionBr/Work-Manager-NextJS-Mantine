@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useWorkStore } from "@/stores/workManagerStore";
+import { useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
@@ -13,41 +13,17 @@ import {
   ThemeIcon,
   Box,
   Anchor,
+  Modal,
 } from "@mantine/core";
 import { IconBriefcase } from "@tabler/icons-react";
 import ProjectForm from "./Project/ProjectForm";
-import { Currency } from "@/types/settings.types";
+import FinanceCategoryForm from "@/components/Finances/Form/FinanceCategoryForm";
 import { SettingsTab } from "../Settings/SettingsModal";
 
 export default function WorkInitializer() {
-  const [submitting, setSubmitting] = useState(false);
-  const { addProject } = useWorkStore();
-  const {
-    locale,
-    defaultSalaryCurrency,
-    defaultSalaryAmount,
-    setIsModalOpen,
-    setSelectedTab,
-  } = useSettingsStore();
-
-  async function handleSubmit(values: {
-    title: string;
-    description: string;
-    salary: number;
-    currency: Currency;
-    payment_per_project: boolean;
-    cash_flow_category_id?: string | null;
-  }) {
-    setSubmitting(true);
-    const success = await addProject({
-      ...values,
-    }, true);
-    if (success) {
-      close();
-    }
-    setSubmitting(false);
-  }
-
+  const { locale, setIsModalOpen, setSelectedTab } = useSettingsStore();
+  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [opened, { open, close }] = useDisclosure(false);
   return (
     <Container size="md" py="xl">
       <Paper shadow="md" p="xl" radius="lg" withBorder>
@@ -101,24 +77,23 @@ export default function WorkInitializer() {
 
           <Box maw={600} w="100%" mx="auto">
             <ProjectForm
-              initialValues={{
-                color: null,
-                title: "",
-                description: "",
-                salary: defaultSalaryAmount,
-                currency: defaultSalaryCurrency,
-                hourly_payment: false,
-                cash_flow_category_id: null,
-                rounding_interval: null,
-                rounding_direction: null,
-                round_in_time_fragments: null,
-                time_fragment_interval: null,
-              }}
-              onSubmit={handleSubmit}
-              newProject={true}
-              submitting={submitting}
+              categoryId={categoryId}
+              setCategoryId={setCategoryId}
+              onOpenCategoryForm={open}
             />
           </Box>
+          <Modal
+            opened={opened}
+            onClose={close}
+            title={
+              locale === "de-DE" ? "Finanz Einstellungen" : "Finance Settings"
+            }
+          >
+            <FinanceCategoryForm
+              onClose={close}
+              onSuccess={(category) => setCategoryId(category.id)}
+            />
+          </Modal>
         </Stack>
       </Paper>
     </Container>

@@ -45,7 +45,7 @@ interface WorkStoreActions {
   addProject: (
     project: TablesInsert<"timer_project">,
     setActiveProjectId: boolean
-  ) => Promise<{ createdProject: Tables<"timer_project"> | null }>;
+  ) => Promise<Tables<"timer_project"> | null>;
   addTimerSession: (
     session: TablesInsert<"timer_session">,
     roundingSettings: TimerRoundingSettings
@@ -54,7 +54,9 @@ interface WorkStoreActions {
     completeOverlap: boolean;
     overlappingSessions: Tables<"timer_session">[] | null;
   }>;
-  updateProject: (project: TablesUpdate<"timer_project">) => Promise<boolean>;
+  updateProject: (
+    project: TablesUpdate<"timer_project">
+  ) => Promise<Tables<"timer_project"> | null>;
   updateTimerSession: (
     oldSession: Tables<"timer_session">,
     newSession: Tables<"timer_session">,
@@ -210,7 +212,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         const { updateStore, timerSessions, projectTree } = get();
         const updatedProject = await actions.updateProject({ project });
         if (!updatedProject.success) {
-          return false;
+          return null;
         }
 
         const updatedProjects = get().projects.map((p) =>
@@ -227,7 +229,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           );
           set({ projectTree: newProjectTree });
         }
-        return true;
+        return updatedProject.data;
       },
 
       async deleteProject(id) {
@@ -268,7 +270,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
 
         const newProject = await actions.createProject({ project });
         if (!newProject.success) {
-          return { createdProject: null };
+          return null;
         }
 
         const updatedProjects = [
@@ -294,7 +296,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           set({ activeProjectId: newProject.data.id });
         }
         handleChangedNodes(changedNodes);
-        return { createdProject: newProject.data };
+        return newProject.data;
       },
 
       async addTimerSession(session, roundingSettings) {
