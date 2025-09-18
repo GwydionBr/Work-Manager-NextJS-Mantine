@@ -1,20 +1,28 @@
 "use client";
 
 import { useForm } from "@mantine/form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { TablesInsert } from "@/types/db.types";
-import { Group, NumberInput, Select, Stack, TextInput } from "@mantine/core";
-import CancelButton from "@/components/UI/Buttons/CancelButton";
+import { Tables, TablesInsert } from "@/types/db.types";
+import {
+  Group,
+  NumberInput,
+  Select,
+  Stack,
+  Button,
+  TextInput,
+  Text,
+} from "@mantine/core";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
 import { currencies } from "@/constants/settings";
 import { Currency } from "@/types/settings.types";
 import LocaleDatePickerInput from "@/components/UI/Locale/LocaleDatePickerInput";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { IconCheck, IconPlus, IconX } from "@tabler/icons-react";
+import CancelButton from "@/components/UI/Buttons/CancelButton";
 
 const projectSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -29,25 +37,50 @@ const projectSchema = z.object({
 
 interface FinanceProjectFormProps {
   onClose: () => void;
+  financeProject?: Tables<"finance_project">;
   initialValues?: TablesInsert<"finance_project">;
+  clientId: string | null;
+  categoryId: string | null;
+  onOpenClientForm: () => void;
+  onOpenCategoryForm: () => void;
+  onClientChange: (value: string | null) => void;
+  onCategoryChange: (value: string | null) => void;
 }
 
 export default function FinanceProjectForm({
   onClose,
+  financeProject,
   initialValues,
+  clientId,
+  categoryId,
+  onOpenClientForm,
+  onOpenCategoryForm,
+  onClientChange,
+  onCategoryChange,
 }: FinanceProjectFormProps) {
   const { locale, defaultFinanceCurrency } = useSettingsStore();
   const { addFinanceProject, financeCategories, financeClients } =
     useFinanceStore();
   const [isLoading, setIsLoading] = useState(false);
   const form = useForm({
-    initialValues: initialValues || {
-      title: "",
-      currency: defaultFinanceCurrency,
-      start_amount: 0,
-    },
+    initialValues: initialValues ||
+      financeProject || {
+        title: "",
+        currency: defaultFinanceCurrency,
+        start_amount: 0,
+      },
     validate: zodResolver(projectSchema),
   });
+
+  useEffect(() => {
+    if (clientId) {
+      form.setFieldValue("client_id", clientId);
+    }
+    if (categoryId) {
+      form.setFieldValue("finance_category_id", categoryId);
+    }
+  }, [clientId, categoryId]);
+
   const handleSubmit = async (values: any) => {
     setIsLoading(true);
     const success = await addFinanceProject({
@@ -99,6 +132,17 @@ export default function FinanceProjectForm({
     value: client.id,
     label: client.name,
   }));
+
+  const handleClientChange = (value: string | null) => {
+    form.setFieldValue("client_id", value);
+    onClientChange(value);
+  };
+
+  const handleCategoryChange = (value: string | null) => {
+    form.setFieldValue("finance_category_id", value);
+    onCategoryChange(value);
+  };
+
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <Stack>
@@ -132,28 +176,74 @@ export default function FinanceProjectForm({
           label={locale === "de-DE" ? "Fälligkeitsdatum" : "Due date"}
           {...form.getInputProps("due_date")}
         />
-        <Select
-          data={categoryOptions}
-          label={locale === "de-DE" ? "Finanzkategorie" : "Finance category"}
-          placeholder={
-            locale === "de-DE"
-              ? "Finanzkategorie auswählen"
-              : "Select finance category"
-          }
-          {...form.getInputProps("finance_category_id")}
-        />
-        <Select
-          data={clientOptions}
-          label={locale === "de-DE" ? "Kunde" : "Client"}
-          placeholder={locale === "de-DE" ? "Kunde auswählen" : "Select client"}
-          {...form.getInputProps("client_id")}
-        />
+        <Group wrap="nowrap">
+          <Select
+            w="100%"
+            data={categoryOptions}
+            label={locale === "de-DE" ? "Finanzkategorie" : "Finance category"}
+            placeholder={
+              locale === "de-DE"
+                ? "Finanzkategorie auswählen"
+                : "Select finance category"
+            }
+            value={form.values.finance_category_id}
+            onChange={handleCategoryChange}
+            error={form.errors.finance_category_id}
+          />
+          <Button
+            mt={25}
+            w={180}
+            p={0}
+            onClick={onOpenCategoryForm}
+            fw={500}
+            variant="subtle"
+            size="xs"
+            leftSection={<IconPlus size={20} />}
+          >
+            <Text fz="xs" c="dimmed">
+              {locale === "de-DE" ? "Neue Kategorie" : "Add Category"}
+            </Text>
+          </Button>
+        </Group>
+        <Group wrap="nowrap">
+          <Select
+            w="100%"
+            data={clientOptions}
+            label={locale === "de-DE" ? "Kunde" : "Client"}
+            placeholder={
+              locale === "de-DE" ? "Kunde auswählen" : "Select client"
+            }
+            {...form.getInputProps("client_id")}
+            value={form.values.client_id}
+            onChange={handleClientChange}
+            error={form.errors.client_id}
+          />
+          <Button
+            mt={25}
+            w={180}
+            p={0}
+            onClick={onOpenClientForm}
+            fw={500}
+            variant="subtle"
+            size="xs"
+            leftSection={<IconPlus size={20} />}
+          >
+            <Text fz="xs" c="dimmed">
+              {locale === "de-DE" ? "Neuer Kunde" : "Add Client"}
+            </Text>
+          </Button>
+        </Group>
         <Stack mt="md">
           <CreateButton
             onClick={form.onSubmit(handleSubmit)}
             loading={isLoading}
           />
-          <CancelButton onClick={onClose} />
+          <CancelButton
+            onClick={() => {
+              form.reset();
+              onClose();
+            }}
+          />
         </Stack>
       </Stack>
     </form>

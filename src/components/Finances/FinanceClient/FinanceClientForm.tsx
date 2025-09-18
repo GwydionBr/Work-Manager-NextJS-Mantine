@@ -72,8 +72,6 @@ export default function FinanceClientForm({
       currentClient = response;
     }
     if (currentClient) {
-      form.reset();
-      onClose();
       onSuccess?.(currentClient);
       notifications.show({
         title: locale === "de-DE" ? "Erfolg" : "Success",
@@ -87,6 +85,8 @@ export default function FinanceClientForm({
         withBorder: true,
         position: "top-center",
       });
+      onClose();
+      form.reset();
     } else {
       notifications.show({
         title: locale === "de-DE" ? "Fehler" : "Error",

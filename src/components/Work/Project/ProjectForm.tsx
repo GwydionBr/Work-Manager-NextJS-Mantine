@@ -30,7 +30,6 @@ import {
   getRoundingModes,
 } from "@/constants/settings";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
-import CancelButton from "@/components/UI/Buttons/CancelButton";
 import UpdateButton from "@/components/UI/Buttons/UpdateButton";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
 import ProjectColorPicker from "@/components/UI/ProjectColorPicker";
@@ -80,7 +79,6 @@ const schema = z.object({
 export default function ProjectForm({
   initialValues,
   onSubmit,
-  onCancel,
   newProject,
   submitting,
 }: ProjectFormProps) {

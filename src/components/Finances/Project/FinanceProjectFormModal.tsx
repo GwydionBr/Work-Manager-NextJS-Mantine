@@ -1,10 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-import { Modal, useModalsStack } from "@mantine/core";
+import { Modal, useModalsStack, Group, Text } from "@mantine/core";
 import FinanceProjectForm from "./FinanceProjectForm";
 import useSettingsStore from "@/stores/settingsStore";
+import FinanceClientForm from "../FinanceClient/FinanceClientForm";
+import FinanceCategoryForm from "../Form/FinanceCategoryForm";
+import {
+  IconCategoryPlus,
+  IconMoneybagPlus,
+  IconUserPlus,
+} from "@tabler/icons-react";
 
 interface FinanceProjectFormModalProps {
   opened: boolean;
@@ -15,7 +22,13 @@ export default function FinanceProjectFormModal({
   opened,
   onClose,
 }: FinanceProjectFormModalProps) {
-  const stack = useModalsStack(["project-form"]);
+  const [clientId, setClientId] = useState<string | null>(null);
+  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const stack = useModalsStack([
+    "project-form",
+    "client-form",
+    "category-form",
+  ]);
   const { locale } = useSettingsStore();
 
   useEffect(() => {
@@ -32,12 +45,65 @@ export default function FinanceProjectFormModal({
         {...stack.register("project-form")}
         onClose={onClose}
         title={
-          locale === "de-DE" ? "Neues Finanz Projekt" : "New Finance Project"
+          <Group>
+            <IconMoneybagPlus />
+            <Text>
+              {locale === "de-DE"
+                ? "Neues Finanz Projekt"
+                : "New Finance Project"}
+            </Text>
+          </Group>
         }
         size="lg"
         padding="md"
       >
-        <FinanceProjectForm onClose={onClose} />
+        <FinanceProjectForm
+          onClose={onClose}
+          clientId={clientId}
+          categoryId={categoryId}
+          onOpenClientForm={() => stack.open("client-form")}
+          onOpenCategoryForm={() => stack.open("category-form")}
+          onClientChange={setClientId}
+          onCategoryChange={setCategoryId}
+        />
+      </Modal>
+      <Modal
+        {...stack.register("client-form")}
+        onClose={() => stack.close("client-form")}
+        title={
+          <Group>
+            <IconUserPlus />
+            <Text>{locale === "de-DE" ? "Neuer Kunde" : "New Client"}</Text>
+          </Group>
+        }
+        size="lg"
+        padding="md"
+      >
+        <FinanceClientForm
+          onClose={() => stack.close("client-form")}
+          onSuccess={(client) => setClientId(client.id)}
+        />
+      </Modal>
+      <Modal
+        {...stack.register("category-form")}
+        onClose={() => stack.close("category-form")}
+        title={
+          <Group>
+            <IconCategoryPlus />
+            <Text>
+              {locale === "de-DE"
+                ? "Neue Finanzkategorie"
+                : "New Finance Category"}
+            </Text>
+          </Group>
+        }
+        size="lg"
+        padding="md"
+      >
+        <FinanceCategoryForm
+          onClose={() => stack.close("category-form")}
+          onSuccess={(category) => setCategoryId(category.id)}
+        />
       </Modal>
     </Modal.Stack>
   );

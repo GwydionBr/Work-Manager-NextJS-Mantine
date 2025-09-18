@@ -23,7 +23,6 @@ import { currencies } from "@/constants/settings";
 import TimeInput from "@/components/Work/Session/SessionTimeInput";
 import UpdateButton from "@/components/UI/Buttons/UpdateButton";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
-import CancelButton from "@/components/UI/Buttons/CancelButton";
 import LocaleDateTimePicker from "@/components/UI/Locale/LocaleDateTimePicker";
 
 import { Tables } from "@/types/db.types";

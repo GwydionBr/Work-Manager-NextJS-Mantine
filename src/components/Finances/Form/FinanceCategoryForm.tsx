@@ -23,11 +23,7 @@ const schema = z.object({
 interface FinanceCategoryFormProps {
   onClose: () => void;
   onSuccess?: (category: Tables<"finance_category">) => void;
-  category?: {
-    id: string;
-    title: string;
-    description: string | null;
-  } | null;
+  category?: Tables<"finance_category"> | null;
 }
 
 export default function FinanceCategoryForm({
@@ -67,8 +63,6 @@ export default function FinanceCategoryForm({
     }
 
     if (currentCategory) {
-      form.reset();
-      onClose();
       onSuccess?.(currentCategory);
       notifications.show({
         title: locale === "de-DE" ? "Erfolg" : "Success",
@@ -82,6 +76,8 @@ export default function FinanceCategoryForm({
         withBorder: true,
         position: "top-center",
       });
+      onClose();
+      form.reset();
     } else {
       notifications.show({
         title: locale === "de-DE" ? "Fehler" : "Error",
@@ -133,7 +129,12 @@ export default function FinanceCategoryForm({
             loading={isLoading}
           />
         )}
-        <CancelButton onClick={onClose} />
+        <CancelButton
+          onClick={() => {
+            form.reset();
+            onClose();
+          }}
+        />
       </Stack>
     </form>
   );
