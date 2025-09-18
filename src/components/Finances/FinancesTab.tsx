@@ -10,10 +10,10 @@ import {
   IconBriefcase,
   IconPresentationAnalytics,
 } from "@tabler/icons-react";
-import FinanceOverview from "./Overview/FinanceOverview";
-import FinanceRecurring from "./Recurring/FinanceRecurring";
-import FinanceSingle from "./Single/FinanceSingle";
-import FinanceProjects from "./Project/FinanceProjects";
+import FinanceOverview from "@/components/Finances/Overview/FinanceOverview";
+import FinanceRecurring from "@/components/Finances/CashFlow/Recurring/FinanceRecurring";
+import FinanceSingle from "@/components/Finances/CashFlow/Single/FinanceSingle";
+import FinanceProjects from "@/components/Finances/Project/FinanceProjects";
 import { FinanceTab } from "@/types/finance.types";
 
 export default function FinancesTab() {

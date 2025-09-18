@@ -31,9 +31,9 @@ import {
   IconAlertTriangle,
 } from "@tabler/icons-react";
 import { CashFlowType } from "@/types/settings.types";
-import CancelButton from "../UI/Buttons/CancelButton";
-import DeleteActionIcon from "../UI/ActionIcons/DeleteActionIcon";
-import FinanceCategoryForm from "./Form/FinanceCategoryForm";
+import CancelButton from "../../UI/Buttons/CancelButton";
+import DeleteActionIcon from "../../UI/ActionIcons/DeleteActionIcon";
+import FinanceCategoryForm from "../Form/FinanceCategoryForm";
 
 // Type guard to distinguish between single and recurring cash flows
 function isSingleCashFlow(

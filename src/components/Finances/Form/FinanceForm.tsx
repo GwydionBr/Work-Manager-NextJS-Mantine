@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useFinanceStore } from "@/stores/financeStore";
 
@@ -14,7 +13,6 @@ import {
   Group,
   Alert,
   Select,
-  Popover,
   Button,
 } from "@mantine/core";
 import {
@@ -29,24 +27,28 @@ import SingleFinanceForm, {
 import RecurringFinanceForm, {
   RecurringFinanceFormValues,
 } from "./RecurringFinanceForm";
-import { Tables } from "@/types/db.types";
+import CancelButton from "@/components/UI/Buttons/CancelButton";
 
 import { CashFlowType } from "@/types/settings.types";
 
 import classes from "../../UI/Switch.module.css";
-import FinanceCategoryForm from "./FinanceCategoryForm";
 
 interface FinanceFormProps {
   onClose: () => void;
   isSingle?: boolean;
+  onOpenCategoryForm: () => void;
+  categoryId: string | null;
+  setCategoryId: (categoryId: string | null) => void;
 }
 
 export default function FinanceForm({
   onClose,
   isSingle = true,
+  onOpenCategoryForm,
+  categoryId,
+  setCategoryId,
 }: FinanceFormProps) {
   const [type, setType] = useState<CashFlowType>("income");
-  const [categoryId, setCategoryId] = useState<string | null>(null);
   const [isRecurring, setIsRecurring] = useState<boolean>(!isSingle);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,10 +56,6 @@ export default function FinanceForm({
     useSettingsStore();
   const { addSingleCashFlow, addRecurringCashFlow, financeCategories } =
     useFinanceStore();
-  const [
-    isCategoryFormOpen,
-    { open: openCategoryForm, close: closeCategoryForm },
-  ] = useDisclosure(false);
 
   useEffect(() => {
     if (financeCategories.length > 0) {
@@ -81,10 +79,6 @@ export default function FinanceForm({
       onClose();
     }
   }
-
-  const handleAddCategory = (category: Tables<"finance_category">) => {
-    setCategoryId(category.id);
-  };
 
   async function handleRecurringFinanceSubmit(
     values: RecurringFinanceFormValues
@@ -168,39 +162,20 @@ export default function FinanceForm({
             }
             size="sm"
           />
-          <Popover
-            opened={isCategoryFormOpen}
-            onClose={closeCategoryForm}
-            onOpen={openCategoryForm}
-            closeOnClickOutside
-            trapFocus
-            returnFocus
-            withOverlay
+          <Button
+            mt={25}
+            w={180}
+            p={0}
+            onClick={onOpenCategoryForm}
+            fw={500}
+            variant="subtle"
+            size="xs"
+            leftSection={<IconPlus size={20} />}
           >
-            <Popover.Target>
-              <Button
-                mt={25}
-                w={180}
-                p={0}
-                onClick={openCategoryForm}
-                fw={500}
-                variant="subtle"
-                size="xs"
-                leftSection={<IconPlus size={20} />}
-              >
-                <Text fz="xs" c="dimmed">
-                  {locale === "de-DE" ? "Neue Kategorie" : "Add Category"}
-                </Text>
-              </Button>
-            </Popover.Target>
-            <Popover.Dropdown>
-              <FinanceCategoryForm
-                onClose={closeCategoryForm}
-                category={null}
-                onSuccess={handleAddCategory}
-              />
-            </Popover.Dropdown>
-          </Popover>
+            <Text fz="xs" c="dimmed">
+              {locale === "de-DE" ? "Neue Kategorie" : "Add Category"}
+            </Text>
+          </Button>
         </Group>
       </Stack>
       {isRecurring ? (
@@ -216,6 +191,7 @@ export default function FinanceForm({
           isLoading={isLoading}
         />
       )}
+      <CancelButton onClick={onClose} />
       {error && (
         <Alert
           color="red"

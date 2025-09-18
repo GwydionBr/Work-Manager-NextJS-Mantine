@@ -25,7 +25,7 @@ import { Tables } from "@/types/db.types";
 
 import classes from "./Finances.module.css";
 import { formatMoney } from "@/utils/formatFunctions";
-import EditCashFlowDrawer from "@/components/Finances/EditCashFlowDrawer";
+import EditCashFlowDrawer from "@/components/Finances/CashFlow/EditCashFlowDrawer";
 
 interface FinanceSectionProps {
   title: string;

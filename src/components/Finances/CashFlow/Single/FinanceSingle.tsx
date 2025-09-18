@@ -5,14 +5,26 @@ import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Table, Group, Text, ScrollArea, Stack } from "@mantine/core";
-import EditCashFlowDrawer from "../EditCashFlowDrawer";
-import NewCashFlowButton from "../NewCashFlowButton";
+import {
+  Table,
+  Group,
+  Text,
+  ScrollArea,
+  Stack,
+  ActionIcon,
+} from "@mantine/core";
+import EditCashFlowDrawer from "@/components/Finances/CashFlow/EditCashFlowDrawer";
+import CashFlowModal from "@/components/Finances/CashFlow/CashFlowModal";
 import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
 
 import { formatDate, formatMoney } from "@/utils/formatFunctions";
 import { Tables } from "@/types/db.types";
-import { IconCashMove, IconCashMoveBack } from "@tabler/icons-react";
+import {
+  IconCashMove,
+  IconCashMoveBack,
+  IconCashPlus,
+} from "@tabler/icons-react";
+import DelayedTooltip from "@/components/UI/DelayedTooltip";
 
 export default function FinanceSingle() {
   const { singleCashFlows, financeCategories } = useFinanceStore();
@@ -20,6 +32,10 @@ export default function FinanceSingle() {
   const [
     editCashFlowOpened,
     { open: openEditCashFlow, close: closeEditCashFlow },
+  ] = useDisclosure(false);
+  const [
+    cashFlowModalOpened,
+    { open: openCashFlowModal, close: closeCashFlowModal },
   ] = useDisclosure(false);
   const [selectedCashFlow, setSelectedCashFlow] =
     useState<Tables<"single_cash_flow"> | null>(singleCashFlows[0] ?? null);
@@ -31,13 +47,21 @@ export default function FinanceSingle() {
     <ScrollArea mb="md">
       <Stack>
         <Group justify="center">
-          <NewCashFlowButton
-            isSingle={true}
-            tooltipLabel={
+          <DelayedTooltip
+            label={
               locale === "de-DE"
                 ? "Einmalzahlung hinzufügen"
                 : "Add Single Cash Flow"
             }
+          >
+            <ActionIcon onClick={openCashFlowModal} variant="subtle">
+              <IconCashPlus />
+            </ActionIcon>
+          </DelayedTooltip>
+          <CashFlowModal
+            opened={cashFlowModalOpened}
+            onClose={closeCashFlowModal}
+            isSingle={true}
           />
         </Group>
         <Table>

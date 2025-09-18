@@ -14,7 +14,7 @@ import {
   Stack,
 } from "@mantine/core";
 import FinanceSection from "@/components/Finances/FinanceSection";
-import NewCashFlowButton from "@/components/Finances/NewCashFlowButton";
+import NewCashFlowButton from "@/components/Finances/CashFlow/NewCashFlowButton";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 import { IconArrowBarRight } from "@tabler/icons-react";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";

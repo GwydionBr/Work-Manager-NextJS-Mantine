@@ -14,15 +14,18 @@ import {
   Text,
   Card,
   Divider,
+  ActionIcon,
 } from "@mantine/core";
 
 import classes from "./FinanceRecurring.module.css";
-import EditCashFlowButton from "../EditCashFlowDrawer";
-import NewCashFlowButton from "../NewCashFlowButton";
+import EditCashFlowButton from "@/components/Finances/CashFlow/EditCashFlowDrawer";
+import CashFlowModal from "@/components/Finances/CashFlow/CashFlowModal";
 import { formatDate, formatMoney } from "@/utils/formatFunctions";
 import { FinanceInterval } from "@/types/settings.types";
 import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
 import { Tables } from "@/types/db.types";
+import DelayedTooltip from "@/components/UI/DelayedTooltip";
+import { IconCashPlus } from "@tabler/icons-react";
 
 export default function FinanceRecurring() {
   const { recurringCashFlows } = useFinanceStore();
@@ -33,7 +36,10 @@ export default function FinanceRecurring() {
     editCashFlowOpened,
     { open: openEditCashFlow, close: closeEditCashFlow },
   ] = useDisclosure(false);
-
+  const [
+    cashFlowModalOpened,
+    { open: openCashFlowModal, close: closeCashFlowModal },
+  ] = useDisclosure(false);
   useEffect(() => {
     if (recurringCashFlows.length > 0) {
       setSelectedCashFlow(recurringCashFlows[0]);
@@ -219,13 +225,21 @@ export default function FinanceRecurring() {
 
   return (
     <Stack gap="xl" align="center" mb="xl">
-      <NewCashFlowButton
-        isSingle={false}
-        tooltipLabel={
+      <DelayedTooltip
+        label={
           locale === "de-DE"
             ? "Wiederkehrenden Cashflow hinzufügen"
             : "Add Recurring Cash Flow"
         }
+      >
+        <ActionIcon onClick={openCashFlowModal} variant="subtle">
+          <IconCashPlus />
+        </ActionIcon>
+      </DelayedTooltip>
+      <CashFlowModal
+        opened={cashFlowModalOpened}
+        onClose={closeCashFlowModal}
+        isSingle={false}
       />
       {renderTable(
         activeCashFlows,

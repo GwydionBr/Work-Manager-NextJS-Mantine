@@ -6,7 +6,7 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import { ActionIcon, Box, Flex, Modal } from "@mantine/core";
 import FinanceForm from "@/components/Finances/Form/FinanceForm";
 import { IconCashPlus } from "@tabler/icons-react";
-import DelayedTooltip from "../UI/DelayedTooltip";
+import DelayedTooltip from "../../UI/DelayedTooltip";
 
 interface NewCashFlowButtonProps {
   isSingle?: boolean;
@@ -29,7 +29,13 @@ export default function NewCashFlowButton({
         padding="md"
       >
         <Flex direction="column" gap="xl">
-          <FinanceForm onClose={close} isSingle={isSingle} />
+          <FinanceForm
+            onClose={close}
+            isSingle={isSingle}
+            onOpenCategoryForm={() => {}}
+            categoryId={null}
+            setCategoryId={() => {}}
+          />
         </Flex>
       </Modal>
       <DelayedTooltip
