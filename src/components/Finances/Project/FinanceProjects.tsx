@@ -16,7 +16,7 @@ import {
   Button,
 } from "@mantine/core";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
-import FinanceProjectFormModal from "./FinanceProjectFormModal";
+import FinanceProjectFormModal from "./FinanceProjectModal";
 import FinanceProjectCard from "./FinanceProjectCard";
 import { IconMoneybagPlus } from "@tabler/icons-react";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";

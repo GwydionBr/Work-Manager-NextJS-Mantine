@@ -1,6 +1,6 @@
 "use client";
 
-import { useHotkeys } from "@mantine/hooks";
+import { useHotkeys, useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -15,6 +15,10 @@ import {
 } from "@mantine/core";
 import FinanceSection from "@/components/Finances/FinanceSection";
 import NewCashFlowButton from "@/components/Finances/CashFlow/NewCashFlowButton";
+import CashFlowModal from "@/components/Finances/CashFlow/CashFlowModal";
+import FinanceProjectModal from "@/components/Finances/Project/FinanceProjectModal";
+import CashFlowActionIcon from "@/components/UI/ActionIcons/CashFlowActionIcon";
+import FinanceProjectActionIcon from "@/components/UI/ActionIcons/FinanceProjectActionIcon";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 import { IconArrowBarRight } from "@tabler/icons-react";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
@@ -32,7 +36,14 @@ export default function FinanceNavbar() {
     isFinanceNavbarOpen,
     toggleFinanceNavbar,
   } = useSettingsStore();
-
+  const [
+    isFinanceProjectModalOpen,
+    { open: openFinanceProjectModal, close: closeFinanceProjectModal },
+  ] = useDisclosure(false);
+  const [
+    isCashFlowModalOpen,
+    { open: openCashFlowModal, close: closeCashFlowModal },
+  ] = useDisclosure(false);
   useHotkeys([["mod + J", () => toggleFinanceNavbar()]]);
 
   const incomeCashFlows = singleCashFlows.filter(
@@ -95,20 +106,35 @@ export default function FinanceNavbar() {
               {(styles) => (
                 <Group gap={8} style={styles}>
                   <AdjustmentActionIcon
-                    aria-label="Adjust finance settings"
                     tooltipLabel={
                       locale === "de-DE"
                         ? "Finanzeinstellungen anpassen"
                         : "Adjust finance settings"
                     }
-                    size="md"
                     iconSize={20}
                     onClick={() => {
                       setIsModalOpen(true);
                       setSelectedTab(SettingsTab.FINANCE);
                     }}
                   />
-                  <NewCashFlowButton />
+                  <FinanceProjectActionIcon
+                    tooltipLabel={
+                      locale === "de-DE"
+                        ? "Finanzprojekt hinzufügen"
+                        : "Add finance project"
+                    }
+                    onClick={openFinanceProjectModal}
+                    iconSize={20}
+                  />
+                  <CashFlowActionIcon
+                    tooltipLabel={
+                      locale === "de-DE"
+                        ? "Zahlung hinzufügen"
+                        : "Add cash flow"
+                    }
+                    onClick={openCashFlowModal}
+                    iconSize={20}
+                  />
                 </Group>
               )}
             </Transition>
@@ -120,15 +146,30 @@ export default function FinanceNavbar() {
             >
               {(styles) => (
                 <Stack gap={8} style={styles} align="center" mt={10}>
-                  <NewCashFlowButton />
+                  <FinanceProjectActionIcon
+                    tooltipLabel={
+                      locale === "de-DE"
+                        ? "Finanzprojekt hinzufügen"
+                        : "Add finance project"
+                    }
+                    onClick={openFinanceProjectModal}
+                    iconSize={20}
+                  />
+                  <CashFlowActionIcon
+                    tooltipLabel={
+                      locale === "de-DE"
+                        ? "Zahlung hinzufügen"
+                        : "Add cash flow"
+                    }
+                    onClick={openCashFlowModal}
+                    iconSize={20}
+                  />
                   <AdjustmentActionIcon
-                    aria-label="Adjust finance settings"
                     tooltipLabel={
                       locale === "de-DE"
                         ? "Finanzeinstellungen anpassen"
                         : "Adjust finance settings"
                     }
-                    size="md"
                     iconSize={20}
                     onClick={() => {
                       setIsModalOpen(true);
@@ -201,6 +242,14 @@ export default function FinanceNavbar() {
           </ActionIcon>
         </DelayedTooltip>
       </Group>
+      <FinanceProjectModal
+        opened={isFinanceProjectModalOpen}
+        onClose={() => closeFinanceProjectModal()}
+      />
+      <CashFlowModal
+        opened={isCashFlowModalOpen}
+        onClose={() => closeCashFlowModal()}
+      />
     </Box>
   );
 }
