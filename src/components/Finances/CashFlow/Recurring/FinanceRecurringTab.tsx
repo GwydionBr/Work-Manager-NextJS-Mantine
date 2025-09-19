@@ -14,6 +14,7 @@ import {
   Card,
   Divider,
   ActionIcon,
+  Badge,
 } from "@mantine/core";
 
 import EditCashFlowButton from "@/components/Finances/CashFlow/EditCashFlowDrawer";
@@ -101,7 +102,7 @@ export default function FinanceRecurringTab() {
     showStartDates: boolean = false
   ) => (
     <Stack align="center" w="100%">
-      <Title order={3}>{title}</Title>
+      <Divider w="100%" label={<Badge color="blue" variant="outline">{title}</Badge>} size="sm" mb="md"/>
       {(expenseSum || incomeSum) && (
         <Card withBorder radius="md" p="md" my="md">
           <Stack>

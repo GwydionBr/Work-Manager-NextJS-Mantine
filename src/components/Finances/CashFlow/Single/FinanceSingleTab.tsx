@@ -12,6 +12,7 @@ import {
   ScrollArea,
   Stack,
   ActionIcon,
+  Badge,
 } from "@mantine/core";
 import EditCashFlowDrawer from "@/components/Finances/CashFlow/EditCashFlowDrawer";
 import CashFlowModal from "@/components/Finances/CashFlow/CashFlowModal";
@@ -23,6 +24,7 @@ import {
   IconCashMove,
   IconCashMoveBack,
   IconCashPlus,
+  IconTag,
 } from "@tabler/icons-react";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 
@@ -101,11 +103,17 @@ export default function FinanceSingleTab() {
                   </Table.Td>
                   <Table.Td>{cashFlow.title}</Table.Td>
                   <Table.Td>
-                    {
-                      financeCategories.find(
-                        (category) => category.id === cashFlow.category_id
-                      )?.title
-                    }
+                    <Badge
+                      color="grape"
+                      variant="light"
+                      leftSection={<IconTag size={12} />}
+                    >
+                      {
+                        financeCategories.find(
+                          (category) => category.id === cashFlow.category_id
+                        )?.title
+                      }
+                    </Badge>
                   </Table.Td>
                   <Table.Td>
                     <EditActionIcon

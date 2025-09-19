@@ -214,7 +214,9 @@ export default function FinanceProjectTab() {
       if (range && lastSelectedIndex !== null) {
         const start = Math.min(lastSelectedIndex, index);
         const end = Math.max(lastSelectedIndex, index);
-        const rangeIds = financeProjects.slice(start, end + 1).map((p) => p.id);
+        const rangeIds = filteredFinanceProjects
+          .slice(start, end + 1)
+          .map((p) => p.id);
         setSelectedFinanceProjects((prev) =>
           Array.from(new Set([...prev, ...rangeIds]))
         );
@@ -446,15 +448,7 @@ export default function FinanceProjectTab() {
                 );
               })
             ) : (
-              <Box
-                p="xl"
-                style={{
-                  backgroundColor: "var(--mantine-color-gray-0)",
-                  borderRadius: "var(--mantine-radius-lg)",
-                  border: "2px dashed var(--mantine-color-gray-4)",
-                }}
-                ta="center"
-              >
+              <Card p="xl" withBorder shadow="sm" radius="lg" ta="center">
                 <Stack align="center" gap="md">
                   <ThemeIcon size="xl" color="gray" variant="light">
                     <IconCurrencyDollar size={32} />
@@ -487,7 +481,7 @@ export default function FinanceProjectTab() {
                     )}
                   </Button>
                 </Stack>
-              </Box>
+              </Card>
             )}
           </Stack>
         </Stack>
