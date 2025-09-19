@@ -71,12 +71,12 @@ export default function FinanceTabs() {
         >
           {locale === "de-DE" ? "Analyse" : "Analysis"}
         </Tabs.Tab>
-        <Tabs.Tab
+        {/* <Tabs.Tab
           leftSection={<IconBrandCashapp color="light-dark(blue, cyan)" />}
           value="Payout"
         >
           {locale === "de-DE" ? "Auszahlung" : "Payout"}
-        </Tabs.Tab>
+        </Tabs.Tab> */}
       </Tabs.List>
 
       <Tabs.Panel value="Projects">
