@@ -26,7 +26,7 @@ import {
 } from "@tabler/icons-react";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 
-export default function FinanceSingle() {
+export default function FinanceSingleTab() {
   const { singleCashFlows, financeCategories } = useFinanceStore();
   const { locale } = useSettingsStore();
   const [

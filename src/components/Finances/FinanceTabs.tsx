@@ -11,13 +11,14 @@ import {
   IconPresentationAnalytics,
   IconBrandCashapp,
 } from "@tabler/icons-react";
-import FinanceOverview from "@/components/Finances/Overview/FinanceOverview";
-import FinanceRecurring from "@/components/Finances/CashFlow/Recurring/FinanceRecurring";
-import FinanceSingle from "@/components/Finances/CashFlow/Single/FinanceSingle";
-import FinanceProjects from "@/components/Finances/Project/FinanceProjects";
+import FinanceOverviewTab from "@/components/Finances/Overview/FinanceOverviewTab";
+import FinanceRecurringTab from "@/components/Finances/CashFlow/Recurring/FinanceRecurringTab";
+import FinanceSingleTab from "@/components/Finances/CashFlow/Single/FinanceSingleTab";
+import FinanceProjectTab from "@/components/Finances/Project/FinanceProjectsTab";
 import { FinanceTab } from "@/types/finance.types";
+import PayoutTab from "./Payout/PayoutTab";
 
-export default function FinancesTab() {
+export default function FinanceTabs() {
   const { locale } = useSettingsStore();
   const { singleCashFlows, recurringCashFlows, activeTab, setActiveTab } =
     useFinanceStore();
@@ -72,23 +73,26 @@ export default function FinancesTab() {
         </Tabs.Tab>
         <Tabs.Tab
           leftSection={<IconBrandCashapp color="light-dark(blue, cyan)" />}
-          value="Categories"
+          value="Payout"
         >
           {locale === "de-DE" ? "Auszahlung" : "Payout"}
         </Tabs.Tab>
       </Tabs.List>
 
-      <Tabs.Panel value="Analysis">
-        <FinanceOverview />
-      </Tabs.Panel>
       <Tabs.Panel value="Projects">
-        <FinanceProjects />
+        <FinanceProjectTab />
       </Tabs.Panel>
       <Tabs.Panel value="Single">
-        <FinanceSingle />
+        <FinanceSingleTab />
       </Tabs.Panel>
       <Tabs.Panel value="Recurring">
-        <FinanceRecurring />
+        <FinanceRecurringTab />
+      </Tabs.Panel>
+      <Tabs.Panel value="Payout">
+        <PayoutTab />
+      </Tabs.Panel>
+      <Tabs.Panel value="Analysis">
+        <FinanceOverviewTab />
       </Tabs.Panel>
     </Tabs>
   );

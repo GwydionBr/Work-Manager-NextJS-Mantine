@@ -17,8 +17,6 @@ import {
   getEndOfMonth,
 } from "@/utils/financeChartHelperFunctions";
 
-import classes from "./FinanceOverview.module.css";
-
 import { type FinanceInterval } from "@/types/settings.types";
 
 /**
@@ -32,7 +30,7 @@ import { type FinanceInterval } from "@/types/settings.types";
  * - Complete time period coverage (including empty periods)
  * - Timezone-safe date handling with date-fns
  */
-export default function FinanceOverview() {
+export default function FinanceOverviewTab() {
   // Chart configuration state
   const [interval, setInterval] = useState<FinanceInterval>("day");
   const [chartType, setChartType] = useState<ChartType>("area");
@@ -59,7 +57,7 @@ export default function FinanceOverview() {
   }, []);
 
   return (
-    <Stack className={classes.financeOverviewContainer} mb="xl">
+    <Stack align="center" mb="xl">
       <ChartControls
         interval={interval}
         setInterval={setInterval}

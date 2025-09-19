@@ -6,7 +6,6 @@ import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
-  Box,
   Table,
   Title,
   Stack,
@@ -17,7 +16,6 @@ import {
   ActionIcon,
 } from "@mantine/core";
 
-import classes from "./FinanceRecurring.module.css";
 import EditCashFlowButton from "@/components/Finances/CashFlow/EditCashFlowDrawer";
 import CashFlowModal from "@/components/Finances/CashFlow/CashFlowModal";
 import { formatDate, formatMoney } from "@/utils/formatFunctions";
@@ -27,7 +25,7 @@ import { Tables } from "@/types/db.types";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import { IconCashPlus } from "@tabler/icons-react";
 
-export default function FinanceRecurring() {
+export default function FinanceRecurringTab() {
   const { recurringCashFlows } = useFinanceStore();
   const { locale, defaultFinanceCurrency } = useSettingsStore();
   const [selectedCashFlow, setSelectedCashFlow] =
@@ -102,7 +100,7 @@ export default function FinanceRecurring() {
     showEndDates: boolean = false,
     showStartDates: boolean = false
   ) => (
-    <Box className={classes.financeRecurringContainer}>
+    <Stack align="center" w="100%">
       <Title order={3}>{title}</Title>
       {(expenseSum || incomeSum) && (
         <Card withBorder radius="md" p="md" my="md">
@@ -220,7 +218,7 @@ export default function FinanceRecurring() {
           onClose={closeEditCashFlow}
         />
       )}
-    </Box>
+    </Stack>
   );
 
   return (

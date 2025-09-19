@@ -4,7 +4,6 @@ import { useCallback, useMemo, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { modals } from "@mantine/modals";
 
 import {
   ActionIcon,
@@ -19,7 +18,7 @@ import {
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import FinanceProjectFormModal from "./FinanceProjectModal";
 import FinanceProjectCard from "./FinanceProjectCard";
-import { IconAlertTriangleFilled, IconMoneybagPlus } from "@tabler/icons-react";
+import { IconMoneybagPlus } from "@tabler/icons-react";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
@@ -36,7 +35,7 @@ import {
   showDeleteConfirmationModal,
 } from "@/utils/notificationFunctions";
 
-export default function FinanceProjects() {
+export default function FinanceProjectTab() {
   const { financeProjects, isFetching, deleteFinanceProjects } =
     useFinanceStore();
   const { locale } = useSettingsStore();

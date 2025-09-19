@@ -16,7 +16,7 @@ export type FinanceNavbarItem = {
 
 export type FinanceNavbarItems = {
   [key in FinanceProjectNavbarTab]: FinanceNavbarItem;
-}
+};
 
 export enum FinanceProjectNavbarTab {
   All = "all",
@@ -30,4 +30,5 @@ export enum FinanceTab {
   Projects = "Projects",
   Single = "Single",
   Recurring = "Recurring",
+  Payout = "Payout",
 }
