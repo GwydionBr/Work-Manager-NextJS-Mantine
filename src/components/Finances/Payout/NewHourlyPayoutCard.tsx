@@ -8,8 +8,8 @@ import { useDisclosure } from "@mantine/hooks";
 
 import { Text, Stack, Card, Group } from "@mantine/core";
 import { IconBrandCashapp } from "@tabler/icons-react";
-import QuickPayoutButton from "@/components/Payout/QuickPayoutButton";
-import PayoutModal from "@/components/Payout/Modal/PayoutModal";
+import QuickPayoutButton from "@/components/Finances/Payout/QuickPayoutButton";
+import PayoutModal from "@/components/Finances/Payout/Modal/PayoutModal";
 
 import { Tables } from "@/types/db.types";
 import { TimerProject } from "@/types/work.types";

@@ -3,7 +3,7 @@
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useHover } from "@mantine/hooks";
 
-import { Box, Group, Stack, Text, alpha, UnstyledButton } from "@mantine/core";
+import { Group, Stack, Text, alpha, UnstyledButton } from "@mantine/core";
 import { IconChevronRight } from "@tabler/icons-react";
 
 import { formatDate, formatMoney } from "@/utils/formatFunctions";

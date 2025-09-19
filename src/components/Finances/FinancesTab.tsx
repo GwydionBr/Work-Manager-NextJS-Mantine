@@ -9,6 +9,7 @@ import {
   IconCircleDashedNumber1,
   IconBriefcase,
   IconPresentationAnalytics,
+  IconBrandCashapp,
 } from "@tabler/icons-react";
 import FinanceOverview from "@/components/Finances/Overview/FinanceOverview";
 import FinanceRecurring from "@/components/Finances/CashFlow/Recurring/FinanceRecurring";
@@ -43,20 +44,6 @@ export default function FinancesTab() {
       <Tabs.List grow mb="xl">
         <Tabs.Tab
           leftSection={
-            <IconPresentationAnalytics color="light-dark(blue, cyan)" />
-          }
-          value="Analysis"
-        >
-          {locale === "de-DE" ? "Analyse" : "Analysis"}
-        </Tabs.Tab>
-        <Tabs.Tab
-          value="Projects"
-          leftSection={<IconBriefcase color="light-dark(blue, cyan)" />}
-        >
-          {locale === "de-DE" ? "Projekte" : "Projects"}
-        </Tabs.Tab>
-        <Tabs.Tab
-          leftSection={
             <IconCircleDashedNumber1 color="light-dark(blue, cyan)" />
           }
           value="Single"
@@ -68,6 +55,26 @@ export default function FinancesTab() {
           value="Recurring"
         >
           {locale === "de-DE" ? "Wiederkehrend" : "Recurring"}
+        </Tabs.Tab>
+        <Tabs.Tab
+          value="Projects"
+          leftSection={<IconBriefcase color="light-dark(blue, cyan)" />}
+        >
+          {locale === "de-DE" ? "Projekte" : "Projects"}
+        </Tabs.Tab>
+        <Tabs.Tab
+          leftSection={
+            <IconPresentationAnalytics color="light-dark(blue, cyan)" />
+          }
+          value="Analysis"
+        >
+          {locale === "de-DE" ? "Analyse" : "Analysis"}
+        </Tabs.Tab>
+        <Tabs.Tab
+          leftSection={<IconBrandCashapp color="light-dark(blue, cyan)" />}
+          value="Categories"
+        >
+          {locale === "de-DE" ? "Auszahlung" : "Payout"}
         </Tabs.Tab>
       </Tabs.List>
 

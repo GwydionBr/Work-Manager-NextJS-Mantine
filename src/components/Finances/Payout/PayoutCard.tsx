@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Box, Collapse, Card } from "@mantine/core";
+import { Box, Card } from "@mantine/core";
 import ProjectPayoutMenu from "./ProjectPayoutMenu";
 import HourlyPayoutMenu from "./HourlyPayoutMenu";
 import PayoutModal from "./Modal/PayoutModal";

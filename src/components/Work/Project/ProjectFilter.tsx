@@ -6,12 +6,11 @@ import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Button, Card, Divider, Text, Stack } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
-import PayoutModal from "@/components/Payout/Modal/PayoutModal";
+import PayoutModal from "@/components/Finances/Payout/Modal/PayoutModal";
 import { Currency } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
 import {
   IconBrandCashapp,
-  IconSquareRounded,
   IconSquareRoundedCheck,
 } from "@tabler/icons-react";
 import { formatMoney } from "@/utils/formatFunctions";
