@@ -16,19 +16,17 @@ import {
   Group,
   HoverCard,
   Stack,
-  Button,
   Text,
   Box,
   Transition,
   Badge,
   Divider,
   ThemeIcon,
-  Tooltip,
-  Flex,
+  Menu,
 } from "@mantine/core";
 
 import { FinanceProject } from "@/types/finance.types";
-import { formatDate, formatMoney } from "@/utils/formatFunctions";
+import { formatMoney } from "@/utils/formatFunctions";
 import FinanceAdjustmentForm from "./FinanceAdjustmentForm";
 import FinanceAdjustmentRow from "./FinanceAdjustmentRow";
 import FinanceClientCard from "../FinanceClient/FinanceClientCard";
@@ -37,16 +35,14 @@ import {
   IconArrowDown,
   IconLinkPlus,
   IconCurrencyDollar,
-  IconCalendar,
   IconUser,
   IconTag,
   IconTrendingUp,
   IconTrendingDown,
-  IconReceipt,
   IconEdit,
+  IconTrash,
 } from "@tabler/icons-react";
-import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
-import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
+import MoreActionIcon from "@/components/UI/ActionIcons/MoreActionIcon";
 
 interface FinanceProjectCardProps extends CardProps {
   project: FinanceProject;
@@ -71,8 +67,13 @@ export default function FinanceProjectCard({
     { open: openAdjustmentForm, close: closeAdjustmentForm },
   ] = useDisclosure(false);
   const { hovered, ref: hoverRef } = useHover();
+  const [isMoreActionOpen, { open: openMoreAction, close: closeMoreAction }] =
+    useDisclosure(false);
+
   const ref = useClickOutside(() => {
-    closeAdjustmentForm();
+    if (!isMoreActionOpen) {
+      closeAdjustmentForm();
+    }
   });
   const mergedRef = mergeRefs(ref, hoverRef);
   const totalAmount = project.adjustments.reduce(
@@ -151,7 +152,7 @@ export default function FinanceProjectCard({
         {/* Selection Icon */}
 
         {/* Action Bar */}
-        <Collapse in={isAdjustmentFormOpen}>
+        {/* <Collapse in={isAdjustmentFormOpen}>
           <Card
             p="sm"
             withBorder
@@ -177,11 +178,11 @@ export default function FinanceProjectCard({
               <DeleteActionIcon onClick={onDelete} />
             </Group>
           </Card>
-        </Collapse>
+        </Collapse> */}
 
         {/* Header */}
         <Group justify="space-between" align="flex-start">
-          <Box style={{ flex: 1 }}>
+          <Stack gap="xs">
             <Text size="xl" fw={700} c="dimmed" mb="xs">
               {project.title}
             </Text>
@@ -212,16 +213,7 @@ export default function FinanceProjectCard({
                   {financeCategory.title}
                 </Badge>
               )}
-              {project.due_date && (
-                <Badge
-                  color="orange"
-                  variant="light"
-                  leftSection={<IconCalendar size={12} />}
-                >
-                  {formatDate(new Date(project.due_date), locale)}
-                </Badge>
-              )}
-              <Badge
+              {/* <Badge
                 color={project.paid ? "green" : "yellow"}
                 variant="light"
                 leftSection={<IconReceipt size={12} />}
@@ -229,9 +221,49 @@ export default function FinanceProjectCard({
                 {project.paid
                   ? getLocalizedText("Bezahlt", "Paid")
                   : getLocalizedText("Ausstehend", "Pending")}
-              </Badge>
+              </Badge> */}
             </Group>
-          </Box>
+          </Stack>
+          <Transition mounted={isAdjustmentFormOpen}>
+            {(styles) => (
+              <Menu
+                opened={isMoreActionOpen}
+                onClose={closeMoreAction}
+                position="bottom-end"
+              >
+                <Menu.Target>
+                  <MoreActionIcon onClick={openMoreAction} style={styles} />
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Label>
+                    {getLocalizedText("Finanz Projekt", "Finance Project")}
+                  </Menu.Label>
+                  <Menu.Divider />
+                  <Menu.Item
+                    leftSection={<IconLinkPlus size={16} />}
+                    onClick={() => {}}
+                  >
+                    {getLocalizedText(
+                      "Mit Arbeitsprojekt verknüpfen",
+                      "Link with Work Project"
+                    )}
+                  </Menu.Item>
+                  <Menu.Item
+                    leftSection={<IconEdit size={16} />}
+                    onClick={() => {}}
+                  >
+                    <Text>{getLocalizedText("Bearbeiten", "Edit")}</Text>
+                  </Menu.Item>
+                  <Menu.Item
+                    leftSection={<IconTrash size={16} />}
+                    onClick={onDelete}
+                  >
+                    <Text>{getLocalizedText("Löschen", "Delete")}</Text>
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            )}
+          </Transition>
         </Group>
 
         <Divider />

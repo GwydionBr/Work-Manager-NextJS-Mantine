@@ -81,7 +81,9 @@ export default function FinanceSingleTab() {
           <Table.Tbody>
             {sortedSingleCashFlows.map((cashFlow) => {
               return (
-                <Table.Tr key={cashFlow.id}>
+                <Table.Tr
+                  key={cashFlow.id}
+                >
                   <Table.Td>
                     <Group>
                       {cashFlow.type === "expense" ? (
