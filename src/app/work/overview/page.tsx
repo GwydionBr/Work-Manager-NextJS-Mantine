@@ -8,7 +8,7 @@ import { useSessionFiltering } from "@/hooks/useSessionFiltering";
 
 import { Box, Collapse, Group, Stack, Text } from "@mantine/core";
 import Header from "@/components/Header/Header";
-import PayoutMenu from "@/components/Finances/Payout/PayoutCard";
+import PayoutMenu from "@/components/Finances/Payout/PayoutMenuCard";
 import SessionHierarchy from "@/components/Work/Session/SessionHirarchy/SessionHierarchy";
 import { groupSessions } from "@/utils/sessionHelperFunctions";
 import SessionFilter from "@/components/Work/Session/BulkSelectionControl";
@@ -17,7 +17,7 @@ import AnalysisActionIcon from "@/components/UI/ActionIcons/AnalysisActionIcon";
 import FilterActionIcon from "@/components/UI/ActionIcons/FilterActionIcon";
 import NewSessionModal from "@/components/Work/Session/NewSessionModal";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
-import PayoutCard from "@/components/Finances/Payout/PayoutCard";
+import PayoutCard from "@/components/Finances/Payout/PayoutMenuCard";
 
 export default function WorkOverviewPage() {
   const { projects: timerProjects, folders, timerSessions } = useWorkStore();

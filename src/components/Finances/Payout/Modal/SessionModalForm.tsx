@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useForm, zodResolver } from "@mantine/form";
+import { useForm } from "@mantine/form";
+import { zodResolver } from "mantine-form-zod-resolver";
 
 import { z } from "zod";
 
@@ -22,6 +23,7 @@ import {
 import { IconArrowDown, IconBrandCashapp } from "@tabler/icons-react";
 import { currencies } from "@/constants/settings";
 import { formatDate, formatMoney } from "@/utils/formatFunctions";
+import { showActionSuccessNotification } from "@/utils/notificationFunctions";
 
 interface SessionModalFormProps {
   sessionIds: string[];
@@ -49,7 +51,7 @@ export default function SessionModalForm({
   const [error, setError] = useState<string | null>(null);
   const form = useForm({
     initialValues: {
-      endValue: startValue,
+      endValue: Math.round(startValue * 100) / 100,
       endCurrency: startCurrency,
     },
     validate: zodResolver(schema),
@@ -99,6 +101,10 @@ export default function SessionModalForm({
       console.log("Payout result from Modal", payoutResult);
       if (payoutResult.success) {
         addExistingSingleCashFlow(payoutResult.data.cashFlow);
+        showActionSuccessNotification(
+          locale === "de-DE" ? "Auszahlung erfolgreich" : "Payout successful",
+          locale
+        );
         handleClose();
       } else {
         setError(payoutResult.error);

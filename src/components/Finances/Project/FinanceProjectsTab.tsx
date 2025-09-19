@@ -14,16 +14,25 @@ import {
   Text,
   Divider,
   Button,
+  Badge,
+  ThemeIcon,
+  Card,
 } from "@mantine/core";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import FinanceProjectFormModal from "./FinanceProjectModal";
 import FinanceProjectCard from "./FinanceProjectCard";
-import { IconMoneybagPlus } from "@tabler/icons-react";
+import {
+  IconMoneybagPlus,
+  IconFilter,
+  IconRefresh,
+  IconCalendar,
+  IconCurrencyDollar,
+} from "@tabler/icons-react";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
 import FinanceProjectNavbar from "./FinanceProjectNavbar";
-import { formatDate } from "@/utils/formatFunctions";
+import { formatDate, formatMoney } from "@/utils/formatFunctions";
 import { isToday } from "date-fns";
 import {
   FinanceNavbarItems,
@@ -39,6 +48,10 @@ export default function FinanceProjectTab() {
   const { financeProjects, isFetching, deleteFinanceProjects } =
     useFinanceStore();
   const { locale } = useSettingsStore();
+
+  const getLocalizedText = (de: string, en: string) => {
+    return locale === "de-DE" ? de : en;
+  };
   const [selectedFinanceProjects, setSelectedFinanceProjects] = useState<
     string[]
   >([]);
@@ -228,35 +241,35 @@ export default function FinanceProjectTab() {
   const onDelete = (ids: string[]) => {
     const isSingle = ids.length === 1;
     showDeleteConfirmationModal(
-      locale === "de-DE"
-        ? isSingle
-          ? "Finanzprojekt löschen"
-          : "Finanzprojekte löschen"
-        : isSingle
-          ? "Delete Finance Project"
-          : "Delete Finance Projects",
-      locale === "de-DE"
-        ? isSingle
-          ? "Sind Sie sicher, dass Sie dieses Finanzprojekt löschen möchten?"
-          : "Sind Sie sicher, dass Sie diese Finanzprojekte löschen möchten?"
-        : isSingle
-          ? "Are you sure you want to delete this finance project?"
-          : "Are you sure you want to delete these finance projects?",
+      isSingle
+        ? getLocalizedText("Finanzprojekt löschen", "Delete Finance Project")
+        : getLocalizedText("Finanzprojekte löschen", "Delete Finance Projects"),
+      isSingle
+        ? getLocalizedText(
+            "Sind Sie sicher, dass Sie dieses Finanzprojekt löschen möchten?",
+            "Are you sure you want to delete this finance project?"
+          )
+        : getLocalizedText(
+            "Sind Sie sicher, dass Sie diese Finanzprojekte löschen möchten?",
+            "Are you sure you want to delete these finance projects?"
+          ),
       async () => {
         const deleted = await deleteFinanceProjects(ids);
         if (deleted) {
           setSelectedFinanceProjects([]);
           showActionSuccessNotification(
-            locale === "de-DE"
-              ? "Finanzprojekt erfolgreich gelöscht"
-              : "Finance project deleted successfully",
+            getLocalizedText(
+              "Finanzprojekt erfolgreich gelöscht",
+              "Finance project deleted successfully"
+            ),
             locale
           );
         } else {
           showActionErrorNotification(
-            locale === "de-DE"
-              ? "Finanzprojekt konnte nicht gelöscht werden"
-              : "Finance project could not be deleted",
+            getLocalizedText(
+              "Finanzprojekt konnte nicht gelöscht werden",
+              "Finance project could not be deleted"
+            ),
             locale
           );
         }
@@ -267,63 +280,124 @@ export default function FinanceProjectTab() {
 
   return (
     <Group align="flex-start" w="100%" wrap="nowrap" mb="xl">
-      <FinanceProjectNavbar tab={tab} setTab={setTab} items={navbarItems} />
-      <Stack maw={900} w="100%">
-        <Group justify="space-between" w="100%" px="md">
-          <Box w={20} />
-          <DelayedTooltip
-            label={
-              locale === "de-DE"
-                ? "Finanz Projekt hinzufügen"
-                : "Add Finance Project"
-            }
-          >
-            <ActionIcon onClick={toggleAddProjectModal} variant="subtle">
-              <IconMoneybagPlus />
-            </ActionIcon>
-          </DelayedTooltip>
-          <SelectActionIcon
-            disabled={isFetching || filteredFinanceProjects.length === 0}
-            tooltipLabel={
-              locale === "de-DE"
-                ? "Aktiviere Mehrfachauswahl"
-                : "Activate bulk select"
-            }
-            mainControl
-            selected={selectedModeActive}
-            onClick={handleToggleSelectedMode}
-          />
-        </Group>
-        <Stack gap={0}>
-          <Collapse in={selectedModeActive} w="100%">
-            <Group justify="space-between" w="100%" mb="sm">
-              <Group onClick={toggleAllProjects} style={{ cursor: "pointer" }}>
-                <SelectActionIcon
-                  onClick={() => {}}
-                  selected={
-                    selectedFinanceProjects.length ===
-                    filteredFinanceProjects.length
-                  }
-                  partiallySelected={
-                    selectedFinanceProjects.length > 0 &&
-                    selectedFinanceProjects.length <
-                      filteredFinanceProjects.length
-                  }
-                />
-                <Text fz="sm" c="dimmed">
-                  {locale === "de-DE" ? "Alle" : "All"}
-                </Text>
-              </Group>
-              <PayoutActionIcon
-                disabled={selectedFinanceProjects.length === 0}
-                onClick={() => console.log(selectedFinanceProjects)}
-              />
-              <DeleteActionIcon
-                disabled={selectedFinanceProjects.length === 0}
-                onClick={() => onDelete(selectedFinanceProjects)}
-              />
+      <Stack w={200} miw={200} gap="md" pos="absolute">
+        {/* Toolbar */}
+        <Card p="sm" withBorder shadow="sm" radius="md" py={0}>
+          <Group justify="space-between" align="center">
+            <DelayedTooltip
+              label={getLocalizedText("Aktualisieren", "Refresh")}
+            >
+              <ActionIcon
+                variant="subtle"
+                color="gray"
+                size="lg"
+                loading={isFetching}
+              >
+                <IconRefresh size={20} />
+              </ActionIcon>
+            </DelayedTooltip>
+
+            <DelayedTooltip
+              label={getLocalizedText(
+                "Finanzprojekt hinzufügen",
+                "Add Finance Project"
+              )}
+            >
+              <ActionIcon
+                onClick={toggleAddProjectModal}
+                variant="subtle"
+                size="lg"
+              >
+                <IconMoneybagPlus size={20} />
+              </ActionIcon>
+            </DelayedTooltip>
+
+            <SelectActionIcon
+              iconSize={20}
+              disabled={isFetching || filteredFinanceProjects.length === 0}
+              tooltipLabel={getLocalizedText(
+                "Aktiviere Mehrfachauswahl",
+                "Activate bulk select"
+              )}
+              mainControl
+              selected={selectedModeActive}
+              onClick={handleToggleSelectedMode}
+            />
+          </Group>
+        </Card>
+        <FinanceProjectNavbar tab={tab} setTab={setTab} items={navbarItems} />
+        {/* Filter Statistics */}
+        <Card p="md" withBorder shadow="sm" radius="md">
+          <Stack>
+            <Text size="sm" c="dimmed">
+              {filteredFinanceProjects.length}{" "}
+              {getLocalizedText("Projekte", "Projects")}
+            </Text>
+            <Group justify="space-between" align="center">
+              <Text size="sm" c="dimmed">
+                {getLocalizedText("Gesamtbetrag", "Total Amount")}:{" "}
+                {formatMoney(navbarItems.all.totalAmount, "EUR", locale)}
+              </Text>
             </Group>
+          </Stack>
+        </Card>
+      </Stack>
+      <Stack maw={900} w="100%" ml={220}>
+        <Stack gap={0}>
+          {/* Bulk Selection */}
+          <Collapse in={selectedModeActive} w="100%">
+            <Card
+              p="md"
+              mb="md"
+              withBorder
+              shadow="sm"
+              radius="md"
+              style={{
+                borderColor:
+                  "light-dark(var(--mantine-color-blue-3), var(--mantine-color-blue-8))",
+              }}
+            >
+              <Group justify="space-between" align="center">
+                <Group
+                  onClick={toggleAllProjects}
+                  style={{ cursor: "pointer" }}
+                >
+                  <SelectActionIcon
+                    onClick={() => {}}
+                    selected={
+                      selectedFinanceProjects.length ===
+                      filteredFinanceProjects.length
+                    }
+                    partiallySelected={
+                      selectedFinanceProjects.length > 0 &&
+                      selectedFinanceProjects.length <
+                        filteredFinanceProjects.length
+                    }
+                  />
+                  <Text fz="sm" c="dimmed">
+                    {getLocalizedText("Alle auswählen", "Select All")}
+                  </Text>
+                </Group>
+
+                <Badge color="blue" variant="light">
+                  {selectedFinanceProjects.length}{" "}
+                  {getLocalizedText("ausgewählt", "selected")}
+                </Badge>
+
+                <Group gap="xs">
+                  <PayoutActionIcon
+                    disabled={selectedFinanceProjects.length === 0}
+                    onClick={() => console.log(selectedFinanceProjects)}
+                  />
+                  <DeleteActionIcon
+                    disabled={selectedFinanceProjects.length === 0}
+                    onClick={() => onDelete(selectedFinanceProjects)}
+                  />
+                </Group>
+              </Group>
+            </Card>
           </Collapse>
+          {/* Projects */}
           <Stack w="100%" align="center">
             {filteredFinanceProjects.length > 0 ? (
               filteredFinanceProjects.map((project, index) => {
@@ -339,15 +413,10 @@ export default function FinanceProjectTab() {
                       <Divider
                         size="md"
                         label={
-                          <Text
-                            size="sm"
-                            fw={500}
-                            c={
-                              isOverdue
-                                ? "red"
-                                : noDueDate
-                                  ? "yellow"
-                                  : "light-dark(var(--mantine-color-gray-7), var(--mantine-color-gray-4))"
+                          <Badge
+                            variant="light"
+                            color={
+                              isOverdue ? "red" : noDueDate ? "yellow" : "gray"
                             }
                           >
                             {project.due_date
@@ -355,7 +424,7 @@ export default function FinanceProjectTab() {
                               : locale === "de-DE"
                                 ? "Kein Fälligkeitsdatum"
                                 : "No due date"}
-                          </Text>
+                          </Badge>
                         }
                         labelPosition="left"
                       />
@@ -377,22 +446,48 @@ export default function FinanceProjectTab() {
                 );
               })
             ) : (
-              <Stack mt="xl">
-                <Text size="sm" c="dimmed" ta="center">
-                  {locale === "de-DE"
-                    ? "Keine Finanzprojekte gefunden"
-                    : "No finance projects found"}
-                </Text>
-                <Button
-                  variant="filled"
-                  leftSection={<IconMoneybagPlus />}
-                  onClick={toggleAddProjectModal}
-                >
-                  {locale === "de-DE"
-                    ? "Erstes Finanzprojekt hinzufügen"
-                    : "Add first finance project"}
-                </Button>
-              </Stack>
+              <Box
+                p="xl"
+                style={{
+                  backgroundColor: "var(--mantine-color-gray-0)",
+                  borderRadius: "var(--mantine-radius-lg)",
+                  border: "2px dashed var(--mantine-color-gray-4)",
+                }}
+                ta="center"
+              >
+                <Stack align="center" gap="md">
+                  <ThemeIcon size="xl" color="gray" variant="light">
+                    <IconCurrencyDollar size={32} />
+                  </ThemeIcon>
+
+                  <Box>
+                    <Text size="lg" fw={600} c="dimmed" mb="xs">
+                      {getLocalizedText(
+                        "Keine Finanzprojekte gefunden",
+                        "No finance projects found"
+                      )}
+                    </Text>
+                    <Text size="sm" c="dimmed" maw={400}>
+                      {getLocalizedText(
+                        "Erstellen Sie Ihr erstes Finanzprojekt, um Ihre Einnahmen und Ausgaben zu verwalten.",
+                        "Create your first finance project to manage your income and expenses."
+                      )}
+                    </Text>
+                  </Box>
+
+                  <Button
+                    variant="filled"
+                    size="lg"
+                    leftSection={<IconMoneybagPlus size={18} />}
+                    onClick={toggleAddProjectModal}
+                  >
+                    {getLocalizedText(
+                      "Erstes Finanzprojekt hinzufügen",
+                      "Add first finance project"
+                    )}
+                  </Button>
+                </Stack>
+              </Box>
             )}
           </Stack>
         </Stack>

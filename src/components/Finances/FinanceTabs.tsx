@@ -42,7 +42,14 @@ export default function FinanceTabs() {
       value={activeTab}
       onChange={(value) => setActiveTab(value as FinanceTab)}
     >
-      <Tabs.List grow mb="xl">
+      <Tabs.List
+        grow
+        mb="xl"
+        pos="sticky"
+        top={0}
+        bg="var(--mantine-color-body)"
+        style={{ zIndex: 100 }}
+      >
         <Tabs.Tab
           leftSection={
             <IconCircleDashedNumber1 color="light-dark(blue, cyan)" />
@@ -64,6 +71,12 @@ export default function FinanceTabs() {
           {locale === "de-DE" ? "Projekte" : "Projects"}
         </Tabs.Tab>
         <Tabs.Tab
+          leftSection={<IconBrandCashapp color="light-dark(blue, cyan)" />}
+          value="Payout"
+        >
+          {locale === "de-DE" ? "Auszahlung" : "Payout"}
+        </Tabs.Tab>
+        <Tabs.Tab
           leftSection={
             <IconPresentationAnalytics color="light-dark(blue, cyan)" />
           }
@@ -71,12 +84,6 @@ export default function FinanceTabs() {
         >
           {locale === "de-DE" ? "Analyse" : "Analysis"}
         </Tabs.Tab>
-        {/* <Tabs.Tab
-          leftSection={<IconBrandCashapp color="light-dark(blue, cyan)" />}
-          value="Payout"
-        >
-          {locale === "de-DE" ? "Auszahlung" : "Payout"}
-        </Tabs.Tab> */}
       </Tabs.List>
 
       <Tabs.Panel value="Projects">

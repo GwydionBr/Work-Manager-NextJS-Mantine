@@ -34,6 +34,7 @@ export { deleteAppointment } from "./appointments/deleteAppointment";
 
 export { payoutSessions } from "./finance/payout/sessionPayout";
 export { createPayout } from "./finance/payout/createPayout";
+export { getAllPayouts } from "./finance/payout/getAllPayouts";
 
 // Session Actions
 

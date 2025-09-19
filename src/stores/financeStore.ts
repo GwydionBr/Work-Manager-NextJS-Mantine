@@ -5,7 +5,7 @@ import { persist } from "zustand/middleware";
 import * as actions from "@/actions";
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { processRecurringCashFlows } from "@/utils/financeHelperFunction";
-import { FinanceProject, FinanceRule, FinanceTab } from "@/types/finance.types";
+import { FinanceProject, FinanceRule, FinanceTab, Payout } from "@/types/finance.types";
 
 interface FinanceStoreState {
   singleCashFlows: Tables<"single_cash_flow">[];
@@ -15,6 +15,7 @@ interface FinanceStoreState {
   financeClients: Tables<"finance_client">[];
   financeProjects: FinanceProject[];
   financeRules: FinanceRule[];
+  payouts: Payout[];
   isFetching: boolean;
   lastFetch: Date | null;
   activeTab: FinanceTab;
@@ -84,6 +85,7 @@ export const useFinanceStore = create<
       financeClients: [],
       financeRules: [],
       financeProjects: [],
+      payouts: [],
       isFetching: true,
       lastFetch: null,
       activeTab: FinanceTab.Single,
@@ -95,37 +97,37 @@ export const useFinanceStore = create<
           financeCategories: [],
           financeClients: [],
           financeRules: [],
+          payouts: [],
           isFetching: true,
           lastFetch: null,
           financeProjects: [],
           activeTab: FinanceTab.Single,
         }),
       async fetchFinanceData() {
-        console.log("fetching finance data");
         const [
           singleCashFlows,
           recurringCashFlows,
           financeCategories,
           financeClients,
           financeProjects,
+          payouts,
         ] = await Promise.all([
           actions.getAllSingleCashFlows(),
           actions.getAllRecurringCashFlows(),
           actions.getAllFinanceCategories(),
           actions.getAllFinanceClients(),
           actions.getAllFinanceProjects(),
+          actions.getAllPayouts(),
         ]);
-
-        console.log("finance data fetched");
 
         if (
           !singleCashFlows.success ||
           !recurringCashFlows.success ||
           !financeCategories.success ||
           !financeClients.success ||
-          !financeProjects.success
+          !financeProjects.success ||
+          !payouts.success
         ) {
-          console.error("error fetching finance data");
           return;
         }
 
@@ -133,17 +135,12 @@ export const useFinanceStore = create<
           recurringCashFlows.data,
           singleCashFlows.data
         );
-        console.log("pastAndCurrentFlows");
 
         const newSingleCashFlows = await actions.createMultipleSingleCashFlows({
           cashFlows: pastAndCurrentFlows,
         });
 
-        console.log("newSingleCashFlows");
-
         if (!newSingleCashFlows.success) return;
-
-        console.log("setting finance data");
 
         set({
           singleCashFlows: [
@@ -155,10 +152,10 @@ export const useFinanceStore = create<
           financeCategories: financeCategories.data,
           financeClients: financeClients.data,
           financeProjects: financeProjects.data,
+          payouts: payouts.data,
           isFetching: false,
           lastFetch: new Date(),
         });
-        console.log("finance data set");
       },
 
       async addFinanceClient(client) {
