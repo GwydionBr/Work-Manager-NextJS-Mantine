@@ -7,17 +7,13 @@ import {
   Badge,
   Divider,
   ThemeIcon,
-  Tooltip,
-  Flex,
   Box,
 } from "@mantine/core";
 import {
   IconCurrencyDollar,
   IconClock,
-  IconCalendar,
   IconReceipt,
   IconFolder,
-  IconUsers,
   IconTrendingUp,
   IconTrendingDown,
 } from "@tabler/icons-react";
@@ -208,13 +204,12 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
 
         {/* Conversion Rate (if applicable) */}
         {hasCurrencyConversion && (
-          <Box
+          <Card
             p="sm"
-            style={{
-              backgroundColor: "var(--mantine-color-blue-0)",
-              borderRadius: "var(--mantine-radius-sm)",
-              border: "1px solid var(--mantine-color-blue-2)",
-            }}
+            withBorder
+            radius="md"
+            shadow="sm"
+            bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
           >
             <Group gap="xs" align="center">
               <ThemeIcon size="sm" color="blue" variant="light">
@@ -230,7 +225,7 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
                 {payout.end_currency}
               </Text>
             </Group>
-          </Box>
+          </Card>
         )}
       </Stack>
     </Card>
