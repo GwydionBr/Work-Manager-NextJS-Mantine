@@ -3,9 +3,10 @@
 import { createClient } from "@/utils/supabase/server";
 
 import { ApiResponseSingle } from "@/types/action.types";
+import { Tables } from "@/types/db.types";
 
 export async function getCurrentUserProfile(): Promise<
-  ApiResponseSingle<"profiles">
+  ApiResponseSingle<Tables<"profiles">>
 > {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getUser();

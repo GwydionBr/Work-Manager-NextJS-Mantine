@@ -7,6 +7,7 @@ import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { processRecurringCashFlows } from "@/utils/financeHelperFunction";
 import {
   FinanceProject,
+  FinanceProjectUpdate,
   FinanceRule,
   FinanceTab,
   Payout,
@@ -32,9 +33,6 @@ interface FinanceStoreActions {
   addFinanceClient: (
     client: TablesInsert<"finance_client">
   ) => Promise<Tables<"finance_client"> | null>;
-  updateFinanceClient: (
-    client: TablesUpdate<"finance_client">
-  ) => Promise<Tables<"finance_client"> | null>;
   deleteFinanceClients: (ids: string[]) => Promise<boolean>;
   addFinanceProject: (
     project: TablesInsert<"finance_project">,
@@ -51,6 +49,12 @@ interface FinanceStoreActions {
   addRecurringCashFlow: (
     recurringCashFlow: TablesInsert<"recurring_cash_flow">
   ) => Promise<boolean>;
+  updateFinanceProject: (
+    project: FinanceProjectUpdate
+  ) => Promise<FinanceProject | null>;
+  updateFinanceClient: (
+    client: TablesUpdate<"finance_client">
+  ) => Promise<Tables<"finance_client"> | null>;
   updateSingleCashFlow: (
     singleCashFlow: TablesUpdate<"single_cash_flow">
   ) => Promise<boolean>;
@@ -61,13 +65,13 @@ interface FinanceStoreActions {
     recurringCashFlowId: string,
     updates: Partial<TablesUpdate<"single_cash_flow">>
   ) => Promise<boolean>;
+  updateFinanceAdjustment: (
+    adjustment: TablesUpdate<"finance_project_adjustment">
+  ) => Promise<Tables<"finance_project_adjustment"> | null>;
   deleteSingleCashFlow: (id: string) => Promise<boolean>;
   deleteRecurringCashFlow: (id: string) => Promise<boolean>;
   addFinanceAdjustment: (
     adjustment: TablesInsert<"finance_project_adjustment">
-  ) => Promise<Tables<"finance_project_adjustment"> | null>;
-  updateFinanceAdjustment: (
-    adjustment: TablesUpdate<"finance_project_adjustment">
   ) => Promise<Tables<"finance_project_adjustment"> | null>;
   deleteFinanceAdjustments: (ids: string[]) => Promise<boolean>;
   addFinanceCategory: (
@@ -216,12 +220,15 @@ export const useFinanceStore = create<
 
       async addFinanceProject(project, clientIds, categoryIds) {
         const { financeProjects } = get();
-        const { data: newProject, success, error } =
-          await actions.createFinanceProject({
-            project,
-            clientIds,
-            categoryIds,
-          });
+        const {
+          data: newProject,
+          success,
+          error,
+        } = await actions.createFinanceProject({
+          project,
+          clientIds,
+          categoryIds,
+        });
         console.log(error);
         if (!success) return null;
 
@@ -322,6 +329,20 @@ export const useFinanceStore = create<
         });
 
         return true;
+      },
+
+
+      async updateFinanceProject(project) {
+        const { financeProjects } = get();
+        const updatedProject = await actions.updateFinanceProject(project);
+        if (!updatedProject.success) return null;
+        const updatedFinanceProjects = financeProjects.map((p) =>
+          p.id === project.id ? updatedProject.data : p
+        );
+        set({
+          financeProjects: updatedFinanceProjects,
+        });
+        return updatedProject.data;
       },
 
       async updateRecurringCashFlow(recurringCashFlow) {

@@ -2,11 +2,11 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { ApiResponseSingle } from "@/types/action.types";
-import { TablesInsert } from "@/types/db.types";
+import { Tables, TablesInsert } from "@/types/db.types";
 
 export async function createFinanceAdjustment(
   adjustment: TablesInsert<"finance_project_adjustment">
-): Promise<ApiResponseSingle<"finance_project_adjustment">> {
+): Promise<ApiResponseSingle<Tables<"finance_project_adjustment">>> {
   const supabase = await createClient();
 
   const { data, error } = await supabase

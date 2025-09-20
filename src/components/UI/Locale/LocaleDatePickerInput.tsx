@@ -22,6 +22,7 @@ export default function LocaleDatePickerInput({
       onChange={onChange}
       error={error}
       allowSingleDateInRange={allowSingleDateInRange}
+      highlightToday
       {...props}
     />
   );

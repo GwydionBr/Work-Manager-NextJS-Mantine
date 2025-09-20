@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { TablesInsert, TablesUpdate } from "@/types/db.types";
+import { TablesInsert, TablesUpdate, Tables } from "@/types/db.types";
 import {
   ApiResponseList,
   ApiResponseSingle,
@@ -9,7 +9,7 @@ import {
 } from "@/types/action.types";
 
 export async function getAllProjects(): Promise<
-  ApiResponseList<"timer_project">
+  ApiResponseList<Tables<"timer_project">>
 > {
   const supabase = await createClient();
 
@@ -41,7 +41,7 @@ export async function getProjectById({
   projectId,
 }: {
   projectId: string;
-}): Promise<ApiResponseSingle<"timer_project">> {
+}): Promise<ApiResponseSingle<Tables<"timer_project">>> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("timer_project")
@@ -60,7 +60,7 @@ export async function createProject({
   project,
 }: {
   project: TablesInsert<"timer_project">;
-}): Promise<ApiResponseSingle<"timer_project">> {
+}): Promise<ApiResponseSingle<Tables<"timer_project">>> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("timer_project")
@@ -79,7 +79,7 @@ export async function updateProject({
   project,
 }: {
   project: TablesUpdate<"timer_project">;
-}): Promise<ApiResponseSingle<"timer_project">> {
+}): Promise<ApiResponseSingle<Tables<"timer_project">>> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("timer_project")

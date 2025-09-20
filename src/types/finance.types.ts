@@ -1,4 +1,4 @@
-import { Tables } from "./db.types";
+import { Tables, TablesUpdate } from "./db.types";
 
 export interface Payout extends Tables<"payout"> {
   cashflow: Tables<"single_cash_flow"> | null;
@@ -9,6 +9,11 @@ export interface Payout extends Tables<"payout"> {
 export interface FinanceRule extends Tables<"finance_rule"> {
   financeCategoryIds: string[];
   timerProjectIds: string[];
+}
+
+export interface FinanceProjectUpdate extends TablesUpdate<"finance_project"> {
+  clients: Tables<"finance_client">[];
+  categories: Tables<"finance_category">[];
 }
 
 export interface FinanceProject extends Tables<"finance_project"> {

@@ -2,9 +2,11 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { ApiResponseSingle } from "@/types/action.types";
-import { TablesUpdate } from "@/types/db.types";
+import { TablesUpdate, Tables } from "@/types/db.types";
 
-export async function getSettings(): Promise<ApiResponseSingle<"settings">> {
+export async function getSettings(): Promise<
+  ApiResponseSingle<Tables<"settings">>
+> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -39,7 +41,9 @@ export async function getSettings(): Promise<ApiResponseSingle<"settings">> {
   };
 }
 
-export async function updateSettings(settings: TablesUpdate<"settings">): Promise<ApiResponseSingle<"settings">> {
+export async function updateSettings(
+  settings: TablesUpdate<"settings">
+): Promise<ApiResponseSingle<Tables<"settings">>> {
   const supabase = await createClient();
 
   const { data, error } = await supabase

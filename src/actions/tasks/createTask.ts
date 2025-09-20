@@ -2,11 +2,11 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { ApiResponseSingle } from "@/types/action.types";
-import { TablesInsert } from "@/types/db.types";
+import { TablesInsert, Tables } from "@/types/db.types";
 
 export async function createTask(
   task: TablesInsert<"task">
-): Promise<ApiResponseSingle<"task">> {
+): Promise<ApiResponseSingle<Tables<"task">>> {
   const supabase = await createClient();
 
   const { data, error } = await supabase

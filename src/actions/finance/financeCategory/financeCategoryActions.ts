@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { TablesInsert, TablesUpdate } from "@/types/db.types";
+import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import {
   ApiResponseList,
   ApiResponseSingle,
@@ -9,7 +9,7 @@ import {
 } from "@/types/action.types";
 
 export async function getAllFinanceCategories(): Promise<
-  ApiResponseList<"finance_category">
+  ApiResponseList<Tables<"finance_category">>
 > {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -28,7 +28,7 @@ export async function createFinanceCategory({
   category,
 }: {
   category: TablesInsert<"finance_category">;
-}): Promise<ApiResponseSingle<"finance_category">> {
+}): Promise<ApiResponseSingle<Tables<"finance_category">>> {
   const supabase = await createClient();
 
   const {
@@ -60,7 +60,7 @@ export async function updateFinanceCategory({
   category,
 }: {
   category: TablesUpdate<"finance_category">;
-}): Promise<ApiResponseSingle<"finance_category">> {
+}): Promise<ApiResponseSingle<Tables<"finance_category">>> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("finance_category")

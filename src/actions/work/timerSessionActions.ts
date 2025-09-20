@@ -9,7 +9,7 @@ import {
 } from "@/types/action.types";
 
 export async function getAllSessions(): Promise<
-  ApiResponseList<"timer_session">
+  ApiResponseList<Tables<"timer_session">>
 > {
   const supabase = await createClient();
 
@@ -37,7 +37,7 @@ export async function getProjectSessions({
   projectId,
 }: {
   projectId: string;
-}): Promise<ApiResponseList<"timer_session">> {
+}): Promise<ApiResponseList<Tables<"timer_session">>> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("timer_session")
@@ -56,7 +56,7 @@ export async function createSessions({
   sessions,
 }: {
   sessions: TablesInsert<"timer_session">[];
-}): Promise<ApiResponseList<"timer_session">> {
+}): Promise<ApiResponseList<Tables<"timer_session">>> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("timer_session")
@@ -74,7 +74,7 @@ export async function updateSession({
   session,
 }: {
   session: TablesUpdate<"timer_session">;
-}): Promise<ApiResponseSingle<"timer_session">> {
+}): Promise<ApiResponseSingle<Tables<"timer_session">>> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("timer_session")

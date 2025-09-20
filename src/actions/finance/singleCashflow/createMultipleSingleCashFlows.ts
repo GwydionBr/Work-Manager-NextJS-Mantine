@@ -1,14 +1,14 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { TablesInsert } from "@/types/db.types";
+import { TablesInsert, Tables } from "@/types/db.types";
 import { ApiResponseList } from "@/types/action.types";
 
 export async function createMultipleSingleCashFlows({
   cashFlows,
 }: {
   cashFlows: TablesInsert<"single_cash_flow">[];
-}): Promise<ApiResponseList<"single_cash_flow">> {
+}): Promise<ApiResponseList<Tables<"single_cash_flow">>> {
   const supabase = await createClient();
 
   const {

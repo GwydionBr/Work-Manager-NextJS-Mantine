@@ -2,15 +2,10 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { Group } from "@/stores/groupStore";
-import { ErrorResponse } from "@/types/action.types";
+import { ApiResponseSingle } from "@/types/action.types";
 
 export async function getGroupById(groupId: string): Promise<
-  | ErrorResponse
-  | {
-      success: true;
-      data: Group;
-      error: null;
-    }
+  | ApiResponseSingle<Group>
 > {
   const supabase = await createClient();
 

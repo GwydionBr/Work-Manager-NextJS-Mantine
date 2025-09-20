@@ -23,6 +23,7 @@ export default function LocaleDateTimePicker({
       timePickerProps={{
         format: format24h ? "24h" : "12h",
       }}
+      highlightToday
       label={label}
       value={value}
       onChange={onChange}

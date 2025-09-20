@@ -1,18 +1,11 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { ErrorResponse } from "@/types/action.types";
+import { ApiResponseSingle, ErrorResponse } from "@/types/action.types";
 import { GroupRequest } from "@/stores/groupStore";
 
 export async function getGroupRequests(): Promise<
-  | ErrorResponse
-  | {
-      success: true;
-      data: {
-        groupRequests: GroupRequest[];
-      };
-      error: null;
-    }
+  | ApiResponseSingle<{ groupRequests: GroupRequest[] }>
 > {
   const supabase = await createClient();
 

@@ -3,16 +3,9 @@
 import { createClient } from "@/utils/supabase/server";
 
 import { Group } from "@/stores/groupStore";
-import { ErrorResponse } from "@/types/action.types";
+import { ApiResponseList } from "@/types/action.types";
 
-export async function getAllGroups(): Promise<
-  | ErrorResponse
-  | {
-      success: true;
-      data: Group[];
-      error: null;
-    }
-> {
+export async function getAllGroups(): Promise<ApiResponseList<Group>> {
   const supabase = await createClient();
 
   const {

@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { ErrorResponse } from "@/types/action.types";
+import { ApiResponseSingle, ErrorResponse } from "@/types/action.types";
 import { Tables, TablesInsert } from "@/types/db.types";
 import { InvitedMember } from "@/stores/groupStore";
 
@@ -14,16 +14,11 @@ export async function createGroup({
   memberIds?: string[];
   color: null | string;
 }): Promise<
-  | ErrorResponse
-  | {
-      success: true;
-      data: {
-        group: Tables<"group">;
-        admin: Tables<"profiles"> & { memberId: string };
-        invitedMembers: InvitedMember[];
-      };
-      error: null;
-    }
+  ApiResponseSingle<{
+    group: Tables<"group">;
+    admin: Tables<"profiles"> & { memberId: string };
+    invitedMembers: InvitedMember[];
+  }>
 > {
   const supabase = await createClient();
 

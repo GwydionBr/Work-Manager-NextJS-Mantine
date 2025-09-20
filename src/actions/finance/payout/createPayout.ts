@@ -1,8 +1,9 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { SuccessPayoutResponse, ErrorResponse } from "@/types/action.types";
+import { ApiResponseSingle } from "@/types/action.types";
 import { Currency } from "@/types/settings.types";
+import { Payout } from "@/types/finance.types";
 
 interface CreatePayoutProps {
   projectId: string | null;
@@ -22,7 +23,7 @@ export async function createPayout({
   categoryId,
   endValue,
   endCurrency,
-}: CreatePayoutProps): Promise<SuccessPayoutResponse | ErrorResponse> {
+}: CreatePayoutProps): Promise<ApiResponseSingle<Payout>> {
   const supabase = await createClient();
 
   const { data: cashFlow, error: cashFlowError } = await supabase

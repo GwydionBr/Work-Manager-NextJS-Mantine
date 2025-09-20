@@ -2,17 +2,13 @@
 
 import { createClient } from "@/utils/supabase/server";
 
-import { ErrorResponse } from "@/types/action.types";
+import { ApiResponseSingle } from "@/types/action.types";
 import { Enums, Tables } from "@/types/db.types";
 
 export async function insertGroupMembers(
   groupId: string,
   memberIds: string[]
-): Promise<ErrorResponse | {
-  success: true;
-  data: (Tables<"profiles"> & { memberId: string })[];
-  error: null;
-}> {
+): Promise<ApiResponseSingle<(Tables<"profiles"> & { memberId: string })[]>> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("group_member")

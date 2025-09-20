@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { TablesInsert, TablesUpdate } from "@/types/db.types";
+import { TablesInsert, TablesUpdate, Tables } from "@/types/db.types";
 import {
   ApiResponseList,
   ApiResponseSingle,
@@ -9,7 +9,7 @@ import {
 } from "@/types/action.types";
 
 export async function getAllProjectFolders(): Promise<
-  ApiResponseList<"timer_project_folder">
+  ApiResponseList<Tables<"timer_project_folder">>
 > {
   const supabase = await createClient();
 
@@ -41,7 +41,7 @@ export async function getProjectFolderById({
   folderId,
 }: {
   folderId: string;
-}): Promise<ApiResponseSingle<"timer_project_folder">> {
+}): Promise<ApiResponseSingle<Tables<"timer_project_folder">>> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("timer_project_folder")
@@ -60,7 +60,7 @@ export async function createProjectFolder({
   folder,
 }: {
   folder: TablesInsert<"timer_project_folder">;
-}): Promise<ApiResponseSingle<"timer_project_folder">> {
+}): Promise<ApiResponseSingle<Tables<"timer_project_folder">>> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -83,7 +83,7 @@ export async function updateProjectFolder({
   folder,
 }: {
   folder: TablesUpdate<"timer_project_folder">;
-}): Promise<ApiResponseSingle<"timer_project_folder">> {
+}): Promise<ApiResponseSingle<Tables<"timer_project_folder">>> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("timer_project_folder")

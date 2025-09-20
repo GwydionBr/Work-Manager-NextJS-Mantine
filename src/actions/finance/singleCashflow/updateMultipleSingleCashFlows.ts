@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { TablesUpdate } from "@/types/db.types";
+import { TablesUpdate, Tables } from "@/types/db.types";
 import { ApiResponseList } from "@/types/action.types";
 
 export async function updateMultipleSingleCashFlows({
@@ -10,7 +10,7 @@ export async function updateMultipleSingleCashFlows({
 }: {
   recurringCashFlowId: string;
   updates: Partial<TablesUpdate<"single_cash_flow">>;
-}): Promise<ApiResponseList<"single_cash_flow">> {
+}): Promise<ApiResponseList<Tables<"single_cash_flow">>> {
   const supabase = await createClient();
 
   const {

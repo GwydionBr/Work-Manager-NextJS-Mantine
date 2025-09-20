@@ -3,22 +3,16 @@
 import { createClient } from "@/utils/supabase/server";
 
 import { Friend } from "@/stores/userStore";
-import { ErrorResponse } from "@/types/action.types";
+import { ApiResponseSingle } from "@/types/action.types";
 import { Tables } from "@/types/db.types";
 
-
 export async function getAllFriends(): Promise<
-  | ErrorResponse
-  | {
-      success: true;
-      data: {
-        friends: Friend[];
-        requestedFriends: Friend[];
-        pendingFriends: Friend[];
-        declinedFriends: Friend[];
-      };
-      error: null;
-    }
+  ApiResponseSingle<{
+    friends: Friend[];
+    requestedFriends: Friend[];
+    pendingFriends: Friend[];
+    declinedFriends: Friend[];
+  }>
 > {
   const supabase = await createClient();
 

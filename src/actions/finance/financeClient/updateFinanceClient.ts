@@ -2,11 +2,11 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { ApiResponseSingle } from "@/types/action.types";
-import { TablesUpdate } from "@/types/db.types";
+import { Tables, TablesUpdate } from "@/types/db.types";
 
 export async function updateFinanceClient(
   client: TablesUpdate<"finance_client">
-): Promise<ApiResponseSingle<"finance_client">> {
+): Promise<ApiResponseSingle<Tables<"finance_client">>> {
   if (!client.id) {
     return { success: false, data: null, error: "Client id is required" };
   }

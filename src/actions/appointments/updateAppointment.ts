@@ -2,11 +2,11 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { ApiResponseSingle } from "@/types/action.types";
-import { TablesUpdate } from "@/types/db.types";
+import { TablesUpdate, Tables } from "@/types/db.types";
 
 export async function updateAppointment(
   appointment: TablesUpdate<"appointment">
-): Promise<ApiResponseSingle<"appointment">> {
+): Promise<ApiResponseSingle<Tables<"appointment">>> {
   const supabase = await createClient();
 
   const { data, error } = await supabase

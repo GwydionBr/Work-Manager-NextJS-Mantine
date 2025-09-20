@@ -1,16 +1,11 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { ErrorResponse } from "@/types/action.types";
+import { ApiResponseList } from "@/types/action.types";
 import { FinanceProject } from "@/types/finance.types";
 
 export async function getAllFinanceProjects(): Promise<
-  | {
-      success: true;
-      data: FinanceProject[];
-      error: null;
-    }
-  | ErrorResponse
+  ApiResponseList<FinanceProject>
 > {
   const supabase = await createClient();
   const {

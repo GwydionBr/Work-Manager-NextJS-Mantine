@@ -1,32 +1,5 @@
 import { Tables } from "@/types/db.types";
 
-// Liste der erlaubten Tabellen
-export type TableNames =
-  | "group"
-  | "group_member"
-  | "grocery_item"
-  | "group_task"
-  | "group_appointment"
-  | "recurring_group_task"
-  | "profiles"
-  | "recurring_cash_flow"
-  | "settings"
-  | "single_cash_flow"
-  | "timer_project"
-  | "timer_session"
-  | "friendships"
-  | "finance_category"
-  | "finance_rule"
-  | "finance_rule_category"
-  | "finance_rule_timer_project"
-  | "timer_project_folder"
-  | "payout"
-  | "task"
-  | "appointment"
-  | "finance_client"
-  | "finance_project"
-  | "finance_project_adjustment";
-
 // Response after an error occurs
 export interface ErrorResponse {
   success: false;
@@ -34,26 +7,22 @@ export interface ErrorResponse {
   error: string;
 }
 
-export interface SuccessResponseList<T extends TableNames> {
+export interface SuccessResponseList<T> {
   success: true;
-  data: Tables<T>[];
+  data: T[];
   error: null;
 }
 
-export interface SuccessResponseSingle<T extends TableNames> {
+export interface SuccessResponseSingle<T> {
   success: true;
-  data: Tables<T>;
+  data: T;
   error: null;
 }
 
-// Common type for all API responses
-export type ApiResponseList<T extends TableNames> =
-  | SuccessResponseList<T>
-  | ErrorResponse;
+// Generic API responses
+export type ApiResponseSingle<T> = SuccessResponseSingle<T> | ErrorResponse;
 
-export type ApiResponseSingle<T extends TableNames> =
-  | SuccessResponseSingle<T>
-  | ErrorResponse;
+export type ApiResponseList<T> = SuccessResponseList<T> | ErrorResponse;
 
 export type SimpleResponse =
   | { success: true; data: null; error: null }

@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { ErrorResponse } from "@/types/action.types";
+import { ApiResponseSingle } from "@/types/action.types";
 import { Enums, Tables, TablesUpdate } from "@/types/db.types";
 import { InvitedMember } from "@/stores/groupStore";
 
@@ -12,15 +12,10 @@ export async function updateGroup({
   group: TablesUpdate<"group">;
   memberIds?: string[];
 }): Promise<
-  | ErrorResponse
-  | {
-      success: true;
-      data: {
-        group: Tables<"group">;
-        invitedMembers: InvitedMember[] | null;
-      };
-      error: null;
-    }
+  | ApiResponseSingle<{
+      group: Tables<"group">;
+      invitedMembers: InvitedMember[] | null;
+    }>
 > {
   const supabase = await createClient();
   const { data, error } = await supabase

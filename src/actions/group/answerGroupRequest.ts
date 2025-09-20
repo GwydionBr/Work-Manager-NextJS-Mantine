@@ -1,6 +1,6 @@
 "use server";
 
-import { ErrorResponse, SimpleResponse } from "@/types/action.types";
+import { ApiResponseSingle, SimpleResponse } from "@/types/action.types";
 import { createClient } from "@/utils/supabase/server";
 
 import { Tables } from "@/types/db.types";
@@ -12,12 +12,7 @@ export async function acceptGroupRequest({
   groupRequestId: string;
   color: null | string;
 }): Promise<
-  | ErrorResponse
-  | {
-      success: true;
-      data: { groupMember: Tables<"profiles">; groupId: string };
-      error: null;
-    }
+  ApiResponseSingle<{ groupMember: Tables<"profiles">; groupId: string }>
 > {
   const supabase = await createClient();
   const { data, error } = await supabase

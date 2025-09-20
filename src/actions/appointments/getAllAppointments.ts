@@ -2,9 +2,10 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { ApiResponseList } from "@/types/action.types";
+import { Tables } from "@/types/db.types";
 
 export async function getAllAppointments(): Promise<
-  ApiResponseList<"appointment">
+  ApiResponseList<Tables<"appointment">>
 > {
   const supabase = await createClient();
   const {

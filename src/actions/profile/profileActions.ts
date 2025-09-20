@@ -1,14 +1,14 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { TablesInsert, TablesUpdate } from "@/types/db.types";
+import { TablesInsert, TablesUpdate, Tables } from "@/types/db.types";
 import {
   ApiResponseList,
   ApiResponseSingle,
   SimpleResponse,
 } from "@/types/action.types";
 
-export async function getOtherProfiles(): Promise<ApiResponseList<"profiles">> {
+export async function getOtherProfiles(): Promise<ApiResponseList<Tables<"profiles">>> {
   const supabase = await createClient();
 
   const {
@@ -31,7 +31,7 @@ export async function getOtherProfiles(): Promise<ApiResponseList<"profiles">> {
   return { success: true, data, error: null };
 }
 
-export async function getProfile(): Promise<ApiResponseSingle<"profiles">> {
+export async function getProfile(): Promise<ApiResponseSingle<Tables<"profiles">>> {
   const supabase = await createClient();
 
   const {
@@ -63,7 +63,7 @@ export async function createProfile({
   profile,
 }: {
   profile: TablesInsert<"profiles">;
-}): Promise<ApiResponseSingle<"profiles">> {
+}): Promise<ApiResponseSingle<Tables<"profiles">>> {
   const supabase = await createClient();
 
   const {
@@ -95,7 +95,7 @@ export async function updateProfile({
   profile,
 }: {
   profile: TablesUpdate<"profiles">;
-}): Promise<ApiResponseSingle<"profiles">> {
+}): Promise<ApiResponseSingle<Tables<"profiles">>> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("profiles")

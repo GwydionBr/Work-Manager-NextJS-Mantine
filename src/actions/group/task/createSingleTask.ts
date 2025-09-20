@@ -1,13 +1,13 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { TablesInsert } from "@/types/db.types";
+import { TablesInsert, Tables } from "@/types/db.types";
 
 import { ApiResponseSingle } from "@/types/action.types";
 
 export async function createSingleGroupTask(
   task: TablesInsert<"group_task">
-): Promise<ApiResponseSingle<"group_task">> {
+): Promise<ApiResponseSingle<Tables<"group_task">>> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("group_task")

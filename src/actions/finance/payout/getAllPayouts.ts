@@ -1,17 +1,10 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { ErrorResponse } from "@/types/action.types";
+import { ApiResponseList } from "@/types/action.types";
 import { Payout } from "@/types/finance.types";
 
-export async function getAllPayouts(): Promise<
-  | {
-      success: true;
-      data: Payout[];
-      error: null;
-    }
-  | ErrorResponse
-> {
+export async function getAllPayouts(): Promise<ApiResponseList<Payout>> {
   const supabase = await createClient();
   const {
     data: { user },

@@ -1,6 +1,6 @@
 "use server";
 
-import { TablesUpdate } from "@/types/db.types";
+import { TablesUpdate, Tables } from "@/types/db.types";
 import { ApiResponseSingle } from "@/types/action.types";
 import { createClient } from "@/utils/supabase/server";
 
@@ -8,7 +8,7 @@ export async function updateSingleCashFlow({
   updateSingleCashFlow,
 }: {
   updateSingleCashFlow: TablesUpdate<"single_cash_flow">;
-}): Promise<ApiResponseSingle<"single_cash_flow">> {
+}): Promise<ApiResponseSingle<Tables<"single_cash_flow">>> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("single_cash_flow")

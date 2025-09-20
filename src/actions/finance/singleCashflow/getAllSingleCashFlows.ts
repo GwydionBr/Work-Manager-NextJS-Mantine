@@ -2,9 +2,10 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { ApiResponseList } from "@/types/action.types";
+import { Tables } from "@/types/db.types";
 
 export async function getAllSingleCashFlows(): Promise<
-  ApiResponseList<"single_cash_flow">
+  ApiResponseList<Tables<"single_cash_flow">>
 > {
   const supabase = await createClient();
   const { data, error } = await supabase

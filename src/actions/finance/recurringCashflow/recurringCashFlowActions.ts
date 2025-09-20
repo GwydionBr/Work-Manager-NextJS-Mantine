@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { TablesInsert, TablesUpdate } from "@/types/db.types";
+import { TablesInsert, TablesUpdate, Tables } from "@/types/db.types";
 import {
   ApiResponseList,
   ApiResponseSingle,
@@ -9,7 +9,7 @@ import {
 } from "@/types/action.types";
 
 export async function getAllRecurringCashFlows(): Promise<
-  ApiResponseList<"recurring_cash_flow">
+  ApiResponseList<Tables<"recurring_cash_flow">>
 > {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -28,7 +28,7 @@ export async function createRecurringCashFlow({
   cashFlow,
 }: {
   cashFlow: TablesInsert<"recurring_cash_flow">;
-}): Promise<ApiResponseSingle<"recurring_cash_flow">> {
+}): Promise<ApiResponseSingle<Tables<"recurring_cash_flow">>> {
   const supabase = await createClient();
 
   const {
@@ -60,7 +60,7 @@ export async function updateRecurringCashFlow({
   updateRecurringCashFlow,
 }: {
   updateRecurringCashFlow: TablesUpdate<"recurring_cash_flow">;
-}): Promise<ApiResponseSingle<"recurring_cash_flow">> {
+}): Promise<ApiResponseSingle<Tables<"recurring_cash_flow">>> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("recurring_cash_flow")

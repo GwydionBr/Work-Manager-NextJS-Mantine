@@ -1,13 +1,13 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { TablesInsert } from "@/types/db.types";
+import { TablesInsert, Tables } from "@/types/db.types";
 
 import { ApiResponseSingle } from "@/types/action.types";
 
 export async function createRecurringGroupTask(
   task: TablesInsert<"recurring_group_task">
-): Promise<ApiResponseSingle<"recurring_group_task">> {
+): Promise<ApiResponseSingle<Tables<"recurring_group_task">>> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("recurring_group_task")

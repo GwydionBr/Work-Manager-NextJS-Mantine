@@ -2,7 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 
-import { TablesInsert } from "@/types/db.types";
+import { TablesInsert, Tables } from "@/types/db.types";
 import {
   ApiResponseSingle,
   SimpleResponse,
@@ -12,7 +12,7 @@ export async function createFriendship({
   friendship,
 }: {
   friendship: TablesInsert<"friendships">;
-}): Promise<ApiResponseSingle<"friendships">> {
+}): Promise<ApiResponseSingle<Tables<"friendships">>> {
   const supabase = await createClient();
 
   const {

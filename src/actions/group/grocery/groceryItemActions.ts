@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { TablesInsert, TablesUpdate } from "@/types/db.types";
+import { TablesInsert, TablesUpdate, Tables } from "@/types/db.types";
 import {
   ApiResponseList,
   ApiResponseSingle,
@@ -12,7 +12,7 @@ export async function getGroceryItemsByGroup({
   groupId,
 }: {
   groupId: string;
-}): Promise<ApiResponseList<"grocery_item">> {
+}): Promise<ApiResponseList<Tables<"grocery_item">>> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("grocery_item")
@@ -30,7 +30,7 @@ export async function getGroceryItemById({
   itemId,
 }: {
   itemId: string;
-}): Promise<ApiResponseSingle<"grocery_item">> {
+}): Promise<ApiResponseSingle<Tables<"grocery_item">>> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("grocery_item")
@@ -49,7 +49,7 @@ export async function createGroceryItem({
   item,
 }: {
   item: TablesInsert<"grocery_item">;
-}): Promise<ApiResponseSingle<"grocery_item">> {
+}): Promise<ApiResponseSingle<Tables<"grocery_item">>> {
   const supabase = await createClient();
 
   const {
@@ -83,7 +83,7 @@ export async function updateGroceryItem({
   item,
 }: {
   item: TablesUpdate<"grocery_item">;
-}): Promise<ApiResponseSingle<"grocery_item">> {
+}): Promise<ApiResponseSingle<Tables<"grocery_item">>> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("grocery_item")
