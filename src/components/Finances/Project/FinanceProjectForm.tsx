@@ -6,7 +6,6 @@ import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { Tables, TablesInsert } from "@/types/db.types";
 import {
   Group,
   NumberInput,
@@ -15,6 +14,7 @@ import {
   Button,
   TextInput,
   Text,
+  MultiSelect,
 } from "@mantine/core";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
 import { currencies } from "@/constants/settings";
@@ -23,6 +23,7 @@ import LocaleDatePickerInput from "@/components/UI/Locale/LocaleDatePickerInput"
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconPlus, IconX } from "@tabler/icons-react";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
+import { FinanceProject } from "@/types/finance.types";
 
 const projectSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -31,28 +32,26 @@ const projectSchema = z.object({
   ),
   start_amount: z.number().min(0, "Start amount is required"),
   due_date: z.string().optional(),
-  finance_category_id: z.string().optional(),
-  client_id: z.string().optional(),
+  finance_category_ids: z.array(z.string()),
+  finance_client_ids: z.array(z.string()),
 });
 
 interface FinanceProjectFormProps {
   onClose: () => void;
-  financeProject?: Tables<"finance_project">;
-  initialValues?: TablesInsert<"finance_project">;
-  clientId: string | null;
-  categoryId: string | null;
+  financeProject?: FinanceProject;
+  clientIds: string[];
+  categoryIds: string[];
   onOpenClientForm: () => void;
   onOpenCategoryForm: () => void;
-  onClientChange: (value: string | null) => void;
-  onCategoryChange: (value: string | null) => void;
+  onClientChange: (value: string[]) => void;
+  onCategoryChange: (value: string[]) => void;
 }
 
 export default function FinanceProjectForm({
   onClose,
   financeProject,
-  initialValues,
-  clientId,
-  categoryId,
+  clientIds,
+  categoryIds,
   onOpenClientForm,
   onOpenCategoryForm,
   onClientChange,
@@ -62,33 +61,50 @@ export default function FinanceProjectForm({
   const { addFinanceProject, financeCategories, financeClients } =
     useFinanceStore();
   const [isLoading, setIsLoading] = useState(false);
-  const form = useForm({
-    initialValues: initialValues ||
-      financeProject || {
-        title: "",
-        currency: defaultFinanceCurrency,
-        start_amount: 0,
-      },
+  const form = useForm<z.infer<typeof projectSchema>>({
+    initialValues: financeProject
+      ? {
+          title: financeProject.title,
+          currency: financeProject.currency,
+          start_amount: financeProject.start_amount,
+          finance_category_ids: financeProject.categories.map(
+            (category) => category.id
+          ),
+          finance_client_ids: financeProject.clients.map((client) => client.id),
+          due_date: financeProject.due_date || undefined,
+        }
+      : {
+          title: "",
+          currency: defaultFinanceCurrency,
+          start_amount: 0,
+          finance_category_ids: [],
+          finance_client_ids: [],
+          due_date: undefined,
+        },
     validate: zodResolver(projectSchema),
   });
 
   useEffect(() => {
-    if (clientId) {
-      form.setFieldValue("client_id", clientId);
+    if (clientIds) {
+      form.setFieldValue("finance_client_ids", clientIds);
     }
-    if (categoryId) {
-      form.setFieldValue("finance_category_id", categoryId);
+    if (categoryIds) {
+      form.setFieldValue("finance_category_ids", categoryIds);
     }
-  }, [clientId, categoryId]);
+  }, [clientIds, categoryIds]);
 
   const handleSubmit = async (values: any) => {
     setIsLoading(true);
-    const success = await addFinanceProject({
-      ...values,
-      due_date: values.due_date || null,
-      finance_category_id: values.finance_category_id || null,
-      client_id: values.client_id || null,
-    });
+    const success = await addFinanceProject(
+      {
+        title: values.title,
+        currency: values.currency,
+        start_amount: values.start_amount,
+        due_date: values.due_date || null,
+      },
+      values.finance_client_ids,
+      values.finance_category_ids
+    );
     if (success) {
       notifications.show({
         title: locale === "de-DE" ? "Erfolg" : "Success",
@@ -133,13 +149,13 @@ export default function FinanceProjectForm({
     label: client.name,
   }));
 
-  const handleClientChange = (value: string | null) => {
-    form.setFieldValue("client_id", value);
+  const handleClientChange = (value: string[]) => {
+    form.setFieldValue("finance_client_ids", value);
     onClientChange(value);
   };
 
-  const handleCategoryChange = (value: string | null) => {
-    form.setFieldValue("finance_category_id", value);
+  const handleCategoryChange = (value: string[]) => {
+    form.setFieldValue("finance_category_ids", value);
     onCategoryChange(value);
   };
 
@@ -178,18 +194,26 @@ export default function FinanceProjectForm({
           {...form.getInputProps("due_date")}
         />
         <Group wrap="nowrap">
-          <Select
+          <MultiSelect
             w="100%"
+            multiple
             data={categoryOptions}
+            searchable
+            clearable
+            nothingFoundMessage={
+              locale === "de-DE"
+                ? "Keine Kategorien gefunden"
+                : "No categories found"
+            }
             label={locale === "de-DE" ? "Finanzkategorie" : "Finance category"}
             placeholder={
               locale === "de-DE"
                 ? "Finanzkategorie auswählen"
                 : "Select finance category"
             }
-            value={form.values.finance_category_id}
+            value={form.values.finance_category_ids}
             onChange={handleCategoryChange}
-            error={form.errors.finance_category_id}
+            error={form.errors.finance_category_ids}
           />
           <Button
             mt={25}
@@ -207,17 +231,22 @@ export default function FinanceProjectForm({
           </Button>
         </Group>
         <Group wrap="nowrap">
-          <Select
+          <MultiSelect
             w="100%"
+            multiple
             data={clientOptions}
+            searchable
+            clearable
+            nothingFoundMessage={
+              locale === "de-DE" ? "Keine Kunden gefunden" : "No clients found"
+            }
             label={locale === "de-DE" ? "Kunde" : "Client"}
             placeholder={
               locale === "de-DE" ? "Kunde auswählen" : "Select client"
             }
-            {...form.getInputProps("client_id")}
-            value={form.values.client_id}
+            value={form.values.finance_client_ids || []}
             onChange={handleClientChange}
-            error={form.errors.client_id}
+            error={form.errors.finance_client_ids}
           />
           <Button
             mt={25}

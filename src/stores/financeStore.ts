@@ -5,7 +5,12 @@ import { persist } from "zustand/middleware";
 import * as actions from "@/actions";
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { processRecurringCashFlows } from "@/utils/financeHelperFunction";
-import { FinanceProject, FinanceRule, FinanceTab, Payout } from "@/types/finance.types";
+import {
+  FinanceProject,
+  FinanceRule,
+  FinanceTab,
+  Payout,
+} from "@/types/finance.types";
 
 interface FinanceStoreState {
   singleCashFlows: Tables<"single_cash_flow">[];
@@ -32,7 +37,9 @@ interface FinanceStoreActions {
   ) => Promise<Tables<"finance_client"> | null>;
   deleteFinanceClients: (ids: string[]) => Promise<boolean>;
   addFinanceProject: (
-    project: TablesInsert<"finance_project">
+    project: TablesInsert<"finance_project">,
+    clientIds: string[],
+    categoryIds: string[]
   ) => Promise<Tables<"finance_project"> | null>;
   deleteFinanceProjects: (ids: string[]) => Promise<boolean>;
   addSingleCashFlow: (
@@ -207,20 +214,23 @@ export const useFinanceStore = create<
         return true;
       },
 
-      async addFinanceProject(project) {
+      async addFinanceProject(project, clientIds, categoryIds) {
         const { financeProjects } = get();
-        const newProject = await actions.createFinanceProject(project);
-        if (!newProject.success) return null;
+        const { data: newProject, success, error } =
+          await actions.createFinanceProject({
+            project,
+            clientIds,
+            categoryIds,
+          });
+        console.log(error);
+        if (!success) return null;
 
-        const newFinanceProjects = [
-          ...financeProjects,
-          { ...newProject.data, adjustments: [] },
-        ];
+        const newFinanceProjects = [...financeProjects, newProject];
         set({
           financeProjects: newFinanceProjects,
         });
 
-        return newProject.data;
+        return newProject;
       },
 
       async deleteFinanceProjects(ids) {

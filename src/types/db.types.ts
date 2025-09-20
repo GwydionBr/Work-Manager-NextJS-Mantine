@@ -145,11 +145,9 @@ export type Database = {
       };
       finance_project: {
         Row: {
-          client_id: string | null;
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
           due_date: string | null;
-          finance_category_id: string | null;
           id: string;
           paid: boolean;
           start_amount: number;
@@ -157,11 +155,9 @@ export type Database = {
           user_id: string;
         };
         Insert: {
-          client_id?: string | null;
           created_at?: string;
           currency: Database["public"]["Enums"]["currency"];
           due_date?: string | null;
-          finance_category_id?: string | null;
           id?: string;
           paid?: boolean;
           start_amount: number;
@@ -169,33 +165,16 @@ export type Database = {
           user_id?: string;
         };
         Update: {
-          client_id?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           due_date?: string | null;
-          finance_category_id?: string | null;
           id?: string;
           paid?: boolean;
           start_amount?: number;
           title?: string;
           user_id?: string;
         };
-        Relationships: [
-          {
-            foreignKeyName: "finance_project_client_id_fkey";
-            columns: ["client_id"];
-            isOneToOne: false;
-            referencedRelation: "finance_client";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "finance_project_finance_category_id_fkey";
-            columns: ["finance_category_id"];
-            isOneToOne: false;
-            referencedRelation: "finance_category";
-            referencedColumns: ["id"];
-          },
-        ];
+        Relationships: [];
       };
       finance_project_adjustment: {
         Row: {
@@ -235,6 +214,84 @@ export type Database = {
           },
           {
             foreignKeyName: "finance_project_adjustment_finance_project_id_fkey";
+            columns: ["finance_project_id"];
+            isOneToOne: false;
+            referencedRelation: "finance_project";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      finance_project_category: {
+        Row: {
+          created_at: string;
+          finance_category_id: string;
+          finance_project_id: string;
+          id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          finance_category_id: string;
+          finance_project_id: string;
+          id?: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          finance_category_id?: string;
+          finance_project_id?: string;
+          id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "finance_project_category_finance_category_id_fkey";
+            columns: ["finance_category_id"];
+            isOneToOne: false;
+            referencedRelation: "finance_category";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "finance_project_category_finance_project_id_fkey";
+            columns: ["finance_project_id"];
+            isOneToOne: false;
+            referencedRelation: "finance_project";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      finance_project_client: {
+        Row: {
+          created_at: string;
+          finance_client_id: string;
+          finance_project_id: string;
+          id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          finance_client_id: string;
+          finance_project_id: string;
+          id?: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          finance_client_id?: string;
+          finance_project_id?: string;
+          id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "finance_project_client_finance_client_id_fkey";
+            columns: ["finance_client_id"];
+            isOneToOne: false;
+            referencedRelation: "finance_client";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "finance_project_client_finance_project_id_fkey";
             columns: ["finance_project_id"];
             isOneToOne: false;
             referencedRelation: "finance_project";

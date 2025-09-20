@@ -21,31 +21,41 @@ export async function getAllFinanceProjects(): Promise<
     return { success: false, data: null, error: "User not found" };
   }
 
-  const { data: projects, error } = await supabase
+  const { data, error } = await supabase
     .from("finance_project")
-    .select("*")
+    .select(
+      `
+      *,
+      adjustments:finance_project_adjustment(*),
+      clients:finance_project_client(
+        finance_client:finance_client_id(*)
+      ),
+      categories:finance_project_category(
+        finance_category:finance_category_id(*)
+      )
+    `
+    )
     .eq("user_id", user.id)
-    .order("due_date", { ascending: true });
+    .order("created_at", { ascending: false });
 
   if (error) {
     return { success: false, data: null, error: error.message };
   }
 
-  const { data: adjustments, error: adjustmentsError } = await supabase
-    .from("finance_project_adjustment")
-    .select("*")
-    .eq("user_id", user.id);
-
-  if (adjustmentsError) {
-    return { success: false, data: null, error: adjustmentsError.message };
+  if (!data || data.length === 0) {
+    return { success: true, data: [], error: null };
   }
 
-  const data = projects.map((project) => ({
+  // Transform the data to match the expected structure
+  const formatted: FinanceProject[] = data.map((project) => ({
     ...project,
-    adjustments: adjustments.filter(
-      (adjustment) => adjustment.finance_project_id === project.id
-    ),
+    adjustments: project.adjustments || [],
+    clients:
+      project.clients?.map((c: any) => c.finance_client).filter(Boolean) || [],
+    categories:
+      project.categories?.map((c: any) => c.finance_category).filter(Boolean) ||
+      [],
   }));
 
-  return { success: true, data, error: null };
+  return { success: true, data: formatted, error: null };
 }

@@ -81,14 +81,6 @@ export default function FinanceProjectCard({
     project.start_amount
   );
 
-  const financeClient = financeClients.find(
-    (client) => client.id === project.client_id
-  );
-
-  const financeCategory = financeCategories.find(
-    (category) => category.id === project.finance_category_id
-  );
-
   const hasAdjustments = project.adjustments.length > 0;
   const isPositive = totalAmount > 0;
   const adjustmentTotal = project.adjustments.reduce(
@@ -187,32 +179,35 @@ export default function FinanceProjectCard({
               {project.title}
             </Text>
             <Group gap="md" wrap="wrap">
-              {financeClient && (
-                <HoverCard>
-                  <HoverCard.Target>
-                    <Badge
-                      color="blue"
-                      variant="light"
-                      leftSection={<IconUser size={12} />}
-                      style={{ cursor: "pointer" }}
-                    >
-                      {financeClient.name}
-                    </Badge>
-                  </HoverCard.Target>
-                  <HoverCard.Dropdown>
-                    <FinanceClientCard client={financeClient} />
-                  </HoverCard.Dropdown>
-                </HoverCard>
-              )}
-              {financeCategory && (
-                <Badge
-                  color="violet"
-                  variant="light"
-                  leftSection={<IconTag size={12} />}
-                >
-                  {financeCategory.title}
-                </Badge>
-              )}
+              {project.clients.length > 0 &&
+                project.clients.map((client) => (
+                  <HoverCard key={client.id}>
+                    <HoverCard.Target>
+                      <Badge
+                        color="blue"
+                        variant="light"
+                        leftSection={<IconUser size={12} />}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {client.name}
+                      </Badge>
+                    </HoverCard.Target>
+                    <HoverCard.Dropdown>
+                      <FinanceClientCard client={client} />
+                    </HoverCard.Dropdown>
+                  </HoverCard>
+                ))}
+              {project.categories.length > 0 &&
+                project.categories.map((category) => (
+                  <Badge
+                    key={category.id}
+                    color="violet"
+                    variant="light"
+                    leftSection={<IconTag size={12} />}
+                  >
+                    {category.title}
+                  </Badge>
+                ))}
               {/* <Badge
                 color={project.paid ? "green" : "yellow"}
                 variant="light"
@@ -325,7 +320,7 @@ export default function FinanceProjectCard({
               {getLocalizedText("Anpassungen", "Adjustments")} (
               {project.adjustments.length})
             </Text>
-            <Stack gap="xs">
+            <Stack gap={5}>
               {project.adjustments.map((adjustment) => (
                 <FinanceAdjustmentRow
                   key={adjustment.id}

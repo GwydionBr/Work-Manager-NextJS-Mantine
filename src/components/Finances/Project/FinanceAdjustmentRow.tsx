@@ -2,7 +2,13 @@
 
 import { Tables } from "@/types/db.types";
 import { Group, Text, Box, Badge, ThemeIcon, Card } from "@mantine/core";
-import { IconArrowRight, IconUser } from "@tabler/icons-react";
+import {
+  IconArrowRight,
+  IconMinus,
+  IconPlus,
+  IconUser,
+  IconArrowLeft,
+} from "@tabler/icons-react";
 import { formatMoney, formatDate } from "@/utils/formatFunctions";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { Currency } from "@/types/settings.types";
@@ -31,19 +37,28 @@ export default function FinanceAdjustmentRow({
   return (
     <Card p="sm" withBorder shadow="sm" radius="md">
       <Group justify="space-between" align="flex-start">
-        <Group gap="sm" align="center">
+        <Group gap="xs" align="center">
+          <ThemeIcon
+            size="sm"
+            color={isIncome ? "green" : "red"}
+            variant="transparent"
+          >
+            {isIncome ? (
+              <IconArrowRight size={14} />
+            ) : (
+              <IconArrowLeft size={14} />
+            )}
+          </ThemeIcon>
           <ThemeIcon
             size="sm"
             color={isIncome ? "green" : "red"}
             variant="light"
           >
-            <IconArrowRight size={14} />
+            {isIncome ? <IconPlus size={14} /> : <IconMinus size={14} />}
           </ThemeIcon>
-
           <Group gap="xs">
             <Text size="sm" fw={500} c={isIncome ? "green" : "red"}>
-              {isIncome ? "+" : ""}
-              {formatMoney(adjustment.amount, currency, locale)}
+              {formatMoney(Math.abs(adjustment.amount), currency, locale)}
             </Text>
 
             {adjustment.description && (

@@ -42,6 +42,7 @@ export default function FinanceAdjustmentForm({
     setIsLoading(true);
     const response = await addFinanceAdjustment({
       ...values,
+      client_id: values.client_id || null,
       finance_project_id: projectId,
     });
     if (response) {
@@ -57,7 +58,7 @@ export default function FinanceAdjustmentForm({
         withBorder: true,
         position: "top-center",
       });
-      onClose();
+      handleClose();
     } else {
       notifications.show({
         title: locale === "de-DE" ? "Fehler" : "Error",
@@ -73,6 +74,11 @@ export default function FinanceAdjustmentForm({
       });
     }
     setIsLoading(false);
+  };
+
+  const handleClose = () => {
+    form.reset();
+    onClose();
   };
 
   const clientOptions = financeClients.map((client) => ({
@@ -95,6 +101,9 @@ export default function FinanceAdjustmentForm({
           {...form.getInputProps("description")}
         />
         <Select
+          allowDeselect
+          searchable
+          clearable
           label={locale === "de-DE" ? "Kunde" : "Client"}
           {...form.getInputProps("client_id")}
           data={clientOptions}

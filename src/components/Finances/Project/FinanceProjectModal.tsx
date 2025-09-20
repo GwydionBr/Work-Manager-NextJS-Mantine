@@ -22,8 +22,8 @@ export default function FinanceProjectFormModal({
   opened,
   onClose,
 }: FinanceProjectFormModalProps) {
-  const [clientId, setClientId] = useState<string | null>(null);
-  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [clientIds, setClientIds] = useState<string[]>([]);
+  const [categoryIds, setCategoryIds] = useState<string[]>([]);
   const stack = useModalsStack([
     "project-form",
     "client-form",
@@ -59,12 +59,12 @@ export default function FinanceProjectFormModal({
       >
         <FinanceProjectForm
           onClose={onClose}
-          clientId={clientId}
-          categoryId={categoryId}
+          clientIds={clientIds}
+          categoryIds={categoryIds}
           onOpenClientForm={() => stack.open("client-form")}
           onOpenCategoryForm={() => stack.open("category-form")}
-          onClientChange={setClientId}
-          onCategoryChange={setCategoryId}
+          onClientChange={setClientIds}
+          onCategoryChange={setCategoryIds}
         />
       </Modal>
       <Modal
@@ -81,7 +81,7 @@ export default function FinanceProjectFormModal({
       >
         <FinanceClientForm
           onClose={() => stack.close("client-form")}
-          onSuccess={(client) => setClientId(client.id)}
+          onSuccess={(client) => setClientIds((prev) => [...prev, client.id])}
         />
       </Modal>
       <Modal
@@ -102,7 +102,9 @@ export default function FinanceProjectFormModal({
       >
         <FinanceCategoryForm
           onClose={() => stack.close("category-form")}
-          onSuccess={(category) => setCategoryId(category.id)}
+          onSuccess={(category) =>
+            setCategoryIds((prev) => [...prev, category.id])
+          }
         />
       </Modal>
     </Modal.Stack>

@@ -13,6 +13,8 @@ export interface FinanceRule extends Tables<"finance_rule"> {
 
 export interface FinanceProject extends Tables<"finance_project"> {
   adjustments: Tables<"finance_project_adjustment">[];
+  clients: Tables<"finance_client">[];
+  categories: Tables<"finance_category">[];
 }
 
 export type FinanceNavbarItem = {
