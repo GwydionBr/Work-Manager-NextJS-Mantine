@@ -15,6 +15,7 @@ import {
 import { FinanceInterval } from "@/types/settings.types";
 import { useMemo } from "react";
 import { getNextDate } from "@/utils/financeHelperFunction";
+import { isToday } from "date-fns";
 
 interface RecurringCashFlowRowProps extends CardProps {
   cashflow: Tables<"recurring_cash_flow">;
@@ -97,7 +98,7 @@ export default function RecurringCashFlowRow({
             )}
             {showNextDate && nextDate && (
               <Group gap={5}>
-                <ThemeIcon variant="transparent" color="blue">
+                <ThemeIcon variant="transparent" color={isToday(nextDate) ? "yellow" : "blue"}>
                   <IconCalendarTime size={20} />
                 </ThemeIcon>
                 <Text>{formatDate(nextDate, locale)}</Text>

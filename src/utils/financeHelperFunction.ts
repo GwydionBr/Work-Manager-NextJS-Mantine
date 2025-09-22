@@ -13,22 +13,47 @@ export const getNextDate = (
   interval: FinanceInterval,
   startDate: Date
 ): Date => {
-  switch (interval) {
-    case "day":
-      return addDays(startDate, 1);
-    case "week":
-      return addWeeks(startDate, 1);
-    case "month":
-      return addMonths(startDate, 1);
-    case "1/4 year":
-      return addQuarters(startDate, 1);
-    case "1/2 year":
-      return addMonths(startDate, 6);
-    case "year":
-      return addYears(startDate, 1);
-    default:
-      return startDate;
+  const today = new Date();
+  let candidate = new Date(startDate);
+
+  // If today is before the start date, the next valid occurrence is the start date itself
+  if (today < candidate) {
+    return candidate;
   }
+
+  // If today falls exactly on an occurrence, return today
+  if (isSameDay(candidate, today)) {
+    return today;
+  }
+
+  // Otherwise, advance from the start date in the chosen interval until we reach today or later
+  const advance = (date: Date): Date => {
+    switch (interval) {
+      case "day":
+        return addDays(date, 1);
+      case "week":
+        return addWeeks(date, 1);
+      case "month":
+        return addMonths(date, 1);
+      case "1/4 year":
+        return addQuarters(date, 1);
+      case "1/2 year":
+        return addMonths(date, 6);
+      case "year":
+        return addYears(date, 1);
+      default:
+        return date;
+    }
+  };
+
+  while (candidate < today && !isSameDay(candidate, today)) {
+    const next = advance(candidate);
+    // Prevent infinite loops in case of an unknown interval
+    if (next.getTime() === candidate.getTime()) break;
+    candidate = next;
+  }
+
+  return isSameDay(candidate, today) ? today : candidate;
 };
 
 interface ProcessedRecurringCashFlows {
