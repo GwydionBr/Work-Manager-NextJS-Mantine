@@ -1,57 +1,51 @@
 "use client";
 
-import { useDisclosure, useHover } from "@mantine/hooks";
+import { useHover } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import {
-  Badge,
-  Card,
-  CardProps,
-  Grid,
-  Text,
-  Group,
-  Menu,
-  Transition,
-} from "@mantine/core";
-import {
-  IconCashMoveBack,
-  IconCashMove,
-  IconTag,
-  IconPencil,
-  IconTrash,
-} from "@tabler/icons-react";
+import { Badge, Card, CardProps, Grid, Text, Group } from "@mantine/core";
+import { IconTag } from "@tabler/icons-react";
 
 import { formatMoney } from "@/utils/formatFunctions";
 import { Tables } from "@/types/db.types";
-import MoreActionIcon from "@/components/UI/ActionIcons/MoreActionIcon";
 
 interface SingleCashflowRowProps extends CardProps {
   cashflow: Tables<"single_cash_flow">;
   onEdit: () => void;
-  onDelete: () => void;
 }
 
 export default function SingleCashflowRow({
   cashflow,
   onEdit,
-  onDelete,
   ...props
 }: SingleCashflowRowProps) {
   const { locale } = useSettingsStore();
   const { financeCategories } = useFinanceStore();
-  const [opened, { open, close }] = useDisclosure(false);
   const { hovered, ref } = useHover();
   return (
-    <Card withBorder shadow="sm" h={45} radius="md" p="xs" {...props} ref={ref}>
+    <Card
+      withBorder
+      shadow="sm"
+      h={45}
+      radius="md"
+      p="xs"
+      bg={
+        hovered
+          ? "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
+          : "light-dark(var(--mantine-color-white), var(--mantine-color-dark-7))"
+      }
+      style={{
+        cursor: "pointer",
+        border: hovered ? "1px solid var(--mantine-color-blue-6)" : "",
+      }}
+      onClick={onEdit}
+      {...props}
+      ref={ref}
+    >
       <Grid>
         <Grid.Col span={2}>
           <Group>
-            {/* {cashflow.type === "expense" ? (
-              <IconCashMoveBack color="red" />
-            ) : (
-              <IconCashMove color="green" />
-            )} */}
             <Text fw={700} c={cashflow.type === "expense" ? "red" : "green"}>
               {formatMoney(cashflow.amount, cashflow.currency, locale)}
             </Text>
@@ -74,35 +68,6 @@ export default function SingleCashflowRow({
               }
             </Badge>
           )}
-        </Grid.Col>
-        <Grid.Col span={1}>
-          <Transition
-            mounted={hovered || opened}
-            transition="fade-left"
-            duration={200}
-          >
-            {(styles) => (
-              <Menu opened={opened} onClose={close}>
-                <Menu.Target>
-                  <MoreActionIcon onClick={open} style={styles} />
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item
-                    onClick={onEdit}
-                    leftSection={<IconPencil size={16} />}
-                  >
-                    {locale === "de-DE" ? "Bearbeiten" : "Edit"}
-                  </Menu.Item>
-                  <Menu.Item
-                    onClick={onDelete}
-                    leftSection={<IconTrash size={16} />}
-                  >
-                    {locale === "de-DE" ? "Löschen" : "Delete"}
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
-            )}
-          </Transition>
         </Grid.Col>
       </Grid>
     </Card>

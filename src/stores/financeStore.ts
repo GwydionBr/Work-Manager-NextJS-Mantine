@@ -486,6 +486,7 @@ export const useFinanceStore = create<
         const deleted = await actions.deleteFinanceCategories({
           categoryIds: ids,
         });
+        console.log(deleted);
         if (!deleted.success) return false;
 
         const updatedFinanceCategories = financeCategories.filter(

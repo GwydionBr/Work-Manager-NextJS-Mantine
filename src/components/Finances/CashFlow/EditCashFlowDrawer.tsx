@@ -29,6 +29,7 @@ import {
   IconCashMove,
   IconAlertHexagonFilled,
   IconAlertTriangle,
+  IconCategoryPlus,
 } from "@tabler/icons-react";
 import { CashFlowType } from "@/types/settings.types";
 import CancelButton from "../../UI/Buttons/CancelButton";
@@ -72,11 +73,9 @@ export default function EditCashFlowDrawer({
     "edit-cash-flow",
     "delete-cash-flow",
     "update-cash-flow",
+    "add-category",
   ]);
-  const [
-    isCategoryFormOpen,
-    { open: openCategoryForm, close: closeCategoryForm },
-  ] = useDisclosure(false);
+
   useEffect(() => {
     if (opened) {
       drawerStack.open("edit-cash-flow");
@@ -84,6 +83,12 @@ export default function EditCashFlowDrawer({
       drawerStack.closeAll();
     }
   }, [opened]);
+
+  useEffect(() => {
+    if (categoryId !== cashFlow.category_id) {
+      setCategoryId(cashFlow.category_id);
+    }
+  }, [cashFlow]);
 
   async function handleSubmit(values: any) {
     setIsLoading(true);
@@ -262,39 +267,20 @@ export default function EditCashFlowDrawer({
               }
               size="sm"
             />
-            <Popover
-              opened={isCategoryFormOpen}
-              onClose={closeCategoryForm}
-              onOpen={openCategoryForm}
-              closeOnClickOutside
-              trapFocus
-              returnFocus
-              withOverlay
+            <Button
+              mt={25}
+              w={180}
+              p={0}
+              onClick={() => drawerStack.open("add-category")}
+              fw={500}
+              variant="subtle"
+              size="xs"
+              leftSection={<IconPlus size={20} />}
             >
-              <Popover.Target>
-                <Button
-                  mt={25}
-                  w={180}
-                  p={0}
-                  onClick={openCategoryForm}
-                  fw={500}
-                  variant="subtle"
-                  size="xs"
-                  leftSection={<IconPlus size={20} />}
-                >
-                  <Text fz="xs" c="dimmed">
-                    {locale === "de-DE" ? "Neue Kategorie" : "Add Category"}
-                  </Text>
-                </Button>
-              </Popover.Target>
-              <Popover.Dropdown>
-                <FinanceCategoryForm
-                  onClose={closeCategoryForm}
-                  category={null}
-                  onSuccess={handleAddCategory}
-                />
-              </Popover.Dropdown>
-            </Popover>
+              <Text fz="xs" c="dimmed">
+                {locale === "de-DE" ? "Neue Kategorie" : "Add Category"}
+              </Text>
+            </Button>
           </Group>
           {isSingleCashFlow(cashFlow) ? (
             <SingleCashFlowForm
@@ -382,6 +368,23 @@ export default function EditCashFlowDrawer({
             </Button>
           </Group>
         </Stack>
+      </Drawer>
+      <Drawer
+        {...drawerStack.register("add-category")}
+        onClose={() => drawerStack.close("add-category")}
+        title={
+          <Group>
+            <IconCategoryPlus />
+            <Text>
+              {locale === "de-DE" ? "Kategorie hinzufügen" : "Add Category"}
+            </Text>
+          </Group>
+        }
+      >
+        <FinanceCategoryForm
+          onClose={() => drawerStack.close("add-category")}
+          onSuccess={handleAddCategory}
+        />
       </Drawer>
     </Drawer.Stack>
   );
