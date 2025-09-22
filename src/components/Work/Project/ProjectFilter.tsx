@@ -36,7 +36,7 @@ export default function ProjectFilter({
   const [openedModal, { open: openModal, close: closeModal }] =
     useDisclosure(false);
   const today = dayjs();
-  const unpaidSessions = sessions.filter((session) => !session.payed);
+  const unpaidSessions = sessions.filter((session) => !session.paid);
 
   const sessionPayout = unpaidSessions.reduce(
     (acc, session) => acc + session.salary * (session.active_seconds / 3600),

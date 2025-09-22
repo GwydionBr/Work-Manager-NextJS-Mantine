@@ -55,12 +55,12 @@ export default function PayoutCard({
 
       // For hourly payment projects, check if session is paid
       if (sessionProject.hourly_payment) {
-        return !session.payed;
+        return !session.paid;
       } else return false;
     }
 
-    // Normal mode - just check session.payed
-    return !session.payed;
+    // Normal mode - just check session.paid
+    return !session.paid;
   });
 
   // Filter selected sessions to only include unpaid ones

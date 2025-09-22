@@ -78,7 +78,8 @@ interface WorkStoreActions {
     startCurrency: Currency,
     categoryId: string | null,
     endValue: number | null,
-    endCurrency: Currency | null
+    endCurrency: Currency | null,
+    projectId?: string | null
   ) => Promise<
     ApiResponseSingle<{
       cashflow: Tables<"single_cash_flow">;
@@ -489,7 +490,8 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         startCurrency,
         categoryId,
         endValue,
-        endCurrency
+        endCurrency,
+        projectId
       ) {
         const { updateStore, projects, timerSessions } = get();
         const payoutResult = await actions.payoutSessions({
@@ -501,6 +503,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           categoryId,
           endValue,
           endCurrency,
+          projectId: projectId ?? null,
         });
         if (!payoutResult.success) {
           return payoutResult;
@@ -509,13 +512,13 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         // Update sessions to mark them as paid
         const updatedSessions = timerSessions.map((s) =>
           sessionIds.includes(s.id)
-            ? { ...s, payed: true, payout_id: payoutResult.data.payout.id }
+            ? { ...s, paid: true, payout_id: payoutResult.data.payout.id }
             : s
         );
         const updatedProjects = projects.map((p) => ({
           project: p.project,
           sessions: p.sessions.map((s) =>
-            sessionIds.includes(s.id) ? { ...s, payed: true } : s
+            sessionIds.includes(s.id) ? { ...s, paid: true } : s
           ),
         }));
         updateStore(updatedProjects, updatedSessions);

@@ -82,7 +82,7 @@ export function DayColumn({
       end_time: end.toISOString(),
       project_id: s.project_id,
       memo: s.memo,
-      payed: s.payed,
+      paid: s.paid,
       active_seconds: s.active_seconds,
       projectTitle: s.projectTitle,
       color: s.color,

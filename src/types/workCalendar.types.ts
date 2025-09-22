@@ -24,7 +24,7 @@ export type CalendarSession = Pick<
   | "end_time"
   | "project_id"
   | "memo"
-  | "payed"
+  | "paid"
   | "active_seconds"
   | "currency"
   | "salary"

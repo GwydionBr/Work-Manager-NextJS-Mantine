@@ -15,6 +15,7 @@ interface PayoutSessionsProps {
   categoryId: string | null;
   endValue: number | null;
   endCurrency: Currency | null;
+  projectId: string | null;
 }
 
 export async function payoutSessions({
@@ -26,6 +27,7 @@ export async function payoutSessions({
   categoryId,
   endValue,
   endCurrency,
+  projectId,
 }: PayoutSessionsProps): Promise<
   ApiResponseSingle<{
     cashflow: Tables<"single_cash_flow">;
@@ -60,6 +62,7 @@ export async function payoutSessions({
       end_value: endValue,
       end_currency: endCurrency,
       timer_project_id: null,
+      timer_session_project_id: projectId,
       title: title,
     })
     .select()
@@ -73,7 +76,7 @@ export async function payoutSessions({
     const { error: sessionError } = await supabase
       .from("timer_session")
       .update({
-        payed: true,
+        paid: true,
         payout_id: payout.id,
       })
       .eq("id", sessionId);

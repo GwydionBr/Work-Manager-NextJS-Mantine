@@ -1195,8 +1195,8 @@ export type Database = {
           hourly_payment: boolean;
           id: string;
           memo: string | null;
+          paid: boolean;
           paused_seconds: number;
-          payed: boolean;
           payout_id: string | null;
           project_id: string;
           real_start_time: string | null;
@@ -1214,8 +1214,8 @@ export type Database = {
           hourly_payment?: boolean;
           id?: string;
           memo?: string | null;
+          paid?: boolean;
           paused_seconds?: number;
-          payed?: boolean;
           payout_id?: string | null;
           project_id?: string;
           real_start_time?: string | null;
@@ -1233,8 +1233,8 @@ export type Database = {
           hourly_payment?: boolean;
           id?: string;
           memo?: string | null;
+          paid?: boolean;
           paused_seconds?: number;
-          payed?: boolean;
           payout_id?: string | null;
           project_id?: string;
           real_start_time?: string | null;

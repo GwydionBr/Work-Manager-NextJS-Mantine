@@ -101,7 +101,7 @@ export default function WorkPage() {
     } else {
       setSelectedSessions(
         timeFilteredSessions
-          .filter((session) => !session.payed)
+          .filter((session) => !session.paid)
           .map((session) => session.id)
       );
     }
@@ -111,7 +111,7 @@ export default function WorkPage() {
     activateSelectedMode();
     setSelectedSessions(
       timeFilteredSessions
-        .filter((session) => !session.payed)
+        .filter((session) => !session.paid)
         .map((session) => session.id)
     );
   }, [timeFilteredSessions]);
@@ -119,7 +119,7 @@ export default function WorkPage() {
   const toggleGroupSelection = useCallback(
     (sessionIds: string[]) => {
       const groupIds = sessionIds.filter((id) =>
-        timeFilteredSessions.some((s) => s.id === id && !s.payed)
+        timeFilteredSessions.some((s) => s.id === id && !s.paid)
       );
       const isAnySelected = groupIds.some((id) =>
         selectedSessions.includes(id)
@@ -144,7 +144,7 @@ export default function WorkPage() {
         const end = Math.max(lastSelectedIndex, index);
         const rangeIds = timeFilteredSessions
           .slice(start, end + 1)
-          .filter((session) => !session.payed)
+          .filter((session) => !session.paid)
           .map((session) => session.id);
         setSelectedSessions((prev) =>
           Array.from(new Set([...prev, ...rangeIds]))
@@ -238,7 +238,7 @@ export default function WorkPage() {
   };
 
   const selectableSessions = timeFilteredSessions.filter(
-    (session) => !session.payed
+    (session) => !session.paid
   );
 
   const isPayoutAvailable = activeProject.project.hourly_payment
@@ -402,7 +402,7 @@ export default function WorkPage() {
                   selectableIdSet={
                     new Set(
                       timeFilteredSessions
-                        .filter((s) => !s.payed)
+                        .filter((s) => !s.paid)
                         .map((s) => s.id)
                     )
                   }
