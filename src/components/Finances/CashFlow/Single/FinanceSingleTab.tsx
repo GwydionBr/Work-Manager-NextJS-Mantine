@@ -120,7 +120,7 @@ export default function FinanceSingleTab() {
                   <Divider
                     mt={5}
                     label={
-                      <Badge variant="light" color="gray">
+                      <Badge variant="light">
                         {formatDate(new Date(cashFlow.date), locale)}
                       </Badge>
                     }

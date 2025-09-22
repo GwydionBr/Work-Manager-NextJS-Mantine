@@ -241,12 +241,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </AppShell.Navbar>
         <AppShell.Main
           style={{ transition: "0.4s ease-in" }}
-          bg="var(--mantine-color-body)"
+          bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8))"
         >
           {children}
         </AppShell.Main>
         <AppShell.Aside
-          bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
+          bg="var(--mantine-color-body)"
           style={{ transition: "width 0.4s ease-in", overflow: "hidden" }}
         >
           <Aside toggleAside={toggleAside} isAsideOpen={isAsideOpen} />

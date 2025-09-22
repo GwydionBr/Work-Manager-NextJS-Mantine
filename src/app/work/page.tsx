@@ -292,7 +292,7 @@ export default function WorkPage() {
               borderBottom:
                 "1px solid light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2))",
             }}
-            bg="var(--mantine-color-body)"
+            bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8))"
             w="100%"
             gap="xs"
           >

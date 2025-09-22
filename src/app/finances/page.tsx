@@ -9,7 +9,12 @@ export default function FinancesPage() {
   const { isFetching } = useFinanceStore();
 
   return (
-    <ScrollArea px="xl" h="100vh" type="scroll">
+    <ScrollArea
+      px="xl"
+      h="100vh"
+      type="scroll"
+    
+    >
       {isFetching ? (
         <Center h="100vh">
           <Loader />

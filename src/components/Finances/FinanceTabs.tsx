@@ -48,7 +48,7 @@ export default function FinanceTabs() {
         mb="xl"
         pos="sticky"
         top={0}
-        bg="var(--mantine-color-body)"
+        bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8))"
         style={{ zIndex: 100 }}
       >
         <Tabs.Tab

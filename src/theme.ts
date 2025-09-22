@@ -6,4 +6,6 @@ export const mantineTheme = createTheme({
   /* Put your mantine theme override here */
   autoContrast: true,
   primaryColor: "teal",
+  colors: {
+  },
 });
