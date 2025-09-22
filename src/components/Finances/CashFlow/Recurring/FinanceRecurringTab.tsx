@@ -209,6 +209,7 @@ export default function FinanceRecurringTab() {
                 <RecurringCashFlowRow
                   key={cashFlow.id}
                   cashflow={cashFlow}
+                  showNextDate
                   getIntervalLabel={getIntervalLabel}
                   onEdit={() => {
                     setSelectedCashFlow(cashFlow);

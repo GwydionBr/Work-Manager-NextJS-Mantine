@@ -1,4 +1,5 @@
 import { Tables, TablesInsert } from "@/types/db.types";
+import { FinanceInterval } from "@/types/settings.types";
 import {
   addMonths,
   addDays,
@@ -7,6 +8,28 @@ import {
   addYears,
   isSameDay,
 } from "date-fns";
+
+export const getNextDate = (
+  interval: FinanceInterval,
+  startDate: Date
+): Date => {
+  switch (interval) {
+    case "day":
+      return addDays(startDate, 1);
+    case "week":
+      return addWeeks(startDate, 1);
+    case "month":
+      return addMonths(startDate, 1);
+    case "1/4 year":
+      return addQuarters(startDate, 1);
+    case "1/2 year":
+      return addMonths(startDate, 6);
+    case "year":
+      return addYears(startDate, 1);
+    default:
+      return startDate;
+  }
+};
 
 interface ProcessedRecurringCashFlows {
   pastAndCurrentFlows: TablesInsert<"single_cash_flow">[];

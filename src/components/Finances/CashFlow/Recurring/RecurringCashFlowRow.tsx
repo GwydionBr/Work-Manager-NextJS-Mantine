@@ -6,13 +6,21 @@ import { useFinanceStore } from "@/stores/financeStore";
 import { Tables } from "@/types/db.types";
 import { formatDate, formatMoney } from "@/utils/formatFunctions";
 import { Badge, Card, CardProps, Group, Text, ThemeIcon } from "@mantine/core";
-import { IconCalendar, IconCalendarOff, IconTag } from "@tabler/icons-react";
+import {
+  IconCalendar,
+  IconCalendarOff,
+  IconCalendarTime,
+  IconTag,
+} from "@tabler/icons-react";
 import { FinanceInterval } from "@/types/settings.types";
+import { useMemo } from "react";
+import { getNextDate } from "@/utils/financeHelperFunction";
 
 interface RecurringCashFlowRowProps extends CardProps {
   cashflow: Tables<"recurring_cash_flow">;
   showEndDate?: boolean;
   showStartDate?: boolean;
+  showNextDate?: boolean;
   onEdit: () => void;
   getIntervalLabel: (interval: FinanceInterval) => string;
 }
@@ -22,12 +30,19 @@ export default function RecurringCashFlowRow({
   onEdit,
   showEndDate,
   showStartDate,
+  showNextDate,
   getIntervalLabel,
   ...props
 }: RecurringCashFlowRowProps) {
   const { locale } = useSettingsStore();
   const { financeCategories } = useFinanceStore();
   const { hovered, ref } = useHover();
+
+  const nextDate = useMemo(() => {
+    if (!showNextDate) return null;
+    return getNextDate(cashflow.interval, new Date(cashflow.start_date));
+  }, [cashflow.interval, cashflow.start_date]);
+
   return (
     <Card
       withBorder
@@ -47,8 +62,8 @@ export default function RecurringCashFlowRow({
         cursor: hovered ? "pointer" : "default",
       }}
     >
-      <Group justify="space-between" wrap="nowrap" grow>
-        <Group wrap="nowrap">
+      <Group justify="space-between" grow>
+        <Group>
           <Text
             fw={700}
             c={cashflow.type === "expense" ? "red" : "green"}
@@ -58,28 +73,37 @@ export default function RecurringCashFlowRow({
           </Text>
           <Badge variant="light">{getIntervalLabel(cashflow.interval)}</Badge>
         </Group>
-        <Group w="100%">
+        <Group justify="flex-start">
           <Text>{cashflow.title}</Text>
         </Group>
-        <Group>
-          {showStartDate && (
-            <Group gap={5}>
-              <ThemeIcon variant="transparent" color="green">
-                <IconCalendar size={20} />
-              </ThemeIcon>
-              <Text>{formatDate(new Date(cashflow.start_date), locale)}</Text>
-            </Group>
-          )}
-          {showEndDate && cashflow.end_date && (
-            <Group gap={5}>
-              <ThemeIcon variant="transparent" color="red">
-                <IconCalendarOff size={20} />
-              </ThemeIcon>
-              <Text>{formatDate(new Date(cashflow.end_date), locale)}</Text>
-            </Group>
-          )}
-        </Group>
-        <Group>
+
+        <Group justify="space-between">
+          <Group>
+            {showStartDate && (
+              <Group gap={5}>
+                <ThemeIcon variant="transparent" color="green">
+                  <IconCalendar size={20} />
+                </ThemeIcon>
+                <Text>{formatDate(new Date(cashflow.start_date), locale)}</Text>
+              </Group>
+            )}
+            {showEndDate && cashflow.end_date && (
+              <Group gap={5}>
+                <ThemeIcon variant="transparent" color="red">
+                  <IconCalendarOff size={20} />
+                </ThemeIcon>
+                <Text>{formatDate(new Date(cashflow.end_date), locale)}</Text>
+              </Group>
+            )}
+            {showNextDate && nextDate && (
+              <Group gap={5}>
+                <ThemeIcon variant="transparent" color="blue">
+                  <IconCalendarTime size={20} />
+                </ThemeIcon>
+                <Text>{formatDate(nextDate, locale)}</Text>
+              </Group>
+            )}
+          </Group>
           {cashflow.category_id && (
             <Badge
               color="grape"
