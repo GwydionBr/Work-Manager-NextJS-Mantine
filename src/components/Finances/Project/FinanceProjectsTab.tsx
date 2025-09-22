@@ -357,7 +357,7 @@ export default function FinanceProjectTab() {
           </Stack>
         </Card>
       </Stack>
-      <Stack maw={900} w="100%" ml={220} align="center">
+      <Stack w="100%" ml={220} align="center">
         <Stack gap={0} w="100%">
           {/* Bulk Selection */}
           <Collapse in={selectedModeActive} w="100%">
@@ -431,7 +431,7 @@ export default function FinanceProjectTab() {
                           <Badge
                             variant="light"
                             color={
-                              isOverdue ? "red" : noDueDate ? "yellow" : "gray"
+                              isOverdue ? "red" : noDueDate ? "yellow" : "teal"
                             }
                           >
                             {project.due_date

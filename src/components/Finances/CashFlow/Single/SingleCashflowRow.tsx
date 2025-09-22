@@ -47,11 +47,11 @@ export default function SingleCashflowRow({
       <Grid>
         <Grid.Col span={2}>
           <Group>
-            {cashflow.type === "expense" ? (
+            {/* {cashflow.type === "expense" ? (
               <IconCashMoveBack color="red" />
             ) : (
               <IconCashMove color="green" />
-            )}
+            )} */}
             <Text fw={700} c={cashflow.type === "expense" ? "red" : "green"}>
               {formatMoney(cashflow.amount, cashflow.currency, locale)}
             </Text>

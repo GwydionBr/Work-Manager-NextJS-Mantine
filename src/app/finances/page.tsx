@@ -13,7 +13,7 @@ export default function FinancesPage() {
       px="xl"
       h="100vh"
       type="scroll"
-    
+      // scrollbars="y"
     >
       {isFetching ? (
         <Center h="100vh">

@@ -7,15 +7,12 @@ import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
   Table,
-  Title,
   Stack,
   Group,
   Text,
-  Card,
   Divider,
   ActionIcon,
   Badge,
-  Box,
 } from "@mantine/core";
 
 import EditCashFlowButton from "@/components/Finances/CashFlow/EditCashFlowDrawer";
@@ -27,9 +24,15 @@ import { Tables } from "@/types/db.types";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import { IconCashPlus } from "@tabler/icons-react";
 import FinancesNavbar from "../../FinancesNavbar";
+import RecurringCashFlowRow from "./RecurringCashFlowRow";
+import {
+  showActionErrorNotification,
+  showActionSuccessNotification,
+  showDeleteConfirmationModal,
+} from "@/utils/notificationFunctions";
 
 export default function FinanceRecurringTab() {
-  const { recurringCashFlows } = useFinanceStore();
+  const { recurringCashFlows, deleteRecurringCashFlow } = useFinanceStore();
   const { locale, defaultFinanceCurrency } = useSettingsStore();
   const [selectedCashFlow, setSelectedCashFlow] =
     useState<Tables<"recurring_cash_flow"> | null>(null);
@@ -41,6 +44,7 @@ export default function FinanceRecurringTab() {
     cashFlowModalOpened,
     { open: openCashFlowModal, close: closeCashFlowModal },
   ] = useDisclosure(false);
+
   useEffect(() => {
     if (recurringCashFlows.length > 0) {
       setSelectedCashFlow(recurringCashFlows[0]);
@@ -94,120 +98,56 @@ export default function FinanceRecurringTab() {
     }
   }
 
-  const renderTable = (
-    cashFlows: typeof recurringCashFlows,
-    title: string,
-    showEndDates: boolean = false,
-    showStartDates: boolean = false
-  ) => (
-    <Stack align="center" w="100%">
-      <Divider
-        w="100%"
-        label={
-          <Badge color="blue" variant="outline">
-            {title}
-          </Badge>
+  const handleDelete = (id: string) => {
+    showDeleteConfirmationModal(
+      locale === "de-DE" ? "Cashflow löschen" : "Delete Cash Flow",
+      locale === "de-DE"
+        ? "Sind Sie sicher, dass Sie diesen Cashflow löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+        : "Are you sure you want to delete this cash flow? This action cannot be undone.",
+      async () => {
+        const deleted = await deleteRecurringCashFlow(id);
+        if (deleted) {
+          showActionSuccessNotification(
+            locale === "de-DE"
+              ? "Cashflow erfolgreich gelöscht"
+              : "Cash flow deleted successfully",
+            locale
+          );
+        } else {
+          showActionErrorNotification(
+            locale === "de-DE"
+              ? "Cashflow konnte nicht gelöscht werden"
+              : "Cash flow could not be deleted",
+            locale
+          );
         }
-        labelPosition="left"
-        size="sm"
-        mb="md"
-      />
-      <Table striped highlightOnHover ml="xl">
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>{locale === "de-DE" ? "Name" : "Name"}</Table.Th>
-            <Table.Th>{locale === "de-DE" ? "Betrag" : "Amount"}</Table.Th>
-            <Table.Th>{locale === "de-DE" ? "Typ" : "Type"}</Table.Th>
-            <Table.Th>{locale === "de-DE" ? "Intervall" : "Interval"}</Table.Th>
-            {showStartDates && (
-              <Table.Th>
-                {locale === "de-DE" ? "Startdatum" : "Start Date"}
-              </Table.Th>
-            )}
-            {showEndDates && (
-              <Table.Th>
-                {locale === "de-DE" ? "Enddatum" : "End Date"}
-              </Table.Th>
-            )}
-            <Table.Th></Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {cashFlows.map((cashFlow) => (
-            <Table.Tr key={cashFlow.id}>
-              <Table.Td>{cashFlow.title}</Table.Td>
-              <Table.Td>
-                {formatMoney(cashFlow.amount, cashFlow.currency, locale)}
-              </Table.Td>
-              <Table.Td>
-                {cashFlow.type === "expense"
-                  ? locale === "de-DE"
-                    ? "Ausgabe"
-                    : "Expense"
-                  : locale === "de-DE"
-                    ? "Einnahme"
-                    : "Income"}
-              </Table.Td>
-              <Table.Td>{getIntervalLabel(cashFlow.interval)}</Table.Td>
-              {showStartDates && (
-                <Table.Td>
-                  {cashFlow.start_date
-                    ? formatDate(new Date(cashFlow.start_date), locale)
-                    : locale === "de-DE"
-                      ? "Unbegrenzt"
-                      : "Unlimited"}
-                </Table.Td>
-              )}
-              {showEndDates && (
-                <Table.Td>
-                  {cashFlow.end_date
-                    ? formatDate(new Date(cashFlow.end_date), locale)
-                    : locale === "de-DE"
-                      ? "Unbegrenzt"
-                      : "Unlimited"}
-                </Table.Td>
-              )}
-              <Table.Td>
-                <EditActionIcon
-                  onClick={() => {
-                    setSelectedCashFlow(cashFlow);
-                    openEditCashFlow();
-                  }}
-                />
-              </Table.Td>
-            </Table.Tr>
-          ))}
-        </Table.Tbody>
-      </Table>
-      {selectedCashFlow && (
-        <EditCashFlowButton
-          cashFlow={selectedCashFlow}
-          opened={editCashFlowOpened}
-          onClose={closeEditCashFlow}
-        />
-      )}
-    </Stack>
-  );
+      },
+      locale
+    );
+  };
 
   return (
     <Group w="100%">
+      {/* Navbar */}
       <FinancesNavbar
         top={
-          <DelayedTooltip
-            label={
-              locale === "de-DE"
-                ? "Wiederkehrenden Cashflow hinzufügen"
-                : "Add Recurring Cash Flow"
-            }
-          >
-            <ActionIcon onClick={openCashFlowModal} variant="subtle">
-              <IconCashPlus />
-            </ActionIcon>
-          </DelayedTooltip>
+          <Group justify="center">
+            <DelayedTooltip
+              label={
+                locale === "de-DE"
+                  ? "Wiederkehrenden Cashflow hinzufügen"
+                  : "Add Recurring Cash Flow"
+              }
+            >
+              <ActionIcon onClick={openCashFlowModal} variant="subtle">
+                <IconCashPlus />
+              </ActionIcon>
+            </DelayedTooltip>
+          </Group>
         }
         navbar={<Text ta="center">Filter</Text>}
         bottom={
-          <Stack>
+          <Stack align="flex-start">
             <Group justify="space-between">
               <Group gap="xs">
                 <Text>{locale === "de-DE" ? "Ausgaben" : "Expense"}:</Text>
@@ -249,33 +189,103 @@ export default function FinanceRecurringTab() {
           </Stack>
         }
       />
-      <Stack gap="xl" align="center" mb="xl" ml={230} w="100%">
-        <CashFlowModal
-          opened={cashFlowModalOpened}
-          onClose={closeCashFlowModal}
-          isSingle={false}
-        />
-        {renderTable(
-          activeCashFlows,
-          locale === "de-DE" ? "Aktiv" : "Active",
-          false,
-          false
+      {/* Tables */}
+      <Stack gap="xl" mb="xl" ml={230} w="100%">
+        {activeCashFlows.length > 0 && (
+          <Stack w="100%">
+            <Divider
+              w="100%"
+              label={
+                <Badge color="blue" variant="outline">
+                  {locale === "de-DE" ? "Aktiv" : "Active"}
+                </Badge>
+              }
+              labelPosition="left"
+              size="sm"
+              mb="md"
+            />
+            <Stack gap={0} ml="xl">
+              {activeCashFlows.map((cashFlow) => (
+                <RecurringCashFlowRow
+                  key={cashFlow.id}
+                  cashflow={cashFlow}
+                  getIntervalLabel={getIntervalLabel}
+                  onEdit={() => {
+                    setSelectedCashFlow(cashFlow);
+                    openEditCashFlow();
+                  }}
+                />
+              ))}
+            </Stack>
+          </Stack>
         )}
-        {futureCashFlows.length > 0 &&
-          renderTable(
-            futureCashFlows,
-            locale === "de-DE" ? "Zukünftig" : "Future",
-            false,
-            true
-          )}
-        {completedCashFlows.length > 0 &&
-          renderTable(
-            completedCashFlows,
-            locale === "de-DE" ? "Abgeschlossen" : "Completed",
-            true,
-            false
-          )}
+        {futureCashFlows.length > 0 && (
+          <Stack w="100%">
+            <Divider
+              w="100%"
+              label={
+                <Badge color="blue" variant="outline">
+                  {locale === "de-DE" ? "Zukünftig" : "Future"}
+                </Badge>
+              }
+              labelPosition="left"
+            />
+            <Stack gap={0} ml="xl">
+              {futureCashFlows.map((cashFlow) => (
+                <RecurringCashFlowRow
+                  key={cashFlow.id}
+                  cashflow={cashFlow}
+                  showStartDate
+                  getIntervalLabel={getIntervalLabel}
+                  onEdit={() => {
+                    setSelectedCashFlow(cashFlow);
+                    openEditCashFlow();
+                  }}
+                />
+              ))}
+            </Stack>
+          </Stack>
+        )}
+        {completedCashFlows.length > 0 && (
+          <Stack w="100%">
+            <Divider
+              w="100%"
+              labelPosition="left"
+              label={
+                <Badge color="blue" variant="outline">
+                  {locale === "de-DE" ? "Abgeschlossen" : "Completed"}
+                </Badge>
+              }
+            />
+            <Stack gap={0} ml="xl">
+              {completedCashFlows.map((cashFlow) => (
+                <RecurringCashFlowRow
+                  getIntervalLabel={getIntervalLabel}
+                  key={cashFlow.id}
+                  cashflow={cashFlow}
+                  showEndDate
+                  onEdit={() => {
+                    setSelectedCashFlow(cashFlow);
+                    openEditCashFlow();
+                  }}
+                />
+              ))}
+            </Stack>
+          </Stack>
+        )}
       </Stack>
+      <CashFlowModal
+        opened={cashFlowModalOpened}
+        onClose={closeCashFlowModal}
+        isSingle={false}
+      />
+      {selectedCashFlow && (
+        <EditCashFlowButton
+          cashFlow={selectedCashFlow}
+          opened={editCashFlowOpened}
+          onClose={closeEditCashFlow}
+        />
+      )}
     </Group>
   );
 }
