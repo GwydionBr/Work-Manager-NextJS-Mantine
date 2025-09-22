@@ -645,6 +645,7 @@ export type Database = {
           start_currency: Database["public"]["Enums"]["currency"];
           start_value: number;
           timer_project_id: string | null;
+          timer_session_project_id: string | null;
           title: string;
           user_id: string;
         };
@@ -658,6 +659,7 @@ export type Database = {
           start_currency: Database["public"]["Enums"]["currency"];
           start_value: number;
           timer_project_id?: string | null;
+          timer_session_project_id?: string | null;
           title: string;
           user_id?: string;
         };
@@ -671,6 +673,7 @@ export type Database = {
           start_currency?: Database["public"]["Enums"]["currency"];
           start_value?: number;
           timer_project_id?: string | null;
+          timer_session_project_id?: string | null;
           title?: string;
           user_id?: string;
         };
@@ -692,6 +695,13 @@ export type Database = {
           {
             foreignKeyName: "payout_timer_project_id_fkey";
             columns: ["timer_project_id"];
+            isOneToOne: false;
+            referencedRelation: "timer_project";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "payout_timer_session_project_id_fkey";
+            columns: ["timer_session_project_id"];
             isOneToOne: false;
             referencedRelation: "timer_project";
             referencedColumns: ["id"];

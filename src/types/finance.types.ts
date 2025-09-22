@@ -4,6 +4,7 @@ export interface Payout extends Tables<"payout"> {
   cashflow: Tables<"single_cash_flow"> | null;
   timer_project: Tables<"timer_project"> | null;
   timer_sessions: Tables<"timer_session">[];
+  timer_session_project: Tables<"timer_project"> | null;
 }
 
 export interface FinanceRule extends Tables<"finance_rule"> {

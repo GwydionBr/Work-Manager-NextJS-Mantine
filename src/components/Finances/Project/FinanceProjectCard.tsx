@@ -102,7 +102,7 @@ export default function FinanceProjectCard({
       radius="lg"
       p="lg"
       w="100%"
-      bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
+      bg="light-dark(var(--mantine-color-white), var(--mantine-color-dark-6))"
       shadow="sm"
       style={{
         cursor: isAdjustmentFormOpen ? "default" : "pointer",
@@ -145,37 +145,6 @@ export default function FinanceProjectCard({
         ml={selectedModeActive ? 50 : 0}
         style={{ transition: "margin 0.2s ease" }}
       >
-        {/* Selection Icon */}
-
-        {/* Action Bar */}
-        {/* <Collapse in={isAdjustmentFormOpen}>
-          <Card
-            p="sm"
-            withBorder
-            shadow="sm"
-            radius="md"
-            bg="light-dark(var(--mantine-color-white), var(--mantine-color-dark-7))"
-            mb="md"
-          >
-            <Group justify="space-between" align="center">
-              <Group gap="xs">
-                <PayoutActionIcon onClick={() => {}} />
-                <Button
-                  variant="outline"
-                  leftSection={<IconLinkPlus />}
-                  size="xs"
-                >
-                  {getLocalizedText(
-                    "Mit Arbeitsprojekt verknüpfen",
-                    "Link with Work Project"
-                  )}
-                </Button>
-              </Group>
-              <DeleteActionIcon onClick={onDelete} />
-            </Group>
-          </Card>
-        </Collapse> */}
-
         {/* Header */}
         <Group justify="space-between" align="flex-start">
           <Stack gap="xs" w="100%">

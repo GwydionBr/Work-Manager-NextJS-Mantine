@@ -19,6 +19,7 @@ import {
   IconFolder,
   IconTrendingUp,
   IconTrendingDown,
+  IconArrowRight,
 } from "@tabler/icons-react";
 
 import { formatDate, formatMoney } from "@/utils/formatFunctions";
@@ -58,7 +59,7 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
       p="lg"
       shadow="sm"
       w="100%"
-      bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
+      bg="light-dark(var(--mantine-color-white), var(--mantine-color-dark-6))"
       style={{ transition: "all 0.2s ease" }}
       className="hover:shadow-md"
     >
@@ -66,7 +67,7 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
         {/* Header */}
         <Group justify="space-between" align="flex-start">
           <Box style={{ flex: 1 }}>
-            <Text size="lg" fw={600} c="dimmed">
+            <Text size="lg" fw={600}>
               {payout.title}
             </Text>
             <Text size="sm" c="dimmed">
@@ -75,23 +76,54 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
           </Box>
 
           <Group gap="xs">
-            {payout.cashflow && (
-              <Badge
-                color="green"
-                variant="light"
-                leftSection={<IconReceipt size={12} />}
-              >
-                {locale === "de-DE" ? "Cashflow" : "Cashflow"}
-              </Badge>
+            {totalSessions > 0 && totalTime && (
+              <Group>
+                <Badge
+                  color="blue"
+                  variant="light"
+                  leftSection={<IconClock size={12} />}
+                >
+                  {totalSessions} Session{totalSessions !== 1 ? "s" : ""}
+                </Badge>
+                <Badge
+                  color="orange"
+                  variant="transparent"
+                  leftSection={<IconClock size={12} />}
+                >
+                  {totalTime}
+                </Badge>
+                {payout.timer_session_project && (
+                  <Badge
+                    color="violet"
+                    variant="transparent"
+                    leftSection={<IconFolder size={12} />}
+                  >
+                    {payout.timer_session_project.title}
+                  </Badge>
+                )}
+              </Group>
             )}
-            {totalSessions > 0 && (
+            {totalSessions === 0 && !payout.timer_project && (
               <Badge
-                color="blue"
-                variant="light"
+                color="red"
+                variant="transparent"
                 leftSection={<IconClock size={12} />}
               >
-                {totalSessions} Session{totalSessions !== 1 ? "s" : ""}
+                {locale === "de-DE"
+                  ? "Keine bestehenden Sitzungen"
+                  : "No existing sessions"}
               </Badge>
+            )}
+            {payout.timer_project && (
+              <Group gap="xs" align="center">
+                <Badge
+                  color="violet"
+                  variant="transparent"
+                  leftSection={<IconFolder size={12} />}
+                >
+                  {payout.timer_project.title}
+                </Badge>
+              </Group>
             )}
           </Group>
         </Group>
@@ -116,9 +148,9 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
 
           {hasCurrencyConversion && (
             <>
-              <Text size="sm" c="dimmed">
-                →
-              </Text>
+              <ThemeIcon size="md" color="blue" variant="transparent">
+                <IconArrowRight size={20} />
+              </ThemeIcon>
               <Stack gap="xs" align="center">
                 <Text size="sm" c="dimmed" fw={500}>
                   {locale === "de-DE"
@@ -142,64 +174,6 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
           )}
         </Group>
 
-        {/* Additional Information */}
-        <Group justify="space-between" wrap="wrap">
-          {/* Timer Project */}
-          {payout.timer_project && (
-            <Group gap="xs" align="center">
-              <ThemeIcon size="sm" color="violet" variant="light">
-                <IconFolder size={14} />
-              </ThemeIcon>
-              <Box>
-                <Text size="sm" fw={500}>
-                  {payout.timer_project.title}
-                </Text>
-                <Text size="xs" c="dimmed">
-                  {locale === "de-DE" ? "Projekt" : "Project"}
-                </Text>
-              </Box>
-            </Group>
-          )}
-
-          {/* Total Time */}
-          {totalTime && (
-            <Group gap="xs" align="center">
-              <ThemeIcon size="sm" color="orange" variant="light">
-                <IconClock size={14} />
-              </ThemeIcon>
-              <Box>
-                <Text size="sm" fw={500}>
-                  {totalTime}
-                </Text>
-                <Text size="xs" c="dimmed">
-                  {locale === "de-DE" ? "Gesamtzeit" : "Total Time"}
-                </Text>
-              </Box>
-            </Group>
-          )}
-
-          {/* Cashflow Details */}
-          {payout.cashflow && (
-            <Group gap="xs" align="center">
-              <ThemeIcon size="sm" color="teal" variant="light">
-                <IconReceipt size={14} />
-              </ThemeIcon>
-              <Box>
-                <Text size="sm" fw={500}>
-                  {payout.cashflow.title}
-                </Text>
-                <Text size="xs" c="dimmed">
-                  {formatMoney(
-                    payout.cashflow.amount,
-                    payout.cashflow.currency,
-                    locale
-                  )}
-                </Text>
-              </Box>
-            </Group>
-          )}
-        </Group>
-
         {/* Conversion Rate (if applicable) */}
         {hasCurrencyConversion && (
           <Card
@@ -207,7 +181,7 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
             withBorder
             radius="md"
             shadow="sm"
-            bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
+            bg="light-dark(var(--mantine-color-white), var(--mantine-color-dark-6))"
           >
             <Group gap="xs" align="center">
               <ThemeIcon size="sm" color="blue" variant="light">

@@ -52,8 +52,8 @@ export default function RecurringCashFlowRow({
       p="xs"
       bg={
         hovered
-          ? "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
-          : "light-dark(var(--mantine-color-white), var(--mantine-color-dark-7))"
+          ? "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))"
+          : "light-dark(var(--mantine-color-white), var(--mantine-color-dark-6))"
       }
       {...props}
       ref={ref}
