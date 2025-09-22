@@ -104,7 +104,6 @@ export default function FinanceSingleTab() {
             />
           </Group>
         }
-        navbar={<Text ta="center">Filter</Text>}
         bottom={<Text ta="center">Statistiken</Text>}
       />
       <ScrollArea mb="md" ml={230} w="100%">
