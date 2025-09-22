@@ -3,7 +3,7 @@
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Box, Tabs, Text } from "@mantine/core";
+import { Tabs } from "@mantine/core";
 import {
   IconReload,
   IconCircleDashedNumber1,
@@ -15,25 +15,14 @@ import FinanceOverviewTab from "@/components/Finances/Overview/FinanceOverviewTa
 import FinanceRecurringTab from "@/components/Finances/CashFlow/Recurring/FinanceRecurringTab";
 import FinanceProjectTab from "@/components/Finances/Project/FinanceProjectsTab";
 import { FinanceTab } from "@/types/finance.types";
-import PayoutTab from "./Payout/PayoutTab";
+import PayoutTab from "./Payout/PayoutTab/PayoutTab";
 import FinanceSingleTab from "./CashFlow/Single/FinanceSingleTab";
 
 export default function FinanceTabs() {
   const { locale } = useSettingsStore();
-  const { singleCashFlows, recurringCashFlows, activeTab, setActiveTab } =
+  const { activeTab, setActiveTab } =
     useFinanceStore();
 
-  if (singleCashFlows.length === 0 && recurringCashFlows.length === 0) {
-    return (
-      <Box>
-        <Text>
-          {locale === "de-DE"
-            ? "Bitte fügen Sie einige Daten hinzu, um die Diagramme anzuzeigen"
-            : "Please insert some data to see the charts"}
-        </Text>
-      </Box>
-    );
-  }
 
   return (
     <Tabs

@@ -1,4 +1,7 @@
-import { Payout } from "@/types/finance.types";
+"use client";
+
+import { useSettingsStore } from "@/stores/settingsStore";
+
 import {
   Card,
   Text,
@@ -18,27 +21,16 @@ import {
   IconTrendingDown,
 } from "@tabler/icons-react";
 
+import { formatDate, formatMoney } from "@/utils/formatFunctions";
+
+import { Payout } from "@/types/finance.types";
+
 interface PayoutRowCardProps {
   payout: Payout;
 }
 
 export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
-  const formatCurrency = (amount: number, currency: string) => {
-    return new Intl.NumberFormat("de-DE", {
-      style: "currency",
-      currency: currency,
-    }).format(amount);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("de-DE", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+  const { locale } = useSettingsStore();
 
   const getTotalSessionTime = () => {
     if (!payout.timer_sessions || payout.timer_sessions.length === 0)
@@ -66,7 +58,6 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
       p="lg"
       shadow="sm"
       w="100%"
-      maw={800}
       bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
       style={{ transition: "all 0.2s ease" }}
       className="hover:shadow-md"
@@ -79,7 +70,7 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
               {payout.title}
             </Text>
             <Text size="sm" c="dimmed">
-              {formatDate(payout.created_at)}
+              {formatDate(new Date(payout.created_at), locale)}
             </Text>
           </Box>
 
@@ -90,7 +81,7 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
                 variant="light"
                 leftSection={<IconReceipt size={12} />}
               >
-                Cashflow
+                {locale === "de-DE" ? "Cashflow" : "Cashflow"}
               </Badge>
             )}
             {totalSessions > 0 && (
@@ -111,14 +102,14 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
         <Group justify="space-between" align="center">
           <Stack gap="xs">
             <Text size="sm" c="dimmed" fw={500}>
-              Auszahlungsbetrag
+              {locale === "de-DE" ? "Auszahlungsbetrag" : "Payout Amount"}
             </Text>
             <Group gap="xs" align="center">
               <ThemeIcon size="sm" color="green" variant="light">
                 <IconCurrencyDollar size={14} />
               </ThemeIcon>
               <Text size="lg" fw={700} c="green">
-                {formatCurrency(payout.start_value, payout.start_currency)}
+                {formatMoney(payout.start_value, payout.start_currency, locale)}
               </Text>
             </Group>
           </Stack>
@@ -130,14 +121,20 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
               </Text>
               <Stack gap="xs" align="center">
                 <Text size="sm" c="dimmed" fw={500}>
-                  Nach Konvertierung
+                  {locale === "de-DE"
+                    ? "Nach Konvertierung"
+                    : "After Conversion"}
                 </Text>
                 <Group gap="xs" align="center">
                   <ThemeIcon size="sm" color="blue" variant="light">
                     <IconCurrencyDollar size={14} />
                   </ThemeIcon>
                   <Text size="lg" fw={700} c="blue">
-                    {formatCurrency(payout.end_value!, payout.end_currency!)}
+                    {formatMoney(
+                      payout.end_value!,
+                      payout.end_currency!,
+                      locale
+                    )}
                   </Text>
                 </Group>
               </Stack>
@@ -158,7 +155,7 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
                   {payout.timer_project.title}
                 </Text>
                 <Text size="xs" c="dimmed">
-                  Projekt
+                  {locale === "de-DE" ? "Projekt" : "Project"}
                 </Text>
               </Box>
             </Group>
@@ -175,7 +172,7 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
                   {totalTime}
                 </Text>
                 <Text size="xs" c="dimmed">
-                  Gesamtzeit
+                  {locale === "de-DE" ? "Gesamtzeit" : "Total Time"}
                 </Text>
               </Box>
             </Group>
@@ -192,9 +189,10 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
                   {payout.cashflow.title}
                 </Text>
                 <Text size="xs" c="dimmed">
-                  {formatCurrency(
+                  {formatMoney(
                     payout.cashflow.amount,
-                    payout.cashflow.currency
+                    payout.cashflow.currency,
+                    locale
                   )}
                 </Text>
               </Box>
@@ -220,7 +218,8 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
                 )}
               </ThemeIcon>
               <Text size="sm" c="blue" fw={500}>
-                Konvertierungsrate: 1 {payout.start_currency} ={" "}
+                {locale === "de-DE" ? "Konvertierungsrate" : "Conversion Rate"}:
+                1 {payout.start_currency} ={" "}
                 {(payout.end_value! / payout.start_value).toFixed(4)}{" "}
                 {payout.end_currency}
               </Text>

@@ -10,7 +10,6 @@ import {
   FinanceProjectUpdate,
   FinanceRule,
   FinanceTab,
-  Payout,
 } from "@/types/finance.types";
 
 interface FinanceStoreState {
@@ -21,7 +20,7 @@ interface FinanceStoreState {
   financeClients: Tables<"finance_client">[];
   financeProjects: FinanceProject[];
   financeRules: FinanceRule[];
-  payouts: Payout[];
+  payouts: Tables<"payout">[];
   isFetching: boolean;
   lastFetch: Date | null;
   activeTab: FinanceTab;

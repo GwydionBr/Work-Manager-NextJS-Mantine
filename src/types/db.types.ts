@@ -640,6 +640,7 @@ export type Database = {
           created_at: string;
           end_currency: Database["public"]["Enums"]["currency"] | null;
           end_value: number | null;
+          finance_project_id: string | null;
           id: string;
           start_currency: Database["public"]["Enums"]["currency"];
           start_value: number;
@@ -652,6 +653,7 @@ export type Database = {
           created_at?: string;
           end_currency?: Database["public"]["Enums"]["currency"] | null;
           end_value?: number | null;
+          finance_project_id?: string | null;
           id?: string;
           start_currency: Database["public"]["Enums"]["currency"];
           start_value: number;
@@ -664,6 +666,7 @@ export type Database = {
           created_at?: string;
           end_currency?: Database["public"]["Enums"]["currency"] | null;
           end_value?: number | null;
+          finance_project_id?: string | null;
           id?: string;
           start_currency?: Database["public"]["Enums"]["currency"];
           start_value?: number;
@@ -677,6 +680,13 @@ export type Database = {
             columns: ["cashflow_id"];
             isOneToOne: false;
             referencedRelation: "single_cash_flow";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "payout_finance_project_id_fkey";
+            columns: ["finance_project_id"];
+            isOneToOne: false;
+            referencedRelation: "finance_project";
             referencedColumns: ["id"];
           },
           {
