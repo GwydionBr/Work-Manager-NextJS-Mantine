@@ -15,6 +15,7 @@ import {
   Divider,
   ActionIcon,
   Badge,
+  Box,
 } from "@mantine/core";
 
 import EditCashFlowButton from "@/components/Finances/CashFlow/EditCashFlowDrawer";
@@ -25,6 +26,7 @@ import EditActionIcon from "@/components/UI/ActionIcons/EditActionIcon";
 import { Tables } from "@/types/db.types";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import { IconCashPlus } from "@tabler/icons-react";
+import FinancesNavbar from "../../FinancesNavbar";
 
 export default function FinanceRecurringTab() {
   const { recurringCashFlows } = useFinanceStore();
@@ -95,54 +97,10 @@ export default function FinanceRecurringTab() {
   const renderTable = (
     cashFlows: typeof recurringCashFlows,
     title: string,
-    expenseSum?: number,
-    incomeSum?: number,
-    totalSum?: number,
     showEndDates: boolean = false,
     showStartDates: boolean = false
   ) => (
     <Stack align="center" w="100%">
-      {(expenseSum || incomeSum) && (
-        <Card withBorder radius="md" p="md" my="md">
-          <Stack>
-            <Group justify="space-between">
-              <Group gap="xs">
-                <Text>{locale === "de-DE" ? "Ausgaben" : "Expense"}:</Text>
-                <Text c="red" fw={700}>
-                  {expenseSum
-                    ? expenseSum.toLocaleString(locale, {
-                        style: "currency",
-                        currency: defaultFinanceCurrency,
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 2,
-                      })
-                    : 0}
-                </Text>
-              </Group>
-              <Group gap="xs">
-                <Text>{locale === "de-DE" ? "Einnahmen" : "Income"}:</Text>
-                <Text c="green" fw={700}>
-                  {incomeSum
-                    ? incomeSum.toLocaleString(locale, {
-                        style: "currency",
-                        currency: defaultFinanceCurrency,
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 2,
-                      })
-                    : 0}
-                </Text>
-              </Group>
-            </Group>
-            <Divider />
-            <Group justify="center">
-              <Text>{locale === "de-DE" ? "Gesamt" : "Total"}:</Text>
-              <Text c={totalSum && totalSum > 0 ? "green" : "red"} fw={700}>
-                {totalSum ? totalSum : 0}
-              </Text>
-            </Group>
-          </Stack>
-        </Card>
-      )}
       <Divider
         w="100%"
         label={
@@ -150,10 +108,11 @@ export default function FinanceRecurringTab() {
             {title}
           </Badge>
         }
+        labelPosition="left"
         size="sm"
         mb="md"
       />
-      <Table striped highlightOnHover>
+      <Table striped highlightOnHover ml="xl">
         <Table.Thead>
           <Table.Tr>
             <Table.Th>{locale === "de-DE" ? "Name" : "Name"}</Table.Th>
@@ -231,52 +190,92 @@ export default function FinanceRecurringTab() {
   );
 
   return (
-    <Stack gap="xl" align="center" mb="xl">
-      <DelayedTooltip
-        label={
-          locale === "de-DE"
-            ? "Wiederkehrenden Cashflow hinzufügen"
-            : "Add Recurring Cash Flow"
+    <Group w="100%">
+      <FinancesNavbar
+        top={
+          <DelayedTooltip
+            label={
+              locale === "de-DE"
+                ? "Wiederkehrenden Cashflow hinzufügen"
+                : "Add Recurring Cash Flow"
+            }
+          >
+            <ActionIcon onClick={openCashFlowModal} variant="subtle">
+              <IconCashPlus />
+            </ActionIcon>
+          </DelayedTooltip>
         }
-      >
-        <ActionIcon onClick={openCashFlowModal} variant="subtle">
-          <IconCashPlus />
-        </ActionIcon>
-      </DelayedTooltip>
-      <CashFlowModal
-        opened={cashFlowModalOpened}
-        onClose={closeCashFlowModal}
-        isSingle={false}
+        navbar={<Text ta="center">Filter</Text>}
+        bottom={
+          <Stack>
+            <Group justify="space-between">
+              <Group gap="xs">
+                <Text>{locale === "de-DE" ? "Ausgaben" : "Expense"}:</Text>
+                <Text c="red" fw={700}>
+                  {activeExpenseSum
+                    ? activeExpenseSum.toLocaleString(locale, {
+                        style: "currency",
+                        currency: defaultFinanceCurrency,
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2,
+                      })
+                    : 0}
+                </Text>
+              </Group>
+              <Group gap="xs">
+                <Text>{locale === "de-DE" ? "Einnahmen" : "Income"}:</Text>
+                <Text c="green" fw={700}>
+                  {activeIncomeSum
+                    ? activeIncomeSum.toLocaleString(locale, {
+                        style: "currency",
+                        currency: defaultFinanceCurrency,
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2,
+                      })
+                    : 0}
+                </Text>
+              </Group>
+            </Group>
+            <Divider />
+            <Group justify="center">
+              <Text>{locale === "de-DE" ? "Gesamt" : "Total"}:</Text>
+              <Text
+                c={activeTotalSum && activeTotalSum > 0 ? "green" : "red"}
+                fw={700}
+              >
+                {activeTotalSum ? activeTotalSum : 0}
+              </Text>
+            </Group>
+          </Stack>
+        }
       />
-      {renderTable(
-        activeCashFlows,
-        locale === "de-DE" ? "Aktiv" : "Active",
-        activeExpenseSum,
-        activeIncomeSum,
-        activeTotalSum,
-        false,
-        false
-      )}
-      {futureCashFlows.length > 0 &&
-        renderTable(
-          futureCashFlows,
-          locale === "de-DE" ? "Zukünftig" : "Future",
-          undefined,
-          undefined,
-          undefined,
+      <Stack gap="xl" align="center" mb="xl" ml={230} w="100%">
+        <CashFlowModal
+          opened={cashFlowModalOpened}
+          onClose={closeCashFlowModal}
+          isSingle={false}
+        />
+        {renderTable(
+          activeCashFlows,
+          locale === "de-DE" ? "Aktiv" : "Active",
           false,
-          true
-        )}
-      {completedCashFlows.length > 0 &&
-        renderTable(
-          completedCashFlows,
-          locale === "de-DE" ? "Abgeschlossen" : "Completed",
-          undefined,
-          undefined,
-          undefined,
-          true,
           false
         )}
-    </Stack>
+        {futureCashFlows.length > 0 &&
+          renderTable(
+            futureCashFlows,
+            locale === "de-DE" ? "Zukünftig" : "Future",
+            false,
+            true
+          )}
+        {completedCashFlows.length > 0 &&
+          renderTable(
+            completedCashFlows,
+            locale === "de-DE" ? "Abgeschlossen" : "Completed",
+            true,
+            false
+          )}
+      </Stack>
+    </Group>
   );
 }
