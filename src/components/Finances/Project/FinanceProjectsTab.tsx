@@ -27,6 +27,9 @@ import {
   IconRefresh,
   IconCalendar,
   IconCurrencyDollar,
+  IconList,
+  IconCalendarEvent,
+  IconSquareRoundedCheck,
 } from "@tabler/icons-react";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
@@ -45,6 +48,7 @@ import {
   showDeleteConfirmationModal,
 } from "@/utils/notificationFunctions";
 import EditFinanceProjectDrawer from "./EditFinanceProjectDrawer";
+import FinancesNavbar from "../FinancesNavbar";
 
 export default function FinanceProjectTab() {
   const { financeProjects, isFetching, deleteFinanceProjects } =
@@ -293,11 +297,87 @@ export default function FinanceProjectTab() {
     );
   };
 
+  const newNavbarItems = useMemo(() => {
+    return [
+      [
+        {
+          label: locale === "de-DE" ? "Alle" : "All",
+          leftSection: (
+            <ThemeIcon variant="transparent" color="gray">
+              <IconList />
+            </ThemeIcon>
+          ),
+          active: tab === FinanceProjectNavbarTab.All,
+          description: (
+            <Text size="sm">
+              {formatMoney(navbarItems.all.totalAmount, "EUR", locale)} (
+              {navbarItems.all.projectCount})
+            </Text>
+          ),
+          onClick: () => setTab(FinanceProjectNavbarTab.All),
+          disabled: navbarItems.all.projectCount === 0,
+        },
+        {
+          label: locale === "de-DE" ? "Bevorstehend" : "Upcoming",
+          leftSection: (
+            <ThemeIcon variant="transparent" color="blue">
+              <IconCalendarEvent />
+            </ThemeIcon>
+          ),
+          active: tab === FinanceProjectNavbarTab.Upcoming,
+          description: (
+            <Text size="sm">
+              {formatMoney(navbarItems.upcoming.totalAmount, "EUR", locale)} (
+              {navbarItems.upcoming.projectCount})
+            </Text>
+          ),
+          onClick: () => setTab(FinanceProjectNavbarTab.Upcoming),
+          disabled: navbarItems.upcoming.projectCount === 0,
+        },
+        {
+          label: locale === "de-DE" ? "Überfällig" : "Overdue",
+          leftSection: (
+            <ThemeIcon variant="transparent" color="red">
+              <IconCalendarEvent />
+            </ThemeIcon>
+          ),
+          active: tab === FinanceProjectNavbarTab.Overdue,
+          description: (
+            <Text size="sm">
+              {formatMoney(navbarItems.overdue.totalAmount, "EUR", locale)} (
+              {navbarItems.overdue.projectCount})
+            </Text>
+          ),
+          onClick: () => setTab(FinanceProjectNavbarTab.Overdue),
+          disabled: navbarItems.overdue.projectCount === 0,
+        },
+      ],
+      [
+        {
+          label: locale === "de-DE" ? "Bezahlt" : "Paid",
+          leftSection: (
+            <ThemeIcon variant="transparent" color="green">
+              <IconSquareRoundedCheck />
+            </ThemeIcon>
+          ),
+          active: tab === FinanceProjectNavbarTab.Paid,
+          description: (
+            <Text size="sm">
+              {formatMoney(navbarItems.paid.totalAmount, "EUR", locale)} (
+              {navbarItems.paid.projectCount})
+            </Text>
+          ),
+          onClick: () => setTab(FinanceProjectNavbarTab.Paid),
+          disabled: navbarItems.paid.projectCount === 0,
+        },
+      ],
+    ];
+  }, [locale, navbarItems, filteredFinanceProjects, tab]);
+
   return (
     <Group align="flex-start" w="100%" wrap="nowrap" mb="xl">
-      <Stack w={200} miw={200} gap="md" pos="absolute">
-        {/* Toolbar */}
-        <Card p="sm" withBorder shadow="sm" radius="md" py={0}>
+      <FinancesNavbar
+        top={
           <Group justify="space-between" align="center">
             <DelayedTooltip
               label={getLocalizedText("Aktualisieren", "Refresh")}
@@ -339,10 +419,10 @@ export default function FinanceProjectTab() {
               onClick={handleToggleSelectedMode}
             />
           </Group>
-        </Card>
-        <FinanceProjectNavbar tab={tab} setTab={setTab} items={navbarItems} />
-        {/* Filter Statistics */}
-        <Card p="md" withBorder shadow="sm" radius="md">
+        }
+        isNavbar
+        navbarItems={newNavbarItems}
+        bottom={
           <Stack>
             <Text size="sm" c="dimmed">
               {filteredFinanceProjects.length}{" "}
@@ -355,8 +435,8 @@ export default function FinanceProjectTab() {
               </Text>
             </Group>
           </Stack>
-        </Card>
-      </Stack>
+        }
+      />
       <Stack w="100%" ml={220} align="center">
         <Stack gap={0} w="100%">
           {/* Bulk Selection */}

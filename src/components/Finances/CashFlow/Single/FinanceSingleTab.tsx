@@ -93,7 +93,7 @@ export default function FinanceSingleTab() {
                   : "Add Single Cash Flow"
               }
             >
-              <ActionIcon onClick={openCashFlowModal} variant="subtle">
+              <ActionIcon onClick={openCashFlowModal} variant="subtle" size="lg">
                 <IconCashPlus />
               </ActionIcon>
             </DelayedTooltip>
@@ -104,7 +104,6 @@ export default function FinanceSingleTab() {
             />
           </Group>
         }
-        bottom={<Text ta="center">Statistiken</Text>}
       />
       <ScrollArea mb="md" ml={230} w="100%">
         <Stack gap={0}>

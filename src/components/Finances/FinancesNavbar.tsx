@@ -35,9 +35,9 @@ export default function FinancesNavbar({
       )}
       {isNavbar && navbarItems && (
         <Card withBorder shadow="sm" radius="lg">
-          <Stack>
+          <Stack gap={0}>
             {navbarItems.map((items, index) => (
-              <Stack key={index}>
+              <Stack key={index} gap={0}>
                 {index > 0 && (
                   <Divider color="light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-3))" />
                 )}
