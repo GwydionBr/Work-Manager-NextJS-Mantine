@@ -49,11 +49,13 @@ import {
 } from "@/utils/notificationFunctions";
 import EditFinanceProjectDrawer from "./EditFinanceProjectDrawer";
 import FinancesNavbar from "../FinancesNavbar";
+import { SettingsTab } from "@/components/Settings/SettingsModal";
+import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 
 export default function FinanceProjectTab() {
   const { financeProjects, isFetching, deleteFinanceProjects } =
     useFinanceStore();
-  const { locale } = useSettingsStore();
+  const { locale, setIsModalOpen, setSelectedTab } = useSettingsStore();
 
   const getLocalizedText = (de: string, en: string) => {
     return locale === "de-DE" ? de : en;
@@ -379,18 +381,19 @@ export default function FinanceProjectTab() {
       <FinancesNavbar
         top={
           <Group justify="space-between" align="center">
-            <DelayedTooltip
-              label={getLocalizedText("Aktualisieren", "Refresh")}
-            >
-              <ActionIcon
-                variant="subtle"
-                color="gray"
-                size="lg"
-                loading={isFetching}
-              >
-                <IconRefresh size={20} />
-              </ActionIcon>
-            </DelayedTooltip>
+            <AdjustmentActionIcon
+              size="lg"
+              tooltipLabel={
+                locale === "de-DE"
+                  ? "Finanzeinstellungen anpassen"
+                  : "Adjust finance settings"
+              }
+              iconSize={20}
+              onClick={() => {
+                setIsModalOpen(true);
+                setSelectedTab(SettingsTab.FINANCE);
+              }}
+            />
 
             <DelayedTooltip
               label={getLocalizedText(

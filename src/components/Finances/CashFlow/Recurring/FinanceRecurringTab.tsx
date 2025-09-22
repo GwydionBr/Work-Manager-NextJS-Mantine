@@ -31,10 +31,13 @@ import {
 } from "@tabler/icons-react";
 import FinancesNavbar from "../../FinancesNavbar";
 import RecurringCashFlowRow from "./RecurringCashFlowRow";
+import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
+import { SettingsTab } from "@/components/Settings/SettingsModal";
 
 export default function FinanceRecurringTab() {
   const { recurringCashFlows } = useFinanceStore();
-  const { locale, defaultFinanceCurrency } = useSettingsStore();
+  const { locale, defaultFinanceCurrency, setIsModalOpen, setSelectedTab } =
+    useSettingsStore();
   const [filter, setFilter] = useState<
     "all" | "active" | "completed" | "future"
   >("all");
@@ -259,7 +262,20 @@ export default function FinanceRecurringTab() {
       {/* Navbar */}
       <FinancesNavbar
         top={
-          <Group justify="center">
+          <Group justify="space-between">
+            <AdjustmentActionIcon
+              size="lg"
+              tooltipLabel={
+                locale === "de-DE"
+                  ? "Finanzeinstellungen anpassen"
+                  : "Adjust finance settings"
+              }
+              iconSize={20}
+              onClick={() => {
+                setIsModalOpen(true);
+                setSelectedTab(SettingsTab.FINANCE);
+              }}
+            />
             <DelayedTooltip
               label={
                 locale === "de-DE"

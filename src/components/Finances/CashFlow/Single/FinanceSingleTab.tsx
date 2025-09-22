@@ -29,10 +29,12 @@ import {
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import SingleCashflowRow from "./SingleCashflowRow";
 import FinancesNavbar from "../../FinancesNavbar";
+import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
+import { SettingsTab } from "@/components/Settings/SettingsModal";
 
 export default function FinanceSingleTab() {
   const { singleCashFlows } = useFinanceStore();
-  const { locale } = useSettingsStore();
+  const { locale, setIsModalOpen, setSelectedTab } = useSettingsStore();
   const [typeFilter, setTypeFilter] = useState<"all" | "expense" | "income">(
     "all"
   );
@@ -155,7 +157,20 @@ export default function FinanceSingleTab() {
     <Group>
       <FinancesNavbar
         top={
-          <Group justify="center">
+          <Group justify="space-between">
+            <AdjustmentActionIcon
+              size="lg"
+              tooltipLabel={
+                locale === "de-DE"
+                  ? "Finanzeinstellungen anpassen"
+                  : "Adjust finance settings"
+              }
+              iconSize={20}
+              onClick={() => {
+                setIsModalOpen(true);
+                setSelectedTab(SettingsTab.FINANCE);
+              }}
+            />
             <DelayedTooltip
               label={
                 locale === "de-DE"
