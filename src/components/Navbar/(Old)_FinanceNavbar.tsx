@@ -14,7 +14,6 @@ import {
   Stack,
 } from "@mantine/core";
 import FinanceSection from "@/components/Finances/FinanceSection";
-import NewCashFlowButton from "@/components/Finances/CashFlow/NewCashFlowButton";
 import CashFlowModal from "@/components/Finances/CashFlow/CashFlowModal";
 import FinanceProjectModal from "@/components/Finances/Project/FinanceProjectModal";
 import CashFlowActionIcon from "@/components/UI/ActionIcons/CashFlowActionIcon";
@@ -27,7 +26,7 @@ import classes from "./Navbar.module.css";
 import { SettingsTab } from "../Settings/SettingsModal";
 import Shortcut from "../UI/Shortcut";
 
-export default function FinanceNavbar() {
+export default function OldFinanceNavbar() {
   const { singleCashFlows, isFetching } = useFinanceStore();
   const {
     setSelectedTab,

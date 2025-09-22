@@ -4,7 +4,7 @@ import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Box } from "@mantine/core";
-import FinanceNavbar from "@/components/Navbar/FinanceNavbar";
+import OldFinanceNavbar from "@/components/Navbar/(Old)_FinanceNavbar";
 import FinanceInitializer from "@/components/Finances/FinanceInitializer";
 
 export default function FinanceLayout({
