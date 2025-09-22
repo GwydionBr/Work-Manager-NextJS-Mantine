@@ -98,7 +98,7 @@ export default function FinanceForm({
     <Stack>
       <SegmentedControl
         value={type}
-        color="teal"
+        color={type === "income" ? "green" : "red"}
         onChange={(value) => setType(value as CashFlowType)}
         data={[
           {
@@ -174,12 +174,14 @@ export default function FinanceForm({
       </Stack>
       {isRecurring ? (
         <RecurringFinanceForm
+          type={type}
           financeCurrency={financeCurrency}
           handleSubmit={handleRecurringFinanceSubmit}
           isLoading={isLoading}
         />
       ) : (
         <SingleFinanceForm
+          type={type}
           financeCurrency={financeCurrency}
           handleSubmit={handleSingleFinanceSubmit}
           isLoading={isLoading}

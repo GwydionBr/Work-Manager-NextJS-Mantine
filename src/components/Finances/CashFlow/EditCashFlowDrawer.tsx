@@ -54,9 +54,7 @@ export default function EditCashFlowDrawer({
 }) {
   const { locale } = useSettingsStore();
   const [isLoading, setIsLoading] = useState(false);
-  const [type, setType] = useState<CashFlowType>(
-    cashFlow.type === "income" ? "income" : "expense"
-  );
+  const [type, setType] = useState<CashFlowType>("income");
   const [categoryId, setCategoryId] = useState<string | null>(
     cashFlow.category_id ?? null
   );
@@ -75,6 +73,12 @@ export default function EditCashFlowDrawer({
     "update-cash-flow",
     "add-category",
   ]);
+
+  useEffect(() => {
+    if (cashFlow) {
+      setType(cashFlow.type);
+    }
+  }, [cashFlow, opened]);
 
   useEffect(() => {
     if (opened) {
@@ -222,7 +226,7 @@ export default function EditCashFlowDrawer({
         <Flex direction="column" gap="xl">
           <SegmentedControl
             value={type}
-            color="teal"
+            color={type === "income" ? "green" : "red"}
             onChange={(value) => setType(value as CashFlowType)}
             data={[
               {
@@ -284,6 +288,7 @@ export default function EditCashFlowDrawer({
           </Group>
           {isSingleCashFlow(cashFlow) ? (
             <SingleCashFlowForm
+              type={type}
               financeCurrency={cashFlow.currency}
               handleSubmit={handleSubmit}
               isLoading={isLoading}
@@ -291,6 +296,7 @@ export default function EditCashFlowDrawer({
             />
           ) : (
             <RecurringCashFlowForm
+              type={type}
               financeCurrency={cashFlow.currency}
               handleSubmit={handleSubmit}
               isLoading={isLoading}

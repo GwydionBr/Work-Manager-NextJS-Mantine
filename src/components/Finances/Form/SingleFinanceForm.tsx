@@ -1,6 +1,7 @@
 "use client";
 
 import { useForm } from "@mantine/form";
+import { useEffect } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { TextInput, NumberInput, Select, Stack } from "@mantine/core";
@@ -12,12 +13,12 @@ import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { currencies } from "@/constants/settings";
 
-import { Currency } from "@/types/settings.types";
+import { CashFlowType, Currency } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
 
 const schema = z.object({
   title: z.string().min(2, "Name must be at least 2 characters"),
-  amount: z.number().min(0, "Amount must be greater than 0"),
+  amount: z.number(),
   currency: z.enum(
     currencies.map((currency) => currency.value) as [string, ...string[]]
   ),
@@ -35,6 +36,7 @@ export interface SingleFinanceFormValues {
 }
 
 interface SingleFinanceFormProps {
+  type: CashFlowType;
   financeCurrency: Currency;
   handleSubmit: (values: SingleFinanceFormValues) => void;
   isLoading: boolean;
@@ -42,6 +44,7 @@ interface SingleFinanceFormProps {
 }
 
 export default function SingleFinanceForm({
+  type,
   financeCurrency,
   handleSubmit,
   isLoading,
@@ -57,6 +60,14 @@ export default function SingleFinanceForm({
     },
     validate: zodResolver(schema),
   });
+
+  useEffect(() => {
+    if (type === "expense") {
+      form.setFieldValue("amount", -1 * Math.abs(form.values.amount));
+    } else {
+      form.setFieldValue("amount", Math.abs(form.values.amount));
+    }
+  }, [type]);
 
   function handleFormSubmit(values: SingleFinanceFormValues) {
     handleSubmit({
@@ -76,10 +87,19 @@ export default function SingleFinanceForm({
         />
         <NumberInput
           withAsterisk
-          allowNegative={false}
+          allowNegative={type === "expense"}
           allowLeadingZeros={false}
           label={locale === "de-DE" ? "Betrag" : "Amount"}
-          {...form.getInputProps("amount")}
+          onChange={(value) => {
+            form.setFieldValue(
+              "amount",
+              type === "expense"
+                ? -1 * Math.abs(Number(value))
+                : Math.abs(Number(value))
+            );
+          }}
+          value={form.values.amount}
+          error={form.errors.amount}
         />
         <Select
           withAsterisk

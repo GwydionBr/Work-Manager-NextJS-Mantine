@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm } from "@mantine/form";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -12,13 +13,17 @@ import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { currencies, financeIntervals } from "@/constants/settings";
 
-import { Currency, FinanceInterval } from "@/types/settings.types";
+import {
+  CashFlowType,
+  Currency,
+  FinanceInterval,
+} from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
 
 const schema = z.object({
   title: z.string().min(2, "Name must be at least 2 characters"),
   description: z.string().optional(),
-  amount: z.number().min(0, "Amount must be greater than 0"),
+  amount: z.number(),
   currency: z.enum(
     currencies.map((currency) => currency.value) as [string, ...string[]]
   ),
@@ -47,6 +52,7 @@ export interface RecurringFinanceFormValues {
 }
 
 interface RecurringFinanceFormProps {
+  type: CashFlowType;
   financeCurrency: Currency;
   handleSubmit: (values: RecurringFinanceFormValues) => void;
   isLoading: boolean;
@@ -54,6 +60,7 @@ interface RecurringFinanceFormProps {
 }
 
 export default function RecurringFinanceForm({
+  type,
   financeCurrency,
   handleSubmit,
   isLoading,
@@ -74,6 +81,14 @@ export default function RecurringFinanceForm({
     },
     validate: zodResolver(schema),
   });
+
+  useEffect(() => {
+    if (type === "expense") {
+      form.setFieldValue("amount", -1 * Math.abs(form.values.amount));
+    } else {
+      form.setFieldValue("amount", Math.abs(form.values.amount));
+    }
+  }, [type]);
 
   function handleFormSubmit(values: RecurringFinanceFormValues) {
     handleSubmit({
@@ -97,10 +112,19 @@ export default function RecurringFinanceForm({
         />
         <NumberInput
           withAsterisk
-          allowNegative={false}
+          allowNegative={type === "expense"}
           allowLeadingZeros={false}
           label={locale === "de-DE" ? "Betrag" : "Amount"}
-          {...form.getInputProps("amount")}
+          onChange={(value) => {
+            form.setFieldValue(
+              "amount",
+              type === "expense"
+                ? -1 * Math.abs(Number(value))
+                : Math.abs(Number(value))
+            );
+          }}
+          value={form.values.amount}
+          error={form.errors.amount}
         />
         <Select
           withAsterisk

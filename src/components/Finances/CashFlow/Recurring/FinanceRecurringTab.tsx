@@ -106,7 +106,7 @@ export default function FinanceRecurringTab() {
     [activeCashFlows]
   );
 
-  const activeTotalSum = activeIncomeSum - activeExpenseSum;
+  const activeTotalSum = activeIncomeSum + activeExpenseSum;
 
   const completedCashFlows = useMemo(
     () =>
