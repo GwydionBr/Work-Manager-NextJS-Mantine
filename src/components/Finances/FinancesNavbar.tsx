@@ -1,17 +1,26 @@
 "use client";
 
-import { Card, Stack } from "@mantine/core";
+import { Card, Divider, NavLink, Stack } from "@mantine/core";
 
 interface FinancesNavbarProps {
   top?: React.ReactNode;
-  navbar?: React.ReactNode;
+  isNavbar?: boolean;
+  navbarItems?: {
+    label: string;
+    leftSection?: React.ReactNode;
+    description?: React.ReactNode;
+    active?: boolean;
+    onClick?: () => void;
+    disabled?: boolean;
+  }[][];
   bottom?: React.ReactNode;
 }
 
 export default function FinancesNavbar({
   top,
-  navbar,
+  isNavbar,
   bottom,
+  navbarItems,
 }: FinancesNavbarProps) {
   return (
     <Stack
@@ -20,13 +29,24 @@ export default function FinancesNavbar({
       style={{ position: "absolute", top: 75, zIndex: 100 }}
     >
       {top && (
-        <Card withBorder shadow="sm" radius="lg">
+        <Card withBorder shadow="sm" radius="lg" p="sm" py={0}>
           {top}
         </Card>
       )}
-      {navbar && (
+      {isNavbar && navbarItems && (
         <Card withBorder shadow="sm" radius="lg">
-          {navbar}
+          <Stack>
+            {navbarItems.map((items, index) => (
+              <Stack key={index}>
+                {index > 0 && (
+                  <Divider color="light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-3))" />
+                )}
+                {items.map((item) => (
+                  <NavLink key={item.label} {...item} />
+                ))}
+              </Stack>
+            ))}
+          </Stack>
         </Card>
       )}
       {bottom && (
