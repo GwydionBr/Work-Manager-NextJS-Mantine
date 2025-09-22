@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
@@ -36,6 +36,7 @@ import { formatDate, formatMoney } from "@/utils/formatFunctions";
 import { isToday } from "date-fns";
 import {
   FinanceNavbarItems,
+  FinanceProject,
   FinanceProjectNavbarTab,
 } from "@/types/finance.types";
 import {
@@ -43,6 +44,7 @@ import {
   showActionErrorNotification,
   showDeleteConfirmationModal,
 } from "@/utils/notificationFunctions";
+import EditFinanceProjectDrawer from "./EditFinanceProjectDrawer";
 
 export default function FinanceProjectTab() {
   const { financeProjects, isFetching, deleteFinanceProjects } =
@@ -61,12 +63,23 @@ export default function FinanceProjectTab() {
     addProjectModalOpened,
     { close: closeAddProjectModal, toggle: toggleAddProjectModal },
   ] = useDisclosure(false);
+  const [
+    editProjectModalOpened,
+    { close: closeEditProjectModal, toggle: toggleEditProjectModal },
+  ] = useDisclosure(false);
+  const [editProject, setEditProject] = useState<FinanceProject | null>(null);
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
     null
   );
   const [tab, setTab] = useState<FinanceProjectNavbarTab>(
     FinanceProjectNavbarTab.All
   );
+
+  useEffect(() => {
+    if (!editProject && financeProjects.length > 0) {
+      setEditProject(financeProjects[0]);
+    }
+  }, [financeProjects]);
 
   const navbarItems = useMemo<FinanceNavbarItems>(() => {
     const items: FinanceNavbarItems = {
@@ -442,6 +455,8 @@ export default function FinanceProjectTab() {
                           toggleProjectSelection(project.id, index, e.shiftKey)
                         }
                         onDelete={() => onDelete([project.id])}
+                        setEditProject={setEditProject}
+                        onOpenEditProject={toggleEditProjectModal}
                       />
                     </Box>
                   </Stack>
@@ -490,6 +505,13 @@ export default function FinanceProjectTab() {
           onClose={closeAddProjectModal}
         />
       </Stack>
+      {editProject && (
+        <EditFinanceProjectDrawer
+          opened={editProjectModalOpened}
+          onClose={closeEditProjectModal}
+          financeProject={editProject}
+        />
+      )}
     </Group>
   );
 }

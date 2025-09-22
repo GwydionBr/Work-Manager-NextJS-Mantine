@@ -17,6 +17,7 @@ import paths from "@/utils/paths";
 
 import classes from "./Navbar.module.css";
 import SettingsModal, { SettingsTab } from "../Settings/SettingsModal";
+import Image from "next/image";
 
 interface LinkData {
   icon: React.ElementType;

@@ -100,7 +100,7 @@ export default function SessionModalForm({
       ]);
       console.log("Payout result from Modal", payoutResult);
       if (payoutResult.success) {
-        addExistingSingleCashFlow(payoutResult.data.cashFlow);
+        addExistingSingleCashFlow(payoutResult.data.cashflow);
         showActionSuccessNotification(
           locale === "de-DE" ? "Auszahlung erfolgreich" : "Payout successful",
           locale

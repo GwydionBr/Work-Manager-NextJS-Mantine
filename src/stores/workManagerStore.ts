@@ -79,7 +79,12 @@ interface WorkStoreActions {
     categoryId: string | null,
     endValue: number | null,
     endCurrency: Currency | null
-  ) => Promise<SuccessPayoutResponse | ErrorResponse>;
+  ) => Promise<
+    ApiResponseSingle<{
+      cashflow: Tables<"single_cash_flow">;
+      payout: Tables<"payout">;
+    }>
+  >;
   payoutProjectSalary: (
     projectId: string,
     startValue: number,

@@ -50,6 +50,8 @@ interface FinanceProjectCardProps extends CardProps {
   isSelected: boolean;
   onToggleSelected: (e: React.MouseEvent<HTMLButtonElement>) => void;
   onDelete: () => void;
+  setEditProject: (project: FinanceProject) => void;
+  onOpenEditProject: () => void;
 }
 
 export default function FinanceProjectCard({
@@ -58,6 +60,8 @@ export default function FinanceProjectCard({
   isSelected,
   onToggleSelected,
   onDelete,
+  setEditProject,
+  onOpenEditProject,
   ...props
 }: FinanceProjectCardProps) {
   const { locale } = useSettingsStore();
@@ -174,10 +178,56 @@ export default function FinanceProjectCard({
 
         {/* Header */}
         <Group justify="space-between" align="flex-start">
-          <Stack gap="xs">
-            <Text size="xl" fw={700} c="dimmed" mb="xs">
-              {project.title}
-            </Text>
+          <Stack gap="xs" w="100%">
+            <Group justify="space-between" align="center" w="100%">
+              <Text size="xl" fw={700} c="dimmed" mb="xs">
+                {project.title}
+              </Text>
+
+              <Transition mounted={isAdjustmentFormOpen}>
+                {(styles) => (
+                  <Menu
+                    opened={isMoreActionOpen}
+                    onClose={closeMoreAction}
+                    position="bottom-end"
+                  >
+                    <Menu.Target>
+                      <MoreActionIcon onClick={openMoreAction} style={styles} />
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      <Menu.Label>
+                        {getLocalizedText("Finanz Projekt", "Finance Project")}
+                      </Menu.Label>
+                      <Menu.Divider />
+                      <Menu.Item
+                        leftSection={<IconLinkPlus size={16} />}
+                        onClick={() => {}}
+                      >
+                        {getLocalizedText(
+                          "Mit Arbeitsprojekt verknüpfen",
+                          "Link with Work Project"
+                        )}
+                      </Menu.Item>
+                      <Menu.Item
+                        leftSection={<IconEdit size={16} />}
+                        onClick={() => {
+                          setEditProject(project);
+                          onOpenEditProject();
+                        }}
+                      >
+                        <Text>{getLocalizedText("Bearbeiten", "Edit")}</Text>
+                      </Menu.Item>
+                      <Menu.Item
+                        leftSection={<IconTrash size={16} />}
+                        onClick={onDelete}
+                      >
+                        <Text>{getLocalizedText("Löschen", "Delete")}</Text>
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
+                )}
+              </Transition>
+            </Group>
             <Group gap="md" wrap="wrap">
               {project.clients.length > 0 &&
                 project.clients.map((client) => (
@@ -219,46 +269,6 @@ export default function FinanceProjectCard({
               </Badge> */}
             </Group>
           </Stack>
-          <Transition mounted={isAdjustmentFormOpen}>
-            {(styles) => (
-              <Menu
-                opened={isMoreActionOpen}
-                onClose={closeMoreAction}
-                position="bottom-end"
-              >
-                <Menu.Target>
-                  <MoreActionIcon onClick={openMoreAction} style={styles} />
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Label>
-                    {getLocalizedText("Finanz Projekt", "Finance Project")}
-                  </Menu.Label>
-                  <Menu.Divider />
-                  <Menu.Item
-                    leftSection={<IconLinkPlus size={16} />}
-                    onClick={() => {}}
-                  >
-                    {getLocalizedText(
-                      "Mit Arbeitsprojekt verknüpfen",
-                      "Link with Work Project"
-                    )}
-                  </Menu.Item>
-                  <Menu.Item
-                    leftSection={<IconEdit size={16} />}
-                    onClick={() => {}}
-                  >
-                    <Text>{getLocalizedText("Bearbeiten", "Edit")}</Text>
-                  </Menu.Item>
-                  <Menu.Item
-                    leftSection={<IconTrash size={16} />}
-                    onClick={onDelete}
-                  >
-                    <Text>{getLocalizedText("Löschen", "Delete")}</Text>
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
-            )}
-          </Transition>
         </Group>
 
         <Divider />

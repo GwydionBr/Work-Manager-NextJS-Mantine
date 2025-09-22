@@ -29,8 +29,12 @@ export default function EditFinanceProjectDrawer({
   const { locale } = useSettingsStore();
   const { deleteFinanceProjects } = useFinanceStore();
   const [isLoading, setIsLoading] = useState(false);
-  const [clientIds, setClientIds] = useState<string[]>([]);
-  const [categoryIds, setCategoryIds] = useState<string[]>([]);
+  const [clientIds, setClientIds] = useState<string[]>(
+    financeProject.clients.map((client) => client.id)
+  );
+  const [categoryIds, setCategoryIds] = useState<string[]>(
+    financeProject.categories.map((category) => category.id)
+  );
 
   const drawerStack = useDrawersStack([
     "edit-finance-project",

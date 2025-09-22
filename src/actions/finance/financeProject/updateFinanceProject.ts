@@ -19,5 +19,5 @@ export async function updateFinanceProject(
     return { success: false, data: null, error: error.message };
   }
 
-  return { success: true, data, error: null };
+  return { success: true, data: data as FinanceProject, error: null };
 }

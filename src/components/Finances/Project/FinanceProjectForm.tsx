@@ -20,10 +20,13 @@ import CreateButton from "@/components/UI/Buttons/CreateButton";
 import { currencies } from "@/constants/settings";
 import { Currency } from "@/types/settings.types";
 import LocaleDatePickerInput from "@/components/UI/Locale/LocaleDatePickerInput";
-import { notifications } from "@mantine/notifications";
-import { IconCheck, IconPlus, IconX } from "@tabler/icons-react";
+import { IconPlus } from "@tabler/icons-react";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 import { FinanceProject } from "@/types/finance.types";
+import {
+  showActionErrorNotification,
+  showActionSuccessNotification,
+} from "@/utils/notificationFunctions";
 
 const projectSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -58,8 +61,12 @@ export default function FinanceProjectForm({
   onCategoryChange,
 }: FinanceProjectFormProps) {
   const { locale, defaultFinanceCurrency } = useSettingsStore();
-  const { addFinanceProject, financeCategories, financeClients } =
-    useFinanceStore();
+  const {
+    addFinanceProject,
+    financeCategories,
+    financeClients,
+    updateFinanceProject,
+  } = useFinanceStore();
   const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof projectSchema>>({
     initialValues: financeProject
@@ -95,43 +102,54 @@ export default function FinanceProjectForm({
 
   const handleSubmit = async (values: any) => {
     setIsLoading(true);
-    const success = await addFinanceProject(
-      {
-        title: values.title,
-        currency: values.currency,
-        start_amount: values.start_amount,
-        due_date: values.due_date || null,
-      },
-      values.finance_client_ids,
-      values.finance_category_ids
-    );
-    if (success) {
-      notifications.show({
-        title: locale === "de-DE" ? "Erfolg" : "Success",
-        message:
+    if (financeProject) {
+      const success = await updateFinanceProject({
+        ...values,
+        id: financeProject.id,
+      });
+      if (success) {
+        showActionSuccessNotification(
+          locale === "de-DE"
+            ? "Projekt erfolgreich bearbeitet"
+            : "Project successfully updated",
+          locale
+        );
+        handleClose();
+      } else {
+        showActionErrorNotification(
+          locale === "de-DE"
+            ? "Projekt konnte nicht bearbeitet werden"
+            : "Project could not be updated",
+          locale
+        );
+      }
+    } else {
+      const success = await addFinanceProject(
+        {
+          title: values.title,
+          currency: values.currency,
+          start_amount: values.start_amount,
+          due_date: values.due_date || null,
+        },
+        values.finance_client_ids,
+        values.finance_category_ids
+      );
+      if (success) {
+        showActionSuccessNotification(
           locale === "de-DE"
             ? "Projekt erfolgreich erstellt"
-            : "Project created successfully",
-        icon: <IconCheck />,
-        color: "green",
-        autoClose: 4000,
-        withBorder: true,
-        position: "top-center",
-      });
-      handleClose();
-    } else {
-      notifications.show({
-        title: locale === "de-DE" ? "Fehler" : "Error",
-        message:
+            : "Project successfully created",
+          locale
+        );
+        handleClose();
+      } else {
+        showActionErrorNotification(
           locale === "de-DE"
             ? "Projekt konnte nicht erstellt werden"
             : "Project could not be created",
-        icon: <IconX />,
-        color: "red",
-        autoClose: 4000,
-        withBorder: true,
-        position: "top-center",
-      });
+          locale
+        );
+      }
     }
     setIsLoading(false);
   };

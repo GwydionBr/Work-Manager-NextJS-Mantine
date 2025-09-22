@@ -73,6 +73,7 @@ export { deleteFinanceClients } from "./finance/financeClient/deleteFinanceClien
 export { getAllFinanceProjects } from "./finance/financeProject/getAllFinanceProjects";
 export { createFinanceProject } from "./finance/financeProject/createFinanceProject";
 export { deleteFinanceProjects } from "./finance/financeProject/deleteFinanceProject";
+export { updateFinanceProject } from "./finance/financeProject/updateFinanceProject";
 
 export { createFinanceAdjustment } from "./finance/financeAdjustment/createFinanceAdjustment";
 export { updateFinanceAdjustment } from "./finance/financeAdjustment/updateFinanceAdjustment";
