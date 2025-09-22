@@ -26,9 +26,9 @@ export default function FinanceLayout({
 
   return (
     <Box>
-      <FinanceNavbar />
+      {/* <FinanceNavbar /> */}
       <Box
-        ml={isFinanceNavbarOpen ? 250 : 60}
+        // ml={isFinanceNavbarOpen ? 250 : 60}
         style={{ transition: "margin 0.4s ease-in-out" }}
       >
         {children}

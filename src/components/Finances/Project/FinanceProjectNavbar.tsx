@@ -33,7 +33,7 @@ export default function FinanceProjectNavbar({
 }: FinanceProjectNavbarProps) {
   const { locale } = useSettingsStore();
   return (
-    <Card withBorder p="md" w={200} miw={190} radius="lg" {...props}>
+    <Card withBorder shadow="sm" p="md" w={200} miw={190} radius="lg" {...props}>
       <NavLink
         label={locale === "de-DE" ? "Alle" : "All"}
         leftSection={<IconList />}

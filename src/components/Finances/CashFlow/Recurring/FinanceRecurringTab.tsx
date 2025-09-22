@@ -102,7 +102,6 @@ export default function FinanceRecurringTab() {
     showStartDates: boolean = false
   ) => (
     <Stack align="center" w="100%">
-      <Divider w="100%" label={<Badge color="blue" variant="outline">{title}</Badge>} size="sm" mb="md"/>
       {(expenseSum || incomeSum) && (
         <Card withBorder radius="md" p="md" my="md">
           <Stack>
@@ -144,7 +143,16 @@ export default function FinanceRecurringTab() {
           </Stack>
         </Card>
       )}
-
+      <Divider
+        w="100%"
+        label={
+          <Badge color="blue" variant="outline">
+            {title}
+          </Badge>
+        }
+        size="sm"
+        mb="md"
+      />
       <Table striped highlightOnHover>
         <Table.Thead>
           <Table.Tr>

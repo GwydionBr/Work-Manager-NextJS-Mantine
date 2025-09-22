@@ -27,6 +27,7 @@ import {
   IconTag,
 } from "@tabler/icons-react";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
+import SingleCashflowRow from "./SingleCashflowRow";
 
 export default function FinanceSingleTab() {
   const { singleCashFlows, financeCategories } = useFinanceStore();
@@ -66,70 +67,11 @@ export default function FinanceSingleTab() {
             isSingle={true}
           />
         </Group>
-        <Table>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>{locale === "de-DE" ? "Datum" : "Date"}</Table.Th>
-              <Table.Th>{locale === "de-DE" ? "Betrag" : "Amount"}</Table.Th>
-              <Table.Th>{locale === "de-DE" ? "Name" : "Name"}</Table.Th>
-              <Table.Th>
-                {locale === "de-DE" ? "Kategorie" : "Category"}
-              </Table.Th>
-              <Table.Th></Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {sortedSingleCashFlows.map((cashFlow) => {
-              return (
-                <Table.Tr
-                  key={cashFlow.id}
-                >
-                  <Table.Td>
-                    <Group>
-                      {cashFlow.type === "expense" ? (
-                        <IconCashMoveBack color="red" />
-                      ) : (
-                        <IconCashMove color="green" />
-                      )}
-                      {formatDate(new Date(cashFlow.date), locale)}
-                    </Group>
-                  </Table.Td>
-                  <Table.Td>
-                    <Text
-                      size="sm"
-                      fw={600}
-                      c={cashFlow.type === "expense" ? "red" : "green"}
-                    >
-                      {formatMoney(cashFlow.amount, cashFlow.currency, locale)}
-                    </Text>
-                  </Table.Td>
-                  <Table.Td>{cashFlow.title}</Table.Td>
-                  <Table.Td>
-                    <Badge
-                      color="grape"
-                      variant="light"
-                      leftSection={<IconTag size={12} />}
-                    >
-                      {
-                        financeCategories.find(
-                          (category) => category.id === cashFlow.category_id
-                        )?.title
-                      }
-                    </Badge>
-                  </Table.Td>
-                  <Table.Td>
-                    <EditActionIcon
-                      onClick={() => {
-                        setSelectedCashFlow(cashFlow);
-                        openEditCashFlow();
-                      }}
-                    />
-                  </Table.Td>
-                </Table.Tr>
-              );
-            })}
-          </Table.Tbody>
-        </Table>
+        <Stack gap={0}>
+          {sortedSingleCashFlows.map((cashFlow) => {
+            return <SingleCashflowRow key={cashFlow.id} cashflow={cashFlow} />;
+          })}
+        </Stack>
       </Stack>
 
       {selectedCashFlow && (

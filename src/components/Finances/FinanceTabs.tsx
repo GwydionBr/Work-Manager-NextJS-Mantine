@@ -13,10 +13,11 @@ import {
 } from "@tabler/icons-react";
 import FinanceOverviewTab from "@/components/Finances/Overview/FinanceOverviewTab";
 import FinanceRecurringTab from "@/components/Finances/CashFlow/Recurring/FinanceRecurringTab";
-import FinanceSingleTab from "@/components/Finances/CashFlow/Single/FinanceSingleTab";
+import OldFinanceSingleTab from "@/components/Finances/CashFlow/Single/OldFinanceSingleTab";
 import FinanceProjectTab from "@/components/Finances/Project/FinanceProjectsTab";
 import { FinanceTab } from "@/types/finance.types";
 import PayoutTab from "./Payout/PayoutTab";
+import FinanceSingleTab from "./CashFlow/Single/FinanceSingleTab";
 
 export default function FinanceTabs() {
   const { locale } = useSettingsStore();
@@ -91,6 +92,7 @@ export default function FinanceTabs() {
       </Tabs.Panel>
       <Tabs.Panel value="Single">
         <FinanceSingleTab />
+        <OldFinanceSingleTab />
       </Tabs.Panel>
       <Tabs.Panel value="Recurring">
         <FinanceRecurringTab />
