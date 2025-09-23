@@ -9,6 +9,13 @@ import {
   isSameDay,
 } from "date-fns";
 
+const getCorrectDay = (date: Date, anchorDay: number) => {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+  return Math.min(anchorDay, lastDayOfMonth);
+};
+
 /**
  * Get the next date for a given interval and start date
  * @param interval - The interval to use
@@ -32,13 +39,6 @@ export const getNextDate = (
   if (isSameDay(candidate, today)) {
     return today;
   }
-
-  const getCorrectDay = (date: Date, anchorDay: number) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
-    return Math.min(anchorDay, lastDayOfMonth);
-  };
 
   // Otherwise, advance from the start date in the chosen interval until we reach today or later
   const advance = (date: Date): Date => {
@@ -75,7 +75,6 @@ export const getNextDate = (
     candidate = next;
   }
 
-
   return isSameDay(candidate, today) ? today : candidate;
 };
 
@@ -95,6 +94,7 @@ export const processRecurringCashFlows = (
 
   recurringCashFlows.forEach((flow) => {
     const startDate = new Date(flow.start_date);
+    const anchorDay = startDate.getDate();
     const endDate = flow.end_date ? new Date(flow.end_date) : null;
 
     // Calculate the actual end date (either the recurring flow's end date or 6 months from now, whichever comes first)
@@ -151,15 +151,19 @@ export const processRecurringCashFlows = (
           break;
         case "month":
           currentDate = addMonths(currentDate, 1);
+          currentDate.setDate(getCorrectDay(currentDate, anchorDay));
           break;
         case "1/4 year":
           currentDate = addQuarters(currentDate, 1);
+          currentDate.setDate(getCorrectDay(currentDate, anchorDay));
           break;
         case "1/2 year":
           currentDate = addMonths(currentDate, 6);
+          currentDate.setDate(getCorrectDay(currentDate, anchorDay));
           break;
         case "year":
           currentDate = addYears(currentDate, 1);
+          currentDate.setDate(getCorrectDay(currentDate, anchorDay));
           break;
       }
     }
