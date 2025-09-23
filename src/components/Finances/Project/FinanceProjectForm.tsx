@@ -100,13 +100,20 @@ export default function FinanceProjectForm({
     }
   }, [clientIds, categoryIds]);
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: z.infer<typeof projectSchema>) => {
     setIsLoading(true);
     if (financeProject) {
-      const success = await updateFinanceProject({
-        ...values,
-        id: financeProject.id,
-      });
+      const { clients, categories, ...projectData } = financeProject;
+      const newProject = {
+        ...projectData,
+        title: values.title,
+        currency: values.currency,
+        start_amount: values.start_amount,
+        due_date: values.due_date || null,
+        clientIds: values.finance_client_ids,
+        categoryIds: values.finance_category_ids,
+      };
+      const success = await updateFinanceProject(newProject);
       if (success) {
         showActionSuccessNotification(
           locale === "de-DE"

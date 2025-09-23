@@ -50,7 +50,7 @@ interface FinanceStoreActions {
     recurringCashFlow: TablesInsert<"recurring_cash_flow">
   ) => Promise<boolean>;
   updateFinanceProject: (
-    project: FinanceProject
+    project: FetchedFinanceProject
   ) => Promise<FetchedFinanceProject | null>;
   updateFinanceClient: (
     client: TablesUpdate<"finance_client">
@@ -337,20 +337,16 @@ export const useFinanceStore = create<
       async updateFinanceProject(project) {
         const { financeProjects } = get();
 
-        const newProject = {
-          ...project,
-          clientIds: project.clients.map((client) => client.id),
-          categoryIds: project.categories.map((category) => category.id),
-        };
-
         const oldProject = financeProjects.find((p) => p.id === project.id);
         if (!oldProject) return null;
 
         const updatedProject = await actions.updateFinanceProject(
           oldProject,
-          newProject
+          project
         );
-        if (!updatedProject.success) return null;
+        if (!updatedProject.success) {
+          return null;
+        }
         const updatedFinanceProjects = financeProjects.map((p) =>
           p.id === project.id ? updatedProject.data : p
         );

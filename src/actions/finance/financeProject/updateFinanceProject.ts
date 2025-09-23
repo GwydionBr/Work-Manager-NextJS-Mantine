@@ -2,7 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { ApiResponseSingle } from "@/types/action.types";
-import { FinanceProject, FetchedFinanceProject } from "@/types/finance.types";
+import { FetchedFinanceProject } from "@/types/finance.types";
 
 export async function updateFinanceProject(
   oldProject: FetchedFinanceProject,
@@ -25,7 +25,7 @@ export async function updateFinanceProject(
 
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("finance_project")
     .update(projectData)
     .eq("id", project.id!)

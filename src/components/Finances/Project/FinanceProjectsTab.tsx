@@ -548,6 +548,7 @@ export default function FinanceProjectTab() {
                       <FinanceProjectCard
                         project={project}
                         selectedModeActive={selectedModeActive}
+                        editProjectModalOpened={editProjectModalOpened}
                         isSelected={selectedFinanceProjects.includes(
                           project.id
                         )}

@@ -33,9 +33,7 @@ import FinanceAdjustmentRow from "./FinanceAdjustmentRow";
 import FinanceClientCard from "../FinanceClient/FinanceClientCard";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import {
-  IconArrowDown,
   IconLinkPlus,
-  IconCurrencyDollar,
   IconUser,
   IconTag,
   IconTrendingUp,
@@ -50,6 +48,7 @@ interface FinanceProjectCardProps extends CardProps {
   project: FinanceProject;
   selectedModeActive: boolean;
   isSelected: boolean;
+  editProjectModalOpened: boolean;
   onToggleSelected: (e: React.MouseEvent<HTMLButtonElement>) => void;
   onDelete: () => void;
   setEditProject: (project: FinanceProject) => void;
@@ -60,6 +59,7 @@ export default function FinanceProjectCard({
   project,
   selectedModeActive,
   isSelected,
+  editProjectModalOpened,
   onToggleSelected,
   onDelete,
   setEditProject,
@@ -80,7 +80,12 @@ export default function FinanceProjectCard({
     useDisclosure(false);
 
   const ref = useClickOutside(() => {
-    if (!isMoreActionOpen && !isDropdownOpen && !isAdjustmentFormOpen) {
+    if (
+      !isMoreActionOpen &&
+      !isDropdownOpen &&
+      !isAdjustmentFormOpen &&
+      !editProjectModalOpened
+    ) {
       closeEditing();
     }
   });
@@ -200,15 +205,6 @@ export default function FinanceProjectCard({
                   {category.title}
                 </Badge>
               ))}
-            {/* <Badge
-                color={project.paid ? "green" : "yellow"}
-                variant="light"
-                leftSection={<IconReceipt size={12} />}
-              >
-                {project.paid
-                  ? getLocalizedText("Bezahlt", "Paid")
-                  : getLocalizedText("Ausstehend", "Pending")}
-              </Badge> */}
           </Group>
 
           {/* Right Side */}
@@ -325,24 +321,6 @@ export default function FinanceProjectCard({
                         </Popover.Dropdown>
                       </Popover>
                     </Group>
-
-                    {/* <Card
-                      p="md"
-                      withBorder
-                      shadow="sm"
-                      radius="md"
-                      bg="light-dark(var(--mantine-color-white), var(--mantine-color-dark-7))"
-                    >
-                      <Stack align="center">
-                        <IconArrowDown color="var(--mantine-color-teal-6)" />
-                        <FinanceAdjustmentForm
-                          onClose={closeAdjustmentForm}
-                          projectId={project.id}
-                          onDropdownOpen={openDropdown}
-                          onDropdownClose={closeDropdown}
-                        />
-                      </Stack>
-                    </Card> */}
                   </Grid.Col>
                   <Grid.Col span={4}></Grid.Col>
                 </Grid>
