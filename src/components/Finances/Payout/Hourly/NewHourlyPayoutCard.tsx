@@ -8,7 +8,7 @@ import { useDisclosure } from "@mantine/hooks";
 
 import { Text, Stack, Card, Group } from "@mantine/core";
 import { IconBrandCashapp } from "@tabler/icons-react";
-import QuickPayoutButton from "@/components/Finances/Payout/QuickPayoutButton";
+import QuickPayoutButton from "@/components/Finances/Payout/Hourly/QuickPayoutButton";
 import PayoutModal from "@/components/Finances/Payout/Modal/PayoutModal";
 
 import { Tables } from "@/types/db.types";
@@ -81,10 +81,7 @@ export default function NewHourlyPayoutCard({
             sessions={thisMonthSessions}
             salary={project.project.salary}
             currency={project.project.currency}
-            timeSpan={[
-              today.startOf("month").toDate(),
-              today.toDate(),
-            ]}
+            timeSpan={[today.startOf("month").toDate(), today.toDate()]}
             handleClick={handlePayoutClick}
           />
           <QuickPayoutButton

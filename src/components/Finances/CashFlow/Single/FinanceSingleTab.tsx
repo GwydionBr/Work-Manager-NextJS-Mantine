@@ -64,14 +64,20 @@ export default function FinanceSingleTab() {
           .filter((cashFlow) => {
             const date = new Date(cashFlow.date);
             if (cashFlow.type === "income") return false;
-            return date.getMonth() === new Date().getMonth();
+            return (
+              date.getMonth() === new Date().getMonth() &&
+              date.getFullYear() === new Date().getFullYear()
+            );
           })
           .reduce((acc, cashFlow) => acc + cashFlow.amount, 0),
         sortedSingleCashFlows
           .filter((cashFlow) => {
             const date = new Date(cashFlow.date);
             if (cashFlow.type === "income") return false;
-            return date.getMonth() === new Date().getMonth() - 1;
+            return (
+              date.getMonth() === new Date().getMonth() - 1 &&
+              date.getFullYear() === new Date().getFullYear()
+            );
           })
           .reduce((acc, cashFlow) => acc + cashFlow.amount, 0),
       ],
@@ -80,14 +86,20 @@ export default function FinanceSingleTab() {
           .filter((cashFlow) => {
             const date = new Date(cashFlow.date);
             if (cashFlow.type === "expense") return false;
-            return date.getMonth() === new Date().getMonth();
+            return (
+              date.getMonth() === new Date().getMonth() &&
+              date.getFullYear() === new Date().getFullYear()
+            );
           })
           .reduce((acc, cashFlow) => acc + cashFlow.amount, 0),
         sortedSingleCashFlows
           .filter((cashFlow) => {
             const date = new Date(cashFlow.date);
             if (cashFlow.type === "expense") return false;
-            return date.getMonth() === new Date().getMonth() - 1;
+            return (
+              date.getMonth() === new Date().getMonth() - 1 &&
+              date.getFullYear() === new Date().getFullYear()
+            );
           })
           .reduce((acc, cashFlow) => acc + cashFlow.amount, 0),
       ],

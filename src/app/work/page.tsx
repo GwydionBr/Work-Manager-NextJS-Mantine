@@ -29,8 +29,8 @@ import ProjectFilter from "@/components/Work/Project/ProjectFilter";
 
 import { formatMoney } from "@/utils/formatFunctions";
 import { groupSessions } from "@/utils/sessionHelperFunctions";
-import NewHourlyPayoutCard from "@/components/Finances/Payout/NewHourlyPayoutCard";
-import NewProjectPayoutCard from "@/components/Finances/Payout/NewProjectPayoutCard";
+import NewHourlyPayoutCard from "@/components/Finances/Payout/Hourly/NewHourlyPayoutCard";
+import NewProjectPayoutCard from "@/components/Finances/Payout/Project/NewProjectPayoutCard";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import NewSessionModal from "@/components/Work/Session/NewSessionModal";
 import SessionSelector from "@/components/Work/Session/SessionSelector";

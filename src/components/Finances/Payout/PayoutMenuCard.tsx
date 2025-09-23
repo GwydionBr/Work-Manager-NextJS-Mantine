@@ -5,8 +5,8 @@ import { useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Box, Card } from "@mantine/core";
-import ProjectPayoutMenu from "./ProjectPayoutMenu";
-import HourlyPayoutMenu from "./HourlyPayoutMenu";
+import ProjectPayoutMenu from "./Project/ProjectPayoutMenu";
+import HourlyPayoutMenu from "./Hourly/HourlyPayoutMenu";
 import PayoutModal from "./Modal/PayoutModal";
 
 import type { Tables } from "@/types/db.types";
