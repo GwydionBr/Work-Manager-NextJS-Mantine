@@ -2,10 +2,10 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { ApiResponseList } from "@/types/action.types";
-import { FinanceProject } from "@/types/finance.types";
+import { FetchedFinanceProject } from "@/types/finance.types";
 
 export async function getAllFinanceProjects(): Promise<
-  ApiResponseList<FinanceProject>
+  ApiResponseList<FetchedFinanceProject>
 > {
   const supabase = await createClient();
   const {
@@ -42,14 +42,16 @@ export async function getAllFinanceProjects(): Promise<
   }
 
   // Transform the data to match the expected structure
-  const formatted: FinanceProject[] = data.map((project) => ({
+  const formatted: FetchedFinanceProject[] = data.map((project) => ({
     ...project,
     adjustments: project.adjustments || [],
-    clients:
-      project.clients?.map((c: any) => c.finance_client).filter(Boolean) || [],
-    categories:
-      project.categories?.map((c: any) => c.finance_category).filter(Boolean) ||
+    clientIds:
+      project.clients?.map((c: any) => c.finance_client.id).filter(Boolean) ||
       [],
+    categoryIds:
+      project.categories
+        ?.map((c: any) => c.finance_category.id)
+        .filter(Boolean) || [],
   }));
 
   return { success: true, data: formatted, error: null };

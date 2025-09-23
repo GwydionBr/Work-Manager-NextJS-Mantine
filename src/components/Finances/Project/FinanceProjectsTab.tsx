@@ -23,9 +23,6 @@ import FinanceProjectFormModal from "./FinanceProjectModal";
 import FinanceProjectCard from "./FinanceProjectCard";
 import {
   IconMoneybagPlus,
-  IconFilter,
-  IconRefresh,
-  IconCalendar,
   IconCurrencyDollar,
   IconList,
   IconCalendarEvent,
@@ -34,7 +31,6 @@ import {
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
-import FinanceProjectNavbar from "./FinanceProjectNavbar";
 import { formatDate, formatMoney } from "@/utils/formatFunctions";
 import { isToday } from "date-fns";
 import {
@@ -53,8 +49,13 @@ import { SettingsTab } from "@/components/Settings/SettingsModal";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 
 export default function FinanceProjectTab() {
-  const { financeProjects, isFetching, deleteFinanceProjects } =
-    useFinanceStore();
+  const {
+    financeProjects,
+    isFetching,
+    deleteFinanceProjects,
+    financeClients,
+    financeCategories,
+  } = useFinanceStore();
   const { locale, setIsModalOpen, setSelectedTab } = useSettingsStore();
 
   const getLocalizedText = (de: string, en: string) => {
@@ -81,11 +82,23 @@ export default function FinanceProjectTab() {
     FinanceProjectNavbarTab.All
   );
 
+  const formattedFinanceProjects = useMemo(() => {
+    return financeProjects.map((project) => ({
+      ...project,
+      clients: financeClients.filter((client) =>
+        project.clientIds.includes(client.id)
+      ),
+      categories: financeCategories.filter((category) =>
+        project.categoryIds.includes(category.id)
+      ),
+    }));
+  }, [financeProjects, financeClients, financeCategories]);
+
   useEffect(() => {
-    if (!editProject && financeProjects.length > 0) {
-      setEditProject(financeProjects[0]);
+    if (!editProject && formattedFinanceProjects.length > 0) {
+      setEditProject(formattedFinanceProjects[0]);
     }
-  }, [financeProjects]);
+  }, [formattedFinanceProjects]);
 
   const navbarItems = useMemo<FinanceNavbarItems>(() => {
     const items: FinanceNavbarItems = {
@@ -96,7 +109,7 @@ export default function FinanceProjectTab() {
     };
 
     // All
-    const totalAmount = financeProjects.reduce((acc, project) => {
+    const totalAmount = formattedFinanceProjects.reduce((acc, project) => {
       return (
         acc +
         project.adjustments.reduce((acc, adjustment) => {
@@ -104,16 +117,18 @@ export default function FinanceProjectTab() {
         }, project.start_amount)
       );
     }, 0);
-    items.all = { totalAmount, projectCount: financeProjects.length };
+    items.all = { totalAmount, projectCount: formattedFinanceProjects.length };
 
     // Upcoming
-    const upcomingFilteredProjects = financeProjects.filter((project) => {
-      return (
-        (project.due_date && project.due_date > new Date().toISOString()) ||
-        !project.due_date ||
-        isToday(new Date(project.due_date))
-      );
-    });
+    const upcomingFilteredProjects = formattedFinanceProjects.filter(
+      (project) => {
+        return (
+          (project.due_date && project.due_date > new Date().toISOString()) ||
+          !project.due_date ||
+          isToday(new Date(project.due_date))
+        );
+      }
+    );
     const upcomingTotalAmount = upcomingFilteredProjects.reduce(
       (acc, project) => {
         return (
@@ -131,13 +146,15 @@ export default function FinanceProjectTab() {
     };
 
     // Overdue
-    const overdueFilteredProjects = financeProjects.filter((project) => {
-      return (
-        project.due_date &&
-        project.due_date < new Date().toISOString() &&
-        !isToday(new Date(project.due_date))
-      );
-    });
+    const overdueFilteredProjects = formattedFinanceProjects.filter(
+      (project) => {
+        return (
+          project.due_date &&
+          project.due_date < new Date().toISOString() &&
+          !isToday(new Date(project.due_date))
+        );
+      }
+    );
 
     const overdueTotalAmount = overdueFilteredProjects.reduce(
       (acc, project) => {
@@ -156,7 +173,7 @@ export default function FinanceProjectTab() {
     };
 
     // Paid
-    const paidFilteredProjects = financeProjects.filter((project) => {
+    const paidFilteredProjects = formattedFinanceProjects.filter((project) => {
       return project.paid;
     });
 
@@ -174,10 +191,10 @@ export default function FinanceProjectTab() {
     };
 
     return items;
-  }, [financeProjects]);
+  }, [formattedFinanceProjects]);
 
   const sortedFinanceProjects = useMemo(() => {
-    return [...financeProjects].sort((a, b) => {
+    return [...formattedFinanceProjects].sort((a, b) => {
       const aHasDueDate = Boolean(a.due_date);
       const bHasDueDate = Boolean(b.due_date);
       const aIsOverdue =
@@ -201,7 +218,7 @@ export default function FinanceProjectTab() {
         new Date(b.due_date as string).getTime()
       );
     });
-  }, [financeProjects]);
+  }, [formattedFinanceProjects]);
 
   const filteredFinanceProjects = useMemo(() => {
     return sortedFinanceProjects.filter((project) => {
@@ -248,7 +265,7 @@ export default function FinanceProjectTab() {
         setLastSelectedIndex(index);
       }
     },
-    [financeProjects, lastSelectedIndex]
+    [filteredFinanceProjects, lastSelectedIndex]
   );
 
   const toggleAllProjects = useCallback(() => {

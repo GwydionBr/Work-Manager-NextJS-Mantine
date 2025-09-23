@@ -320,15 +320,15 @@ export default function FinanceProjectCard({
             radius="md"
             bg="light-dark(var(--mantine-color-white), var(--mantine-color-dark-7))"
           >
-            <Group justify="center" mb="sm">
+            <Stack align="center">
               <IconArrowDown color="var(--mantine-color-teal-6)" />
-            </Group>
-            <FinanceAdjustmentForm
-              onClose={closeAdjustmentForm}
-              projectId={project.id}
-              onDropdownOpen={openDropdown}
-              onDropdownClose={closeDropdown}
-            />
+              <FinanceAdjustmentForm
+                onClose={closeAdjustmentForm}
+                projectId={project.id}
+                onDropdownOpen={openDropdown}
+                onDropdownClose={closeDropdown}
+              />
+            </Stack>
           </Card>
         </Collapse>
       </Stack>

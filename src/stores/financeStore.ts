@@ -7,10 +7,10 @@ import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { processRecurringCashFlows } from "@/utils/financeHelperFunction";
 import {
   FinanceProject,
-  FinanceProjectUpdate,
   FinanceRule,
   FinanceTab,
   DeleteRecurringCashFlowMode,
+  FetchedFinanceProject,
 } from "@/types/finance.types";
 
 interface FinanceStoreState {
@@ -19,7 +19,7 @@ interface FinanceStoreState {
   recurringCashFlows: Tables<"recurring_cash_flow">[];
   financeCategories: Tables<"finance_category">[];
   financeClients: Tables<"finance_client">[];
-  financeProjects: FinanceProject[];
+  financeProjects: FetchedFinanceProject[];
   financeRules: FinanceRule[];
   payouts: Tables<"payout">[];
   isFetching: boolean;
@@ -50,8 +50,8 @@ interface FinanceStoreActions {
     recurringCashFlow: TablesInsert<"recurring_cash_flow">
   ) => Promise<boolean>;
   updateFinanceProject: (
-    project: FinanceProjectUpdate
-  ) => Promise<FinanceProject | null>;
+    project: FinanceProject
+  ) => Promise<FetchedFinanceProject | null>;
   updateFinanceClient: (
     client: TablesUpdate<"finance_client">
   ) => Promise<Tables<"finance_client"> | null>;
@@ -336,7 +336,20 @@ export const useFinanceStore = create<
 
       async updateFinanceProject(project) {
         const { financeProjects } = get();
-        const updatedProject = await actions.updateFinanceProject(project);
+
+        const newProject = {
+          ...project,
+          clientIds: project.clients.map((client) => client.id),
+          categoryIds: project.categories.map((category) => category.id),
+        };
+
+        const oldProject = financeProjects.find((p) => p.id === project.id);
+        if (!oldProject) return null;
+
+        const updatedProject = await actions.updateFinanceProject(
+          oldProject,
+          newProject
+        );
         if (!updatedProject.success) return null;
         const updatedFinanceProjects = financeProjects.map((p) =>
           p.id === project.id ? updatedProject.data : p

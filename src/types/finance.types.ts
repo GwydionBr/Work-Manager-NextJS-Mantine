@@ -17,9 +17,10 @@ export interface FinanceRule extends Tables<"finance_rule"> {
   timerProjectIds: string[];
 }
 
-export interface FinanceProjectUpdate extends TablesUpdate<"finance_project"> {
-  clients: Tables<"finance_client">[];
-  categories: Tables<"finance_category">[];
+export interface FetchedFinanceProject extends Tables<"finance_project"> {
+  adjustments: Tables<"finance_project_adjustment">[];
+  clientIds: string[];
+  categoryIds: string[];
 }
 
 export interface FinanceProject extends Tables<"finance_project"> {

@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { ApiResponseSingle } from "@/types/action.types";
 import { TablesInsert } from "@/types/db.types";
-import { FinanceProject } from "@/types/finance.types";
+import { FetchedFinanceProject } from "@/types/finance.types";
 
 interface CreateFinanceProjectProps {
   project: TablesInsert<"finance_project">;
@@ -16,7 +16,7 @@ export async function createFinanceProject({
   clientIds,
   categoryIds,
 }: CreateFinanceProjectProps): Promise<
-  ApiResponseSingle<FinanceProject>
+  ApiResponseSingle<FetchedFinanceProject>
 > {
   const supabase = await createClient();
 
@@ -62,23 +62,12 @@ export async function createFinanceProject({
     return { success: false, data: null, error: categoryError.message };
   }
 
-  // Fetch actual client and category objects
-  const { data: clients } = await supabase
-    .from("finance_client")
-    .select("*")
-    .in("id", clientIds);
-
-  const { data: categories } = await supabase
-    .from("finance_category")
-    .select("*")
-    .in("id", categoryIds);
-
   return {
     success: true,
     data: {
       ...data,
-      clients: clients || [],
-      categories: categories || [],
+      clientIds: clientIds,
+      categoryIds: categoryIds,
       adjustments: [],
     },
     error: null,
