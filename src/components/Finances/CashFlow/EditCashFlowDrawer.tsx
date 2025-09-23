@@ -18,8 +18,8 @@ import {
   Stack,
   Popover,
 } from "@mantine/core";
-import SingleCashFlowForm from "@/components/Finances/Form/SingleFinanceForm";
-import RecurringCashFlowForm from "@/components/Finances/Form/RecurringFinanceForm";
+import SingleCashFlowForm from "@/components/Finances/CashFlow/SingleFinanceForm";
+import RecurringCashFlowForm from "@/components/Finances/CashFlow/RecurringFinanceForm";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 
 import { Tables } from "@/types/db.types";
@@ -34,7 +34,7 @@ import {
 import { CashFlowType } from "@/types/settings.types";
 import CancelButton from "../../UI/Buttons/CancelButton";
 import DeleteActionIcon from "../../UI/ActionIcons/DeleteActionIcon";
-import FinanceCategoryForm from "../Form/FinanceCategoryForm";
+import FinanceCategoryForm from "../FInanceCategory/FinanceCategoryForm";
 import {
   showActionErrorNotification,
   showActionSuccessNotification,

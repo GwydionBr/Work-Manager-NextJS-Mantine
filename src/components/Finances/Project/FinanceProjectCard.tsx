@@ -28,13 +28,11 @@ import {
 
 import { FinanceProject } from "@/types/finance.types";
 import { formatMoney } from "@/utils/formatFunctions";
-import FinanceAdjustmentForm from "./FinanceAdjustmentForm";
-import FinanceAdjustmentRow from "./FinanceAdjustmentRow";
+import FinanceAdjustmentForm from "./FinanceAdjustment/FinanceAdjustmentForm";
+import FinanceAdjustmentRow from "./FinanceAdjustment/FinanceAdjustmentRow";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import {
   IconLinkPlus,
-  IconUser,
-  IconTag,
   IconTrendingUp,
   IconTrendingDown,
   IconEdit,
@@ -43,6 +41,7 @@ import {
 import MoreActionIcon from "@/components/UI/ActionIcons/MoreActionIcon";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import FinanceClientBadge from "../FinanceClient/FinanceClientBadge";
+import FinanceCategoryBadge from "../FInanceCategory/FinanceCategoryBadge";
 
 interface FinanceProjectCardProps extends CardProps {
   project: FinanceProject;
@@ -73,8 +72,8 @@ export default function FinanceProjectCard({
   const [isMoreActionOpen, { open: openMoreAction, close: closeMoreAction }] =
     useDisclosure(false);
   const [
-    isClientPopoverOpen,
-    { open: openClientPopover, close: closeClientPopover },
+    isBadgePopoverOpen,
+    { open: openBadgePopover, close: closeBadgePopover },
   ] = useDisclosure(false);
   const [
     isAdjustmentFormOpen,
@@ -88,7 +87,8 @@ export default function FinanceProjectCard({
       !isMoreActionOpen &&
       !isDropdownOpen &&
       !isAdjustmentFormOpen &&
-      !editProjectModalOpened
+      !editProjectModalOpened &&
+      !isBadgePopoverOpen
     ) {
       closeEditing();
     }
@@ -137,7 +137,9 @@ export default function FinanceProjectCard({
         if (selectedModeActive) {
           onToggleSelected(e as any);
         } else {
-          openEditing();
+          if (!isBadgePopoverOpen) {
+            openEditing();
+          }
         }
       }}
       ref={mergedRef}
@@ -182,19 +184,21 @@ export default function FinanceProjectCard({
           <Group gap="md" wrap="wrap" flex={2}>
             {project.clients.length > 0 &&
               project.clients.map((client) => (
-                <FinanceClientBadge key={client.id} client={client} />
+                <FinanceClientBadge
+                  key={client.id}
+                  client={client}
+                  onPopoverOpen={openBadgePopover}
+                  onPopoverClose={closeBadgePopover}
+                />
               ))}
             {project.categories.length > 0 &&
               project.categories.map((category) => (
-                <Badge
+                <FinanceCategoryBadge
                   key={category.id}
-                  color="violet"
-                  variant="light"
-                  style={{ cursor: "pointer" }}
-                  leftSection={<IconTag size={12} />}
-                >
-                  {category.title}
-                </Badge>
+                  category={category}
+                  onPopoverOpen={openBadgePopover}
+                  onPopoverClose={closeBadgePopover}
+                />
               ))}
           </Group>
 

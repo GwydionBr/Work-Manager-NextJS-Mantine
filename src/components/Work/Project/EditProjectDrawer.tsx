@@ -17,7 +17,7 @@ import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 import { IconAlertTriangleFilled, IconCategoryPlus } from "@tabler/icons-react";
-import FinanceCategoryForm from "@/components/Finances/Form/FinanceCategoryForm";
+import FinanceCategoryForm from "@/components/Finances/FInanceCategory/FinanceCategoryForm";
 import {
   showActionErrorNotification,
   showActionSuccessNotification,

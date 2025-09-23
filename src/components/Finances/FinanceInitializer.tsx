@@ -16,9 +16,9 @@ import {
   Modal,
 } from "@mantine/core";
 import { IconCash } from "@tabler/icons-react";
-import FinanceForm from "@/components/Finances/Form/FinanceForm";
+import FinanceForm from "@/components/Finances/CashFlow/CashflowForm";
 import { SettingsTab } from "../Settings/SettingsModal";
-import FinanceCategoryForm from "./Form/FinanceCategoryForm";
+import FinanceCategoryForm from "./FInanceCategory/FinanceCategoryForm";
 
 export default function FinanceInitializer() {
   const [opened, { open, close }] = useDisclosure(false);

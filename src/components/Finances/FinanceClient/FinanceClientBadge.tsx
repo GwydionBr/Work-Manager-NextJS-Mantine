@@ -9,10 +9,14 @@ import FinanceClientCard from "./FinanceClientCard";
 
 interface FinanceClientBadgeProps {
   client: Tables<"finance_client">;
+  onPopoverOpen: () => void;
+  onPopoverClose: () => void;
 }
 
 export default function FinanceClientBadge({
   client,
+  onPopoverOpen,
+  onPopoverClose,
 }: FinanceClientBadgeProps) {
   const [
     isClientPopoverOpen,
@@ -20,19 +24,29 @@ export default function FinanceClientBadge({
   ] = useDisclosure(false);
   const { hovered, ref } = useHover();
 
+  const handlePopoverOpen = () => {
+    onPopoverOpen();
+    openClientPopover();
+  };
+
+  const handlePopoverClose = () => {
+    onPopoverClose();
+    closeClientPopover();
+  };
+
   return (
     <Popover
       key={client.id}
-      onDismiss={closeClientPopover}
+      onDismiss={handlePopoverClose}
       opened={isClientPopoverOpen}
-      onClose={closeClientPopover}
+      onClose={handlePopoverClose}
     >
       <Popover.Target ref={ref}>
         <Badge
           ref={ref}
           onClick={(e) => {
             e.stopPropagation();
-            openClientPopover();
+            handlePopoverOpen();
           }}
           color="blue"
           variant="light"
