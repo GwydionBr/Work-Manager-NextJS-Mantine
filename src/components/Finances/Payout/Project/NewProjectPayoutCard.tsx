@@ -6,7 +6,6 @@ import { Text, Stack, Card, Group } from "@mantine/core";
 
 import type { Tables } from "@/types/db.types";
 import { IconBrandCashapp } from "@tabler/icons-react";
-import QuickPayoutButton from "../Hourly/QuickPayoutButton";
 
 interface NewProjectPayoutCardProps {
   project: Tables<"timer_project">;

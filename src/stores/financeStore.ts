@@ -10,6 +10,7 @@ import {
   FinanceProjectUpdate,
   FinanceRule,
   FinanceTab,
+  DeleteRecurringCashFlowMode,
 } from "@/types/finance.types";
 
 interface FinanceStoreState {
@@ -68,7 +69,10 @@ interface FinanceStoreActions {
     adjustment: TablesUpdate<"finance_project_adjustment">
   ) => Promise<Tables<"finance_project_adjustment"> | null>;
   deleteSingleCashFlow: (id: string) => Promise<boolean>;
-  deleteRecurringCashFlow: (id: string) => Promise<boolean>;
+  deleteRecurringCashFlow: (
+    id: string,
+    mode: DeleteRecurringCashFlowMode
+  ) => Promise<boolean>;
   addFinanceAdjustment: (
     adjustment: TablesInsert<"finance_project_adjustment">
   ) => Promise<Tables<"finance_project_adjustment"> | null>;
@@ -330,7 +334,6 @@ export const useFinanceStore = create<
         return true;
       },
 
-
       async updateFinanceProject(project) {
         const { financeProjects } = get();
         const updatedProject = await actions.updateFinanceProject(project);
@@ -408,17 +411,27 @@ export const useFinanceStore = create<
         return true;
       },
 
-      async deleteRecurringCashFlow(id) {
-        const { recurringCashFlows } = get();
+      async deleteRecurringCashFlow(id, mode) {
+        const { recurringCashFlows, singleCashFlows } = get();
 
         const deleted = await actions.deleteRecurringCashFlow({
           recurringCashFlowId: id,
+          mode,
         });
         if (!deleted.success) return false;
 
         const updatedRecurringCashFlows = recurringCashFlows.filter(
           (c) => c.id !== id
         );
+
+        if (mode === DeleteRecurringCashFlowMode.delete_all) {
+          const updatedSingleCashFlows = singleCashFlows.filter(
+            (c) => c.recurring_cash_flow_id !== id
+          );
+          set({
+            singleCashFlows: updatedSingleCashFlows,
+          });
+        }
 
         set({
           recurringCashFlows: updatedRecurringCashFlows,

@@ -7,6 +7,11 @@ export interface Payout extends Tables<"payout"> {
   timer_session_project: Tables<"timer_project"> | null;
 }
 
+export enum DeleteRecurringCashFlowMode {
+  delete_all = "delete_all",
+  keep_unlinked = "keep_unlinked",
+}
+
 export interface FinanceRule extends Tables<"finance_rule"> {
   financeCategoryIds: string[];
   timerProjectIds: string[];

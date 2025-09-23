@@ -35,6 +35,12 @@ import { CashFlowType } from "@/types/settings.types";
 import CancelButton from "../../UI/Buttons/CancelButton";
 import DeleteActionIcon from "../../UI/ActionIcons/DeleteActionIcon";
 import FinanceCategoryForm from "../Form/FinanceCategoryForm";
+import {
+  showActionErrorNotification,
+  showActionSuccessNotification,
+} from "@/utils/notificationFunctions";
+import { Radio } from "@mantine/core";
+import { DeleteRecurringCashFlowMode } from "@/types/finance.types";
 
 // Type guard to distinguish between single and recurring cash flows
 function isSingleCashFlow(
@@ -54,6 +60,9 @@ export default function EditCashFlowDrawer({
 }) {
   const { locale } = useSettingsStore();
   const [isLoading, setIsLoading] = useState(false);
+  const [deleteMode, setDeleteMode] = useState<DeleteRecurringCashFlowMode>(
+    DeleteRecurringCashFlowMode.delete_all
+  );
   const [type, setType] = useState<CashFlowType>("income");
   const [categoryId, setCategoryId] = useState<string | null>(
     cashFlow.category_id ?? null
@@ -70,6 +79,7 @@ export default function EditCashFlowDrawer({
   const drawerStack = useDrawersStack([
     "edit-cash-flow",
     "delete-cash-flow",
+    "delete-recurring-cash-flow",
     "update-cash-flow",
     "add-category",
   ]);
@@ -142,16 +152,74 @@ export default function EditCashFlowDrawer({
     setIsLoading(false);
   }
 
-  async function handleDelete() {
-    let success = false;
-    if (isSingleCashFlow(cashFlow)) {
-      success = await deleteSingleCashFlow(cashFlow.id);
-    } else {
-      success = await deleteRecurringCashFlow(cashFlow.id);
-    }
+  async function handleSingleDelete() {
+    if (!isSingleCashFlow(cashFlow)) return;
+    const success = await deleteSingleCashFlow(cashFlow.id);
     if (success) {
+      showActionSuccessNotification(
+        locale === "de-DE"
+          ? "Cashflow erfolgreich gelöscht"
+          : "Cashflow deleted successfully",
+        locale
+      );
       onClose();
+    } else {
+      showActionErrorNotification(
+        locale === "de-DE"
+          ? "Cashflow konnte nicht gelöscht werden"
+          : "Cashflow could not be deleted",
+        locale
+      );
     }
+  }
+
+  async function handleDeleteRecurringWithMode(
+    mode: DeleteRecurringCashFlowMode
+  ) {
+    if (isSingleCashFlow(cashFlow)) return;
+    const success = await deleteRecurringCashFlow(cashFlow.id, mode);
+    if (success) {
+      showActionSuccessNotification(
+        locale === "de-DE"
+          ? "Wiederkehrender Cashflow erfolgreich gelöscht"
+          : "Recurring cash flow deleted successfully",
+        locale
+      );
+      onClose();
+    } else {
+      showActionErrorNotification(
+        locale === "de-DE"
+          ? "Wiederkehrender Cashflow konnte nicht gelöscht werden"
+          : "Recurring cash flow could not be deleted",
+        locale
+      );
+    }
+  }
+
+  async function handleDeactivateRecurring() {
+    if (isSingleCashFlow(cashFlow)) return;
+    setIsLoading(true);
+    const success = await updateRecurringCashFlow({
+      id: cashFlow.id,
+      end_date: new Date().toISOString(),
+    });
+    if (success) {
+      showActionSuccessNotification(
+        locale === "de-DE"
+          ? "Wiederkehrender Cashflow erfolgreich deaktiviert"
+          : "Recurring cash flow deactivated successfully",
+        locale
+      );
+      onClose();
+    } else {
+      showActionErrorNotification(
+        locale === "de-DE"
+          ? "Wiederkehrender Cashflow konnte nicht deaktiviert werden"
+          : "Recurring cash flow could not be deactivated",
+        locale
+      );
+    }
+    setIsLoading(false);
   }
 
   async function handleUpdateAll() {
@@ -192,7 +260,20 @@ export default function EditCashFlowDrawer({
     setIsLoading(true);
     const success = await updateRecurringCashFlow(pendingValues);
     if (success) {
+      showActionSuccessNotification(
+        locale === "de-DE"
+          ? "Wiederkehrender Cashflow erfolgreich aktualisiert"
+          : "Recurring cash flow updated successfully",
+        locale
+      );
       onClose();
+    } else {
+      showActionErrorNotification(
+        locale === "de-DE"
+          ? "Wiederkehrender Cashflow konnte nicht aktualisiert werden"
+          : "Recurring cash flow could not be updated",
+        locale
+      );
     }
     setIsLoading(false);
   }
@@ -332,8 +413,84 @@ export default function EditCashFlowDrawer({
             onClick={() => drawerStack.close("delete-cash-flow")}
             color="teal"
           />
-          <DeleteButton onClick={handleDelete} />
+          <DeleteButton
+            onClick={() => {
+              if (isSingleCashFlow(cashFlow)) {
+                handleSingleDelete();
+              } else {
+                drawerStack.open("delete-recurring-cash-flow");
+              }
+            }}
+          />
         </Group>
+      </Drawer>
+
+      <Drawer
+        {...drawerStack.register("delete-recurring-cash-flow")}
+        onClose={() => drawerStack.close("delete-recurring-cash-flow")}
+        title={
+          <Group>
+            <IconAlertHexagonFilled size={25} color="red" />
+            <Text>
+              {locale === "de-DE"
+                ? "Wiederkehrender Cashflow löschen"
+                : "Delete Recurring Cash Flow"}
+            </Text>
+          </Group>
+        }
+      >
+        <Stack gap="md">
+          <Text>
+            {locale === "de-DE"
+              ? "Wie möchten Sie mit den verknüpften Einmal-Cashflows verfahren?"
+              : "How should linked single cash flows be handled?"}
+          </Text>
+          <Radio.Group
+            value={deleteMode}
+            onChange={(v) => setDeleteMode(v as any)}
+          >
+            <Stack gap={6}>
+              <Radio
+                value={DeleteRecurringCashFlowMode.delete_all}
+                label={
+                  locale === "de-DE"
+                    ? "Alle verknüpften Einmal-Cashflows ebenfalls löschen"
+                    : "Also delete all linked single cash flows"
+                }
+              />
+              <Radio
+                value={DeleteRecurringCashFlowMode.keep_unlinked}
+                label={
+                  locale === "de-DE"
+                    ? "Einmal-Cashflows behalten (Verknüpfung entfernen)"
+                    : "Keep single cash flows (unlink from recurring)"
+                }
+              />
+            </Stack>
+          </Radio.Group>
+
+          <Group justify="space-between" mt="sm">
+            <Button
+              variant="light"
+              color="gray"
+              onClick={handleDeactivateRecurring}
+              loading={isLoading}
+            >
+              {locale === "de-DE"
+                ? "Stattdessen deaktivieren"
+                : "Deactivate instead"}
+            </Button>
+            <Group gap="sm">
+              <CancelButton
+                onClick={() => drawerStack.close("delete-recurring-cash-flow")}
+                color="teal"
+              />
+              <DeleteButton
+                onClick={() => handleDeleteRecurringWithMode(deleteMode)}
+              />
+            </Group>
+          </Group>
+        </Stack>
       </Drawer>
 
       <Drawer
