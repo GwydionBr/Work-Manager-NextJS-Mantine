@@ -151,6 +151,7 @@ export type Database = {
           id: string;
           paid: boolean;
           start_amount: number;
+          timer_project_id: string | null;
           title: string;
           user_id: string;
         };
@@ -161,6 +162,7 @@ export type Database = {
           id?: string;
           paid?: boolean;
           start_amount: number;
+          timer_project_id?: string | null;
           title: string;
           user_id?: string;
         };
@@ -171,10 +173,19 @@ export type Database = {
           id?: string;
           paid?: boolean;
           start_amount?: number;
+          timer_project_id?: string | null;
           title?: string;
           user_id?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "finance_project_timer_project_id_fkey";
+            columns: ["timer_project_id"];
+            isOneToOne: false;
+            referencedRelation: "timer_project";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       finance_project_adjustment: {
         Row: {
