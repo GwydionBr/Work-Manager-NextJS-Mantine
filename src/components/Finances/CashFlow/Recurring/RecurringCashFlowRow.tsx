@@ -1,6 +1,6 @@
 "use client";
 
-import { useHover, useDisclosure } from "@mantine/hooks";
+import { useHover } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useFinanceStore } from "@/stores/financeStore";
 import { Tables } from "@/types/db.types";
@@ -98,7 +98,10 @@ export default function RecurringCashFlowRow({
             )}
             {showNextDate && nextDate && (
               <Group gap={5}>
-                <ThemeIcon variant="transparent" color={isToday(nextDate) ? "yellow" : "blue"}>
+                <ThemeIcon
+                  variant="transparent"
+                  color={isToday(nextDate) ? "yellow" : "blue"}
+                >
                   <IconCalendarTime size={20} />
                 </ThemeIcon>
                 <Text>{formatDate(nextDate, locale)}</Text>

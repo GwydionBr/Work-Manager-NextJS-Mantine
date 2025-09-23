@@ -9,12 +9,19 @@ import {
   isSameDay,
 } from "date-fns";
 
+/**
+ * Get the next date for a given interval and start date
+ * @param interval - The interval to use
+ * @param startDate - The start date to use
+ * @returns The next date
+ */
 export const getNextDate = (
   interval: FinanceInterval,
   startDate: Date
 ): Date => {
   const today = new Date();
   let candidate = new Date(startDate);
+  const anchorDay = candidate.getDate();
 
   // If today is before the start date, the next valid occurrence is the start date itself
   if (today < candidate) {
@@ -26,6 +33,13 @@ export const getNextDate = (
     return today;
   }
 
+  const getCorrectDay = (date: Date, anchorDay: number) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+    return Math.min(anchorDay, lastDayOfMonth);
+  };
+
   // Otherwise, advance from the start date in the chosen interval until we reach today or later
   const advance = (date: Date): Date => {
     switch (interval) {
@@ -34,13 +48,21 @@ export const getNextDate = (
       case "week":
         return addWeeks(date, 1);
       case "month":
-        return addMonths(date, 1);
+        let newMonthDate = addMonths(date, 1);
+        newMonthDate.setDate(getCorrectDay(newMonthDate, anchorDay));
+        return newMonthDate;
       case "1/4 year":
-        return addQuarters(date, 1);
+        let newQuarterDate = addQuarters(date, 1);
+        newQuarterDate.setDate(getCorrectDay(newQuarterDate, anchorDay));
+        return newQuarterDate;
       case "1/2 year":
-        return addMonths(date, 6);
+        let newHalfYearDate = addMonths(date, 6);
+        newHalfYearDate.setDate(getCorrectDay(newHalfYearDate, anchorDay));
+        return newHalfYearDate;
       case "year":
-        return addYears(date, 1);
+        let newYearDate = addYears(date, 1);
+        newYearDate.setDate(getCorrectDay(newYearDate, anchorDay));
+        return newYearDate;
       default:
         return date;
     }
@@ -52,6 +74,7 @@ export const getNextDate = (
     if (next.getTime() === candidate.getTime()) break;
     candidate = next;
   }
+
 
   return isSameDay(candidate, today) ? today : candidate;
 };
