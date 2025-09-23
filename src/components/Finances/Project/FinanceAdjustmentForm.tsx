@@ -4,7 +4,7 @@ import { useForm } from "@mantine/form";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useFinanceStore } from "@/stores/financeStore";
 import { z } from "zod";
-import { Box, Button, Group, NumberInput, Select } from "@mantine/core";
+import { Box, Group, NumberInput, Select } from "@mantine/core";
 import { TextInput } from "@mantine/core";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { notifications } from "@mantine/notifications";
@@ -36,16 +36,21 @@ export default function FinanceAdjustmentForm({
   const [isLoading, setIsLoading] = useState(false);
   const form = useForm({
     initialValues: {
-      amount: 0,
+      amount: "",
       description: "",
       client_id: "",
     },
     validate: zodResolver(schema),
   });
-  const handleSubmit = async (values: z.infer<typeof schema>) => {
+  const handleSubmit = async (values: {
+    amount: string;
+    description: string;
+    client_id: string;
+  }) => {
     setIsLoading(true);
     const response = await addFinanceAdjustment({
       ...values,
+      amount: parseFloat(values.amount === "" ? "0" : values.amount),
       client_id: values.client_id || null,
       finance_project_id: projectId,
     });
@@ -116,6 +121,7 @@ export default function FinanceAdjustmentForm({
         />
         <Box mt="lg">
           <CreateButton
+            type="submit"
             onClick={form.onSubmit(handleSubmit)}
             loading={isLoading}
           />

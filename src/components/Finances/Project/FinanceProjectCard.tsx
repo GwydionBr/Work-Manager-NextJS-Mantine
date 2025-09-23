@@ -22,6 +22,8 @@ import {
   Divider,
   ThemeIcon,
   Menu,
+  Grid,
+  Popover,
 } from "@mantine/core";
 
 import { FinanceProject } from "@/types/finance.types";
@@ -42,6 +44,7 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import MoreActionIcon from "@/components/UI/ActionIcons/MoreActionIcon";
+import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 
 interface FinanceProjectCardProps extends CardProps {
   project: FinanceProject;
@@ -64,19 +67,21 @@ export default function FinanceProjectCard({
   ...props
 }: FinanceProjectCardProps) {
   const { locale } = useSettingsStore();
+  const [isEditing, { open: openEditing, close: closeEditing }] =
+    useDisclosure(false);
+  const { hovered, ref: hoverRef } = useHover();
+  const [isMoreActionOpen, { open: openMoreAction, close: closeMoreAction }] =
+    useDisclosure(false);
   const [
     isAdjustmentFormOpen,
     { open: openAdjustmentForm, close: closeAdjustmentForm },
   ] = useDisclosure(false);
-  const { hovered, ref: hoverRef } = useHover();
-  const [isMoreActionOpen, { open: openMoreAction, close: closeMoreAction }] =
-    useDisclosure(false);
   const [isDropdownOpen, { open: openDropdown, close: closeDropdown }] =
     useDisclosure(false);
 
   const ref = useClickOutside(() => {
-    if (!isMoreActionOpen && !isDropdownOpen) {
-      closeAdjustmentForm();
+    if (!isMoreActionOpen && !isDropdownOpen && !isAdjustmentFormOpen) {
+      closeEditing();
     }
   });
   const mergedRef = mergeRefs(ref, hoverRef);
@@ -84,6 +89,12 @@ export default function FinanceProjectCard({
     (acc, adjustment) => acc + adjustment.amount,
     project.start_amount
   );
+
+  const handleAdjustmentClose = () => {
+    if (!isDropdownOpen) {
+      closeAdjustmentForm();
+    }
+  };
 
   const hasAdjustments = project.adjustments.length > 0;
   const isPositive = totalAmount > 0;
@@ -105,10 +116,10 @@ export default function FinanceProjectCard({
       bg="light-dark(var(--mantine-color-white), var(--mantine-color-dark-6))"
       shadow="sm"
       style={{
-        cursor: isAdjustmentFormOpen ? "default" : "pointer",
+        cursor: isEditing ? "default" : "pointer",
         border: isSelected
           ? "2px solid var(--mantine-color-blue-5)"
-          : hovered || isAdjustmentFormOpen
+          : hovered || isEditing
             ? "1px solid light-dark(var(--mantine-color-blue-5), var(--mantine-color-blue-8))"
             : "",
         transition: "all 0.2s ease",
@@ -117,7 +128,7 @@ export default function FinanceProjectCard({
         if (selectedModeActive) {
           onToggleSelected(e as any);
         } else {
-          openAdjustmentForm();
+          openEditing();
         }
       }}
       ref={mergedRef}
@@ -224,7 +235,7 @@ export default function FinanceProjectCard({
               </Group>
             )}
             {/* More Actions */}
-            <Transition mounted={isAdjustmentFormOpen}>
+            <Transition mounted={isEditing}>
               {(styles) => (
                 <Menu
                   opened={isMoreActionOpen}
@@ -271,44 +282,87 @@ export default function FinanceProjectCard({
         </Group>
 
         {/* Adjustment Form */}
-        <Collapse in={isAdjustmentFormOpen}>
+        <Collapse in={isEditing}>
           <Stack>
             <Divider />
             {/* Adjustments List */}
             {hasAdjustments && (
-              <Box>
-                <Text size="sm" c="dimmed" fw={500} mb="xs">
-                  {getLocalizedText("Anpassungen", "Adjustments")} (
-                  {project.adjustments.length})
-                </Text>
-                <Stack gap={5}>
-                  {project.adjustments.map((adjustment) => (
-                    <FinanceAdjustmentRow
-                      key={adjustment.id}
-                      adjustment={adjustment}
-                      currency={project.currency}
-                    />
-                  ))}
+              <Stack gap="xs">
+                <Grid gutter="xs">
+                  <Grid.Col span={4}>
+                    <Text size="sm" c="dimmed" fw={500} mb="xs">
+                      {getLocalizedText("Anpassungen", "Adjustments")} (
+                      {project.adjustments.length})
+                    </Text>
+                  </Grid.Col>
+                  <Grid.Col span={4}>
+                    <Group justify="center">
+                      <Popover
+                        closeOnClickOutside
+                        trapFocus
+                        returnFocus
+                        opened={isAdjustmentFormOpen}
+                        onDismiss={handleAdjustmentClose}
+                        onClose={handleAdjustmentClose}
+                        onOpen={openAdjustmentForm}
+                      >
+                        <Popover.Target>
+                          <PlusActionIcon
+                            variant={isAdjustmentFormOpen ? "light" : "subtle"}
+                            onClick={openAdjustmentForm}
+                            w="100%"
+                          />
+                        </Popover.Target>
+                        <Popover.Dropdown p={0}>
+                          <Card withBorder shadow="sm" radius="md">
+                            <FinanceAdjustmentForm
+                              onClose={handleAdjustmentClose}
+                              projectId={project.id}
+                              onDropdownOpen={openDropdown}
+                              onDropdownClose={closeDropdown}
+                            />
+                          </Card>
+                        </Popover.Dropdown>
+                      </Popover>
+                    </Group>
+
+                    {/* <Card
+                      p="md"
+                      withBorder
+                      shadow="sm"
+                      radius="md"
+                      bg="light-dark(var(--mantine-color-white), var(--mantine-color-dark-7))"
+                    >
+                      <Stack align="center">
+                        <IconArrowDown color="var(--mantine-color-teal-6)" />
+                        <FinanceAdjustmentForm
+                          onClose={closeAdjustmentForm}
+                          projectId={project.id}
+                          onDropdownOpen={openDropdown}
+                          onDropdownClose={closeDropdown}
+                        />
+                      </Stack>
+                    </Card> */}
+                  </Grid.Col>
+                  <Grid.Col span={4}></Grid.Col>
+                </Grid>
+                <Stack
+                  gap={5}
+                  mt={isAdjustmentFormOpen ? 110 : 0}
+                  style={{ transition: "margin 0.2s ease" }}
+                >
+                  {project.adjustments
+                    .sort((a, b) => b.created_at.localeCompare(a.created_at))
+                    .map((adjustment) => (
+                      <FinanceAdjustmentRow
+                        key={adjustment.id}
+                        adjustment={adjustment}
+                        currency={project.currency}
+                      />
+                    ))}
                 </Stack>
-              </Box>
-            )}
-            <Card
-              p="md"
-              withBorder
-              shadow="sm"
-              radius="md"
-              bg="light-dark(var(--mantine-color-white), var(--mantine-color-dark-7))"
-            >
-              <Stack align="center">
-                <IconArrowDown color="var(--mantine-color-teal-6)" />
-                <FinanceAdjustmentForm
-                  onClose={closeAdjustmentForm}
-                  projectId={project.id}
-                  onDropdownOpen={openDropdown}
-                  onDropdownClose={closeDropdown}
-                />
               </Stack>
-            </Card>
+            )}
           </Stack>
         </Collapse>
       </Stack>
