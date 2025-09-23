@@ -20,11 +20,15 @@ const schema = z.object({
 
 interface FinanceAdjustmentFormProps {
   onClose: () => void;
+  onDropdownOpen?: () => void;
+  onDropdownClose?: () => void;
   projectId: string;
 }
 
 export default function FinanceAdjustmentForm({
   onClose,
+  onDropdownOpen,
+  onDropdownClose,
   projectId,
 }: FinanceAdjustmentFormProps) {
   const { locale } = useSettingsStore();
@@ -105,6 +109,8 @@ export default function FinanceAdjustmentForm({
           searchable
           clearable
           label={locale === "de-DE" ? "Kunde" : "Client"}
+          onDropdownOpen={onDropdownOpen}
+          onDropdownClose={onDropdownClose}
           {...form.getInputProps("client_id")}
           data={clientOptions}
         />

@@ -7,7 +7,6 @@ import {
   mergeRefs,
 } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useFinanceStore } from "@/stores/financeStore";
 
 import {
   Card,
@@ -65,7 +64,6 @@ export default function FinanceProjectCard({
   ...props
 }: FinanceProjectCardProps) {
   const { locale } = useSettingsStore();
-  const { financeCategories, financeClients } = useFinanceStore();
   const [
     isAdjustmentFormOpen,
     { open: openAdjustmentForm, close: closeAdjustmentForm },
@@ -73,9 +71,11 @@ export default function FinanceProjectCard({
   const { hovered, ref: hoverRef } = useHover();
   const [isMoreActionOpen, { open: openMoreAction, close: closeMoreAction }] =
     useDisclosure(false);
+  const [isDropdownOpen, { open: openDropdown, close: closeDropdown }] =
+    useDisclosure(false);
 
   const ref = useClickOutside(() => {
-    if (!isMoreActionOpen) {
+    if (!isMoreActionOpen && !isDropdownOpen) {
       closeAdjustmentForm();
     }
   });
@@ -326,6 +326,8 @@ export default function FinanceProjectCard({
             <FinanceAdjustmentForm
               onClose={closeAdjustmentForm}
               projectId={project.id}
+              onDropdownOpen={openDropdown}
+              onDropdownClose={closeDropdown}
             />
           </Card>
         </Collapse>
