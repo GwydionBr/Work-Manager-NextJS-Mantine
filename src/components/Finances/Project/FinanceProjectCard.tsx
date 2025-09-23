@@ -30,7 +30,6 @@ import { FinanceProject } from "@/types/finance.types";
 import { formatMoney } from "@/utils/formatFunctions";
 import FinanceAdjustmentForm from "./FinanceAdjustmentForm";
 import FinanceAdjustmentRow from "./FinanceAdjustmentRow";
-import FinanceClientCard from "../FinanceClient/FinanceClientCard";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import {
   IconLinkPlus,
@@ -43,6 +42,7 @@ import {
 } from "@tabler/icons-react";
 import MoreActionIcon from "@/components/UI/ActionIcons/MoreActionIcon";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
+import FinanceClientBadge from "../FinanceClient/FinanceClientBadge";
 
 interface FinanceProjectCardProps extends CardProps {
   project: FinanceProject;
@@ -72,6 +72,10 @@ export default function FinanceProjectCard({
   const { hovered, ref: hoverRef } = useHover();
   const [isMoreActionOpen, { open: openMoreAction, close: closeMoreAction }] =
     useDisclosure(false);
+  const [
+    isClientPopoverOpen,
+    { open: openClientPopover, close: closeClientPopover },
+  ] = useDisclosure(false);
   const [
     isAdjustmentFormOpen,
     { open: openAdjustmentForm, close: closeAdjustmentForm },
@@ -178,21 +182,7 @@ export default function FinanceProjectCard({
           <Group gap="md" wrap="wrap" flex={2}>
             {project.clients.length > 0 &&
               project.clients.map((client) => (
-                <HoverCard key={client.id}>
-                  <HoverCard.Target>
-                    <Badge
-                      color="blue"
-                      variant="light"
-                      leftSection={<IconUser size={12} />}
-                      style={{ cursor: "pointer" }}
-                    >
-                      {client.name}
-                    </Badge>
-                  </HoverCard.Target>
-                  <HoverCard.Dropdown>
-                    <FinanceClientCard client={client} />
-                  </HoverCard.Dropdown>
-                </HoverCard>
+                <FinanceClientBadge key={client.id} client={client} />
               ))}
             {project.categories.length > 0 &&
               project.categories.map((category) => (
@@ -200,6 +190,7 @@ export default function FinanceProjectCard({
                   key={category.id}
                   color="violet"
                   variant="light"
+                  style={{ cursor: "pointer" }}
                   leftSection={<IconTag size={12} />}
                 >
                   {category.title}
@@ -210,26 +201,28 @@ export default function FinanceProjectCard({
           {/* Right Side */}
           <Group flex={1} justify="space-between">
             {/* Adjustments */}
-            {hasAdjustments && (
-              <Group gap="xs" align="center">
-                <Divider orientation="vertical" />
-                <ThemeIcon
-                  size="sm"
-                  color={adjustmentTotal > 0 ? "green" : "red"}
-                  variant="light"
-                >
-                  {adjustmentTotal > 0 ? (
-                    <IconTrendingUp size={14} />
-                  ) : (
-                    <IconTrendingDown size={14} />
-                  )}
-                </ThemeIcon>
-                <Text fw={600} c={adjustmentTotal > 0 ? "green" : "red"}>
-                  {adjustmentTotal > 0 ? "+" : ""}
-                  {formatMoney(adjustmentTotal, project.currency, locale)}
-                </Text>
-              </Group>
-            )}
+            <Group gap="xs" align="center">
+              <Divider orientation="vertical" />
+              {hasAdjustments && (
+                <Group gap="xs" align="center">
+                  <ThemeIcon
+                    size="sm"
+                    color={adjustmentTotal > 0 ? "green" : "red"}
+                    variant="light"
+                  >
+                    {adjustmentTotal > 0 ? (
+                      <IconTrendingUp size={14} />
+                    ) : (
+                      <IconTrendingDown size={14} />
+                    )}
+                  </ThemeIcon>
+                  <Text fw={600} c={adjustmentTotal > 0 ? "green" : "red"}>
+                    {adjustmentTotal > 0 ? "+" : ""}
+                    {formatMoney(adjustmentTotal, project.currency, locale)}
+                  </Text>
+                </Group>
+              )}
+            </Group>
             {/* More Actions */}
             <Transition mounted={isEditing}>
               {(styles) => (
@@ -282,48 +275,48 @@ export default function FinanceProjectCard({
           <Stack>
             <Divider />
             {/* Adjustments List */}
-            {hasAdjustments && (
-              <Stack gap="xs">
-                <Grid gutter="xs">
-                  <Grid.Col span={4}>
-                    <Text size="sm" c="dimmed" fw={500} mb="xs">
-                      {getLocalizedText("Anpassungen", "Adjustments")} (
-                      {project.adjustments.length})
-                    </Text>
-                  </Grid.Col>
-                  <Grid.Col span={4}>
-                    <Group justify="center">
-                      <Popover
-                        closeOnClickOutside
-                        trapFocus
-                        returnFocus
-                        opened={isAdjustmentFormOpen}
-                        onDismiss={handleAdjustmentClose}
-                        onClose={handleAdjustmentClose}
-                        onOpen={openAdjustmentForm}
-                      >
-                        <Popover.Target>
-                          <PlusActionIcon
-                            variant={isAdjustmentFormOpen ? "light" : "subtle"}
-                            onClick={openAdjustmentForm}
-                            w="100%"
+            <Stack gap="xs">
+              <Grid gutter="xs">
+                <Grid.Col span={4}>
+                  <Text size="sm" c="dimmed" fw={500} mb="xs">
+                    {getLocalizedText("Anpassungen", "Adjustments")} (
+                    {project.adjustments.length})
+                  </Text>
+                </Grid.Col>
+                <Grid.Col span={4}>
+                  <Group justify="center">
+                    <Popover
+                      closeOnClickOutside
+                      trapFocus
+                      returnFocus
+                      opened={isAdjustmentFormOpen}
+                      onDismiss={handleAdjustmentClose}
+                      onClose={handleAdjustmentClose}
+                      onOpen={openAdjustmentForm}
+                    >
+                      <Popover.Target>
+                        <PlusActionIcon
+                          variant={isAdjustmentFormOpen ? "light" : "subtle"}
+                          onClick={openAdjustmentForm}
+                          w="100%"
+                        />
+                      </Popover.Target>
+                      <Popover.Dropdown p={0}>
+                        <Card withBorder shadow="sm" radius="md">
+                          <FinanceAdjustmentForm
+                            onClose={handleAdjustmentClose}
+                            projectId={project.id}
+                            onDropdownOpen={openDropdown}
+                            onDropdownClose={closeDropdown}
                           />
-                        </Popover.Target>
-                        <Popover.Dropdown p={0}>
-                          <Card withBorder shadow="sm" radius="md">
-                            <FinanceAdjustmentForm
-                              onClose={handleAdjustmentClose}
-                              projectId={project.id}
-                              onDropdownOpen={openDropdown}
-                              onDropdownClose={closeDropdown}
-                            />
-                          </Card>
-                        </Popover.Dropdown>
-                      </Popover>
-                    </Group>
-                  </Grid.Col>
-                  <Grid.Col span={4}></Grid.Col>
-                </Grid>
+                        </Card>
+                      </Popover.Dropdown>
+                    </Popover>
+                  </Group>
+                </Grid.Col>
+                <Grid.Col span={4}></Grid.Col>
+              </Grid>
+              {hasAdjustments && (
                 <Stack
                   gap={5}
                   mt={isAdjustmentFormOpen ? 110 : 0}
@@ -339,8 +332,8 @@ export default function FinanceProjectCard({
                       />
                     ))}
                 </Stack>
-              </Stack>
-            )}
+              )}
+            </Stack>
           </Stack>
         </Collapse>
       </Stack>
