@@ -1,13 +1,10 @@
 "use client";
 import dayjs from "dayjs";
 
-import { useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Button, Card, Divider, Text, Stack } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
-import PayoutModal from "@/components/Finances/Payout/Modal/PayoutModal";
-import { Currency } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
 import {
   IconBrandCashapp,
@@ -17,24 +14,24 @@ import { formatMoney } from "@/utils/formatFunctions";
 
 interface ProjectFilterProps {
   timeSpan: [Date | null, Date | null];
-  onTimeSpanChange: (timeSpan: [Date | null, Date | null]) => void;
   sessions: Tables<"timer_session">[];
   project: Tables<"timer_project">;
-  openPayout: () => void;
+  isProcessingPayout: boolean;
+  onTimeSpanChange: (timeSpan: [Date | null, Date | null]) => void;
   onSelectAll: () => void;
+  handleSessionPayoutClick: (sessions: Tables<"timer_session">[]) => void;
 }
 
 export default function ProjectFilter({
   timeSpan,
-  onTimeSpanChange,
   sessions,
   project,
-  openPayout,
+  isProcessingPayout,
+  onTimeSpanChange,
   onSelectAll,
+  handleSessionPayoutClick,
 }: ProjectFilterProps) {
   const { locale } = useSettingsStore();
-  const [openedModal, { open: openModal, close: closeModal }] =
-    useDisclosure(false);
   const today = dayjs();
   const unpaidSessions = sessions.filter((session) => !session.paid);
 
@@ -45,9 +42,9 @@ export default function ProjectFilter({
 
   function handlePayoutClick() {
     if (!project.hourly_payment) {
-      openPayout();
+      // TODO: Implement project payout
     } else if (sessionPayout > 0) {
-      openModal();
+      handleSessionPayoutClick(sessions.filter((session) => !session.paid));
     }
   }
 
@@ -145,6 +142,7 @@ export default function ProjectFilter({
           onClick={handlePayoutClick}
           disabled={sessionPayout <= 0}
           leftSection={<IconBrandCashapp />}
+          loading={isProcessingPayout}
         >
           {locale === "de-DE" ? "" : "Payout"}{" "}
           {formatMoney(sessionPayout, project.currency, locale)}{" "}

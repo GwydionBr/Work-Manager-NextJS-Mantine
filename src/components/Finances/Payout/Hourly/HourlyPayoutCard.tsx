@@ -10,32 +10,18 @@ import QuickPayoutButton from "@/components/Finances/Payout/Hourly/QuickPayoutBu
 
 import { Tables } from "@/types/db.types";
 import { TimerProject } from "@/types/work.types";
-import { Currency } from "@/types/settings.types";
 
 interface HourlyPayoutCardProps {
   project: TimerProject;
-  onSubmit: (values: {
-    selectedSessionIds: string[];
-    startValue: number;
-    endValue: number | null;
-    endCurrency: Currency | null;
-    project: Tables<"timer_project">;
-  }) => void;
-  setPayoutSessionIds: (sessionIds: string[]) => void;
-  setPayoutStartValue: (startValue: number) => void;
-  openModal: () => void;
   isProcessing: boolean;
+  handlePayoutClick: (sessions: Tables<"timer_session">[]) => void;
 }
 export default function HourlyPayoutCard({
   project,
   isProcessing,
-  onSubmit,
-  setPayoutSessionIds,
-  setPayoutStartValue,  
-  openModal,
+  handlePayoutClick,
 }: HourlyPayoutCardProps) {
-  const { defaultFinanceCurrency, showChangeCurrencyWindow, getLocalizedText } =
-    useSettingsStore();
+  const { getLocalizedText } = useSettingsStore();
 
   const today = dayjs();
 
@@ -49,30 +35,6 @@ export default function HourlyPayoutCard({
     );
   });
   const allTimeSessions = project.sessions;
-
-  const handlePayoutClick = (sessions: Tables<"timer_session">[]) => {
-    const selectedSessionIds = sessions.map((session) => session.id);
-    setPayoutSessionIds(selectedSessionIds);
-    const sessionPayoutAmount = sessions.reduce((acc, session) => {
-      return acc + session.salary * (session.active_seconds / 3600);
-    }, 0);
-    setPayoutStartValue(sessionPayoutAmount);
-    if (
-      showChangeCurrencyWindow === null ||
-      (showChangeCurrencyWindow === true &&
-        project.project.currency !== defaultFinanceCurrency)
-    ) {
-      openModal();
-    } else {
-      onSubmit({
-        selectedSessionIds,
-        startValue: sessionPayoutAmount,
-        endValue: null,
-        endCurrency: null,
-        project: project.project,
-      });
-    }
-  };
 
   return (
     <Card withBorder radius="md" mb="md" p="md" shadow="md" w="100%" maw={400}>

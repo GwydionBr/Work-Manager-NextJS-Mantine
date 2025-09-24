@@ -62,7 +62,8 @@ export default function WorkPage() {
     payoutWorkSessions,
   } = useWorkStore();
   const { sessionPayout } = useFinanceStore();
-  const { locale } = useSettingsStore();
+  const { locale, showChangeCurrencyWindow, defaultFinanceCurrency } =
+    useSettingsStore();
   const activeProject = useWorkStore((state) =>
     state.projects.find((p) => {
       if (activeProjectId) {
@@ -259,6 +260,30 @@ export default function WorkPage() {
     toggleSelectedMode();
   };
 
+  const handleSessionPayoutClick = (sessions: Tables<"timer_session">[]) => {
+    const selectedSessionIds = sessions.map((session) => session.id);
+    setPayoutSessionIds(selectedSessionIds);
+    const sessionPayoutAmount = sessions.reduce((acc, session) => {
+      return acc + session.salary * (session.active_seconds / 3600);
+    }, 0);
+    setPayoutStartValue(sessionPayoutAmount);
+    if (
+      showChangeCurrencyWindow === null ||
+      (showChangeCurrencyWindow === true &&
+        activeProject.project.currency !== defaultFinanceCurrency)
+    ) {
+      openPayoutModal();
+    } else {
+      handleSessionPayout({
+        selectedSessionIds,
+        startValue: sessionPayoutAmount,
+        endValue: null,
+        endCurrency: null,
+        project: activeProject.project,
+      });
+    }
+  };
+
   async function handleSessionPayout(values: {
     project: Tables<"timer_project">;
     selectedSessionIds?: string[];
@@ -452,8 +477,9 @@ export default function WorkPage() {
                     onTimeSpanChange={setFilterTimeSpan}
                     sessions={timeFilteredSessions}
                     project={activeProject.project}
-                    openPayout={handlePayoutToggle}
+                    isProcessingPayout={isProcessingPayout}
                     onSelectAll={selectAllSessions}
+                    handleSessionPayoutClick={handleSessionPayoutClick}
                   />
                 </Collapse>
                 <Collapse in={payoutOpened}>
@@ -461,10 +487,7 @@ export default function WorkPage() {
                     {activeProject.project.hourly_payment ? (
                       <HourlyPayoutCard
                         project={activeProject}
-                        onSubmit={handleSessionPayout}
-                        setPayoutSessionIds={setPayoutSessionIds}
-                        setPayoutStartValue={setPayoutStartValue}
-                        openModal={openPayoutModal}
+                        handlePayoutClick={handleSessionPayoutClick}
                         isProcessing={isProcessingPayout}
                       />
                     ) : (
