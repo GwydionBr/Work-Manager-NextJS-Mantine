@@ -56,28 +56,35 @@ export default function FinanceProjectTab() {
     financeClients,
     financeCategories,
   } = useFinanceStore();
-  const { locale, setIsModalOpen, setSelectedTab } = useSettingsStore();
+  const { locale, setIsModalOpen, setSelectedTab, getLocalizedText } =
+    useSettingsStore();
 
-  const getLocalizedText = (de: string, en: string) => {
-    return locale === "de-DE" ? de : en;
-  };
+  // Bulk selection
+  const [
+    selectedModeActive,
+    { toggle: toggleSelectedMode, close: closeSelectedMode },
+  ] = useDisclosure(false);
   const [selectedFinanceProjects, setSelectedFinanceProjects] = useState<
     string[]
   >([]);
-  const [selectedModeActive, { toggle: toggleSelectedMode }] =
-    useDisclosure(false);
+  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
+    null
+  );
+
+  // Add project
   const [
     addProjectModalOpened,
     { close: closeAddProjectModal, toggle: toggleAddProjectModal },
   ] = useDisclosure(false);
+
+  // Edit project
   const [
     editProjectModalOpened,
     { close: closeEditProjectModal, toggle: toggleEditProjectModal },
   ] = useDisclosure(false);
   const [editProject, setEditProject] = useState<FinanceProject | null>(null);
-  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
-    null
-  );
+
+  // Tab
   const [tab, setTab] = useState<FinanceProjectNavbarTab>(
     FinanceProjectNavbarTab.All
   );
@@ -95,7 +102,11 @@ export default function FinanceProjectTab() {
   }, [financeProjects, financeClients, financeCategories]);
 
   useEffect(() => {
-    if (!editProject && formattedFinanceProjects.length > 0) {
+    if (formattedFinanceProjects.length === 0) {
+      setTab(FinanceProjectNavbarTab.All);
+      setSelectedFinanceProjects([]);
+      closeSelectedMode();
+    } else if (editProject === null) {
       setEditProject(formattedFinanceProjects[0]);
     }
   }, [formattedFinanceProjects]);
@@ -239,11 +250,11 @@ export default function FinanceProjectTab() {
     });
   }, [sortedFinanceProjects, tab]);
 
-  const handleToggleSelectedMode = useCallback(() => {
+  const handleToggleSelectedMode = () => {
     toggleSelectedMode();
     setSelectedFinanceProjects([]);
     setLastSelectedIndex(null);
-  }, [toggleSelectedMode]);
+  };
 
   const toggleProjectSelection = useCallback(
     (clientId: string, index: number, range: boolean) => {
@@ -320,7 +331,7 @@ export default function FinanceProjectTab() {
     return [
       [
         {
-          label: locale === "de-DE" ? "Alle" : "All",
+          label: getLocalizedText("Alle", "All"),
           leftSection: (
             <ThemeIcon variant="transparent" color="gray">
               <IconList />
@@ -337,7 +348,7 @@ export default function FinanceProjectTab() {
           disabled: navbarItems.all.projectCount === 0,
         },
         {
-          label: locale === "de-DE" ? "Bevorstehend" : "Upcoming",
+          label: getLocalizedText("Bevorstehend", "Upcoming"),
           leftSection: (
             <ThemeIcon variant="transparent" color="blue">
               <IconCalendarEvent />
@@ -354,7 +365,7 @@ export default function FinanceProjectTab() {
           disabled: navbarItems.upcoming.projectCount === 0,
         },
         {
-          label: locale === "de-DE" ? "Überfällig" : "Overdue",
+          label: getLocalizedText("Überfällig", "Overdue"),
           leftSection: (
             <ThemeIcon variant="transparent" color="red">
               <IconCalendarEvent />
@@ -373,7 +384,7 @@ export default function FinanceProjectTab() {
       ],
       [
         {
-          label: locale === "de-DE" ? "Bezahlt" : "Paid",
+          label: getLocalizedText("Bezahlt", "Paid"),
           leftSection: (
             <ThemeIcon variant="transparent" color="green">
               <IconSquareRoundedCheck />
@@ -400,11 +411,11 @@ export default function FinanceProjectTab() {
           <Group justify="space-between" align="center">
             <AdjustmentActionIcon
               size="lg"
-              tooltipLabel={
-                locale === "de-DE"
-                  ? "Finanzeinstellungen anpassen"
-                  : "Adjust finance settings"
-              }
+              variant="transparent"
+              tooltipLabel={getLocalizedText(
+                "Finanzeinstellungen anpassen",
+                "Adjust finance settings"
+              )}
               iconSize={20}
               onClick={() => {
                 setIsModalOpen(true);
@@ -420,7 +431,7 @@ export default function FinanceProjectTab() {
             >
               <ActionIcon
                 onClick={toggleAddProjectModal}
-                variant="subtle"
+                variant="transparent"
                 size="lg"
               >
                 <IconMoneybagPlus size={20} />
@@ -430,10 +441,17 @@ export default function FinanceProjectTab() {
             <SelectActionIcon
               iconSize={20}
               disabled={isFetching || filteredFinanceProjects.length === 0}
-              tooltipLabel={getLocalizedText(
-                "Aktiviere Mehrfachauswahl",
-                "Activate bulk select"
-              )}
+              tooltipLabel={
+                selectedModeActive
+                  ? getLocalizedText(
+                      "Deaktiviere Mehrfachauswahl",
+                      "Deactivate bulk select"
+                    )
+                  : getLocalizedText(
+                      "Aktiviere Mehrfachauswahl",
+                      "Activate bulk select"
+                    )
+              }
               mainControl
               selected={selectedModeActive}
               onClick={handleToggleSelectedMode}
@@ -460,7 +478,10 @@ export default function FinanceProjectTab() {
       <Stack w="100%" ml={220} align="center">
         <Stack gap={0} w="100%">
           {/* Bulk Selection */}
-          <Collapse in={selectedModeActive} w="100%">
+          <Collapse
+            in={selectedModeActive && filteredFinanceProjects.length > 0}
+            w="100%"
+          >
             <Card
               p="md"
               mb="md"
@@ -522,7 +543,7 @@ export default function FinanceProjectTab() {
                   !isToday(new Date(project.due_date));
                 const noDueDate = !project.due_date;
                 return (
-                  <Stack key={project.id} w="100%">
+                  <Stack key={project.id} w="100%" gap={5}>
                     {filteredFinanceProjects[index - 1]?.due_date !==
                       project.due_date && (
                       <Divider

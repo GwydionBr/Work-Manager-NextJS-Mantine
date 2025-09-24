@@ -53,6 +53,7 @@ interface SettingsActions {
   setLocale: (locale: Locale) => Promise<void>;
   setFormat24h: (format24h: boolean) => Promise<void>;
   setShowCalendarTime: (showCalendarTime: boolean) => Promise<void>;
+  getLocalizedText: (de: string, en: string) => string;
 }
 
 export const useSettingsStore = create<SettingsState & SettingsActions>()(
@@ -270,6 +271,9 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
           format_24h: format24h,
         });
         set({ format24h: format24h });
+      },
+      getLocalizedText(de, en) {
+        return get().locale === "de-DE" ? de : en;
       },
     }),
     {

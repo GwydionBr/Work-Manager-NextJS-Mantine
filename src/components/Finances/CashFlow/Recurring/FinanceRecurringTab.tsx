@@ -33,30 +33,48 @@ import FinancesNavbar from "../../FinancesNavbar";
 import RecurringCashFlowRow from "./RecurringCashFlowRow";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 import { SettingsTab } from "@/components/Settings/SettingsModal";
+import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 
 export default function FinanceRecurringTab() {
   const { recurringCashFlows } = useFinanceStore();
   const { locale, defaultFinanceCurrency, setIsModalOpen, setSelectedTab } =
     useSettingsStore();
+
   const [filter, setFilter] = useState<
     "all" | "active" | "completed" | "future"
   >("all");
   const [typeFilter, setTypeFilter] = useState<"all" | "expense" | "income">(
     "all"
   );
-  const [selectedCashFlow, setSelectedCashFlow] =
-    useState<Tables<"recurring_cash_flow"> | null>(null);
+
+  // Bulk selection
+  const [
+    bulkSelectionActive,
+    { toggle: toggleBulkSelection, close: closeBulkSelection },
+  ] = useDisclosure(false);
+  const [selectedCashFlows, setSelectedCashFlows] = useState<string[]>([]);
+
+  // Single Edit
   const [
     editCashFlowOpened,
     { open: openEditCashFlow, close: closeEditCashFlow },
   ] = useDisclosure(false);
+  const [selectedCashFlow, setSelectedCashFlow] =
+    useState<Tables<"recurring_cash_flow"> | null>(null);
+
+  // Single Add
   const [
     cashFlowModalOpened,
     { open: openCashFlowModal, close: closeCashFlowModal },
   ] = useDisclosure(false);
 
   useEffect(() => {
-    if (recurringCashFlows.length > 0) {
+    if (recurringCashFlows.length === 0) {
+      setFilter("all");
+      closeBulkSelection();
+      setSelectedCashFlows([]);
+      setSelectedCashFlow(null);
+    } else if (recurringCashFlows.length > 0 && selectedCashFlow === null) {
       setSelectedCashFlow(recurringCashFlows[0]);
     }
   }, [recurringCashFlows]);
@@ -265,6 +283,7 @@ export default function FinanceRecurringTab() {
           <Group justify="space-between">
             <AdjustmentActionIcon
               size="lg"
+              variant="transparent"
               tooltipLabel={
                 locale === "de-DE"
                   ? "Finanzeinstellungen anpassen"
@@ -285,12 +304,32 @@ export default function FinanceRecurringTab() {
             >
               <ActionIcon
                 onClick={openCashFlowModal}
-                variant="subtle"
+                variant="transparent"
                 size="lg"
               >
-                <IconCashPlus />
+                <IconCashPlus size={22} />
               </ActionIcon>
             </DelayedTooltip>
+            <SelectActionIcon
+              iconSize={20}
+              onClick={toggleBulkSelection}
+              selected={bulkSelectionActive}
+              partiallySelected={
+                selectedCashFlows.length > 0 &&
+                selectedCashFlows.length < filteredActiveCashFlows.length
+              }
+              disabled={filteredActiveCashFlows.length === 0}
+              tooltipLabel={
+                bulkSelectionActive
+                  ? locale === "de-DE"
+                    ? "Deaktiviere Mehrfachauswahl"
+                    : "Deactivate bulk select"
+                  : locale === "de-DE"
+                    ? "Aktiviere Mehrfachauswahl"
+                    : "Activate bulk select"
+              }
+              mainControl
+            />
           </Group>
         }
         isNavbar
