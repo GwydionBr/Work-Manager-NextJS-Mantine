@@ -42,9 +42,9 @@ export default function QuickPayoutButton({
     <UnstyledButton
       ref={ref}
       onClick={() => handleClick(unpaidSessions)}
-      bg={hovered ? alpha("var(--mantine-color-teal-5)", 0.1) : "transparent"}
+      bg={hovered ? alpha("var(--mantine-color-violet-5)", 0.1) : "transparent"}
       style={{
-        border: "1px solid var(--mantine-color-teal-5)",
+        border: "1px solid var(--mantine-color-violet-5)",
         borderRadius: 10,
         padding: 10,
         transition: "background-color 0.2s ease-in-out",

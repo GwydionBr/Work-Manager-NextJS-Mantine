@@ -115,6 +115,7 @@ export default function SessionModalForm({
             error={form.errors.endCurrency}
           />
           <Button
+            color="violet"
             type="submit"
             loading={isProcessing}
             leftSection={<IconBrandCashapp />}

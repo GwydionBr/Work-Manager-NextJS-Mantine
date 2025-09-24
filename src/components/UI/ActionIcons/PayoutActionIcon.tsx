@@ -24,7 +24,7 @@ export default function PayoutActionIcon({
         variant="transparent"
         onClick={onClick}
         size="md"
-        color={opened ? "blue" : undefined}
+        color={opened ? "violet" : "violet"}
         {...props}
       >
         <IconBrandCashapp

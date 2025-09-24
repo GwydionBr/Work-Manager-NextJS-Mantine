@@ -502,6 +502,7 @@ export default function WorkPage() {
                     selectedSessions={selectedSessions}
                     timeFilteredSessions={timeFilteredSessions}
                     toggleAllSessions={toggleAllSessions}
+                    handleSessionPayoutClick={handleSessionPayoutClick}
                   />
                 </Collapse>
               </Grid.Col>

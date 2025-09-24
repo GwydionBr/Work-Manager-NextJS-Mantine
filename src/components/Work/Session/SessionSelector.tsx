@@ -8,7 +8,7 @@ import { Group, Text, Divider, Stack, Button, Collapse } from "@mantine/core";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import { Tables } from "@/types/db.types";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
-import { IconPencil } from "@tabler/icons-react";
+import { IconBrandCashapp, IconPencil } from "@tabler/icons-react";
 import {
   showActionErrorNotification,
   showActionSuccessNotification,
@@ -19,12 +19,14 @@ interface SessionSelectorProps {
   selectedSessions: string[];
   timeFilteredSessions: Tables<"timer_session">[];
   toggleAllSessions: () => void;
+  handleSessionPayoutClick: (sessions: Tables<"timer_session">[]) => void;
 }
 
 export default function SessionSelector({
   selectedSessions,
   timeFilteredSessions,
   toggleAllSessions,
+  handleSessionPayoutClick,
 }: SessionSelectorProps) {
   const { locale } = useSettingsStore();
   const { deleteTimerSessions } = useWorkStore();
@@ -101,6 +103,19 @@ export default function SessionSelector({
       </Group>
       <Collapse in={selectedSessions.length > 0}>
         <Stack mb="xs">
+          <Button
+            onClick={() =>
+              handleSessionPayoutClick(
+                timeFilteredSessions.filter((session) =>
+                  selectedSessions.includes(session.id)
+                )
+              )
+            }
+            leftSection={<IconBrandCashapp />}
+            color="violet"
+          >
+            {locale === "de-DE" ? "Auswahl auszahlen" : "Pay Selection"}
+          </Button>
           <Button
             variant="outline"
             onClick={handleEdit}
