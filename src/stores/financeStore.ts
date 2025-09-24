@@ -85,6 +85,11 @@ interface FinanceStoreActions {
     category: TablesUpdate<"finance_category">
   ) => Promise<Tables<"finance_category"> | null>;
   deleteFinanceCategories: (ids: string[]) => Promise<boolean>;
+  sessionPayout: (
+    sessionIds: string[],
+    payout: TablesInsert<"payout">,
+    categoryIds: string[]
+  ) => Promise<Tables<"payout"> | null>;
   setActiveTab: (tab: FinanceTab) => void;
 }
 
@@ -592,6 +597,32 @@ export const useFinanceStore = create<
           financeProjects: updatedFinanceProjects,
         });
         return true;
+      },
+
+      async sessionPayout(sessionIds, payout, categoryIds) {
+        const payoutResult = await actions.payoutSessions({
+          date: new Date(),
+          payout,
+          sessionIds,
+          categoryIds,
+        });
+
+        const { payouts, singleCashFlows } = get();
+        if (!payoutResult.success) {
+          return null;
+        }
+
+        const updatedPayouts = [...payouts, payoutResult.data.payout];
+        const updatedSingleCashFlows = [
+          ...singleCashFlows,
+          payoutResult.data.cashflow,
+        ];
+        set({
+          payouts: updatedPayouts,
+          singleCashFlows: updatedSingleCashFlows,
+        });
+
+        return payoutResult.data.payout;
       },
 
       setActiveTab(tab) {

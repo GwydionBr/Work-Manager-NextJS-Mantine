@@ -718,6 +718,45 @@ export type Database = {
           },
         ];
       };
+      payout_category: {
+        Row: {
+          created_at: string;
+          finance_category_id: string;
+          id: string;
+          payout_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          finance_category_id: string;
+          id?: string;
+          payout_id: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          finance_category_id?: string;
+          id?: string;
+          payout_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "payout_category_finance_category_id_fkey";
+            columns: ["finance_category_id"];
+            isOneToOne: false;
+            referencedRelation: "finance_category";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "payout_category_payout_id_fkey";
+            columns: ["payout_id"];
+            isOneToOne: false;
+            referencedRelation: "payout";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       profiles: {
         Row: {
           avatar_url: string | null;
@@ -1022,30 +1061,30 @@ export type Database = {
       };
       single_cash_flow_category: {
         Row: {
-          cash_flow_category: string;
           created_at: string;
+          finance_category_id: string;
           id: string;
           single_cash_flow_id: string;
           user_id: string;
         };
         Insert: {
-          cash_flow_category?: string;
           created_at?: string;
+          finance_category_id?: string;
           id?: string;
           single_cash_flow_id?: string;
           user_id?: string;
         };
         Update: {
-          cash_flow_category?: string;
           created_at?: string;
+          finance_category_id?: string;
           id?: string;
           single_cash_flow_id?: string;
           user_id?: string;
         };
         Relationships: [
           {
-            foreignKeyName: "single_cash_flow_category_cash_flow_category_fkey";
-            columns: ["cash_flow_category"];
+            foreignKeyName: "single_cash_flow_category_finance_category_id_fkey";
+            columns: ["finance_category_id"];
             isOneToOne: false;
             referencedRelation: "finance_category";
             referencedColumns: ["id"];

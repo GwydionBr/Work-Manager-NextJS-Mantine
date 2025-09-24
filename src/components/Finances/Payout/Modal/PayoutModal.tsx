@@ -2,10 +2,10 @@
 
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Group, Modal, Text } from "@mantine/core";
+import { Box, Group, Modal, Text } from "@mantine/core";
 import { IconBrandCashapp } from "@tabler/icons-react";
-import SessionModalForm from "./SessionModalForm";
-import ProjectModalForm from "./ProjectModalForm";
+import SessionModalForm from "../Hourly/HourlyPayoutModal";
+import ProjectModalForm from "../Project/ProjectPayoutModal";
 
 import { Tables } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
@@ -62,14 +62,16 @@ export default function PayoutModal({
       }}
     >
       {sessionIds && sessionIds.length > 0 ? (
-        <SessionModalForm
-          sessionIds={sessionIds ?? []}
-          handleClose={handleClose}
-          startValue={startValue}
-          categoryId={payoutCategoryId}
-          startCurrency={startCurrency}
-          projectTitle={projectTitle ?? ""}
-        />
+        // <SessionModalForm
+        //   opened={opened}
+        //   sessionIds={sessionIds ?? []}
+        //   handleClose={handleClose}
+        //   startValue={startValue}
+        //   categoryId={payoutCategoryId}
+        //   startCurrency={startCurrency}
+        //   projectTitle={projectTitle ?? ""}
+        // />
+        <Box />
       ) : project && payoutAmount && payoutCurrency ? (
         <ProjectModalForm
           project={project}

@@ -16,11 +16,7 @@ import { getTimeFragmentSession, resolveSessionOverlaps } from "@/utils/helper";
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { TimerProject, ProjectTreeItem } from "@/types/work.types";
 import { Currency } from "@/types/settings.types";
-import {
-  ApiResponseSingle,
-  ErrorResponse,
-  SuccessPayoutResponse,
-} from "@/types/action.types";
+import { ErrorResponse, SuccessPayoutResponse } from "@/types/action.types";
 import { TimerRoundingSettings } from "@/types/timeTracker.types";
 
 interface WorkStoreState {
@@ -73,21 +69,7 @@ interface WorkStoreActions {
   ) => Promise<boolean>;
   deleteProject: (id: string) => Promise<boolean>;
   deleteTimerSessions: (ids: string[]) => Promise<boolean>;
-  payoutSessions: (
-    sessionIds: string[],
-    startValue: number,
-    title: string,
-    startCurrency: Currency,
-    categoryId: string | null,
-    endValue: number | null,
-    endCurrency: Currency | null,
-    projectId?: string | null
-  ) => Promise<
-    ApiResponseSingle<{
-      cashflow: Tables<"single_cash_flow">;
-      payout: Tables<"payout">;
-    }>
-  >;
+  payoutWorkSessions: (sessionIds: string[], payoutId: string) => boolean;
   payoutProjectSalary: (
     projectId: string,
     startValue: number,
@@ -498,36 +480,13 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         return true;
       },
 
-      async payoutSessions(
-        sessionIds,
-        startValue,
-        title,
-        startCurrency,
-        categoryId,
-        endValue,
-        endCurrency,
-        projectId
-      ) {
+      payoutWorkSessions(sessionIds, payoutId) {
         const { updateStore, projects, timerSessions } = get();
-        const payoutResult = await actions.payoutSessions({
-          date: new Date(),
-          sessionIds,
-          startValue,
-          title,
-          startCurrency,
-          categoryId,
-          endValue,
-          endCurrency,
-          projectId: projectId ?? null,
-        });
-        if (!payoutResult.success) {
-          return payoutResult;
-        }
 
         // Update sessions to mark them as paid
         const updatedSessions = timerSessions.map((s) =>
           sessionIds.includes(s.id)
-            ? { ...s, paid: true, payout_id: payoutResult.data.payout.id }
+            ? { ...s, paid: true, payout_id: payoutId }
             : s
         );
         const updatedProjects = projects.map((p) => ({
@@ -537,7 +496,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           ),
         }));
         updateStore(updatedProjects, updatedSessions);
-        return payoutResult;
+        return true;
       },
 
       async payoutProjectSalary(

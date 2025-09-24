@@ -3,7 +3,7 @@
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useHover } from "@mantine/hooks";
 
-import { Group, Stack, Text, alpha, UnstyledButton } from "@mantine/core";
+import { Group, Stack, Text, alpha, UnstyledButton, UnstyledButtonProps } from "@mantine/core";
 import { IconChevronRight } from "@tabler/icons-react";
 
 import { formatDate, formatMoney } from "@/utils/formatFunctions";
@@ -11,7 +11,7 @@ import { formatDate, formatMoney } from "@/utils/formatFunctions";
 import { Tables } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
 
-interface QuickPayoutButtonProps {
+interface QuickPayoutButtonProps extends UnstyledButtonProps {
   label: string;
   sessions: Tables<"timer_session">[];
   salary: number;
@@ -27,6 +27,7 @@ export default function QuickPayoutButton({
   currency,
   timeSpan,
   handleClick,
+  ...props
 }: QuickPayoutButtonProps) {
   const { locale } = useSettingsStore();
   const { hovered, ref } = useHover();
@@ -51,6 +52,7 @@ export default function QuickPayoutButton({
         opacity: unpaidTotal <= 0 ? 0.5 : 1,
       }}
       disabled={unpaidTotal <= 0}
+      {...props}
     >
       <Group justify="space-between">
         <Stack>

@@ -2,32 +2,20 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { ApiResponseSingle } from "@/types/action.types";
-import { Currency } from "@/types/settings.types";
-import { Payout } from "@/types/finance.types";
-import { Tables } from "@/types/db.types";
+import { Tables, TablesInsert } from "@/types/db.types";
 
 interface PayoutSessionsProps {
   date: Date;
-  title: string;
+  payout: TablesInsert<"payout">;
   sessionIds: string[];
-  startValue: number;
-  startCurrency: Currency;
-  categoryId: string | null;
-  endValue: number | null;
-  endCurrency: Currency | null;
-  projectId: string | null;
+  categoryIds: string[];
 }
 
 export async function payoutSessions({
   date,
-  title,
+  payout,
   sessionIds,
-  startValue,
-  startCurrency,
-  categoryId,
-  endValue,
-  endCurrency,
-  projectId,
+  categoryIds,
 }: PayoutSessionsProps): Promise<
   ApiResponseSingle<{
     cashflow: Tables<"single_cash_flow">;
@@ -36,14 +24,13 @@ export async function payoutSessions({
 > {
   const supabase = await createClient();
 
-  const { data: cashFlow, error: cashFlowError } = await supabase
+  const { data: cashflow, error: cashFlowError } = await supabase
     .from("single_cash_flow")
     .insert({
-      title: title,
-      category_id: categoryId,
+      title: payout.title,
       type: "income",
-      amount: endValue ?? startValue,
-      currency: endCurrency ?? startCurrency,
+      amount: payout.end_value ?? payout.start_value,
+      currency: payout.end_currency ?? payout.start_currency,
       date: date.toISOString(),
     })
     .select()
@@ -53,17 +40,25 @@ export async function payoutSessions({
     return { success: false, data: null, error: cashFlowError.message };
   }
 
-  const { data: payout, error: payoutError } = await supabase
+  const { data: categories, error: categoriesError } = await supabase
+    .from("single_cash_flow_category")
+    .insert(
+      categoryIds.map((id) => ({
+        single_cash_flow_id: cashflow.id,
+        finance_category_id: id,
+      }))
+    )
+    .select();
+
+  if (categoriesError) {
+    return { success: false, data: null, error: categoriesError.message };
+  }
+
+  const { data: payoutData, error: payoutError } = await supabase
     .from("payout")
     .insert({
-      cashflow_id: cashFlow.id,
-      start_value: startValue,
-      start_currency: startCurrency,
-      end_value: endValue,
-      end_currency: endCurrency,
-      timer_project_id: null,
-      timer_session_project_id: projectId,
-      title: title,
+      ...payout,
+      cashflow_id: cashflow.id,
     })
     .select()
     .single();
@@ -77,7 +72,7 @@ export async function payoutSessions({
       .from("timer_session")
       .update({
         paid: true,
-        payout_id: payout.id,
+        payout_id: payoutData.id,
       })
       .eq("id", sessionId);
     if (sessionError) {
@@ -85,5 +80,9 @@ export async function payoutSessions({
     }
   }
 
-  return { success: true, data: { cashflow: cashFlow, payout }, error: null };
+  return {
+    success: true,
+    data: { cashflow, payout: payoutData },
+    error: null,
+  };
 }
