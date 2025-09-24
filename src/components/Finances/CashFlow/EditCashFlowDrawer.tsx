@@ -73,7 +73,7 @@ export default function EditCashFlowDrawer({
     updateSingleCashFlow,
     updateRecurringCashFlow,
     updateMultipleSingleCashFlows,
-    deleteSingleCashFlow,
+    deleteSingleCashFlows,
     deleteRecurringCashFlow,
   } = useFinanceStore();
   const drawerStack = useDrawersStack([
@@ -154,7 +154,7 @@ export default function EditCashFlowDrawer({
 
   async function handleSingleDelete() {
     if (!isSingleCashFlow(cashFlow)) return;
-    const success = await deleteSingleCashFlow(cashFlow.id);
+    const success = await deleteSingleCashFlows([cashFlow.id]);
     if (success) {
       showActionSuccessNotification(
         locale === "de-DE"
@@ -427,7 +427,10 @@ export default function EditCashFlowDrawer({
 
       <Drawer
         {...drawerStack.register("delete-recurring-cash-flow")}
-        onClose={() => drawerStack.close("delete-recurring-cash-flow")}
+        onClose={() => {
+          drawerStack.close("delete-cash-flow");
+          drawerStack.close("delete-recurring-cash-flow");
+        }}
         title={
           <Group>
             <IconAlertHexagonFilled size={25} color="red" />
@@ -482,7 +485,10 @@ export default function EditCashFlowDrawer({
             </Button>
             <Group gap="sm">
               <CancelButton
-                onClick={() => drawerStack.close("delete-recurring-cash-flow")}
+                onClick={() => {
+                  drawerStack.close("delete-cash-flow");
+                  drawerStack.close("delete-recurring-cash-flow");
+                }}
                 color="teal"
               />
               <DeleteButton

@@ -27,12 +27,8 @@ export default function FinanceAdjustmentRow({
   const { financeClients } = useFinanceStore();
   const isIncome = adjustment.amount > 0;
   const client = financeClients.find(
-    (client) => client.id === adjustment.client_id
+    (client) => client.id === adjustment.finance_client_id
   );
-
-  const getLocalizedText = (de: string, en: string) => {
-    return locale === "de-DE" ? de : en;
-  };
 
   return (
     <Card p="sm" withBorder shadow="sm" radius="md">

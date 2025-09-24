@@ -13,12 +13,10 @@ import {
   CardProps,
   Collapse,
   Group,
-  HoverCard,
   Stack,
   Text,
   Box,
   Transition,
-  Badge,
   Divider,
   ThemeIcon,
   Menu,
@@ -280,7 +278,11 @@ export default function FinanceProjectCard({
             <Divider />
             {/* Adjustments List */}
             <Stack gap="xs">
-              <Grid gutter="xs">
+              <Grid
+                gutter="xs"
+                mb={isAdjustmentFormOpen ? 110 : 0}
+                style={{ transition: "margin 0.2s ease" }}
+              >
                 <Grid.Col span={4}>
                   <Text size="sm" c="dimmed" fw={500} mb="xs">
                     {getLocalizedText("Anpassungen", "Adjustments")} (
@@ -290,7 +292,6 @@ export default function FinanceProjectCard({
                 <Grid.Col span={4}>
                   <Group justify="center">
                     <Popover
-                      closeOnClickOutside
                       trapFocus
                       returnFocus
                       opened={isAdjustmentFormOpen}
@@ -321,11 +322,7 @@ export default function FinanceProjectCard({
                 <Grid.Col span={4}></Grid.Col>
               </Grid>
               {hasAdjustments && (
-                <Stack
-                  gap={5}
-                  mt={isAdjustmentFormOpen ? 110 : 0}
-                  style={{ transition: "margin 0.2s ease" }}
-                >
+                <Stack gap={5}>
                   {project.adjustments
                     .sort((a, b) => b.created_at.localeCompare(a.created_at))
                     .map((adjustment) => (

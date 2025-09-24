@@ -1,16 +1,29 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { useForm } from "@mantine/form";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useFinanceStore } from "@/stores/financeStore";
-import { z } from "zod";
-import { Box, Group, NumberInput, Select } from "@mantine/core";
+
+import {
+  Button,
+  Group,
+  NumberInput,
+  Popover,
+  Select,
+  Text,
+} from "@mantine/core";
 import { TextInput } from "@mantine/core";
-import { zodResolver } from "mantine-form-zod-resolver";
-import { notifications } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { IconTag, IconTagPlus, IconUserPlus } from "@tabler/icons-react";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
-import { useState } from "react";
+import DelayedTooltip from "@/components/UI/DelayedTooltip";
+
+import { z } from "zod";
+import { zodResolver } from "mantine-form-zod-resolver";
+import {
+  showActionErrorNotification,
+  showActionSuccessNotification,
+} from "@/utils/notificationFunctions";
 
 const schema = z.object({
   amount: z.number(),
@@ -31,56 +44,50 @@ export default function FinanceAdjustmentForm({
   onDropdownClose,
   projectId,
 }: FinanceAdjustmentFormProps) {
-  const { locale } = useSettingsStore();
-  const { financeClients, addFinanceAdjustment } = useFinanceStore();
+  const { locale, getLocalizedText } = useSettingsStore();
+  const { financeClients, addFinanceAdjustment, financeCategories } =
+    useFinanceStore();
   const [isLoading, setIsLoading] = useState(false);
   const form = useForm({
     initialValues: {
       amount: "",
       description: "",
-      client_id: "",
+      finance_client_id: "",
+      finance_category_id: "",
     },
     validate: zodResolver(schema),
   });
   const handleSubmit = async (values: {
     amount: string;
     description: string;
-    client_id: string;
+    finance_client_id: string;
+    finance_category_id: string;
   }) => {
     setIsLoading(true);
     const response = await addFinanceAdjustment({
       ...values,
       amount: parseFloat(values.amount === "" ? "0" : values.amount),
-      client_id: values.client_id || null,
+      finance_client_id: values.finance_client_id || null,
+      finance_category_id: values.finance_category_id || null,
       finance_project_id: projectId,
     });
     if (response) {
-      notifications.show({
-        title: locale === "de-DE" ? "Erfolg" : "Success",
-        message:
-          locale === "de-DE"
-            ? "Anpassung erfolgreich erstellt"
-            : "Adjustment created successfully",
-        icon: <IconCheck />,
-        color: "green",
-        autoClose: 4000,
-        withBorder: true,
-        position: "top-center",
-      });
+      showActionSuccessNotification(
+        getLocalizedText(
+          "Anpassung erfolgreich erstellt",
+          "Adjustment created successfully"
+        ),
+        locale
+      );
       handleClose();
     } else {
-      notifications.show({
-        title: locale === "de-DE" ? "Fehler" : "Error",
-        message:
-          locale === "de-DE"
-            ? "Anpassung konnte nicht erstellt werden"
-            : "Adjustment could not be created",
-        icon: <IconX />,
-        color: "red",
-        autoClose: 4000,
-        withBorder: true,
-        position: "top-center",
-      });
+      showActionErrorNotification(
+        getLocalizedText(
+          "Anpassung konnte nicht erstellt werden",
+          "Adjustment could not be created"
+        ),
+        locale
+      );
     }
     setIsLoading(false);
   };
@@ -90,42 +97,102 @@ export default function FinanceAdjustmentForm({
     onClose();
   };
 
-  const clientOptions = financeClients.map((client) => ({
-    value: client.id,
-    label: client.name,
-  }));
+  const clientOptions = useMemo(
+    () =>
+      financeClients.map((client) => ({
+        value: client.id,
+        label: client.name,
+      })),
+    [financeClients]
+  );
+
+  const categoryOptions = useMemo(
+    () =>
+      financeCategories.map((category) => ({
+        value: category.id,
+        label: category.title,
+      })),
+    [financeCategories]
+  );
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
-      <Group>
-        <NumberInput
-          withAsterisk
-          allowLeadingZeros={false}
-          label={locale === "de-DE" ? "Betrag" : "Amount"}
-          {...form.getInputProps("amount")}
-          data-autofocus
-        />
-        <TextInput
-          label={locale === "de-DE" ? "Beschreibung" : "Description"}
-          {...form.getInputProps("description")}
-        />
-        <Select
-          allowDeselect
-          searchable
-          clearable
-          label={locale === "de-DE" ? "Kunde" : "Client"}
-          onDropdownOpen={onDropdownOpen}
-          onDropdownClose={onDropdownClose}
-          {...form.getInputProps("client_id")}
-          data={clientOptions}
-        />
-        <Box mt="lg">
-          <CreateButton
-            type="submit"
-            onClick={form.onSubmit(handleSubmit)}
-            loading={isLoading}
+      <Group wrap="wrap">
+        <Group>
+          <NumberInput
+            withAsterisk
+            allowLeadingZeros={false}
+            label={getLocalizedText("Betrag", "Amount")}
+            {...form.getInputProps("amount")}
+            data-autofocus
           />
-        </Box>
+          <TextInput
+            label={getLocalizedText("Beschreibung", "Description")}
+            {...form.getInputProps("description")}
+          />
+        </Group>
+        {/* <Group gap={5}>
+          <Select
+            allowDeselect
+            searchable
+            clearable
+            label={getLocalizedText("Kunde", "Client")}
+            onDropdownOpen={onDropdownOpen}
+            onDropdownClose={onDropdownClose}
+            {...form.getInputProps("finance_client_id")}
+            data={clientOptions}
+          />
+          <Popover>
+            <Popover.Target>
+              <DelayedTooltip
+                label={getLocalizedText("Kunde hinzuügen", "Add client")}
+              >
+                <Button mt={25} size="compact-sm" variant="subtle">
+                  <Group gap="xs">
+                    <IconUserPlus size={20} />
+                    <Text c="dimmed" size="sm">
+                      {getLocalizedText("Kunde", "Client")}
+                    </Text>
+                  </Group>
+                </Button>
+              </DelayedTooltip>
+            </Popover.Target>
+          </Popover>
+        </Group>
+        <Group>
+          <Select
+            allowDeselect
+            searchable
+            clearable
+            label={getLocalizedText("Kategorie", "Category")}
+            onDropdownOpen={onDropdownOpen}
+            onDropdownClose={onDropdownClose}
+            {...form.getInputProps("finance_category_id")}
+            data={categoryOptions}
+          />
+          <Popover>
+            <Popover.Target>
+              <DelayedTooltip
+                label={getLocalizedText("Kategorie hinzuügen", "Add category")}
+              >
+                <Button mt={25} size="compact-sm" variant="subtle">
+                  <Group gap="xs">
+                    <IconTagPlus size={20} />
+                    <Text c="dimmed" size="sm">
+                      {getLocalizedText("Kategorie", "Category")}
+                    </Text>
+                  </Group>
+                </Button>
+              </DelayedTooltip>
+            </Popover.Target>
+          </Popover>
+        </Group> */}
+        <CreateButton
+          mt={25}
+          type="submit"
+          onClick={form.onSubmit(handleSubmit)}
+          loading={isLoading}
+        />
       </Group>
     </form>
   );

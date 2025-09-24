@@ -122,6 +122,7 @@ export const processRecurringCashFlows = (
           user_id: flow.user_id,
           recurring_cash_flow_id: flow.id,
           category_id: flow.category_id,
+          finance_client_id: flow.finance_client_id,
         };
 
         if (currentDate <= today) {
@@ -137,6 +138,7 @@ export const processRecurringCashFlows = (
             category_id: flow.category_id,
             finance_project_adjustment_id: null,
             finance_project_id: null,
+            finance_client_id: flow.finance_client_id,
           });
         }
       }
