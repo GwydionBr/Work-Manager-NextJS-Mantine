@@ -7,13 +7,13 @@ import { Text, Stack, Card, Group } from "@mantine/core";
 import type { Tables } from "@/types/db.types";
 import { IconBrandCashapp } from "@tabler/icons-react";
 
-interface NewProjectPayoutCardProps {
+interface ProjectPayoutCardProps {
   project: Tables<"timer_project">;
 }
 
-export default function NewProjectPayoutCard({
+export default function ProjectPayoutCard({
   project,
-}: NewProjectPayoutCardProps) {
+}: ProjectPayoutCardProps) {
   const { locale } = useSettingsStore();
 
   return (

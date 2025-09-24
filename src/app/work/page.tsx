@@ -29,8 +29,8 @@ import ProjectFilter from "@/components/Work/Project/ProjectFilter";
 
 import { formatMoney } from "@/utils/formatFunctions";
 import { groupSessions } from "@/utils/sessionHelperFunctions";
-import NewHourlyPayoutCard from "@/components/Finances/Payout/Hourly/NewHourlyPayoutCard";
-import NewProjectPayoutCard from "@/components/Finances/Payout/Project/NewProjectPayoutCard";
+import HourlyPayoutCard from "@/components/Finances/Payout/Hourly/HourlyPayoutCard";
+import ProjectPayoutCard from "@/components/Finances/Payout/Project/ProjectPayoutCard";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import NewSessionModal from "@/components/Work/Session/NewSessionModal";
 import SessionSelector from "@/components/Work/Session/SessionSelector";
@@ -364,9 +364,9 @@ export default function WorkPage() {
                 <Collapse in={payoutOpened}>
                   <Group>
                     {activeProject.project.hourly_payment ? (
-                      <NewHourlyPayoutCard project={activeProject} />
+                      <HourlyPayoutCard project={activeProject} />
                     ) : (
-                      <NewProjectPayoutCard project={activeProject.project} />
+                      <ProjectPayoutCard project={activeProject.project} />
                     )}
                   </Group>
                 </Collapse>

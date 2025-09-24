@@ -15,12 +15,10 @@ import { Tables } from "@/types/db.types";
 import { TimerProject } from "@/types/work.types";
 import { Currency } from "@/types/settings.types";
 
-interface NewHourlyPayoutCardProps {
+interface HourlyPayoutCardProps {
   project: TimerProject;
 }
-export default function NewHourlyPayoutCard({
-  project,
-}: NewHourlyPayoutCardProps) {
+export default function HourlyPayoutCard({ project }: HourlyPayoutCardProps) {
   const { locale } = useSettingsStore();
 
   const [sessionPayouts, setSessionPayouts] = useState<
