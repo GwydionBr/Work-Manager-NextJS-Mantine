@@ -61,7 +61,7 @@ export { getSettings, updateSettings } from "./settings/settingsActions";
 export { getAllSingleCashFlows } from "./finance/singleCashflow/getAllSingleCashFlows";
 export { createSingleCashFlow } from "./finance/singleCashflow/createSingleCashFlow";
 export { updateSingleCashFlow } from "./finance/singleCashflow/updateSingleCashFlow";
-export { deleteSingleCashFlow } from "./finance/singleCashflow/deleteSingleCashFlow";
+export { deleteSingleCashFlows } from "./finance/singleCashflow/deleteSingleCashFlows";
 export { createMultipleSingleCashFlows } from "./finance/singleCashflow/createMultipleSingleCashFlows";
 export { updateMultipleSingleCashFlows } from "./finance/singleCashflow/updateMultipleSingleCashFlows";
 

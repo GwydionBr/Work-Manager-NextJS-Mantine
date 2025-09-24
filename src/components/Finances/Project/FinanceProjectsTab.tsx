@@ -568,8 +568,8 @@ export default function FinanceProjectTab() {
                     <Box ml="xl">
                       <FinanceProjectCard
                         project={project}
-                        selectedModeActive={selectedModeActive}
                         editProjectModalOpened={editProjectModalOpened}
+                        selectedModeActive={selectedModeActive}
                         isSelected={selectedFinanceProjects.includes(
                           project.id
                         )}

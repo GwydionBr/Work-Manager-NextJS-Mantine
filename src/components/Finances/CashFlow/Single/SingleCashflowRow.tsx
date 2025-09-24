@@ -4,20 +4,36 @@ import { useHover } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Badge, Card, CardProps, Grid, Text, Group } from "@mantine/core";
+import {
+  Badge,
+  Card,
+  CardProps,
+  Grid,
+  Text,
+  Group,
+  Transition,
+  Box,
+} from "@mantine/core";
 import { IconTag } from "@tabler/icons-react";
 
 import { formatMoney } from "@/utils/formatFunctions";
 import { Tables } from "@/types/db.types";
+import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 
 interface SingleCashflowRowProps extends CardProps {
   cashflow: Tables<"single_cash_flow">;
   onEdit: () => void;
+  selectedModeActive: boolean;
+  isSelected: boolean;
+  onToggleSelected: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 export default function SingleCashflowRow({
   cashflow,
   onEdit,
+  selectedModeActive,
+  isSelected,
+  onToggleSelected,
   ...props
 }: SingleCashflowRowProps) {
   const { locale } = useSettingsStore();
@@ -39,11 +55,37 @@ export default function SingleCashflowRow({
         cursor: "pointer",
         border: hovered ? "1px solid var(--mantine-color-blue-6)" : "",
       }}
-      onClick={onEdit}
+      onClick={(e) => {
+        if (selectedModeActive) {
+          onToggleSelected(e as any);
+        } else {
+          onEdit();
+        }
+      }}
       {...props}
       ref={ref}
     >
-      <Grid>
+      <Box pos="absolute" top="xs" right="xl">
+        <Transition
+          mounted={selectedModeActive}
+          transition="fade-right"
+          duration={200}
+        >
+          {(styles) => (
+            <SelectActionIcon
+              style={styles}
+              onClick={() => {
+                onToggleSelected;
+              }}
+              selected={isSelected}
+            />
+          )}
+        </Transition>
+      </Box>
+      <Grid
+        ml={selectedModeActive ? 50 : 0}
+        style={{ transition: "margin 0.2s ease" }}
+      >
         <Grid.Col span={2}>
           <Group>
             <Text fw={700} c={cashflow.type === "expense" ? "red" : "green"}>

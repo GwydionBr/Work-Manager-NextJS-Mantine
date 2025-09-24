@@ -35,9 +35,14 @@ import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIc
 import { SettingsTab } from "@/components/Settings/SettingsModal";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
+import {
+  showActionErrorNotification,
+  showActionSuccessNotification,
+  showDeleteConfirmationModal,
+} from "@/utils/notificationFunctions";
 
 export default function FinanceSingleTab() {
-  const { singleCashFlows } = useFinanceStore();
+  const { singleCashFlows, deleteSingleCashFlows } = useFinanceStore();
   const { locale, setIsModalOpen, setSelectedTab, getLocalizedText } =
     useSettingsStore();
   const [typeFilter, setTypeFilter] = useState<"all" | "expense" | "income">(
@@ -159,6 +164,58 @@ export default function FinanceSingleTab() {
     }
   }, [filteredSingleCashFlows, selectedCashFlows]);
 
+  const toggleCashFlowSelection = useCallback(
+    (clientId: string, index: number, range: boolean) => {
+      if (range && lastSelectedIndex !== null) {
+        const start = Math.min(lastSelectedIndex, index);
+        const end = Math.max(lastSelectedIndex, index);
+        const rangeIds = filteredSingleCashFlows
+          .slice(start, end + 1)
+          .map((p) => p.id);
+        setSelectedCashFlows((prev) =>
+          Array.from(new Set([...prev, ...rangeIds]))
+        );
+      } else {
+        setSelectedCashFlows((prev) =>
+          prev.includes(clientId)
+            ? prev.filter((id) => id !== clientId)
+            : [...prev, clientId]
+        );
+        setLastSelectedIndex(index);
+      }
+    },
+    [filteredSingleCashFlows, lastSelectedIndex]
+  );
+
+  const handleDeleteCashFlows = () => {
+    showDeleteConfirmationModal(
+      getLocalizedText("Einnahmen löschen", "Delete Income"),
+      getLocalizedText(
+        "Sind Sie sicher, dass Sie diese Einnahmen löschen möchten?",
+        "Are you sure you want to delete these income?"
+      ),
+      async () => {
+        const deleted = await deleteSingleCashFlows(selectedCashFlows);
+        if (deleted) {
+          setSelectedCashFlows([]);
+          showActionSuccessNotification(
+            getLocalizedText("Einnahmen gelöscht", "Income deleted"),
+            locale
+          );
+        } else {
+          showActionErrorNotification(
+            getLocalizedText(
+              "Einnahmen konnten nicht gelöscht werden",
+              "Income could not be deleted"
+            ),
+            locale
+          );
+        }
+      },
+      locale
+    );
+  };
+
   const navbarItems = useMemo(() => {
     return [
       [
@@ -237,7 +294,7 @@ export default function FinanceSingleTab() {
             </DelayedTooltip>
             <SelectActionIcon
               iconSize={20}
-              onClick={toggleBulkSelection}
+              onClick={handleToggleBulkSelection}
               selected={bulkSelectionActive}
               partiallySelected={
                 selectedCashFlows.length > 0 &&
@@ -303,7 +360,7 @@ export default function FinanceSingleTab() {
             <Group justify="space-between" align="center">
               <Group onClick={toggleAllCashFlows} style={{ cursor: "pointer" }}>
                 <SelectActionIcon
-                  onClick={handleToggleBulkSelection}
+                  onClick={() => {}}
                   selected={
                     selectedCashFlows.length === filteredSingleCashFlows.length
                   }
@@ -325,7 +382,7 @@ export default function FinanceSingleTab() {
               <Group gap="xs">
                 <DeleteActionIcon
                   disabled={selectedCashFlows.length === 0}
-                  onClick={() => console.log(selectedCashFlows)}
+                  onClick={handleDeleteCashFlows}
                 />
               </Group>
             </Group>
@@ -361,6 +418,11 @@ export default function FinanceSingleTab() {
                     setSelectedCashFlow(cashFlow);
                     openEditCashFlow();
                   }}
+                  selectedModeActive={bulkSelectionActive}
+                  isSelected={selectedCashFlows.includes(cashFlow.id)}
+                  onToggleSelected={(e) =>
+                    toggleCashFlowSelection(cashFlow.id, index, e.shiftKey)
+                  }
                 />
               </Stack>
             );

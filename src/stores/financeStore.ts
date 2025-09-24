@@ -68,7 +68,7 @@ interface FinanceStoreActions {
   updateFinanceAdjustment: (
     adjustment: TablesUpdate<"finance_project_adjustment">
   ) => Promise<Tables<"finance_project_adjustment"> | null>;
-  deleteSingleCashFlow: (id: string) => Promise<boolean>;
+  deleteSingleCashFlows: (ids: string[]) => Promise<boolean>;
   deleteRecurringCashFlow: (
     id: string,
     mode: DeleteRecurringCashFlowMode
@@ -448,16 +448,16 @@ export const useFinanceStore = create<
         return true;
       },
 
-      async deleteSingleCashFlow(id) {
+      async deleteSingleCashFlows(ids) {
         const { singleCashFlows } = get();
 
-        const deleted = await actions.deleteSingleCashFlow({
-          singleCashFlowId: id,
+        const deleted = await actions.deleteSingleCashFlows({
+          ids,
         });
         if (!deleted.success) return false;
 
         const updatedSingleCashFlows = singleCashFlows.filter(
-          (c) => c.id !== id
+          (c) => !ids.includes(c.id)
         );
 
         set({
