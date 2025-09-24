@@ -16,6 +16,7 @@ import {
   Text,
   Collapse,
   Card,
+  Skeleton,
 } from "@mantine/core";
 import EditCashFlowDrawer from "@/components/Finances/CashFlow/EditCashFlowDrawer";
 import CashFlowModal from "@/components/Finances/CashFlow/CashFlowModal";
@@ -42,7 +43,8 @@ import {
 } from "@/utils/notificationFunctions";
 
 export default function FinanceSingleTab() {
-  const { singleCashFlows, deleteSingleCashFlows } = useFinanceStore();
+  const { singleCashFlows, deleteSingleCashFlows, isFetching } =
+    useFinanceStore();
   const { locale, setIsModalOpen, setSelectedTab, getLocalizedText } =
     useSettingsStore();
   const [typeFilter, setTypeFilter] = useState<"all" | "expense" | "income">(
@@ -389,44 +391,52 @@ export default function FinanceSingleTab() {
           </Card>
         </Collapse>
         <Stack gap={0}>
-          {filteredSingleCashFlows.map((cashFlow, index) => {
-            const isNewDate =
-              index === 0 ||
-              new Date(filteredSingleCashFlows[index - 1].date).setHours(
-                0,
-                0,
-                0,
-                0
-              ) !== new Date(cashFlow.date).setHours(0, 0, 0, 0);
-            return (
-              <Stack key={cashFlow.id} gap={5}>
-                {isNewDate && (
-                  <Divider
-                    mt={5}
-                    label={
-                      <Badge variant="light">
-                        {formatDate(new Date(cashFlow.date), locale)}
-                      </Badge>
+          {isFetching ? (
+            <Stack ml="xl" mt="lg">
+              {Array.from({ length: 5 }, (_, i) => (
+                <Skeleton height={45} w="100%" key={i} />
+              ))}
+            </Stack>
+          ) : (
+            filteredSingleCashFlows.map((cashFlow, index) => {
+              const isNewDate =
+                index === 0 ||
+                new Date(filteredSingleCashFlows[index - 1].date).setHours(
+                  0,
+                  0,
+                  0,
+                  0
+                ) !== new Date(cashFlow.date).setHours(0, 0, 0, 0);
+              return (
+                <Stack key={cashFlow.id} gap={5}>
+                  {isNewDate && (
+                    <Divider
+                      mt={5}
+                      label={
+                        <Badge variant="light">
+                          {formatDate(new Date(cashFlow.date), locale)}
+                        </Badge>
+                      }
+                      labelPosition="left"
+                    />
+                  )}
+                  <SingleCashflowRow
+                    cashflow={cashFlow}
+                    ml="xl"
+                    onEdit={() => {
+                      setSelectedCashFlow(cashFlow);
+                      openEditCashFlow();
+                    }}
+                    selectedModeActive={bulkSelectionActive}
+                    isSelected={selectedCashFlows.includes(cashFlow.id)}
+                    onToggleSelected={(e) =>
+                      toggleCashFlowSelection(cashFlow.id, index, e.shiftKey)
                     }
-                    labelPosition="left"
                   />
-                )}
-                <SingleCashflowRow
-                  cashflow={cashFlow}
-                  ml="xl"
-                  onEdit={() => {
-                    setSelectedCashFlow(cashFlow);
-                    openEditCashFlow();
-                  }}
-                  selectedModeActive={bulkSelectionActive}
-                  isSelected={selectedCashFlows.includes(cashFlow.id)}
-                  onToggleSelected={(e) =>
-                    toggleCashFlowSelection(cashFlow.id, index, e.shiftKey)
-                  }
-                />
-              </Stack>
-            );
-          })}
+                </Stack>
+              );
+            })
+          )}
         </Stack>
       </ScrollArea>
       {selectedCashFlow && (

@@ -14,6 +14,7 @@ import {
   Badge,
   ThemeIcon,
   Collapse,
+  Skeleton,
 } from "@mantine/core";
 
 import EditCashFlowButton from "@/components/Finances/CashFlow/EditCashFlowDrawer";
@@ -36,7 +37,7 @@ import { SettingsTab } from "@/components/Settings/SettingsModal";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 
 export default function FinanceRecurringTab() {
-  const { recurringCashFlows } = useFinanceStore();
+  const { recurringCashFlows, isFetching } = useFinanceStore();
   const { locale, defaultFinanceCurrency, setIsModalOpen, setSelectedTab } =
     useSettingsStore();
 
@@ -378,97 +379,105 @@ export default function FinanceRecurringTab() {
         }
       />
       {/* Tables */}
-      <Stack gap="xl" mb="xl" ml={230} w="100%">
-        <Collapse in={filter !== "future" && filter !== "completed"}>
-          {filteredActiveCashFlows.length > 0 && (
-            <Stack w="100%">
-              <Divider
-                w="100%"
-                label={
-                  <Badge color="blue" variant="outline">
-                    {locale === "de-DE" ? "Aktiv" : "Active"}
-                  </Badge>
-                }
-                labelPosition="left"
-                size="sm"
-                mb="md"
-              />
-              <Stack gap={0} ml="xl">
-                {filteredActiveCashFlows.map((cashFlow) => (
-                  <RecurringCashFlowRow
-                    key={cashFlow.id}
-                    cashflow={cashFlow}
-                    showNextDate
-                    getIntervalLabel={getIntervalLabel}
-                    onEdit={() => {
-                      setSelectedCashFlow(cashFlow);
-                      openEditCashFlow();
-                    }}
-                  />
-                ))}
+      <Stack gap="sm" mb="xl" ml={230} w="100%">
+      {isFetching ? (
+        Array.from({ length: 5 }, (_, i) => (
+          <Skeleton height={45} w="100%" key={i} />
+        ))
+      ) : (
+        <Stack gap="xl">
+          <Collapse in={filter !== "future" && filter !== "completed"}>
+            {filteredActiveCashFlows.length > 0 && (
+              <Stack w="100%">
+                <Divider
+                  w="100%"
+                  label={
+                    <Badge color="blue" variant="outline">
+                      {locale === "de-DE" ? "Aktiv" : "Active"}
+                    </Badge>
+                  }
+                  labelPosition="left"
+                  size="sm"
+                  mb="md"
+                />
+                <Stack gap={0} ml="xl">
+                  {filteredActiveCashFlows.map((cashFlow) => (
+                    <RecurringCashFlowRow
+                      key={cashFlow.id}
+                      cashflow={cashFlow}
+                      showNextDate
+                      getIntervalLabel={getIntervalLabel}
+                      onEdit={() => {
+                        setSelectedCashFlow(cashFlow);
+                        openEditCashFlow();
+                      }}
+                    />
+                  ))}
+                </Stack>
               </Stack>
-            </Stack>
-          )}
-        </Collapse>
-        <Collapse in={filter !== "active" && filter !== "completed"}>
-          {filteredFutureCashFlows.length > 0 && (
-            <Stack w="100%">
-              <Divider
-                w="100%"
-                label={
-                  <Badge color="blue" variant="outline">
-                    {locale === "de-DE" ? "Zukünftig" : "Future"}
-                  </Badge>
-                }
-                labelPosition="left"
-              />
-              <Stack gap={0} ml="xl">
-                {filteredFutureCashFlows.map((cashFlow) => (
-                  <RecurringCashFlowRow
-                    key={cashFlow.id}
-                    cashflow={cashFlow}
-                    showStartDate
-                    getIntervalLabel={getIntervalLabel}
-                    onEdit={() => {
-                      setSelectedCashFlow(cashFlow);
-                      openEditCashFlow();
-                    }}
-                  />
-                ))}
+            )}
+          </Collapse>
+          <Collapse in={filter !== "active" && filter !== "completed"}>
+            {filteredFutureCashFlows.length > 0 && (
+              <Stack w="100%">
+                <Divider
+                  w="100%"
+                  label={
+                    <Badge color="blue" variant="outline">
+                      {locale === "de-DE" ? "Zukünftig" : "Future"}
+                    </Badge>
+                  }
+                  labelPosition="left"
+                />
+                <Stack gap={0} ml="xl">
+                  {filteredFutureCashFlows.map((cashFlow) => (
+                    <RecurringCashFlowRow
+                      key={cashFlow.id}
+                      cashflow={cashFlow}
+                      showStartDate
+                      getIntervalLabel={getIntervalLabel}
+                      onEdit={() => {
+                        setSelectedCashFlow(cashFlow);
+                        openEditCashFlow();
+                      }}
+                    />
+                  ))}
+                </Stack>
               </Stack>
-            </Stack>
-          )}
-        </Collapse>
-        <Collapse in={filter !== "active" && filter !== "future"}>
-          {filteredCompletedCashFlows.length > 0 && (
-            <Stack w="100%">
-              <Divider
-                w="100%"
-                labelPosition="left"
-                label={
-                  <Badge color="blue" variant="outline">
-                    {locale === "de-DE" ? "Abgeschlossen" : "Completed"}
-                  </Badge>
-                }
-              />
-              <Stack gap={0} ml="xl">
-                {filteredCompletedCashFlows.map((cashFlow) => (
-                  <RecurringCashFlowRow
-                    getIntervalLabel={getIntervalLabel}
-                    key={cashFlow.id}
-                    cashflow={cashFlow}
-                    showEndDate
-                    onEdit={() => {
-                      setSelectedCashFlow(cashFlow);
-                      openEditCashFlow();
-                    }}
-                  />
-                ))}
+            )}
+          </Collapse>
+          <Collapse in={filter !== "active" && filter !== "future"}>
+            {filteredCompletedCashFlows.length > 0 && (
+              <Stack w="100%">
+                <Divider
+                  w="100%"
+                  labelPosition="left"
+                  label={
+                    <Badge color="blue" variant="outline">
+                      {locale === "de-DE" ? "Abgeschlossen" : "Completed"}
+                    </Badge>
+                  }
+                />
+                <Stack gap={0} ml="xl">
+                  {filteredCompletedCashFlows.map((cashFlow) => (
+                    <RecurringCashFlowRow
+                      getIntervalLabel={getIntervalLabel}
+                      key={cashFlow.id}
+                      cashflow={cashFlow}
+                      showEndDate
+                      onEdit={() => {
+                        setSelectedCashFlow(cashFlow);
+                        openEditCashFlow();
+                      }}
+                    />
+                  ))}
+                </Stack>
               </Stack>
-            </Stack>
-          )}
-        </Collapse>
-      </Stack>
+            )}
+          </Collapse>
+        </Stack>
+      )}
+        </Stack>
       <CashFlowModal
         opened={cashFlowModalOpened}
         onClose={closeCashFlowModal}

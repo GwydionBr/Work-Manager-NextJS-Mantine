@@ -17,6 +17,7 @@ import {
   Badge,
   ThemeIcon,
   Card,
+  Skeleton,
 } from "@mantine/core";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import FinanceProjectFormModal from "./FinanceProjectModal";
@@ -535,7 +536,11 @@ export default function FinanceProjectTab() {
           </Collapse>
           {/* Projects */}
           <Stack w="100%" align="center">
-            {filteredFinanceProjects.length > 0 ? (
+            {isFetching ? (
+              Array.from({ length: 5 }, (_, i) => (
+                <Skeleton height={65} w="100%" key={i} />
+              ))
+            ) : filteredFinanceProjects.length > 0 ? (
               filteredFinanceProjects.map((project, index) => {
                 const isOverdue =
                   project.due_date &&
