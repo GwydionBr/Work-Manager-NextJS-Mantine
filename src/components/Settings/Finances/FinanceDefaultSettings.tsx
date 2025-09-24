@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Radio, Select, Stack } from "@mantine/core";
@@ -19,6 +19,16 @@ export default function FinanceDefaultSettings() {
   } = useSettingsStore();
 
   const [showCCW, setShowCCW] = useState<"true" | "false" | "null">("null");
+
+  useEffect(() => {
+    setShowCCW(
+      showChangeCurrencyWindow === null
+        ? "null"
+        : showChangeCurrencyWindow
+          ? "true"
+          : "false"
+    );
+  }, [showChangeCurrencyWindow]);
 
   const handleCCWChange = (value: string) => {
     setShowCCW(value as "true" | "false" | "null");
@@ -58,21 +68,18 @@ export default function FinanceDefaultSettings() {
           >
             <Stack mt="sm">
               <Radio
+                value="null"
+                label={getLocalizedText("Immer anzeigen", "Always show")}
+              />
+              <Radio
                 value="true"
                 label={getLocalizedText(
-                  "Ja, immer anzeigen",
-                  "Yes, always show"
+                  "Nur wenn es einen Unterschied zu der Standardwährung gibt",
+                  "Only if there is a difference to the default currency"
                 )}
               />
               <Radio
                 value="false"
-                label={getLocalizedText(
-                  "Nein, nur wenn es einen Unterschied zu der Standardwährung gibt",
-                  "No, only if there is a difference to the default currency"
-                )}
-              />
-              <Radio
-                value="null"
                 label={getLocalizedText("Nicht anzeigen", "Do not show")}
               />
             </Stack>
