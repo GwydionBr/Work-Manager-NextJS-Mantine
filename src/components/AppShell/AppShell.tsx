@@ -53,11 +53,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     setActiveProjectId,
     abortFetch: abortWorkFetch,
   } = useWorkStore();
-  const {
-    fetchIfStale: fetchTaskIfStale,
-    lastFetch: lastTaskFetch,
-    abortFetch: abortTaskFetch,
-  } = useTaskStore();
+  const { fetchIfStale: fetchTaskIfStale, abortFetch: abortTaskFetch } =
+    useTaskStore();
   const {
     locale,
     isAsideOpen,
@@ -119,8 +116,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isHome = pathname === "/";
   const isAuth = pathname === "/auth";
 
-  // Define fetch intervals in milliseconds (5 minutes)
-  const FETCH_INTERVAL = 5 * 60 * 1000;
+  // Define fetch intervals in milliseconds (2 hours)
+  const FETCH_INTERVAL = 2* 60 * 60 * 1000;
 
   const fetchAllData = async () => {
     const interval = FETCH_INTERVAL;
