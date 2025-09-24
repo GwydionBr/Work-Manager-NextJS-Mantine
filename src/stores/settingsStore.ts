@@ -28,11 +28,13 @@ interface SettingsState {
   automaticlyStopOtherTimer: boolean;
   locale: Locale;
   format24h: boolean;
+  initialized: boolean | null;
 }
 
 interface SettingsActions {
   resetStore: () => void;
   fetchSettings: () => Promise<void>;
+  fetchIfStale: (intervalMs?: number) => Promise<void>;
   setSelectedTab: (tab: SettingsTab) => void;
   setIsModalOpen: (isModalOpen: boolean) => void;
   toggleWorkNavbar: () => void;
@@ -79,14 +81,14 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       isAsideOpen: false,
       isWorkNavbarOpen: false,
       isFinanceNavbarOpen: false,
-      isFetching: true,
+      isFetching: false,
       lastFetch: null,
       roundInTimeFragments: false,
       timeFragmentInterval: 10,
       automaticlyStopOtherTimer: false,
       locale: "en-US",
       format24h: false,
-
+      initialized: null,
       resetStore: () =>
         set({
           isModalOpen: false,
@@ -107,13 +109,23 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
           isAsideOpen: false,
           isWorkNavbarOpen: false,
           isFinanceNavbarOpen: false,
-          isFetching: true,
+          isFetching: false,
           lastFetch: null,
           automaticlyStopOtherTimer: false,
           locale: "en-US",
           format24h: false,
+          initialized: null,
         }),
+      fetchIfStale: async (intervalMs = 5 * 60 * 1000) => {
+        const { lastFetch, isFetching } = get();
+        const now = Date.now();
+        const last = lastFetch ? new Date(lastFetch).getTime() : 0;
+        const stale = !lastFetch || now - last > intervalMs;
+        if (!stale || isFetching) return;
+        await get().fetchSettings();
+      },
       fetchSettings: async () => {
+        set({ isFetching: true });
         const { data } = await actions.getSettings();
         if (data) {
           set({
@@ -133,9 +145,12 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
             automaticlyStopOtherTimer: data.automaticly_stop_other_timer,
             locale: data.locale,
             format24h: data.format_24h,
+            initialized: true,
           });
+        } else {
+          set({ initialized: false });
         }
-        set({ isFetching: false, lastFetch: new Date() });
+        set({ isFetching: false, lastFetch: new Date(), initialized: true });
       },
       setSelectedTab: (tab: SettingsTab) => {
         set({ selectedTab: tab });

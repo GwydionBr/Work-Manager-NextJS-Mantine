@@ -32,11 +32,13 @@ interface WorkStoreState {
   timerSessions: Tables<"timer_session">[];
   isFetching: boolean;
   lastFetch: Date | null;
+  initialized: boolean | null;
 }
 
 interface WorkStoreActions {
   resetStore: () => void;
   fetchWorkData: () => Promise<void>;
+  fetchIfStale: (intervalMs?: number) => Promise<void>;
   updateStore: (
     updatedProjects: TimerProject[],
     updatedSessions: Tables<"timer_session">[]
@@ -127,8 +129,9 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
       activeProjectId: null,
       lastActiveProjectId: null,
       timerSessions: [],
-      isFetching: true,
+      isFetching: false,
       lastFetch: null,
+      initialized: null,
 
       resetStore: () =>
         set({
@@ -138,9 +141,19 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           activeProjectId: null,
           lastActiveProjectId: null,
           timerSessions: [],
-          isFetching: true,
+          isFetching: false,
           lastFetch: null,
+          initialized: null,
         }),
+
+      async fetchIfStale(intervalMs = 5 * 60 * 1000) {
+        const { lastFetch, isFetching } = get();
+        const now = Date.now();
+        const last = lastFetch ? new Date(lastFetch).getTime() : 0;
+        const stale = !lastFetch || now - last > intervalMs;
+        if (!stale || isFetching) return;
+        await get().fetchWorkData();
+      },
 
       async fetchWorkData() {
         const {
@@ -149,6 +162,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           lastActiveProjectId: storedLastActiveId,
           setActiveProjectId,
         } = get();
+        set({ isFetching: true });
         const [projects, timerSessions, folders] = await Promise.all([
           actions.getAllProjects(),
           actions.getAllSessions(),
@@ -156,6 +170,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         ]);
 
         if (!projects.success || !timerSessions.success || !folders.success) {
+          set({ isFetching: false, initialized: false });
           return;
         }
 
@@ -188,7 +203,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         });
         setActiveProjectId(stillValidId);
         createProjectTree(projects.data, folders.data);
-        set({ isFetching: false, lastFetch: new Date() });
+        set({ isFetching: false, lastFetch: new Date(), initialized: true });
       },
 
       setActiveProjectId(id) {

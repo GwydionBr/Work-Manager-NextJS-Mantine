@@ -9,11 +9,13 @@ interface TaskState {
   tasks: Tables<"task">[];
   isFetching: boolean;
   lastFetch: Date | null;
+  initialized: boolean | null;
 }
 
 interface TaskActions {
   resetStore: () => void;
   fetchTasksData: () => Promise<void>;
+  fetchIfStale: (intervalMs?: number) => Promise<void>;
   createTask: (task: TablesInsert<"task">) => Promise<void>;
   updateTask: (task: TablesUpdate<"task">) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
@@ -22,29 +24,37 @@ interface TaskActions {
 
 export const useTaskStore = create<TaskState & TaskActions>()((set, get) => ({
   tasks: [],
-  isFetching: true,
+  isFetching: false,
   lastFetch: null,
+  initialized: null,
 
   resetStore: () =>
     set({
       tasks: [],
-      isFetching: true,
+      isFetching: false,
       lastFetch: null,
+      initialized: null,
     }),
+  async fetchIfStale(intervalMs = 5 * 60 * 1000) {
+    const { lastFetch, isFetching } = get();
+    const now = Date.now();
+    const last = lastFetch ? new Date(lastFetch).getTime() : 0;
+    const stale = !lastFetch || now - last > intervalMs;
+    if (!stale || isFetching) return;
+    await get().fetchTasksData();
+  },
   async fetchTasksData() {
     set({ isFetching: true });
     const tasks = await actions.getAllTasks();
     if (tasks.success) {
-      set({ tasks: tasks.data });
+      set({ tasks: tasks.data, initialized: true });
     } else {
-      console.error(tasks.error);
+      set({ initialized: false });
     }
-    set({ isFetching: false });
-    set({ lastFetch: new Date() });
+    set({ isFetching: false, lastFetch: new Date() });
   },
   async createTask(task) {
     const response = await actions.createTask(task);
-    console.log(response);
     if (response.success) {
       set({ tasks: [...get().tasks, response.data] });
     }

@@ -10,23 +10,21 @@ export default function FinanceLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isFetching, singleCashFlows, recurringCashFlows } = useFinanceStore();
+  const { isFetching, singleCashFlows, recurringCashFlows, initialized } =
+    useFinanceStore();
 
   if (
     !isFetching &&
     singleCashFlows.length === 0 &&
-    recurringCashFlows.length === 0
+    recurringCashFlows.length === 0 &&
+    initialized
   ) {
     return <FinanceInitializer />;
   }
 
   return (
     <Box>
-      <Box
-        style={{ transition: "margin 0.4s ease-in-out" }}
-      >
-        {children}
-      </Box>
+      <Box style={{ transition: "margin 0.4s ease-in-out" }}>{children}</Box>
     </Box>
   );
 }

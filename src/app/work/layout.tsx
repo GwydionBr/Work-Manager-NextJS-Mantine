@@ -12,10 +12,10 @@ export default function WorkLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { projects, isFetching } = useWorkStore();
+  const { projects, isFetching, initialized } = useWorkStore();
 
   const { isWorkNavbarOpen } = useSettingsStore();
-  if (projects.length === 0 && !isFetching) {
+  if (projects.length === 0 && !isFetching && initialized) {
     return <WorkInitializer />;
   }
 

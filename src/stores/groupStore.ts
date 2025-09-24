@@ -38,11 +38,13 @@ interface GroupState {
   lastFetch: Date | null;
   selectedDate: Date | null;
   isDateChanged: boolean;
+  initialized: boolean | null;
 }
 
 interface GroupActions {
   resetStore: () => void;
   fetchGroupData: () => Promise<void>;
+  fetchIfStale: (intervalMs?: number) => Promise<void>;
   addGroup: (
     group: TablesInsert<"group">,
     color: null | string,
@@ -90,48 +92,32 @@ export const useGroupStore = create<GroupState & GroupActions>()(
     groups: [],
     groupRequests: [],
     activeGroupId: null,
-    isFetching: true,
+    isFetching: false,
     lastFetch: null,
     selectedDate: null,
     isDateChanged: false,
-
+    initialized: null,
     resetStore: () =>
       set({
         groups: [],
         groupRequests: [],
         activeGroupId: null,
-        isFetching: true,
+        isFetching: false,
         lastFetch: null,
         selectedDate: null,
         isDateChanged: false,
+        initialized: null,
       }),
+    fetchIfStale: async (intervalMs = 5 * 60 * 1000) => {
+      const { lastFetch, isFetching } = get();
+      const now = Date.now();
+      const last = lastFetch ? new Date(lastFetch).getTime() : 0;
+      const stale = !lastFetch || now - last > intervalMs;
+      if (!stale || isFetching) return;
+      await get().fetchGroupData();
+    },
     fetchGroupData: async () => {
-      // const activeGroup = get().activeGroupId;
-      // set({ selectedDate: new Date() });
-      // const groupResponse = await actions.getAllGroups();
-
-      // if (groupResponse.success) {
-      //   set({
-      //     groups: groupResponse.data,
-      //     isFetching: false,
-      //     lastFetch: new Date(),
-      //   });
-      //   if (!activeGroup) {
-      //     set({
-      //       activeGroupId: groupResponse.data[0]?.id || null,
-      //     });
-      //   }
-      // } else {
-      //   set({ isFetching: false });
-      // }
-      // const { data: groupRequests, error: groupRequestsError } =
-      //   await actions.getGroupRequests();
-      // if (groupRequests) {
-      //   set({ groupRequests: groupRequests.groupRequests });
-      // }
-      // if (groupRequestsError) {
-      //   console.error(groupRequestsError);
-      // }
+      
     },
 
     addGroup: async (group, color, memberIds) => {

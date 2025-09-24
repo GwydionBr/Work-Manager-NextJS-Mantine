@@ -28,11 +28,13 @@ interface CalendarStoreState {
   addingMode: boolean;
   isFetching: boolean;
   lastFetch: Date | null;
+  initialized: boolean | null;
 }
 
 interface CalendarStoreActions {
   resetStore: () => void;
   fetchCalendarData: () => Promise<void>;
+  fetchIfStale: (intervalMs?: number) => Promise<void>;
   createAppointment: (
     appointment: TablesInsert<"appointment">
   ) => Promise<boolean>;
@@ -83,8 +85,9 @@ export const useCalendarStore = create<
       newEventStartY: null,
       newEventEndY: null,
       newEventDay: null,
-      isFetching: true,
+      isFetching: false,
       lastFetch: null,
+      initialized: null,
       resetStore: () =>
         set({
           activeTimer: null,
@@ -109,23 +112,31 @@ export const useCalendarStore = create<
           newEventStartY: null,
           newEventEndY: null,
           newEventDay: null,
-          isFetching: true,
+          isFetching: false,
           lastFetch: null,
+          initialized: null,
         }),
+      fetchIfStale: async (intervalMs = 5 * 60 * 1000) => {
+        const { lastFetch, isFetching } = get();
+        const now = Date.now();
+        const last = lastFetch ? new Date(lastFetch).getTime() : 0;
+        const stale = !lastFetch || now - last > intervalMs;
+        if (!stale || isFetching) return;
+        await get().fetchCalendarData();
+      },
       fetchCalendarData: async () => {
         set({ isFetching: true });
         const appointments = await actions.getAllAppointments();
         if (appointments.success) {
-          set({ appointments: appointments.data });
-          set({ isFetching: false, lastFetch: new Date() });
+          set({ appointments: appointments.data, initialized: true });
         } else {
-          set({ isFetching: false });
+          set({ initialized: false });
         }
+        set({ isFetching: false, lastFetch: new Date(), initialized: true });
       },
       createAppointment: async (appointment) => {
         const { appointments } = get();
         const response = await actions.createAppointment(appointment);
-        console.log("response", response);
         if (response.success) {
           const newAppointments = [...appointments, response.data];
           set({ appointments: newAppointments });

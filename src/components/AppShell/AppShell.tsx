@@ -34,23 +34,19 @@ enum FetchPriority {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { fetchGroupData, lastFetch: lastGroupFetch } = useGroupStore();
-  const { fetchUserData, lastFetch: lastUserFetch, profile } = useUserStore();
-  const { fetchFinanceData, lastFetch: lastFinanceFetch } = useFinanceStore();
-  const { fetchCalendarData, lastFetch: lastCalendarFetch } =
-    useCalendarStore();
-  const {
-    fetchWorkData,
-    lastFetch: lastWorkFetch,
-    setActiveProjectId,
-  } = useWorkStore();
-  const { fetchTasksData, lastFetch: lastTaskFetch } = useTaskStore();
+  const { fetchIfStale: fetchGroupIfStale, lastFetch: lastGroupFetch } =
+    useGroupStore();
+  const { fetchIfStale: fetchUserIfStale, profile } = useUserStore();
+  const { fetchIfStale: fetchFinanceIfStale } = useFinanceStore();
+  const { fetchIfStale: fetchCalendarIfStale } = useCalendarStore();
+  const { fetchIfStale: fetchWorkIfStale, setActiveProjectId } = useWorkStore();
+  const { fetchIfStale: fetchTaskIfStale, lastFetch: lastTaskFetch } =
+    useTaskStore();
   const {
     locale,
     isAsideOpen,
     setIsAsideOpen,
-    fetchSettings,
-    lastFetch: lastSettingsFetch,
+    fetchIfStale: fetchSettingsIfStale,
   } = useSettingsStore();
   const newVersion = useCheckNewVersion(30000, profile);
 
@@ -110,81 +106,46 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const FETCH_INTERVAL = 5 * 60 * 1000;
 
   const fetchAllData = async () => {
-    const currentTime = Date.now();
-
-    // Helper function to check if data needs to be fetched
-    const shouldFetch = (lastFetch: Date | null) => {
-      if (lastFetch === null) return true;
-      const lastFetchTime =
-        lastFetch instanceof Date
-          ? lastFetch.getTime()
-          : new Date(lastFetch).getTime();
-      return currentTime - lastFetchTime > FETCH_INTERVAL;
-    };
-
-    const fetchData = async () => {
+    const interval = FETCH_INTERVAL;
+    const prioritized = async () => {
       let priorityFetch = FetchPriority.Settings;
-      // Prioritized fetching based on current route
-      if (shouldFetch(lastUserFetch)) {
-        await fetchUserData();
-      }
-      if (shouldFetch(lastSettingsFetch)) {
-        await fetchSettings();
-      }
-      if (pathname.startsWith("/finances") && shouldFetch(lastFinanceFetch)) {
+      // Always gently refresh user and settings if stale (non-blocking)
+      fetchUserIfStale(interval);
+      fetchSettingsIfStale(interval);
+
+      if (pathname.startsWith("/finances")) {
         priorityFetch = FetchPriority.Finance;
-        await fetchFinanceData();
-      } else if (pathname.startsWith("/tasks") && shouldFetch(lastTaskFetch)) {
+        await fetchFinanceIfStale(interval);
+      } else if (pathname.startsWith("/tasks")) {
         priorityFetch = FetchPriority.Tasks;
-        await fetchTasksData();
-      } else if (
-        pathname.startsWith("/workCalendar") &&
-        shouldFetch(lastCalendarFetch)
-      ) {
+        await fetchTaskIfStale(interval);
+      } else if (pathname.startsWith("/workCalendar")) {
         priorityFetch = FetchPriority.Calendar;
-        await fetchCalendarData();
-        await fetchWorkData();
-      } else if (pathname.startsWith("/work") && shouldFetch(lastWorkFetch)) {
+        await fetchWorkIfStale(interval);
+        await fetchCalendarIfStale(interval);
+      } else if (pathname.startsWith("/work")) {
         priorityFetch = FetchPriority.Work;
-        await fetchWorkData();
-      } else if (pathname.startsWith("/group") && shouldFetch(lastGroupFetch)) {
+        await fetchWorkIfStale(interval);
+      } else if (pathname.startsWith("/group")) {
         priorityFetch = FetchPriority.Group;
-        await fetchGroupData();
+        await fetchGroupIfStale(interval);
       }
 
-      // Background fetching for other data
-      const backgroundFetch = () => {
-        if (
-          priorityFetch !== FetchPriority.Finance &&
-          shouldFetch(lastFinanceFetch)
-        ) {
-          fetchFinanceData();
-        }
-        if (
-          priorityFetch !== FetchPriority.Work &&
-          priorityFetch !== FetchPriority.Calendar &&
-          shouldFetch(lastWorkFetch)
-        ) {
-          fetchWorkData();
-        }
-        if (
-          priorityFetch !== FetchPriority.Group &&
-          shouldFetch(lastGroupFetch)
-        ) {
-          fetchGroupData();
-        }
-        if (
-          priorityFetch !== FetchPriority.Tasks &&
-          shouldFetch(lastTaskFetch)
-        ) {
-          fetchTasksData();
-        }
-      };
-
-      backgroundFetch();
+      // Background fetching for other data (best-effort)
+      if (priorityFetch !== FetchPriority.Finance)
+        fetchFinanceIfStale(interval);
+      if (
+        priorityFetch !== FetchPriority.Work &&
+        priorityFetch !== FetchPriority.Calendar
+      )
+        fetchWorkIfStale(interval);
+      if (priorityFetch !== FetchPriority.Calendar)
+        fetchCalendarIfStale(interval);
+      if (priorityFetch !== FetchPriority.Group) fetchGroupIfStale(interval);
+      if (priorityFetch !== FetchPriority.Tasks) fetchTaskIfStale(interval);
     };
 
-    fetchData();
+    prioritized();
   };
 
   useEffect(() => {

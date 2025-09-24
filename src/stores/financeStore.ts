@@ -6,7 +6,6 @@ import * as actions from "@/actions";
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { processRecurringCashFlows } from "@/utils/financeHelperFunction";
 import {
-  FinanceProject,
   FinanceRule,
   FinanceTab,
   DeleteRecurringCashFlowMode,
@@ -25,11 +24,13 @@ interface FinanceStoreState {
   isFetching: boolean;
   lastFetch: Date | null;
   activeTab: FinanceTab;
+  initialized: boolean | null;
 }
 
 interface FinanceStoreActions {
   resetStore: () => void;
   fetchFinanceData: () => Promise<void>;
+  fetchIfStale: (intervalMs?: number) => Promise<void>;
   addFinanceClient: (
     client: TablesInsert<"finance_client">
   ) => Promise<Tables<"finance_client"> | null>;
@@ -100,9 +101,10 @@ export const useFinanceStore = create<
       financeRules: [],
       financeProjects: [],
       payouts: [],
-      isFetching: true,
+      isFetching: false,
       lastFetch: null,
       activeTab: FinanceTab.Single,
+      initialized: null,
       resetStore: () =>
         set({
           singleCashFlows: [],
@@ -112,12 +114,24 @@ export const useFinanceStore = create<
           financeClients: [],
           financeRules: [],
           payouts: [],
-          isFetching: true,
+          isFetching: false,
           lastFetch: null,
           financeProjects: [],
           activeTab: FinanceTab.Single,
+          initialized: null,
         }),
+
+      async fetchIfStale(intervalMs = 5 * 60 * 1000) {
+        const { lastFetch, isFetching } = get();
+        const now = Date.now();
+        const last = lastFetch ? new Date(lastFetch).getTime() : 0;
+        const stale = !lastFetch || now - last > intervalMs;
+        if (!stale || isFetching) return;
+        await get().fetchFinanceData();
+      },
+
       async fetchFinanceData() {
+        set({ isFetching: true });
         const [
           singleCashFlows,
           recurringCashFlows,
@@ -142,6 +156,7 @@ export const useFinanceStore = create<
           !financeProjects.success ||
           !payouts.success
         ) {
+          set({ isFetching: false, initialized: false });
           return;
         }
 
@@ -154,7 +169,10 @@ export const useFinanceStore = create<
           cashFlows: pastAndCurrentFlows,
         });
 
-        if (!newSingleCashFlows.success) return;
+        if (!newSingleCashFlows.success) {
+          set({ isFetching: false, initialized: false });
+          return;
+        }
 
         set({
           singleCashFlows: [
@@ -169,6 +187,7 @@ export const useFinanceStore = create<
           payouts: payouts.data,
           isFetching: false,
           lastFetch: new Date(),
+          initialized: true,
         });
       },
 

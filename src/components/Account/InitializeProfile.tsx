@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/userStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -22,11 +21,15 @@ import ReactCountryFlag from "react-country-flag";
 import { locales } from "@/constants/settings";
 import { getOtherProfiles } from "@/actions/profile/profileActions";
 import { Tables } from "@/types/db.types";
+import {
+  showActionErrorNotification,
+  showActionSuccessNotification,
+} from "@/utils/notificationFunctions";
 
 export default function InitializeProfile() {
   const { profile, updateProfile } = useUserStore();
-  const { locale, setLocale, format24h, setFormat24h } = useSettingsStore();
-  const router = useRouter();
+  const { locale, setLocale, format24h, setFormat24h, getLocalizedText } =
+    useSettingsStore();
   const [isUpdating, setIsUpdating] = useState(false);
   const [allProfiles, setAllProfiles] = useState<Tables<"profiles">[]>([]);
 
@@ -89,7 +92,23 @@ export default function InitializeProfile() {
       username: values.username,
       initialized: true,
     });
-    console.log(response);
+    if (response) {
+      showActionSuccessNotification(
+        getLocalizedText(
+          "Dein Profil wurde erfolgreich initialisiert",
+          "Your profile has been successfully initialized"
+        ),
+        locale
+      );
+    } else {
+      showActionErrorNotification(
+        getLocalizedText(
+          "Dein Profil konnte nicht initialisiert werden",
+          "Your profile could not be initialized"
+        ),
+        locale
+      );
+    }
     setIsUpdating(false);
   }
 

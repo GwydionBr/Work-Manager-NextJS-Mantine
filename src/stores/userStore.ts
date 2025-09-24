@@ -57,11 +57,13 @@ interface UserState {
   declinedFriends: Friend[];
   isFetching: boolean;
   lastFetch: Date | null;
+  initialized: boolean | null;
 }
 
 interface UserActions {
   resetStore: () => void;
   fetchUserData: () => Promise<void>;
+  fetchIfStale: (intervalMs?: number) => Promise<void>;
   logout: () => Promise<boolean>;
   deleteUser: () => Promise<boolean>;
   updateProfile: (profile: TablesUpdate<"profiles">) => Promise<boolean>;
@@ -74,26 +76,35 @@ interface UserActions {
 export const useUserStore = create<UserState & UserActions>()((set, get) => ({
   allProfiles: null,
   profile: null,
-  isFetching: true,
   friends: [],
   requestedFriends: [],
   pendingFriends: [],
   declinedFriends: [],
+  isFetching: false,
   lastFetch: null,
-
+  initialized: null,
   resetStore: () =>
     set({
       allProfiles: null,
       profile: null,
-      isFetching: true,
       friends: [],
       requestedFriends: [],
       pendingFriends: [],
       declinedFriends: [],
+      isFetching: false,
       lastFetch: null,
+      initialized: null,
     }),
 
   // Fetch user data
+  fetchIfStale: async (intervalMs = 5 * 60 * 1000) => {
+    const { lastFetch, isFetching } = get();
+    const now = Date.now();
+    const last = lastFetch ? new Date(lastFetch).getTime() : 0;
+    const stale = !lastFetch || now - last > intervalMs;
+    if (!stale || isFetching) return;
+    await get().fetchUserData();
+  },
   fetchUserData: async () => {
     set({ isFetching: true });
     const profileResponse = await actions.getProfile();
@@ -118,7 +129,7 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
         });
       }
     }
-    set({ isFetching: false, lastFetch: new Date() });
+    set({ isFetching: false, lastFetch: new Date(), initialized: true });
   },
 
   logout: async () => {
@@ -153,7 +164,6 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
 
   updateProfile: async (profile) => {
     const response = await actions.updateProfile({ profile });
-    console.log(response);
     if (response.success) {
       set({ profile: response.data });
       return true;
