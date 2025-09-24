@@ -158,17 +158,6 @@ export default function ProjectFilter({
           {locale === "de-DE" ? "Alle auswählen" : "Select All"}
         </Button>
       </Stack>
-      <PayoutModal
-        opened={openedModal}
-        handleClose={closeModal}
-        sessionPayouts={
-          {
-            [project.currency]: sessionPayout,
-          } as Record<Currency, number>
-        }
-        sessionIds={unpaidSessions.map((session) => session.id)}
-        payoutCategoryId={project.cash_flow_category_id}
-      />
     </Card>
   );
 }

@@ -58,12 +58,14 @@ interface UserState {
   isFetching: boolean;
   lastFetch: Date | null;
   initialized: boolean | null;
+  abortController: AbortController | null;
 }
 
 interface UserActions {
   resetStore: () => void;
   fetchUserData: () => Promise<void>;
   fetchIfStale: (intervalMs?: number) => Promise<void>;
+  abortFetch: () => void;
   logout: () => Promise<boolean>;
   deleteUser: () => Promise<boolean>;
   updateProfile: (profile: TablesUpdate<"profiles">) => Promise<boolean>;
@@ -83,6 +85,7 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
   isFetching: false,
   lastFetch: null,
   initialized: null,
+  abortController: null,
   resetStore: () =>
     set({
       allProfiles: null,
@@ -94,42 +97,92 @@ export const useUserStore = create<UserState & UserActions>()((set, get) => ({
       isFetching: false,
       lastFetch: null,
       initialized: null,
+      abortController: null,
     }),
 
   // Fetch user data
   fetchIfStale: async (intervalMs = 5 * 60 * 1000) => {
-    const { lastFetch, isFetching } = get();
+    const { lastFetch, isFetching, abortController } = get();
     const now = Date.now();
     const last = lastFetch ? new Date(lastFetch).getTime() : 0;
     const stale = !lastFetch || now - last > intervalMs;
     if (!stale || isFetching) return;
+
+    // Abort any existing fetch
+    if (abortController) {
+      abortController.abort();
+    }
+
     await get().fetchUserData();
   },
   fetchUserData: async () => {
-    set({ isFetching: true });
-    const profileResponse = await actions.getProfile();
+    // Create new AbortController for this fetch
+    const abortController = new AbortController();
+    set({ isFetching: true, abortController });
 
-    if (profileResponse.success) {
+    try {
+      const profileResponse = await actions.getProfile();
+
+      // Check if fetch was aborted
+      if (abortController.signal.aborted) {
+        return;
+      }
+
+      if (profileResponse.success) {
+        set({
+          profile: profileResponse.data,
+        });
+        const allProfilesResponse = await actions.getAllProfiles();
+
+        // Check if fetch was aborted
+        if (abortController.signal.aborted) {
+          return;
+        }
+
+        if (allProfilesResponse.success) {
+          set({
+            allProfiles: allProfilesResponse.data,
+          });
+        }
+        const friendshipResponse = await actions.getAllFriends();
+
+        // Check if fetch was aborted
+        if (abortController.signal.aborted) {
+          return;
+        }
+
+        if (friendshipResponse.success) {
+          set({
+            friends: friendshipResponse.data.friends,
+            requestedFriends: friendshipResponse.data.requestedFriends,
+            pendingFriends: friendshipResponse.data.pendingFriends,
+            declinedFriends: friendshipResponse.data.declinedFriends,
+          });
+        }
+      }
       set({
-        profile: profileResponse.data,
+        isFetching: false,
+        lastFetch: new Date(),
+        initialized: true,
+        abortController: null,
       });
-      const allProfilesResponse = await actions.getAllProfiles();
-      if (allProfilesResponse.success) {
-        set({
-          allProfiles: allProfilesResponse.data,
-        });
+    } catch (error) {
+      // If fetch was aborted, don't update state
+      if (abortController.signal.aborted) {
+        return;
       }
-      const friendshipResponse = await actions.getAllFriends();
-      if (friendshipResponse.success) {
-        set({
-          friends: friendshipResponse.data.friends,
-          requestedFriends: friendshipResponse.data.requestedFriends,
-          pendingFriends: friendshipResponse.data.pendingFriends,
-          declinedFriends: friendshipResponse.data.declinedFriends,
-        });
-      }
+
+      // For other errors, reset fetching state
+      set({ isFetching: false, initialized: false, abortController: null });
     }
-    set({ isFetching: false, lastFetch: new Date(), initialized: true });
+  },
+
+  abortFetch() {
+    const { abortController } = get();
+    if (abortController) {
+      abortController.abort();
+      set({ isFetching: false, abortController: null });
+    }
   },
 
   logout: async () => {

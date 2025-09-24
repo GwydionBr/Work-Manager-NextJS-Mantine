@@ -39,12 +39,14 @@ interface GroupState {
   selectedDate: Date | null;
   isDateChanged: boolean;
   initialized: boolean | null;
+  abortController: AbortController | null;
 }
 
 interface GroupActions {
   resetStore: () => void;
   fetchGroupData: () => Promise<void>;
   fetchIfStale: (intervalMs?: number) => Promise<void>;
+  abortFetch: () => void;
   addGroup: (
     group: TablesInsert<"group">,
     color: null | string,
@@ -97,6 +99,7 @@ export const useGroupStore = create<GroupState & GroupActions>()(
     selectedDate: null,
     isDateChanged: false,
     initialized: null,
+    abortController: null,
     resetStore: () =>
       set({
         groups: [],
@@ -107,17 +110,70 @@ export const useGroupStore = create<GroupState & GroupActions>()(
         selectedDate: null,
         isDateChanged: false,
         initialized: null,
+        abortController: null,
       }),
     fetchIfStale: async (intervalMs = 5 * 60 * 1000) => {
-      const { lastFetch, isFetching } = get();
+      const { lastFetch, isFetching, abortController } = get();
       const now = Date.now();
       const last = lastFetch ? new Date(lastFetch).getTime() : 0;
       const stale = !lastFetch || now - last > intervalMs;
       if (!stale || isFetching) return;
+
+      // Abort any existing fetch
+      if (abortController) {
+        abortController.abort();
+      }
+
       await get().fetchGroupData();
     },
     fetchGroupData: async () => {
-      
+      // Create new AbortController for this fetch
+      const abortController = new AbortController();
+      set({ isFetching: true, abortController });
+
+      try {
+        const [groupsResponse, groupRequestsResponse] = await Promise.all([
+          actions.getAllGroups(),
+          actions.getGroupRequests(),
+        ]);
+
+        // Check if fetch was aborted
+        if (abortController.signal.aborted) {
+          return;
+        }
+
+        if (groupsResponse.success) {
+          set({ groups: groupsResponse.data, initialized: true });
+        } else {
+          set({ initialized: false });
+        }
+
+        if (groupRequestsResponse.success) {
+          set({ groupRequests: groupRequestsResponse.data.groupRequests });
+        }
+
+        set({
+          isFetching: false,
+          lastFetch: new Date(),
+          abortController: null,
+        });
+      } catch (error) {
+        // If fetch was aborted, don't update state
+        if (abortController.signal.aborted) {
+          return;
+        }
+
+        // For other errors, reset fetching state
+        set({ isFetching: false, initialized: false, abortController: null });
+      }
+    },
+
+    abortFetch() {
+      const { abortController } = get();
+      if (abortController) {
+        abortController.abort();
+        set({ isFetching: false, abortController: null });
+      }
     },
 
     addGroup: async (group, color, memberIds) => {

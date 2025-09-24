@@ -34,19 +34,36 @@ enum FetchPriority {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { fetchIfStale: fetchGroupIfStale, lastFetch: lastGroupFetch } =
-    useGroupStore();
-  const { fetchIfStale: fetchUserIfStale, profile } = useUserStore();
-  const { fetchIfStale: fetchFinanceIfStale } = useFinanceStore();
-  const { fetchIfStale: fetchCalendarIfStale } = useCalendarStore();
-  const { fetchIfStale: fetchWorkIfStale, setActiveProjectId } = useWorkStore();
-  const { fetchIfStale: fetchTaskIfStale, lastFetch: lastTaskFetch } =
-    useTaskStore();
+  const {
+    fetchIfStale: fetchGroupIfStale,
+    lastFetch: lastGroupFetch,
+    abortFetch: abortGroupFetch,
+  } = useGroupStore();
+  const {
+    fetchIfStale: fetchUserIfStale,
+    profile,
+    abortFetch: abortUserFetch,
+  } = useUserStore();
+  const { fetchIfStale: fetchFinanceIfStale, abortFetch: abortFinanceFetch } =
+    useFinanceStore();
+  const { fetchIfStale: fetchCalendarIfStale, abortFetch: abortCalendarFetch } =
+    useCalendarStore();
+  const {
+    fetchIfStale: fetchWorkIfStale,
+    setActiveProjectId,
+    abortFetch: abortWorkFetch,
+  } = useWorkStore();
+  const {
+    fetchIfStale: fetchTaskIfStale,
+    lastFetch: lastTaskFetch,
+    abortFetch: abortTaskFetch,
+  } = useTaskStore();
   const {
     locale,
     isAsideOpen,
     setIsAsideOpen,
     fetchIfStale: fetchSettingsIfStale,
+    abortFetch: abortSettingsFetch,
   } = useSettingsStore();
   const newVersion = useCheckNewVersion(30000, profile);
 
@@ -123,7 +140,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         priorityFetch = FetchPriority.Calendar;
         await fetchWorkIfStale(interval);
         await fetchCalendarIfStale(interval);
-      } else if (pathname.startsWith("/work")) {
+      } else if (pathname === "/work") {
         priorityFetch = FetchPriority.Work;
         await fetchWorkIfStale(interval);
       } else if (pathname.startsWith("/group")) {
@@ -150,11 +167,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (isHome || isAuth) return;
+
+    // Abort any ongoing fetches when route changes
+    abortFinanceFetch();
+    abortWorkFetch();
+    abortTaskFetch();
+    abortUserFetch();
+    abortGroupFetch();
+    abortCalendarFetch();
+    abortSettingsFetch();
+
     fetchAllData();
     if (pathname !== "/work") {
       setActiveProjectId(null);
     }
-  }, [pathname, isHome, isAuth]);
+  }, [pathname]);
 
   function toggleAside() {
     setIsAsideOpen(!isAsideOpen);

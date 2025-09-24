@@ -30,12 +30,14 @@ interface SettingsState {
   format24h: boolean;
   showChangeCurrencyWindow: boolean | null;
   initialized: boolean | null;
+  abortController: AbortController | null;
 }
 
 interface SettingsActions {
   resetStore: () => void;
   fetchSettings: () => Promise<void>;
   fetchIfStale: (intervalMs?: number) => Promise<void>;
+  abortFetch: () => void;
   setSelectedTab: (tab: SettingsTab) => void;
   setIsModalOpen: (isModalOpen: boolean) => void;
   toggleWorkNavbar: () => void;
@@ -94,6 +96,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       format24h: false,
       showChangeCurrencyWindow: null,
       initialized: null,
+      abortController: null,
       resetStore: () =>
         set({
           isModalOpen: false,
@@ -121,44 +124,85 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
           format24h: false,
           showChangeCurrencyWindow: null,
           initialized: null,
+          abortController: null,
         }),
       fetchIfStale: async (intervalMs = 5 * 60 * 1000) => {
-        const { lastFetch, isFetching } = get();
+        const { lastFetch, isFetching, abortController } = get();
         const now = Date.now();
         const last = lastFetch ? new Date(lastFetch).getTime() : 0;
         const stale = !lastFetch || now - last > intervalMs;
         if (!stale || isFetching) return;
+
+        // Abort any existing fetch
+        if (abortController) {
+          abortController.abort();
+        }
+
         await get().fetchSettings();
       },
       fetchSettings: async () => {
-        set({ isFetching: true });
-        const { data } = await actions.getSettings();
-        if (data) {
+        // Create new AbortController for this fetch
+        const abortController = new AbortController();
+        set({ isFetching: true, abortController });
+
+        try {
+          const { data } = await actions.getSettings();
+
+          // Check if fetch was aborted
+          if (abortController.signal.aborted) {
+            return;
+          }
+
+          if (data) {
+            set({
+              settingsId: data.id,
+              defaultSalaryCurrency: data.default_currency,
+              defaultSalaryAmount: data.default_salary_amount,
+              defaultFinanceCurrency: data.default_finance_currency,
+              defaultProjectHourlyPayment: data.default_project_hourly_payment,
+              showCalendarTime: data.show_calendar_time,
+              timerRoundingSettings: {
+                roundingInterval: data.rounding_interval,
+                roundingDirection: data.rounding_direction,
+                roundInTimeFragments: data.round_in_time_sections,
+                timeFragmentInterval: data.time_section_interval,
+              },
+              defaultGroupColor: data.default_group_color,
+              automaticlyStopOtherTimer: data.automaticly_stop_other_timer,
+              locale: data.locale,
+              format24h: data.format_24h,
+              showChangeCurrencyWindow: data.show_change_curreny_window,
+              initialized: true,
+              abortController: null,
+            });
+          } else {
+            set({ initialized: false, abortController: null });
+          }
           set({
-            settingsId: data.id,
-            defaultSalaryCurrency: data.default_currency,
-            defaultSalaryAmount: data.default_salary_amount,
-            defaultFinanceCurrency: data.default_finance_currency,
-            defaultProjectHourlyPayment: data.default_project_hourly_payment,
-            showCalendarTime: data.show_calendar_time,
-            timerRoundingSettings: {
-              roundingInterval: data.rounding_interval,
-              roundingDirection: data.rounding_direction,
-              roundInTimeFragments: data.round_in_time_sections,
-              timeFragmentInterval: data.time_section_interval,
-            },
-            defaultGroupColor: data.default_group_color,
-            automaticlyStopOtherTimer: data.automaticly_stop_other_timer,
-            locale: data.locale,
-            format24h: data.format_24h,
-            showChangeCurrencyWindow: data.show_change_curreny_window,
+            isFetching: false,
+            lastFetch: new Date(),
             initialized: true,
+            abortController: null,
           });
-        } else {
-          set({ initialized: false });
+        } catch (error) {
+          // If fetch was aborted, don't update state
+          if (abortController.signal.aborted) {
+            return;
+          }
+
+          // For other errors, reset fetching state
+          set({ isFetching: false, initialized: false, abortController: null });
         }
-        set({ isFetching: false, lastFetch: new Date(), initialized: true });
       },
+
+      abortFetch() {
+        const { abortController } = get();
+        if (abortController) {
+          abortController.abort();
+          set({ isFetching: false, abortController: null });
+        }
+      },
+
       setSelectedTab: (tab: SettingsTab) => {
         set({ selectedTab: tab });
       },

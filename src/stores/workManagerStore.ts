@@ -29,12 +29,14 @@ interface WorkStoreState {
   isFetching: boolean;
   lastFetch: Date | null;
   initialized: boolean | null;
+  abortController: AbortController | null;
 }
 
 interface WorkStoreActions {
   resetStore: () => void;
   fetchWorkData: () => Promise<void>;
   fetchIfStale: (intervalMs?: number) => Promise<void>;
+  abortFetch: () => void;
   updateStore: (
     updatedProjects: TimerProject[],
     updatedSessions: Tables<"timer_session">[]
@@ -114,6 +116,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
       isFetching: false,
       lastFetch: null,
       initialized: null,
+      abortController: null,
 
       resetStore: () =>
         set({
@@ -126,14 +129,21 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           isFetching: false,
           lastFetch: null,
           initialized: null,
+          abortController: null,
         }),
 
       async fetchIfStale(intervalMs = 5 * 60 * 1000) {
-        const { lastFetch, isFetching } = get();
+        const { lastFetch, isFetching, abortController } = get();
         const now = Date.now();
         const last = lastFetch ? new Date(lastFetch).getTime() : 0;
         const stale = !lastFetch || now - last > intervalMs;
         if (!stale || isFetching) return;
+
+        // Abort any existing fetch
+        if (abortController) {
+          abortController.abort();
+        }
+
         await get().fetchWorkData();
       },
 
@@ -144,48 +154,83 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           lastActiveProjectId: storedLastActiveId,
           setActiveProjectId,
         } = get();
-        set({ isFetching: true });
-        const [projects, timerSessions, folders] = await Promise.all([
-          actions.getAllProjects(),
-          actions.getAllSessions(),
-          actions.getAllProjectFolders(),
-        ]);
+        // Create new AbortController for this fetch
+        const abortController = new AbortController();
+        set({ isFetching: true, abortController });
 
-        if (!projects.success || !timerSessions.success || !folders.success) {
-          set({ isFetching: false, initialized: false });
-          return;
+        try {
+          const [projects, timerSessions, folders] = await Promise.all([
+            actions.getAllProjects(),
+            actions.getAllSessions(),
+            actions.getAllProjectFolders(),
+          ]);
+
+          // Check if fetch was aborted
+          if (abortController.signal.aborted) {
+            return;
+          }
+
+          if (!projects.success || !timerSessions.success || !folders.success) {
+            set({
+              isFetching: false,
+              initialized: false,
+              abortController: null,
+            });
+            return;
+          }
+
+          const projectsData = projects.data
+            .map((project) => ({
+              project,
+              sessions: timerSessions.data.filter(
+                (session) => session.project_id === project.id
+              ),
+            }))
+            .sort(
+              (a, b) =>
+                new Date(b.project.created_at).getTime() -
+                new Date(a.project.created_at).getTime()
+            );
+
+          const stillValidId =
+            storedActiveId &&
+            projectsData.find((p) => p.project.id === storedActiveId)
+              ? storedActiveId
+              : storedLastActiveId &&
+                  projectsData.find((p) => p.project.id === storedLastActiveId)
+                ? storedLastActiveId
+                : (projectsData[0]?.project.id ?? null);
+
+          set({
+            folders: folders.data,
+            projects: projectsData,
+            timerSessions: timerSessions.data,
+          });
+          setActiveProjectId(stillValidId);
+          createProjectTree(projects.data, folders.data);
+          set({
+            isFetching: false,
+            lastFetch: new Date(),
+            initialized: true,
+            abortController: null,
+          });
+        } catch (error) {
+          // If fetch was aborted, don't update state
+          if (abortController.signal.aborted) {
+            return;
+          }
+
+          // For other errors, reset fetching state
+          set({ isFetching: false, initialized: false, abortController: null });
         }
+      },
 
-        const projectsData = projects.data
-          .map((project) => ({
-            project,
-            sessions: timerSessions.data.filter(
-              (session) => session.project_id === project.id
-            ),
-          }))
-          .sort(
-            (a, b) =>
-              new Date(b.project.created_at).getTime() -
-              new Date(a.project.created_at).getTime()
-          );
-
-        const stillValidId =
-          storedActiveId &&
-          projectsData.find((p) => p.project.id === storedActiveId)
-            ? storedActiveId
-            : storedLastActiveId &&
-                projectsData.find((p) => p.project.id === storedLastActiveId)
-              ? storedLastActiveId
-              : (projectsData[0]?.project.id ?? null);
-
-        set({
-          folders: folders.data,
-          projects: projectsData,
-          timerSessions: timerSessions.data,
-        });
-        setActiveProjectId(stillValidId);
-        createProjectTree(projects.data, folders.data);
-        set({ isFetching: false, lastFetch: new Date(), initialized: true });
+      abortFetch() {
+        const { abortController } = get();
+        if (abortController) {
+          abortController.abort();
+          set({ isFetching: false, abortController: null });
+        }
       },
 
       setActiveProjectId(id) {

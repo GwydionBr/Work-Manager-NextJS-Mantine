@@ -25,12 +25,14 @@ interface FinanceStoreState {
   lastFetch: Date | null;
   activeTab: FinanceTab;
   initialized: boolean | null;
+  abortController: AbortController | null;
 }
 
 interface FinanceStoreActions {
   resetStore: () => void;
   fetchFinanceData: () => Promise<void>;
   fetchIfStale: (intervalMs?: number) => Promise<void>;
+  abortFetch: () => void;
   addFinanceClient: (
     client: TablesInsert<"finance_client">
   ) => Promise<Tables<"finance_client"> | null>;
@@ -110,6 +112,7 @@ export const useFinanceStore = create<
       lastFetch: null,
       activeTab: FinanceTab.Single,
       initialized: null,
+      abortController: null,
       resetStore: () =>
         set({
           singleCashFlows: [],
@@ -124,76 +127,125 @@ export const useFinanceStore = create<
           financeProjects: [],
           activeTab: FinanceTab.Single,
           initialized: null,
+          abortController: null,
         }),
 
       async fetchIfStale(intervalMs = 5 * 60 * 1000) {
-        const { lastFetch, isFetching } = get();
+        const { lastFetch, isFetching, abortController } = get();
         const now = Date.now();
         const last = lastFetch ? new Date(lastFetch).getTime() : 0;
         const stale = !lastFetch || now - last > intervalMs;
         if (!stale || isFetching) return;
+
+        // Abort any existing fetch
+        if (abortController) {
+          abortController.abort();
+        }
+
         await get().fetchFinanceData();
       },
 
       async fetchFinanceData() {
-        set({ isFetching: true });
-        const [
-          singleCashFlows,
-          recurringCashFlows,
-          financeCategories,
-          financeClients,
-          financeProjects,
-          payouts,
-        ] = await Promise.all([
-          actions.getAllSingleCashFlows(),
-          actions.getAllRecurringCashFlows(),
-          actions.getAllFinanceCategories(),
-          actions.getAllFinanceClients(),
-          actions.getAllFinanceProjects(),
-          actions.getAllPayouts(),
-        ]);
+        // Create new AbortController for this fetch
+        const abortController = new AbortController();
+        set({ isFetching: true, abortController });
 
-        if (
-          !singleCashFlows.success ||
-          !recurringCashFlows.success ||
-          !financeCategories.success ||
-          !financeClients.success ||
-          !financeProjects.success ||
-          !payouts.success
-        ) {
-          set({ isFetching: false, initialized: false });
-          return;
+        try {
+          const [
+            singleCashFlows,
+            recurringCashFlows,
+            financeCategories,
+            financeClients,
+            financeProjects,
+            payouts,
+          ] = await Promise.all([
+            actions.getAllSingleCashFlows(),
+            actions.getAllRecurringCashFlows(),
+            actions.getAllFinanceCategories(),
+            actions.getAllFinanceClients(),
+            actions.getAllFinanceProjects(),
+            actions.getAllPayouts(),
+          ]);
+
+          // Check if fetch was aborted
+          if (abortController.signal.aborted) {
+            return;
+          }
+
+          if (
+            !singleCashFlows.success ||
+            !recurringCashFlows.success ||
+            !financeCategories.success ||
+            !financeClients.success ||
+            !financeProjects.success ||
+            !payouts.success
+          ) {
+            set({
+              isFetching: false,
+              initialized: false,
+              abortController: null,
+            });
+            return;
+          }
+
+          const { pastAndCurrentFlows, futureFlows } =
+            processRecurringCashFlows(
+              recurringCashFlows.data,
+              singleCashFlows.data
+            );
+
+          const newSingleCashFlows =
+            await actions.createMultipleSingleCashFlows({
+              cashFlows: pastAndCurrentFlows,
+            });
+
+          // Check if fetch was aborted
+          if (abortController.signal.aborted) {
+            return;
+          }
+
+          if (!newSingleCashFlows.success) {
+            set({
+              isFetching: false,
+              initialized: false,
+              abortController: null,
+            });
+            return;
+          }
+
+          set({
+            singleCashFlows: [
+              ...singleCashFlows.data,
+              ...newSingleCashFlows.data,
+            ],
+            futureSingleCashFlows: futureFlows,
+            recurringCashFlows: recurringCashFlows.data,
+            financeCategories: financeCategories.data,
+            financeClients: financeClients.data,
+            financeProjects: financeProjects.data,
+            payouts: payouts.data,
+            isFetching: false,
+            lastFetch: new Date(),
+            initialized: true,
+            abortController: null,
+          });
+        } catch (error) {
+          // If fetch was aborted, don't update state
+          if (abortController.signal.aborted) {
+            return;
+          }
+
+          // For other errors, reset fetching state
+          set({ isFetching: false, initialized: false, abortController: null });
         }
+      },
 
-        const { pastAndCurrentFlows, futureFlows } = processRecurringCashFlows(
-          recurringCashFlows.data,
-          singleCashFlows.data
-        );
-
-        const newSingleCashFlows = await actions.createMultipleSingleCashFlows({
-          cashFlows: pastAndCurrentFlows,
-        });
-
-        if (!newSingleCashFlows.success) {
-          set({ isFetching: false, initialized: false });
-          return;
+      abortFetch() {
+        const { abortController } = get();
+        if (abortController) {
+          abortController.abort();
+          set({ isFetching: false, abortController: null });
         }
-
-        set({
-          singleCashFlows: [
-            ...singleCashFlows.data,
-            ...newSingleCashFlows.data,
-          ],
-          futureSingleCashFlows: futureFlows,
-          recurringCashFlows: recurringCashFlows.data,
-          financeCategories: financeCategories.data,
-          financeClients: financeClients.data,
-          financeProjects: financeProjects.data,
-          payouts: payouts.data,
-          isFetching: false,
-          lastFetch: new Date(),
-          initialized: true,
-        });
       },
 
       async addFinanceClient(client) {
