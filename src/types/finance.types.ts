@@ -1,4 +1,4 @@
-import { Tables, TablesUpdate } from "./db.types";
+import { Tables } from "./db.types";
 
 export interface Payout extends Tables<"payout"> {
   cashflow: Tables<"single_cash_flow"> | null;

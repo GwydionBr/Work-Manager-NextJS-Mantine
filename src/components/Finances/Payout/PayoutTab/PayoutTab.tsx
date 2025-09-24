@@ -21,9 +21,13 @@ import { useWorkStore } from "@/stores/workManagerStore";
 import { Payout } from "@/types/finance.types";
 
 export default function PayoutTab() {
-  const { payouts } = useFinanceStore();
-  const { setIsModalOpen, setSelectedTab, locale } = useSettingsStore();
-  const { singleCashFlows, isFetching: isFinanceFetching } = useFinanceStore();
+  const { setIsModalOpen, setSelectedTab, getLocalizedText } =
+    useSettingsStore();
+  const {
+    singleCashFlows,
+    isFetching: isFinanceFetching,
+    payouts,
+  } = useFinanceStore();
   const {
     projects,
     timerSessions,
@@ -34,6 +38,7 @@ export default function PayoutTab() {
   >("all");
 
   const payoutData = useMemo<Payout[]>(() => {
+    console.log("rerender");
     return payouts.map((payout) => ({
       ...payout,
       cashflow: payout.cashflow_id
@@ -71,7 +76,7 @@ export default function PayoutTab() {
     return [
       [
         {
-          label: locale === "de-DE" ? "Alle" : "All",
+          label: getLocalizedText("Alle", "All"),
           leftSection: (
             <ThemeIcon variant="transparent" color="gray">
               <IconList />
@@ -82,7 +87,7 @@ export default function PayoutTab() {
           disabled: payoutData.length === 0,
         },
         {
-          label: locale === "de-DE" ? "Projekte" : "Projects",
+          label: getLocalizedText("Projekte", "Projects"),
           leftSection: (
             <ThemeIcon variant="transparent" color="grape">
               <IconFolder />
@@ -95,7 +100,7 @@ export default function PayoutTab() {
               .length === 0,
         },
         {
-          label: locale === "de-DE" ? "Sessions" : "Sessions",
+          label: getLocalizedText("Sessions", "Sessions"),
           leftSection: (
             <ThemeIcon variant="transparent" color="yellow">
               <IconClock />
@@ -108,7 +113,7 @@ export default function PayoutTab() {
               .length === 0,
         },
         {
-          label: locale === "de-DE" ? "Finance Projects" : "Finance Projects",
+          label: getLocalizedText("Finance Projects", "Finance Projects"),
           leftSection: (
             <ThemeIcon variant="transparent" color="green">
               <IconMoneybag />
@@ -131,11 +136,10 @@ export default function PayoutTab() {
           <Group justify="space-between">
             <AdjustmentActionIcon
               size="lg"
-              tooltipLabel={
-                locale === "de-DE"
-                  ? "Finanz Einstellungen anpassen"
-                  : "Adjust finance settings"
-              }
+              tooltipLabel={getLocalizedText(
+                "Finanz Einstellungen anpassen",
+                "Adjust finance settings"
+              )}
               iconSize={20}
               onClick={() => {
                 setIsModalOpen(true);

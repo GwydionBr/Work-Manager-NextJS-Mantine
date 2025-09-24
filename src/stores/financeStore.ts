@@ -652,6 +652,8 @@ export const useFinanceStore = create<
       },
 
       async sessionPayout(sessionIds, payout, categoryIds) {
+        const { payouts, singleCashFlows } = get();
+
         const payoutResult = await actions.payoutSessions({
           date: new Date(),
           payout,
@@ -659,12 +661,11 @@ export const useFinanceStore = create<
           categoryIds,
         });
 
-        const { payouts, singleCashFlows } = get();
         if (!payoutResult.success) {
           return null;
         }
 
-        const updatedPayouts = [...payouts, payoutResult.data.payout];
+        const updatedPayouts = [ payoutResult.data.payout, ...payouts];
         const updatedSingleCashFlows = [
           ...singleCashFlows,
           payoutResult.data.cashflow,
