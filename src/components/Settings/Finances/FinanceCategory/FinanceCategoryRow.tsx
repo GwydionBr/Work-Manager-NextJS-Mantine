@@ -47,8 +47,8 @@ export default function FinanceCategoryRow({
     <Card
       bg={
         isSelected
-          ? "light-dark(var(--mantine-color-blue-0), var(--mantine-color-dark-5))"
-          : "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
+          ? "light-dark(var(--mantine-color-blue-0), var(--mantine-color-dark-8))"
+          : "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-9))"
       }
       withBorder
       key={category.id}

@@ -151,7 +151,6 @@ export type Database = {
           id: string;
           paid: boolean;
           start_amount: number;
-          timer_project_id: string | null;
           title: string;
           user_id: string;
         };
@@ -162,7 +161,6 @@ export type Database = {
           id?: string;
           paid?: boolean;
           start_amount: number;
-          timer_project_id?: string | null;
           title: string;
           user_id?: string;
         };
@@ -173,19 +171,10 @@ export type Database = {
           id?: string;
           paid?: boolean;
           start_amount?: number;
-          timer_project_id?: string | null;
           title?: string;
           user_id?: string;
         };
-        Relationships: [
-          {
-            foreignKeyName: "finance_project_timer_project_id_fkey";
-            columns: ["timer_project_id"];
-            isOneToOne: false;
-            referencedRelation: "timer_project";
-            referencedColumns: ["id"];
-          },
-        ];
+        Relationships: [];
       };
       finance_project_adjustment: {
         Row: {
@@ -890,6 +879,7 @@ export type Database = {
           rounding_direction: Database["public"]["Enums"]["roundingDirection"];
           rounding_interval: number;
           show_calendar_time: boolean;
+          show_change_curreny_window: boolean | null;
           time_section_interval: number;
           updated_at: string;
           user_id: string;
@@ -911,6 +901,7 @@ export type Database = {
           rounding_direction?: Database["public"]["Enums"]["roundingDirection"];
           rounding_interval?: number;
           show_calendar_time?: boolean;
+          show_change_curreny_window?: boolean | null;
           time_section_interval?: number;
           updated_at?: string;
           user_id?: string;
@@ -932,6 +923,7 @@ export type Database = {
           rounding_direction?: Database["public"]["Enums"]["roundingDirection"];
           rounding_interval?: number;
           show_calendar_time?: boolean;
+          show_change_curreny_window?: boolean | null;
           time_section_interval?: number;
           updated_at?: string;
           user_id?: string;
@@ -1112,6 +1104,7 @@ export type Database = {
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
           description: string | null;
+          finance_project_id: string | null;
           folder_id: string | null;
           hourly_payment: boolean;
           id: string;
@@ -1134,6 +1127,7 @@ export type Database = {
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           description?: string | null;
+          finance_project_id?: string | null;
           folder_id?: string | null;
           hourly_payment?: boolean;
           id?: string;
@@ -1156,6 +1150,7 @@ export type Database = {
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           description?: string | null;
+          finance_project_id?: string | null;
           folder_id?: string | null;
           hourly_payment?: boolean;
           id?: string;
@@ -1173,6 +1168,13 @@ export type Database = {
           user_id?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: "timer_project_finance_project_id_fkey";
+            columns: ["finance_project_id"];
+            isOneToOne: false;
+            referencedRelation: "finance_project";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "timerProject_cash_flow_category_id_fkey";
             columns: ["cash_flow_category_id"];

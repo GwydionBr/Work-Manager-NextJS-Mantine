@@ -28,6 +28,7 @@ interface SettingsState {
   automaticlyStopOtherTimer: boolean;
   locale: Locale;
   format24h: boolean;
+  showChangeCurrencyWindow: boolean | null;
   initialized: boolean | null;
 }
 
@@ -55,6 +56,9 @@ interface SettingsActions {
   setLocale: (locale: Locale) => Promise<void>;
   setFormat24h: (format24h: boolean) => Promise<void>;
   setShowCalendarTime: (showCalendarTime: boolean) => Promise<void>;
+  setShowChangeCurrencyWindow: (
+    showChangeCurrencyWindow: boolean | null
+  ) => Promise<void>;
   getLocalizedText: (de: string, en: string) => string;
 }
 
@@ -88,6 +92,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
       automaticlyStopOtherTimer: false,
       locale: "en-US",
       format24h: false,
+      showChangeCurrencyWindow: null,
       initialized: null,
       resetStore: () =>
         set({
@@ -114,6 +119,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
           automaticlyStopOtherTimer: false,
           locale: "en-US",
           format24h: false,
+          showChangeCurrencyWindow: null,
           initialized: null,
         }),
       fetchIfStale: async (intervalMs = 5 * 60 * 1000) => {
@@ -145,6 +151,7 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
             automaticlyStopOtherTimer: data.automaticly_stop_other_timer,
             locale: data.locale,
             format24h: data.format_24h,
+            showChangeCurrencyWindow: data.show_change_curreny_window,
             initialized: true,
           });
         } else {
@@ -273,19 +280,26 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
         console.log(automaticlyStopOtherTimer);
         set({ automaticlyStopOtherTimer: automaticlyStopOtherTimer });
       },
-      setLocale: async (locale: Locale) => {
+      setLocale: async (locale) => {
         await actions.updateSettings({
           id: get().settingsId ?? "",
           locale: locale,
         });
         set({ locale: locale });
       },
-      setFormat24h: async (format24h: boolean) => {
+      setFormat24h: async (format24h) => {
         await actions.updateSettings({
           id: get().settingsId ?? "",
           format_24h: format24h,
         });
         set({ format24h: format24h });
+      },
+      setShowChangeCurrencyWindow: async (showChangeCurrencyWindow) => {
+        await actions.updateSettings({
+          id: get().settingsId ?? "",
+          show_change_curreny_window: showChangeCurrencyWindow,
+        });
+        set({ showChangeCurrencyWindow: showChangeCurrencyWindow });
       },
       getLocalizedText(de, en) {
         return get().locale === "de-DE" ? de : en;

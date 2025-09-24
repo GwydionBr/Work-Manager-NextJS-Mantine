@@ -13,6 +13,7 @@ export default function SettingsRow({ title, children }: SettingsRowProps) {
       withBorder
       shadow="sm"
       radius="md"
+      bg="light-dark(var(--mantine-color-white), var(--mantine-color-dark-9))"
       p={0}
       h="100%"
     >
