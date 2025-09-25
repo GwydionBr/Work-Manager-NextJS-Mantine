@@ -453,7 +453,7 @@ export default function ProjectForm({
                   "Keine Kategorien gefunden",
                   "No categories found"
                 )}
-                value={categoryIds}
+                value={isFetchingFinanceCategories ? [] : categoryIds}
                 onChange={(value) => setCategoryIds(value)}
                 error={form.errors.cash_flow_category_id}
               />

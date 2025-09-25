@@ -152,6 +152,7 @@ export const useFinanceStore = create<
         set({ isFetching: true, abortController });
 
         try {
+          console.log("start fetching finances");
           const [
             singleCashFlows,
             recurringCashFlows,
@@ -167,6 +168,8 @@ export const useFinanceStore = create<
             actions.getAllFinanceProjects(),
             actions.getAllPayouts(),
           ]);
+
+          console.log("finances fetched");
 
           // Check if fetch was aborted
           if (abortController.signal.aborted) {

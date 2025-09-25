@@ -135,6 +135,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         await fetchWorkIfStale(interval);
         await fetchCalendarIfStale(interval);
       } else if (pathname === "/work") {
+        console.log("fetching work");
         priorityFetch = FetchPriority.Work;
         await fetchWorkIfStale(interval);
       } else if (pathname.startsWith("/group")) {
@@ -144,6 +145,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       // Background fetching for other data (best-effort)
       if (priorityFetch !== FetchPriority.Finance)
+        console.log("fetching finance background");
         fetchFinanceIfStale(interval);
       if (
         priorityFetch !== FetchPriority.Work &&
