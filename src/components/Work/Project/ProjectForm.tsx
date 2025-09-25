@@ -41,7 +41,7 @@ import {
   IconPalette,
   IconPlus,
 } from "@tabler/icons-react";
-import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
+import { TablesInsert } from "@/types/db.types";
 import { Currency, RoundingDirection } from "@/types/settings.types";
 import {
   showActionErrorNotification,
@@ -91,7 +91,11 @@ export default function ProjectForm({
     defaultSalaryCurrency,
     defaultSalaryAmount,
     defaultProjectHourlyPayment,
+    getLocalizedText,
   } = useSettingsStore();
+  const { financeCategories, isFetching: isFetchingFinanceCategories } =
+    useFinanceStore();
+
   const { addProject, updateProject } = useWorkStore();
   const {
     roundingInterval,
@@ -146,8 +150,6 @@ export default function ProjectForm({
     },
     validate: zodResolver(schema),
   });
-
-  const { financeCategories } = useFinanceStore();
 
   useEffect(() => {
     if (categoryIds) {
@@ -211,23 +213,23 @@ export default function ProjectForm({
         updatedProject.round_in_time_fragments = null;
         updatedProject.time_fragment_interval = null;
       }
-      console.log("updatedProject", updatedProject);
       const success = await updateProject(updatedProject);
-      console.log("success", success);
       if (success) {
         showActionSuccessNotification(
-          locale === "de-DE"
-            ? "Projekt erfolgreich bearbeitet"
-            : "Project successfully updated",
+          getLocalizedText(
+            "Projekt erfolgreich bearbeitet",
+            "Project successfully updated"
+          ),
           locale
         );
         onClose?.();
         onSuccess?.(success);
       } else {
         showActionErrorNotification(
-          locale === "de-DE"
-            ? "Projekt konnte nicht bearbeitet werden"
-            : "Project could not be updated",
+          getLocalizedText(
+            "Projekt konnte nicht bearbeitet werden",
+            "Project could not be updated"
+          ),
           locale
         );
       }
@@ -250,18 +252,20 @@ export default function ProjectForm({
       );
       if (success) {
         showActionSuccessNotification(
-          locale === "de-DE"
-            ? "Projekt erfolgreich erstellt"
-            : "Project successfully created",
+          getLocalizedText(
+            "Projekt erfolgreich erstellt",
+            "Project successfully created"
+          ),
           locale
         );
         onClose?.();
         onSuccess?.(success);
       } else {
         showActionErrorNotification(
-          locale === "de-DE"
-            ? "Projekt konnte nicht erstellt werden"
-            : "Project could not be created",
+          getLocalizedText(
+            "Projekt konnte nicht erstellt werden",
+            "Project could not be created"
+          ),
           locale
         );
       }
@@ -280,50 +284,45 @@ export default function ProjectForm({
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <Stack>
         <Fieldset
-          legend={locale === "de-DE" ? "Projekt Details" : "Project details"}
+          legend={getLocalizedText("Projekt Details", "Project details")}
         >
           <TextInput
             withAsterisk
             data-autofocus
-            aria-label={
-              locale === "de-DE" ? "Name des Projekts" : "Name of the project"
-            }
-            label={locale === "de-DE" ? "Name" : "Name"}
-            placeholder={
-              locale === "de-DE"
-                ? "Project Name eingeben"
-                : "Enter project name"
-            }
+            aria-label={getLocalizedText(
+              "Name des Projekts",
+              "Name of the project"
+            )}
+            label={getLocalizedText("Name", "Name")}
+            placeholder={getLocalizedText(
+              "Project Name eingeben",
+              "Enter project name"
+            )}
             {...form.getInputProps("title")}
           />
           <Textarea
-            aria-label={
-              locale === "de-DE"
-                ? "Beschreibung des Projekts"
-                : "Description of the project"
-            }
-            label={locale === "de-DE" ? "Beschreibung" : "Description"}
-            placeholder={
-              locale === "de-DE"
-                ? "Projekt Beschreibung eingeben"
-                : "Enter project description"
-            }
+            aria-label={getLocalizedText(
+              "Beschreibung des Projekts",
+              "Description of the project"
+            )}
+            label={getLocalizedText("Beschreibung", "Description")}
+            placeholder={getLocalizedText(
+              "Projekt Beschreibung eingeben",
+              "Enter project description"
+            )}
             {...form.getInputProps("description")}
           />
         </Fieldset>
 
         <Fieldset
-          legend={
-            locale === "de-DE" ? "Finanz Einstellungen" : "Finance settings"
-          }
+          legend={getLocalizedText("Finanz Einstellungen", "Finance settings")}
         >
           <Stack gap="xs" align="flex-start">
             <DelayedTooltip
-              label={
-                locale === "de-DE"
-                  ? "Projekt Typ (Hobby/Arbeit)"
-                  : "Project type (Hobby/Work)"
-              }
+              label={getLocalizedText(
+                "Projekt Typ (Hobby/Arbeit)",
+                "Project type (Hobby/Work)"
+              )}
               openDelay={500}
             >
               <SegmentedControl
@@ -334,7 +333,7 @@ export default function ProjectForm({
                     label: (
                       <Group gap="xs" align="center" wrap="nowrap">
                         <IconHammer size={20} />
-                        <Text>{locale === "de-DE" ? "Hobby" : "Hobby"}</Text>
+                        <Text>{getLocalizedText("Hobby", "Hobby")}</Text>
                       </Group>
                     ),
                   },
@@ -343,7 +342,7 @@ export default function ProjectForm({
                     label: (
                       <Group gap="xs" align="center" wrap="nowrap">
                         <IconBriefcase size={20} />
-                        <Text>{locale === "de-DE" ? "Arbeit" : "Work"}</Text>
+                        <Text>{getLocalizedText("Arbeit", "Work")}</Text>
                       </Group>
                     ),
                   },
@@ -359,7 +358,7 @@ export default function ProjectForm({
                   allowLeadingZeros={false}
                   allowNegative={false}
                   withAsterisk
-                  label={locale === "de-DE" ? "Gehalt" : "Salary"}
+                  label={getLocalizedText("Gehalt", "Salary")}
                   min={0}
                   step={0.01}
                   value={form.values.salary}
@@ -369,14 +368,12 @@ export default function ProjectForm({
                   error={form.errors.salary}
                 />
                 <DelayedTooltip
-                  label={
-                    locale === "de-DE" ? "Zahlungsmethode" : "Payment method"
-                  }
+                  label={getLocalizedText("Zahlungsmethode", "Payment method")}
                 >
                   <Switch
                     size="xl"
-                    onLabel={locale === "de-DE" ? "Stündlich" : "Hourly"}
-                    offLabel={locale === "de-DE" ? "Projekt" : "Project"}
+                    onLabel={getLocalizedText("Stündlich", "Hourly")}
+                    offLabel={getLocalizedText("Projekt", "Project")}
                     checked={form.values.hourly_payment}
                     onChange={(event) =>
                       handleWorkFieldChange(
@@ -392,10 +389,11 @@ export default function ProjectForm({
             <Collapse in={!isHobby}>
               <Select
                 withAsterisk
-                label={locale === "de-DE" ? "Währung" : "Currency"}
-                placeholder={
-                  locale === "de-DE" ? "Währung auswählen" : "Select currency"
-                }
+                label={getLocalizedText("Währung", "Currency")}
+                placeholder={getLocalizedText(
+                  "Währung auswählen",
+                  "Select currency"
+                )}
                 data={currencies}
                 value={form.values.currency}
                 onChange={(value) =>
@@ -407,9 +405,7 @@ export default function ProjectForm({
           </Stack>
         </Fieldset>
 
-        <Fieldset
-          legend={locale === "de-DE" ? "Konfiguration" : "Configuration"}
-        >
+        <Fieldset legend={getLocalizedText("Konfiguration", "Configuration")}>
           <Stack>
             <Popover
               opened={isColorPickerOpen}
@@ -427,7 +423,7 @@ export default function ProjectForm({
                   onClick={open}
                   color={form.values.color || "teal"}
                 >
-                  {locale === "de-DE" ? "Farbe" : "Color"}
+                  {getLocalizedText("Farbe", "Color")}
                 </Button>
               </Popover.Target>
               <Popover.Dropdown ref={ref}>
@@ -441,27 +437,29 @@ export default function ProjectForm({
             <Group wrap="nowrap">
               <MultiSelect
                 w="100%"
-                label={locale === "de-DE" ? "Kategorie" : "Category"}
+                label={getLocalizedText("Kategorie", "Category")}
                 placeholder={
-                  locale === "de-DE"
-                    ? "Kategorie auswählen (optional)"
-                    : "Select category (optional)"
+                  isFetchingFinanceCategories
+                    ? getLocalizedText("Lädt...", "Loading...")
+                    : getLocalizedText(
+                        "Kategorie auswählen (optional)",
+                        "Select category (optional)"
+                      )
                 }
                 data={categoryOptions}
                 clearable
                 searchable
-                nothingFoundMessage={
-                  locale === "de-DE"
-                    ? "Keine Kategorien gefunden"
-                    : "No categories found"
-                }
+                nothingFoundMessage={getLocalizedText(
+                  "Keine Kategorien gefunden",
+                  "No categories found"
+                )}
                 value={categoryIds}
                 onChange={(value) => setCategoryIds(value)}
                 error={form.errors.cash_flow_category_id}
               />
               <Button
                 mt={25}
-                w={180}
+                w={120}
                 p={0}
                 onClick={onOpenCategoryForm}
                 fw={500}
@@ -469,22 +467,19 @@ export default function ProjectForm({
                 leftSection={<IconPlus size={20} />}
               >
                 <Text fz="xs" c="dimmed">
-                  {locale === "de-DE" ? "Neue Kategorie" : "Add Category"}
+                  {getLocalizedText("Kategorie", "Category")}
                 </Text>
               </Button>
             </Group>
           </Stack>
         </Fieldset>
-        <Fieldset
-          legend={locale === "de-DE" ? "Zeit Rundung" : "Time Rounding"}
-        >
+        <Fieldset legend={getLocalizedText("Zeit Rundung", "Time Rounding")}>
           <Stack>
             <Switch
-              label={
-                locale === "de-DE"
-                  ? "Rundung aus Einstellungen verwenden"
-                  : "Use rounding from settings"
-              }
+              label={getLocalizedText(
+                "Rundung aus Einstellungen verwenden",
+                "Use rounding from settings"
+              )}
               checked={isDefaultRounding}
               onChange={(event) =>
                 handleCustomRoundingToggle(event.currentTarget.checked)
@@ -493,11 +488,10 @@ export default function ProjectForm({
             <Stack>
               <Switch
                 disabled={isDefaultRounding}
-                label={
-                  locale === "de-DE"
-                    ? "Runden in Zeitabschnitten"
-                    : "Round in time fragments"
-                }
+                label={getLocalizedText(
+                  "Runden in Zeitabschnitten",
+                  "Round in time fragments"
+                )}
                 checked={form.values.round_in_time_fragments || false}
                 onChange={(event) =>
                   handleWorkFieldChange(
@@ -510,12 +504,11 @@ export default function ProjectForm({
                 <Group>
                   <NumberInput
                     disabled={isDefaultRounding}
-                    label={
-                      locale === "de-DE"
-                        ? "Rundungsintervall"
-                        : "Rounding interval"
-                    }
-                    suffix={locale === "de-DE" ? " Minuten" : " minutes"}
+                    label={getLocalizedText(
+                      "Rundungsintervall",
+                      "Rounding interval"
+                    )}
+                    suffix={getLocalizedText("Minuten", "minutes")}
                     allowNegative={false}
                     allowDecimal={false}
                     allowLeadingZeros={false}
@@ -529,9 +522,7 @@ export default function ProjectForm({
                   <Select
                     w={125}
                     disabled={isDefaultRounding}
-                    label={
-                      locale === "de-DE" ? "Rundungsmodus" : "Rounding mode"
-                    }
+                    label={getLocalizedText("Rundungsmodus", "Rounding mode")}
                     data={getRoundingModes(locale)}
                     value={form.values.rounding_direction}
                     onChange={(value) =>
@@ -546,16 +537,14 @@ export default function ProjectForm({
                     w={200}
                     disabled={isDefaultRounding}
                     data={getRoundingInTimeFragments(locale)}
-                    label={
-                      locale === "de-DE"
-                        ? "Zeitabschnittsintervall"
-                        : "Time Fragment Interval"
-                    }
-                    placeholder={
-                      locale === "de-DE"
-                        ? "Intervall auswählen"
-                        : "Select Default Rounding Amount"
-                    }
+                    label={getLocalizedText(
+                      "Zeitabschnittsintervall",
+                      "Time fragment interval"
+                    )}
+                    placeholder={getLocalizedText(
+                      "Intervall auswählen",
+                      "Select interval"
+                    )}
                     value={form.values.time_fragment_interval.toString()}
                     onChange={(value) =>
                       handleWorkFieldChange(
@@ -569,7 +558,7 @@ export default function ProjectForm({
             </Stack>
           </Stack>
         </Fieldset>
-        {project ? (
+        {project === undefined ? (
           <CreateButton
             onClick={form.onSubmit(handleSubmit)}
             type="submit"

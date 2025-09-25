@@ -34,11 +34,8 @@ enum FetchPriority {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const {
-    fetchIfStale: fetchGroupIfStale,
-    lastFetch: lastGroupFetch,
-    abortFetch: abortGroupFetch,
-  } = useGroupStore();
+  const { fetchIfStale: fetchGroupIfStale, abortFetch: abortGroupFetch } =
+    useGroupStore();
   const {
     fetchIfStale: fetchUserIfStale,
     profile,
@@ -117,7 +114,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isAuth = pathname === "/auth";
 
   // Define fetch intervals in milliseconds (2 hours)
-  const FETCH_INTERVAL = 2* 60 * 60 * 1000;
+  const FETCH_INTERVAL = 2 * 60 * 60 * 1000;
 
   const fetchAllData = async () => {
     const interval = FETCH_INTERVAL;

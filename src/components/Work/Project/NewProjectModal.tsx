@@ -16,7 +16,7 @@ export default function NewProjectModal({
   opened,
   onClose,
 }: NewProjectModalProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useSettingsStore();
   const stack = useModalsStack(["project-form", "category-form"]);
   const [categoryIds, setCategoryIds] = useState<string[]>([]);
 
@@ -34,7 +34,7 @@ export default function NewProjectModal({
         {...stack.register("project-form")}
         size="lg"
         onClose={onClose}
-        title={locale === "de-DE" ? "Neues Projekt" : "New Project"}
+        title={getLocalizedText("Neues Projekt", "New Project")}
       >
         <ProjectForm
           onClose={onClose}
@@ -48,11 +48,13 @@ export default function NewProjectModal({
       <Modal
         {...stack.register("category-form")}
         onClose={() => stack.close("category-form")}
-        title={locale === "de-DE" ? "Neue Kategorie" : "New Category"}
+        title={getLocalizedText("Neue Kategorie", "New Category")}
       >
         <FinanceCategoryForm
           onClose={() => stack.close("category-form")}
-          onSuccess={(category) => setCategoryIds([...categoryIds, category.id])}
+          onSuccess={(category) =>
+            setCategoryIds([...categoryIds, category.id])
+          }
         />
       </Modal>
     </Modal.Stack>
