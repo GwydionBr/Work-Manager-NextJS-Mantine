@@ -22,9 +22,6 @@ export async function getAllFinanceProjects(): Promise<
       `
       *,
       adjustments:finance_project_adjustment(*),
-      clients:finance_project_client(
-        finance_client:finance_client_id(*)
-      ),
       categories:finance_project_category(
         finance_category:finance_category_id(*)
       )
@@ -45,9 +42,6 @@ export async function getAllFinanceProjects(): Promise<
   const formatted: StoreFinanceProject[] = data.map((project) => ({
     ...project,
     adjustments: project.adjustments || [],
-    clientIds:
-      project.clients?.map((c: any) => c.finance_client.id).filter(Boolean) ||
-      [],
     categoryIds:
       project.categories
         ?.map((c: any) => c.finance_category.id)

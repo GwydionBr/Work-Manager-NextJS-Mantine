@@ -148,6 +148,7 @@ export type Database = {
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
           due_date: string | null;
+          finance_client_id: string | null;
           id: string;
           paid: boolean;
           start_amount: number;
@@ -158,6 +159,7 @@ export type Database = {
           created_at?: string;
           currency: Database["public"]["Enums"]["currency"];
           due_date?: string | null;
+          finance_client_id?: string | null;
           id?: string;
           paid?: boolean;
           start_amount: number;
@@ -168,13 +170,22 @@ export type Database = {
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           due_date?: string | null;
+          finance_client_id?: string | null;
           id?: string;
           paid?: boolean;
           start_amount?: number;
           title?: string;
           user_id?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "finance_project_finance_client_id_fkey";
+            columns: ["finance_client_id"];
+            isOneToOne: false;
+            referencedRelation: "finance_client";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       finance_project_adjustment: {
         Row: {
@@ -757,6 +768,7 @@ export type Database = {
       recurring_cash_flow: {
         Row: {
           amount: number;
+          category_id: string | null;
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
           description: string;
@@ -771,6 +783,7 @@ export type Database = {
         };
         Insert: {
           amount: number;
+          category_id?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           description: string;
@@ -785,6 +798,7 @@ export type Database = {
         };
         Update: {
           amount?: number;
+          category_id?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           description?: string;
@@ -969,6 +983,7 @@ export type Database = {
       single_cash_flow: {
         Row: {
           amount: number;
+          category_id: string | null;
           changed_date: string | null;
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
@@ -985,6 +1000,7 @@ export type Database = {
         };
         Insert: {
           amount: number;
+          category_id?: string | null;
           changed_date?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
@@ -1001,6 +1017,7 @@ export type Database = {
         };
         Update: {
           amount?: number;
+          category_id?: string | null;
           changed_date?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
@@ -1132,6 +1149,7 @@ export type Database = {
       };
       timer_project: {
         Row: {
+          cash_flow_category_id: string | null;
           color: string | null;
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
@@ -1154,6 +1172,7 @@ export type Database = {
           user_id: string;
         };
         Insert: {
+          cash_flow_category_id?: string | null;
           color?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
@@ -1176,6 +1195,7 @@ export type Database = {
           user_id?: string;
         };
         Update: {
+          cash_flow_category_id?: string | null;
           color?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];

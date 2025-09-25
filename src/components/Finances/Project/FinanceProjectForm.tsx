@@ -36,24 +36,24 @@ const projectSchema = z.object({
   start_amount: z.number().min(0, "Start amount is required"),
   due_date: z.string().optional(),
   finance_category_ids: z.array(z.string()),
-  finance_client_ids: z.array(z.string()),
+  finance_client_id: z.string().nullable(),
 });
 
 interface FinanceProjectFormProps {
   onClose: () => void;
   financeProject?: FinanceProject;
-  clientIds: string[];
+  clientId: string | null;
   categoryIds: string[];
   onOpenClientForm: () => void;
   onOpenCategoryForm: () => void;
-  onClientChange: (value: string[]) => void;
+  onClientChange: (value: string | null) => void;
   onCategoryChange: (value: string[]) => void;
 }
 
 export default function FinanceProjectForm({
   onClose,
   financeProject,
-  clientIds,
+  clientId,
   categoryIds,
   onOpenClientForm,
   onOpenCategoryForm,
@@ -77,7 +77,7 @@ export default function FinanceProjectForm({
           finance_category_ids: financeProject.categories.map(
             (category) => category.id
           ),
-          finance_client_ids: financeProject.clients.map((client) => client.id),
+          finance_client_id: financeProject.finance_client_id,
           due_date: financeProject.due_date || undefined,
         }
       : {
@@ -85,32 +85,32 @@ export default function FinanceProjectForm({
           currency: defaultFinanceCurrency,
           start_amount: 0,
           finance_category_ids: [],
-          finance_client_ids: [],
+          finance_client_id: null,
           due_date: undefined,
         },
     validate: zodResolver(projectSchema),
   });
 
   useEffect(() => {
-    if (clientIds) {
-      form.setFieldValue("finance_client_ids", clientIds);
+    if (clientId) {
+      form.setFieldValue("finance_client_id", clientId);
     }
     if (categoryIds) {
       form.setFieldValue("finance_category_ids", categoryIds);
     }
-  }, [clientIds, categoryIds]);
+  }, [clientId, categoryIds]);
 
   const handleSubmit = async (values: z.infer<typeof projectSchema>) => {
     setIsLoading(true);
     if (financeProject) {
-      const { clients, categories, ...projectData } = financeProject;
+      const { categories, ...projectData } = financeProject;
       const newProject = {
         ...projectData,
         title: values.title,
         currency: values.currency,
         start_amount: values.start_amount,
         due_date: values.due_date || null,
-        clientIds: values.finance_client_ids,
+        finance_client_id: values.finance_client_id,
         categoryIds: values.finance_category_ids,
       };
       const success = await updateFinanceProject(newProject);
@@ -137,9 +137,9 @@ export default function FinanceProjectForm({
           currency: values.currency,
           start_amount: values.start_amount,
           due_date: values.due_date || null,
+          finance_client_id: values.finance_client_id,
         },
-        values.finance_client_ids,
-        values.finance_category_ids
+        values.finance_category_ids,
       );
       if (success) {
         showActionSuccessNotification(
@@ -174,8 +174,8 @@ export default function FinanceProjectForm({
     label: client.name,
   }));
 
-  const handleClientChange = (value: string[]) => {
-    form.setFieldValue("finance_client_ids", value);
+  const handleClientChange = (value: string | null) => {
+    form.setFieldValue("finance_client_id", value);
     onClientChange(value);
   };
 
@@ -256,9 +256,8 @@ export default function FinanceProjectForm({
           </Button>
         </Group>
         <Group wrap="nowrap">
-          <MultiSelect
+          <Select
             w="100%"
-            multiple
             data={clientOptions}
             searchable
             clearable
@@ -269,9 +268,9 @@ export default function FinanceProjectForm({
             placeholder={
               locale === "de-DE" ? "Kunde auswählen" : "Select client"
             }
-            value={form.values.finance_client_ids || []}
+            value={form.values.finance_client_id || null}
             onChange={handleClientChange}
-            error={form.errors.finance_client_ids}
+            error={form.errors.finance_client_id}
           />
           <Button
             mt={25}

@@ -146,6 +146,7 @@ export const processRecurringCashFlows = (
             finance_project_adjustment_id: null,
             finance_project_id: null,
             finance_client_id: flow.finance_client_id,
+            category_id: null,
           });
         }
       }

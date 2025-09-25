@@ -7,13 +7,11 @@ import { StoreFinanceProject } from "@/types/finance.types";
 
 interface CreateFinanceProjectProps {
   project: TablesInsert<"finance_project">;
-  clientIds: string[];
   categoryIds: string[];
 }
 
 export async function createFinanceProject({
   project,
-  clientIds,
   categoryIds,
 }: CreateFinanceProjectProps): Promise<ApiResponseSingle<StoreFinanceProject>> {
   const supabase = await createClient();
@@ -26,20 +24,6 @@ export async function createFinanceProject({
 
   if (error) {
     return { success: false, data: null, error: error.message };
-  }
-
-  const { error: clientError } = await supabase
-    .from("finance_project_client")
-    .insert(
-      clientIds.map((id) => ({
-        finance_project_id: data.id,
-        finance_client_id: id,
-      }))
-    )
-    .select();
-
-  if (clientError) {
-    return { success: false, data: null, error: clientError.message };
   }
 
   const { error: categoryError } = await supabase
@@ -60,7 +44,6 @@ export async function createFinanceProject({
     success: true,
     data: {
       ...data,
-      clientIds: clientIds,
       categoryIds: categoryIds,
       adjustments: [],
     },

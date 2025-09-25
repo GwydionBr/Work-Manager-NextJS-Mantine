@@ -249,7 +249,6 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         const oldProject = get().projects.find(
           (p) => p.id === updatedProject.id
         );
-        console.log("oldProject", oldProject);
         if (!oldProject) return null;
 
         const updateCategories = {
@@ -266,6 +265,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         const updatedProjectResponse = await actions.updateTimerProject({
           project: projectData,
           categoryUpdates: updateCategories,
+          categoryIds: categoryIds,
         });
 
         if (!updatedProjectResponse.success) {
@@ -649,6 +649,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
             deleteIds: [],
             addIds: [],
           },
+          categoryIds: project.categoryIds,
         });
         if (!updatedProject.success) {
           return false;
@@ -687,6 +688,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
       },
 
       handleChangedNodes(changedNodes) {
+        const { projects } = get();
         const updatedFolders: TablesUpdate<"timer_project_folder">[] =
           changedNodes
             .filter((node) => node.type === "folder")
@@ -710,6 +712,8 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
               deleteIds: [],
               addIds: [],
             },
+            categoryIds:
+              projects.find((p) => p.id === project.id)?.categoryIds || [],
           });
         }
       },

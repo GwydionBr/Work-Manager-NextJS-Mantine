@@ -19,7 +19,6 @@ export interface FinanceRule extends Tables<"finance_rule"> {
 
 export interface StoreFinanceProject extends Tables<"finance_project"> {
   adjustments: Tables<"finance_project_adjustment">[];
-  clientIds: string[];
   categoryIds: string[];
 }
 
@@ -33,7 +32,7 @@ export interface StoreRecurringCashFlow extends Tables<"recurring_cash_flow"> {
 
 export interface FinanceProject extends Tables<"finance_project"> {
   adjustments: Tables<"finance_project_adjustment">[];
-  clients: Tables<"finance_client">[];
+  finance_client: Tables<"finance_client"> | null;
   categories: Tables<"finance_category">[];
 }
 

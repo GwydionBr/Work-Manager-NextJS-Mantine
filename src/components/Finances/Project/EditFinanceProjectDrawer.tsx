@@ -29,8 +29,8 @@ export default function EditFinanceProjectDrawer({
   const { locale } = useSettingsStore();
   const { deleteFinanceProjects } = useFinanceStore();
   const [isLoading, setIsLoading] = useState(false);
-  const [clientIds, setClientIds] = useState<string[]>(
-    financeProject.clients.map((client) => client.id)
+  const [clientId, setClientId] = useState<string | null>(
+    financeProject.finance_client_id
   );
   const [categoryIds, setCategoryIds] = useState<string[]>(
     financeProject.categories.map((category) => category.id)
@@ -98,11 +98,11 @@ export default function EditFinanceProjectDrawer({
         <FinanceProjectForm
           onClose={onClose}
           financeProject={financeProject}
-          clientIds={clientIds}
+          clientId={clientId}
           categoryIds={categoryIds}
           onOpenClientForm={() => drawerStack.open("client-form")}
           onOpenCategoryForm={() => drawerStack.open("category-form")}
-          onClientChange={setClientIds}
+          onClientChange={setClientId}
           onCategoryChange={setCategoryIds}
         />
       </Drawer>
@@ -149,7 +149,7 @@ export default function EditFinanceProjectDrawer({
       >
         <FinanceClientForm
           onClose={() => drawerStack.close("client-form")}
-          onSuccess={(client) => setClientIds((prev) => [...prev, client.id])}
+          onSuccess={(client) => setClientId(client.id)}
         />
       </Drawer>
       <Drawer

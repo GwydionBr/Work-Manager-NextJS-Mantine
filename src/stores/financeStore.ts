@@ -41,7 +41,6 @@ interface FinanceStoreActions {
   deleteFinanceClients: (ids: string[]) => Promise<boolean>;
   addFinanceProject: (
     project: TablesInsert<"finance_project">,
-    clientIds: string[],
     categoryIds: string[]
   ) => Promise<Tables<"finance_project"> | null>;
   deleteFinanceProjects: (ids: string[]) => Promise<boolean>;
@@ -300,7 +299,7 @@ export const useFinanceStore = create<
         return true;
       },
 
-      async addFinanceProject(project, clientIds, categoryIds) {
+      async addFinanceProject(project, categoryIds) {
         const { financeProjects } = get();
         const {
           data: newProject,
@@ -308,7 +307,6 @@ export const useFinanceStore = create<
           error,
         } = await actions.createFinanceProject({
           project,
-          clientIds,
           categoryIds,
         });
         console.log(error);

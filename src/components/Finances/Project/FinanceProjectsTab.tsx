@@ -93,9 +93,7 @@ export default function FinanceProjectTab() {
   const formattedFinanceProjects = useMemo(() => {
     return financeProjects.map((project) => ({
       ...project,
-      clients: financeClients.filter((client) =>
-        project.clientIds.includes(client.id)
-      ),
+      finance_client: financeClients.find((client) => client.id === project.finance_client_id) || null,
       categories: financeCategories.filter((category) =>
         project.categoryIds.includes(category.id)
       ),

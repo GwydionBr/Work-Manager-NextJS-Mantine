@@ -111,11 +111,10 @@ export default function FinanceProjectCard({
   ) => {
     closeBadgePopover();
     if (updatedCategories) {
-      const { clients, categories, ...projectData } = project;
+      const { categories, ...projectData } = project;
       updateFinanceProject({
         ...projectData,
         categoryIds: updatedCategories.map((c) => c.id),
-        clientIds: clients.map((c) => c.id),
       });
     }
   };
@@ -197,15 +196,14 @@ export default function FinanceProjectCard({
           </Group>
 
           <Group gap="md" wrap="wrap" flex={2}>
-            {project.clients.length > 0 &&
-              project.clients.map((client) => (
-                <FinanceClientBadge
-                  key={client.id}
-                  client={client}
-                  onPopoverOpen={openBadgePopover}
-                  onPopoverClose={closeBadgePopover}
-                />
-              ))}
+            {project.finance_client && (
+              <FinanceClientBadge
+                key={project.finance_client.id}
+                client={project.finance_client}
+                onPopoverOpen={openBadgePopover}
+                onPopoverClose={closeBadgePopover}
+              />
+            )}
             <FinanceCategoryBadges
               categories={project.categories}
               onPopoverOpen={openBadgePopover}
