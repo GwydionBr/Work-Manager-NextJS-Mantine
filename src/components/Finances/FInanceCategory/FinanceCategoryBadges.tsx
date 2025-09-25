@@ -20,7 +20,7 @@ import { IconPlus } from "@tabler/icons-react";
 
 import { Tables } from "@/types/db.types";
 import FinanceCategorySingleBadge from "./FinanceCategorySingleBadge";
-import FinanceCategoryForm from "./FinanceCategoryForm";
+import FinanceCategoryForm from "../FinanceCategoryForm";
 
 interface FinanceCategoryBadgesProps {
   categories: Tables<"finance_category">[];

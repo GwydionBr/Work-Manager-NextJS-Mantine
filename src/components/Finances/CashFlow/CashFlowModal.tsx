@@ -5,7 +5,7 @@ import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Group, Modal, Text, useModalsStack } from "@mantine/core";
 import FinanceForm from "@/components/Finances/CashFlow/CashflowForm";
-import FinanceCategoryForm from "@/components/Finances/FinanceCategory/FinanceCategoryForm";
+import FinanceCategoryForm from "@/components/Finances/FinanceCategoryForm";
 import { IconCashPlus, IconCategoryPlus } from "@tabler/icons-react";
 
 interface CashFlowModalProps {

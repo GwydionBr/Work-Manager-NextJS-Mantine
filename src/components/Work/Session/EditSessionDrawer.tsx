@@ -16,7 +16,7 @@ import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 import ProjectForm from "../Project/ProjectForm";
 import { TimerRoundingSettings } from "@/types/timeTracker.types";
 import { notifications } from "@mantine/notifications";
-import FinanceCategoryForm from "@/components/Finances/FinanceCategory/FinanceCategoryForm";
+import FinanceCategoryForm from "@/components/Finances/FinanceCategoryForm";
 
 interface TimerSessionModalProps {
   timerSession: Tables<"timer_session">;
@@ -203,7 +203,9 @@ export default function EditSessionDrawer({
         >
           <FinanceCategoryForm
             onClose={() => drawerStack.close("category-form")}
-            onSuccess={(category) => setCategoryIds([...categoryIds, category.id])}
+            onSuccess={(category) =>
+              setCategoryIds([...categoryIds, category.id])
+            }
           />
         </Drawer>
         <Drawer

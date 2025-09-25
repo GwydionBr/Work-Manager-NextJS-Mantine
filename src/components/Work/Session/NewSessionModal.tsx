@@ -13,7 +13,7 @@ import ProjectForm from "../Project/ProjectForm";
 import { IconClockPlus } from "@tabler/icons-react";
 import { NewSession } from "@/types/timerSession.types";
 import { TimerRoundingSettings } from "@/types/timeTracker.types";
-import FinanceCategoryForm from "@/components/Finances/FinanceCategory/FinanceCategoryForm";
+import FinanceCategoryForm from "@/components/Finances/FinanceCategoryForm";
 
 interface NewSessionModalProps {
   opened: boolean;
@@ -176,7 +176,9 @@ export default function NewSessionModal({
       >
         <FinanceCategoryForm
           onClose={() => stack.close("category-form")}
-          onSuccess={(category) => setCategoryIds([...categoryIds, category.id])}
+          onSuccess={(category) =>
+            setCategoryIds([...categoryIds, category.id])
+          }
         />
       </Modal>
     </Modal.Stack>

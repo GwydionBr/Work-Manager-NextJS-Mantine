@@ -17,7 +17,7 @@ import {
 } from "@mantine/core";
 import { IconBriefcase } from "@tabler/icons-react";
 import ProjectForm from "./Project/ProjectForm";
-import FinanceCategoryForm from "@/components/Finances/FinanceCategory/FinanceCategoryForm";
+import FinanceCategoryForm from "@/components/Finances/FinanceCategoryForm";
 import { SettingsTab } from "../Settings/SettingsModal";
 
 export default function WorkInitializer() {
@@ -91,7 +91,9 @@ export default function WorkInitializer() {
           >
             <FinanceCategoryForm
               onClose={close}
-              onSuccess={(category) => setCategoryIds([...categoryIds, category.id])}
+              onSuccess={(category) =>
+                setCategoryIds([...categoryIds, category.id])
+              }
             />
           </Modal>
         </Stack>

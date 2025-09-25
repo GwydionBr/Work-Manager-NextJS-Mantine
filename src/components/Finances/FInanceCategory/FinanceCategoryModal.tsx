@@ -1,6 +1,6 @@
 "use client";
 
-import FinanceCategoryForm from "./FinanceCategoryForm";
+import FinanceCategoryForm from "../FinanceCategoryForm";
 
 import { Tables } from "@/types/db.types";
 import { Modal } from "@mantine/core";

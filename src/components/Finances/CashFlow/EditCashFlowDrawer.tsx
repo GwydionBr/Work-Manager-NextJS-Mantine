@@ -32,7 +32,7 @@ import {
 import { CashFlowType } from "@/types/settings.types";
 import CancelButton from "../../UI/Buttons/CancelButton";
 import DeleteActionIcon from "../../UI/ActionIcons/DeleteActionIcon";
-import FinanceCategoryForm from "../FinanceCategory/FinanceCategoryForm";
+import FinanceCategoryForm from "../FinanceCategoryForm";
 import {
   showActionErrorNotification,
   showActionSuccessNotification,
