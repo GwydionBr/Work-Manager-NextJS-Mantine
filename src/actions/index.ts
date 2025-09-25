@@ -79,11 +79,9 @@ export { createFinanceAdjustment } from "./finance/financeAdjustment/createFinan
 export { updateFinanceAdjustment } from "./finance/financeAdjustment/updateFinanceAdjustment";
 export { deleteFinanceAdjustments } from "./finance/financeAdjustment/deleteFinanceAdjustments";
 
-export {
-  getAllRecurringCashFlows,
-  createRecurringCashFlow,
-  deleteRecurringCashFlow,
-} from "./finance/recurringCashflow/recurringCashFlowActions";
+export { getAllRecurringCashFlows } from "./finance/recurringCashflow/getAllRecurringCashflows";
+export { createRecurringCashFlow } from "./finance/recurringCashflow/createRecurringCashflow";
+export { deleteRecurringCashFlow } from "./finance/recurringCashflow/deleteRecurringCashflow";
 export { updateRecurringCashFlow } from "./finance/recurringCashflow/updateRecurringCashflow";
 
 export {

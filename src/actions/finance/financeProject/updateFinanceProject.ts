@@ -2,12 +2,12 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { ApiResponseSingle } from "@/types/action.types";
-import { FetchedFinanceProject } from "@/types/finance.types";
+import { StoreFinanceProject } from "@/types/finance.types";
 
 export async function updateFinanceProject(
-  oldProject: FetchedFinanceProject,
-  project: FetchedFinanceProject
-): Promise<ApiResponseSingle<FetchedFinanceProject>> {
+  oldProject: StoreFinanceProject,
+  project: StoreFinanceProject
+): Promise<ApiResponseSingle<StoreFinanceProject>> {
   const { categoryIds, clientIds, adjustments, ...projectData } = project;
 
   const clientIdsToDelete = oldProject.clientIds.filter(

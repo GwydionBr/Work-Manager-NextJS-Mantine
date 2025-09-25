@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { ApiResponseSingle } from "@/types/action.types";
 import { TablesInsert } from "@/types/db.types";
-import { FetchedFinanceProject } from "@/types/finance.types";
+import { StoreFinanceProject } from "@/types/finance.types";
 
 interface CreateFinanceProjectProps {
   project: TablesInsert<"finance_project">;
@@ -15,9 +15,7 @@ export async function createFinanceProject({
   project,
   clientIds,
   categoryIds,
-}: CreateFinanceProjectProps): Promise<
-  ApiResponseSingle<FetchedFinanceProject>
-> {
+}: CreateFinanceProjectProps): Promise<ApiResponseSingle<StoreFinanceProject>> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -27,8 +25,6 @@ export async function createFinanceProject({
     .single();
 
   if (error) {
-    console.log(project);
-    console.log(error);
     return { success: false, data: null, error: error.message };
   }
 
@@ -43,7 +39,6 @@ export async function createFinanceProject({
     .select();
 
   if (clientError) {
-    console.log(clientError);
     return { success: false, data: null, error: clientError.message };
   }
 
@@ -58,7 +53,6 @@ export async function createFinanceProject({
     .select();
 
   if (categoryError) {
-    console.log(categoryError);
     return { success: false, data: null, error: categoryError.message };
   }
 

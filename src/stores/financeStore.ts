@@ -9,7 +9,7 @@ import {
   FinanceRule,
   FinanceTab,
   DeleteRecurringCashFlowMode,
-  FetchedFinanceProject,
+  StoreFinanceProject,
   StoreSingleCashFlow,
   StoreRecurringCashFlow,
 } from "@/types/finance.types";
@@ -20,7 +20,7 @@ interface FinanceStoreState {
   recurringCashFlows: StoreRecurringCashFlow[];
   financeCategories: Tables<"finance_category">[];
   financeClients: Tables<"finance_client">[];
-  financeProjects: FetchedFinanceProject[];
+  financeProjects: StoreFinanceProject[];
   financeRules: FinanceRule[];
   payouts: Tables<"payout">[];
   isFetching: boolean;
@@ -55,8 +55,8 @@ interface FinanceStoreActions {
     categoryIds: string[]
   ) => Promise<boolean>;
   updateFinanceProject: (
-    project: FetchedFinanceProject
-  ) => Promise<FetchedFinanceProject | null>;
+    project: StoreFinanceProject
+  ) => Promise<StoreFinanceProject | null>;
   updateFinanceClient: (
     client: TablesUpdate<"finance_client">
   ) => Promise<Tables<"finance_client"> | null>;
