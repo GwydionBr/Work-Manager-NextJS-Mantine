@@ -38,7 +38,7 @@ export default function TimeTrackerInstance({
     useTimeTrackerManager();
   const { addTimerSession } = useWorkStore();
   const project = useWorkStore((state) =>
-    state.projects.find((p) => p.project.id === timer.projectId)
+    state.projects.find((p) => p.id === timer.projectId)
   );
   const {
     timerRoundingSettings: settingsTimerRoundingSettings,
@@ -147,20 +147,20 @@ export default function TimeTrackerInstance({
       const newTimerRoundingSettings = {
         ...timerRoundingSettings,
         roundingDirection:
-          project.project.rounding_direction ??
+          project.rounding_direction ??
           settingsTimerRoundingSettings.roundingDirection,
         roundingInterval:
-          project.project.rounding_interval ??
+          project.rounding_interval ??
           settingsTimerRoundingSettings.roundingInterval,
         roundInTimeFragments:
-          project.project.round_in_time_fragments ??
+          project.round_in_time_fragments ??
           settingsTimerRoundingSettings.roundInTimeFragments,
         timeFragmentInterval:
-          project.project.time_fragment_interval ??
+          project.time_fragment_interval ??
           settingsTimerRoundingSettings.timeFragmentInterval,
       };
       updateTimer(timer.id, {
-        projectTitle: project.project.title,
+        projectTitle: project.title,
         timerRoundingSettings: newTimerRoundingSettings,
       });
       setTimerRounding(newTimerRoundingSettings);
@@ -236,10 +236,10 @@ export default function TimeTrackerInstance({
           <div style={styles}>
             <TimeTrackerComponentBig
               projectTitle={timer.projectTitle}
-              color={project?.project.color ?? null}
+              color={project?.color ?? null}
               backgroundColor={
-                project?.project.color
-                  ? alpha(project.project.color, 0.1)
+                project?.color
+                  ? alpha(project.color, 0.1)
                   : "var(--mantine-color-body)"
               }
               removeTimer={() => removeTimer(timer.id)}
@@ -283,10 +283,10 @@ export default function TimeTrackerInstance({
         {(styles) => (
           <div style={styles}>
             <TimeTrackerComponentSmall
-              color={project?.project.color ?? null}
+              color={project?.color ?? null}
               backgroundColor={
-                project?.project.color
-                  ? alpha(project.project.color, 0.1)
+                project?.color
+                  ? alpha(project.color, 0.1)
                   : "var(--mantine-color-body)"
               }
               roundedActiveTime={roundedActiveTime}

@@ -8,10 +8,11 @@ import { IconArrowsSort } from "@tabler/icons-react";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import CalendarLegendButton from "./CalendarLegendButton";
 
-import { ViewMode, VisibleProject } from "@/types/workCalendar.types";
+import { ViewMode } from "@/types/workCalendar.types";
+import { StoreTimerProject } from "@/types/work.types";
 
 interface CalendarLegendProps {
-  visibleProjects: VisibleProject[];
+  visibleProjects: StoreTimerProject[];
   handleScrollToNow: () => void;
 }
 
@@ -20,7 +21,7 @@ export default function CalendarLegend({
   handleScrollToNow,
 }: CalendarLegendProps) {
   const { locale } = useSettingsStore();
-  const { zoomIndex, changeZoomIndex, viewMode, setViewMode } =
+  const { viewMode, setViewMode } =
     useCalendarStore();
 
   return (

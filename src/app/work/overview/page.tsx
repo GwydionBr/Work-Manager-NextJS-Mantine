@@ -34,7 +34,7 @@ export default function WorkOverviewPage() {
     { open: openPayout, close: closePayout, toggle: togglePayout },
   ] = useDisclosure(false);
   const { locale } = useSettingsStore();
-  const projects = timerProjects.map((project) => project.project);
+  const projects = timerProjects.map((project) => project);
 
   // Use the custom hook for filtering logic with all new filter functionality
   const {

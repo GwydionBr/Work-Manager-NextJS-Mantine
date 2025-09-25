@@ -22,6 +22,7 @@ import {
   Fieldset,
   Text,
   SegmentedControl,
+  MultiSelect,
 } from "@mantine/core";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
@@ -47,14 +48,15 @@ import {
   showActionSuccessNotification,
 } from "@/utils/notificationFunctions";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
+import { StoreTimerProject } from "@/types/work.types";
 
 interface ProjectFormProps {
   project?: Tables<"timer_project">;
   onClose?: () => void;
   onSuccess?: (project: Tables<"timer_project">) => void;
   onCancel?: () => void;
-  categoryId: string | null;
-  setCategoryId: (categoryId: string | null) => void;
+  categoryIds: string[];
+  setCategoryIds: (categoryIds: string[]) => void;
   setActiveProjectId?: boolean;
   onOpenCategoryForm?: () => void;
 }
@@ -66,7 +68,7 @@ const schema = z.object({
   salary: z.number().min(0, { message: "Salary must be positive" }),
   hourly_payment: z.boolean(),
   currency: z.string().min(1, { message: "Currency is required" }),
-  cash_flow_category_id: z.string().nullable().optional(),
+  cash_flow_category_ids: z.array(z.string()),
   rounding_interval: z.number(),
   rounding_direction: z.string(),
   round_in_time_fragments: z.boolean(),
@@ -77,8 +79,8 @@ export default function ProjectForm({
   project,
   onClose,
   onSuccess,
-  categoryId,
-  setCategoryId,
+  categoryIds,
+  setCategoryIds,
   onOpenCategoryForm,
   setActiveProjectId = false,
   onCancel,
@@ -131,7 +133,7 @@ export default function ProjectForm({
       salary: project?.salary || defaultSalaryAmount,
       hourly_payment: project?.hourly_payment || defaultProjectHourlyPayment,
       currency: project?.currency || defaultSalaryCurrency,
-      cash_flow_category_id: project?.cash_flow_category_id || null,
+      cash_flow_category_ids: categoryIds || [],
       round_in_time_fragments:
         project?.round_in_time_fragments === null ||
         project?.round_in_time_fragments === undefined
@@ -148,10 +150,10 @@ export default function ProjectForm({
   const { financeCategories } = useFinanceStore();
 
   useEffect(() => {
-    if (categoryId) {
-      form.setFieldValue("cash_flow_category_id", categoryId);
+    if (categoryIds) {
+      form.setFieldValue("cash_flow_category_id", categoryIds);
     }
-  }, [categoryId]);
+  }, [categoryIds]);
 
   // Handle hobby toggle
   const handleHobbyToggle = (checked: boolean) => {
@@ -195,11 +197,12 @@ export default function ProjectForm({
   const handleSubmit = async (values: z.infer<typeof schema>) => {
     setSubmitting(true);
     if (project) {
-      const updatedProject: TablesUpdate<"timer_project"> = {
+      const updatedProject: StoreTimerProject = {
         ...project,
         ...values,
         currency: values.currency as Currency,
         rounding_direction: values.rounding_direction as RoundingDirection,
+        categoryIds: categoryIds,
       };
       if (isDefaultRounding) {
         updatedProject.rounding_interval = null;
@@ -237,7 +240,11 @@ export default function ProjectForm({
         newProject.round_in_time_fragments = null;
         newProject.time_fragment_interval = null;
       }
-      const success = await addProject(newProject, setActiveProjectId);
+      const success = await addProject(
+        newProject,
+        setActiveProjectId,
+        categoryIds
+      );
       if (success) {
         showActionSuccessNotification(
           locale === "de-DE"
@@ -429,7 +436,7 @@ export default function ProjectForm({
               </Popover.Dropdown>
             </Popover>
             <Group wrap="nowrap">
-              <Select
+              <MultiSelect
                 w="100%"
                 label={locale === "de-DE" ? "Kategorie" : "Category"}
                 placeholder={
@@ -445,8 +452,8 @@ export default function ProjectForm({
                     ? "Keine Kategorien gefunden"
                     : "No categories found"
                 }
-                value={categoryId}
-                onChange={(value) => setCategoryId(value)}
+                value={categoryIds}
+                onChange={(value) => setCategoryIds(value)}
                 error={form.errors.cash_flow_category_id}
               />
               <Button

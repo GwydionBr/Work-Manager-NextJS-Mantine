@@ -35,10 +35,10 @@ export default function EditProjectDrawer({
   const { locale } = useSettingsStore();
   const { activeProjectId, deleteProject } = useWorkStore();
   const activeProject = useWorkStore((state) =>
-    state.projects.find((p) => p.project.id === activeProjectId)
+    state.projects.find((p) => p.id === activeProjectId)
   );
   const [isLoading, setIsLoading] = useState(false);
-  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [categoryIds, setCategoryIds] = useState<string[]>([]);
   const drawersStack = useDrawersStack([
     "edit-project",
     "delete-project",
@@ -47,7 +47,7 @@ export default function EditProjectDrawer({
 
   useEffect(() => {
     if (activeProject) {
-      setCategoryId(activeProject.project.cash_flow_category_id);
+      setCategoryIds(activeProject.categoryIds);
     }
   }, [activeProject]);
 
@@ -67,7 +67,7 @@ export default function EditProjectDrawer({
   async function handleDelete() {
     setIsLoading(true);
     if (activeProject) {
-      const success = await deleteProject(activeProject.project.id);
+      const success = await deleteProject(activeProject.id);
       if (success) {
         handleClose();
         showActionSuccessNotification(
@@ -116,11 +116,11 @@ export default function EditProjectDrawer({
         >
           <Stack justify="flex-start" gap="xl">
             <ProjectForm
-              project={activeProject.project}
+              project={activeProject}
               onCancel={handleClose}
               onClose={handleClose}
-              categoryId={categoryId}
-              setCategoryId={setCategoryId}
+              categoryIds={categoryIds}
+              setCategoryIds={setCategoryIds}
               onOpenCategoryForm={() => drawersStack.open("category-form")}
             />
           </Stack>
@@ -174,7 +174,7 @@ export default function EditProjectDrawer({
         >
           <FinanceCategoryForm
             onClose={() => drawersStack.close("category-form")}
-            onSuccess={(category) => setCategoryId(category.id)}
+            onSuccess={(category) => setCategoryIds([...categoryIds, category.id])}
           />
         </Drawer>
       </Drawer.Stack>

@@ -18,7 +18,7 @@ export default function NewProjectModal({
 }: NewProjectModalProps) {
   const { locale } = useSettingsStore();
   const stack = useModalsStack(["project-form", "category-form"]);
-  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [categoryIds, setCategoryIds] = useState<string[]>([]);
 
   useEffect(() => {
     if (opened) {
@@ -39,8 +39,8 @@ export default function NewProjectModal({
         <ProjectForm
           onClose={onClose}
           onCancel={onClose}
-          categoryId={categoryId}
-          setCategoryId={setCategoryId}
+          categoryIds={categoryIds}
+          setCategoryIds={setCategoryIds}
           setActiveProjectId={true}
           onOpenCategoryForm={() => stack.open("category-form")}
         />
@@ -52,7 +52,7 @@ export default function NewProjectModal({
       >
         <FinanceCategoryForm
           onClose={() => stack.close("category-form")}
-          onSuccess={(category) => setCategoryId(category.id)}
+          onSuccess={(category) => setCategoryIds([...categoryIds, category.id])}
         />
       </Modal>
     </Modal.Stack>

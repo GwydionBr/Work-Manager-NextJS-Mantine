@@ -38,7 +38,7 @@ export default function TimerManager({
   const { activeProjectId } = useWorkStore();
   const { timerRoundingSettings, locale } = useSettingsStore();
   const activeProject = useWorkStore((state) =>
-    state.projects.find((p) => p.project.id === activeProjectId)
+    state.projects.find((p) => p.id === activeProjectId)
   );
   const [timers, setTimers] = useState<TimerData[]>([]);
 
@@ -88,7 +88,7 @@ export default function TimerManager({
   useEffect(() => {
     if (timers.length === 0) {
       if (!activeProject) return;
-      handleAddTimer(activeProject.project);
+      handleAddTimer(activeProject);
     }
   }, [timers, activeProject]);
 
@@ -131,7 +131,7 @@ export default function TimerManager({
       <PlusActionIcon
         onClick={() => {
           if (!activeProject) return;
-          handleAddTimer(activeProject.project);
+          handleAddTimer(activeProject);
         }}
       />
       <TimeTrackerActionIcon

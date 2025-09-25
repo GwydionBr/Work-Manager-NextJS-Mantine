@@ -7,15 +7,17 @@ import { useWorkStore } from "@/stores/workManagerStore";
 import { Popover, Button, Box } from "@mantine/core";
 import ProjectColorPicker from "@/components/UI/ProjectColorPicker";
 
-import { VisibleProject } from "@/types/workCalendar.types";
+import { StoreTimerProject } from "@/types/work.types";
 
 interface CalendarLegendButtonProps {
-  p: VisibleProject;
+  p: StoreTimerProject;
 }
 
 export default function CalendarLegendButton({ p }: CalendarLegendButtonProps) {
   const { updateProject } = useWorkStore();
-  const [selectedColor, setSelectedColor] = useState<string>(p.color);
+  const [selectedColor, setSelectedColor] = useState<string>(
+    p.color ?? "var(--mantine-color-teal-6)"
+  );
   const [isOpen, { open, close }] = useDisclosure(false);
 
   const ref = useClickOutside(() => {
@@ -26,12 +28,12 @@ export default function CalendarLegendButton({ p }: CalendarLegendButtonProps) {
     <Popover
       opened={isOpen}
       onOpen={() => {
-        setSelectedColor(p.color);
+        setSelectedColor(p.color ?? "var(--mantine-color-teal-6)");
       }}
       onClose={() => {
         close();
         updateProject({
-          id: p.id,
+          ...p,
           color: selectedColor,
         });
       }}
@@ -50,8 +52,8 @@ export default function CalendarLegendButton({ p }: CalendarLegendButtonProps) {
                 width: 10,
                 height: 10,
                 borderRadius: 10,
-                background: p.color,
-                boxShadow: `0 0 0 1px ${p.color}`,
+                background: p.color ?? "var(--mantine-color-teal-6)",
+                boxShadow: `0 0 0 1px ${p.color ?? "var(--mantine-color-teal-6)"}`,
               }}
             />
           }
@@ -65,7 +67,7 @@ export default function CalendarLegendButton({ p }: CalendarLegendButtonProps) {
           onChange={setSelectedColor}
           onClose={() => {
             updateProject({
-              id: p.id,
+              ...p,
               color: selectedColor,
             });
             close();

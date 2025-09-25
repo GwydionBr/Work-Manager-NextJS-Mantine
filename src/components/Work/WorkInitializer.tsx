@@ -22,7 +22,7 @@ import { SettingsTab } from "../Settings/SettingsModal";
 
 export default function WorkInitializer() {
   const { locale, setIsModalOpen, setSelectedTab } = useSettingsStore();
-  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [categoryIds, setCategoryIds] = useState<string[]>([]);
   const [opened, { open, close }] = useDisclosure(false);
   return (
     <Container size="md" py="xl">
@@ -77,8 +77,8 @@ export default function WorkInitializer() {
 
           <Box maw={600} w="100%" mx="auto">
             <ProjectForm
-              categoryId={categoryId}
-              setCategoryId={setCategoryId}
+              categoryIds={categoryIds}
+              setCategoryIds={setCategoryIds}
               onOpenCategoryForm={open}
             />
           </Box>
@@ -91,7 +91,7 @@ export default function WorkInitializer() {
           >
             <FinanceCategoryForm
               onClose={close}
-              onSuccess={(category) => setCategoryId(category.id)}
+              onSuccess={(category) => setCategoryIds([...categoryIds, category.id])}
             />
           </Modal>
         </Stack>

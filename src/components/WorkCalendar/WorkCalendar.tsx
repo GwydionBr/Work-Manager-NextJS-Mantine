@@ -20,6 +20,7 @@ import {
   VisibleProject,
   CalendarAppointment,
 } from "@/types/workCalendar.types";
+import { StoreTimerProject } from "@/types/work.types";
 
 const zoomLevel = [1, 2, 4, 6, 12]; // multiplier for hour height
 
@@ -44,7 +45,7 @@ export default function WorkCalendar() {
     zoomIndex,
   } = useCalendarStore();
   const { projects: timerProjects, timerSessions, isFetching } = useWorkStore();
-  const projects = timerProjects.map((project) => project.project);
+  const projects = timerProjects.map((project) => project);
 
   const [viewportTop, setViewportTop] = useState({
     old: 0,
@@ -146,7 +147,7 @@ export default function WorkCalendar() {
   }, [days, sessionsByDay, appointmentsByDay]);
 
   // Projects visible in the current view (based on sessions overlapping the visible days)
-  const visibleProjects: VisibleProject[] = useMemo(() => {
+  const visibleProjects: StoreTimerProject[] = useMemo(() => {
     const ids = new Set<string>();
     sessionsByDay.forEach((items) => {
       items.forEach((s) => ids.add(String(s.project_id)));
@@ -157,13 +158,7 @@ export default function WorkCalendar() {
       .map((id) => {
         const p = projects.find((pp) => pp.id === id);
         if (!p) return undefined;
-        return {
-          id,
-          title: p.title,
-          color: p.color ?? "var(--mantine-color-teal-6)",
-          salary: p.salary ?? 0,
-          currency: p.currency ?? "USD",
-        };
+        return p;
       })
       .filter((p) => p !== undefined);
 

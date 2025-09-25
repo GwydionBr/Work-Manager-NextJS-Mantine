@@ -1,12 +1,10 @@
 //  Project Actions
 
-export {
-  getAllProjects,
-  getProjectById,
-  createProject,
-  updateProject,
-  deleteProject,
-} from "./work/timerProjectActions";
+
+export { getAllTimerProjects } from "./work/timerProject/getAllTimerProjects";
+export { createTimerProject } from "./work/timerProject/createTimerProject";
+export { updateTimerProject } from "./work/timerProject/updateTimerProject";
+export { deleteTimerProjects } from "./work/timerProject/deleteTimerProjects";
 
 export {
   getAllProjectFolders,

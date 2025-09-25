@@ -14,14 +14,14 @@ import {
 import { getTimeFragmentSession, resolveSessionOverlaps } from "@/utils/helper";
 
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
-import { TimerProject, ProjectTreeItem } from "@/types/work.types";
+import { ProjectTreeItem, StoreTimerProject } from "@/types/work.types";
 import { Currency } from "@/types/settings.types";
 import { ErrorResponse, SuccessPayoutResponse } from "@/types/action.types";
 import { TimerRoundingSettings } from "@/types/timeTracker.types";
 
 interface WorkStoreState {
   projectTree: ProjectTreeItem[];
-  projects: TimerProject[];
+  projects: StoreTimerProject[];
   folders: Tables<"timer_project_folder">[];
   activeProjectId: string | null;
   lastActiveProjectId: string | null;
@@ -38,14 +38,15 @@ interface WorkStoreActions {
   fetchIfStale: (intervalMs?: number) => Promise<void>;
   abortFetch: () => void;
   updateStore: (
-    updatedProjects: TimerProject[],
+    updatedProjects: StoreTimerProject[],
     updatedSessions: Tables<"timer_session">[]
   ) => void;
   setActiveProjectId: (id: string | null) => void;
   addProject: (
     project: TablesInsert<"timer_project">,
-    setActiveProjectId: boolean
-  ) => Promise<Tables<"timer_project"> | null>;
+    setActiveProjectId: boolean,
+    categoryIds: string[]
+  ) => Promise<StoreTimerProject | null>;
   addTimerSession: (
     session: TablesInsert<"timer_session">,
     roundingSettings: TimerRoundingSettings
@@ -55,8 +56,8 @@ interface WorkStoreActions {
     overlappingSessions: Tables<"timer_session">[] | null;
   }>;
   updateProject: (
-    project: TablesUpdate<"timer_project">
-  ) => Promise<Tables<"timer_project"> | null>;
+    updatedProject: StoreTimerProject
+  ) => Promise<StoreTimerProject | null>;
   updateTimerSession: (
     oldSession: Tables<"timer_session">,
     newSession: Tables<"timer_session">,
@@ -160,7 +161,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
 
         try {
           const [projects, timerSessions, folders] = await Promise.all([
-            actions.getAllProjects(),
+            actions.getAllTimerProjects(),
             actions.getAllSessions(),
             actions.getAllProjectFolders(),
           ]);
@@ -179,31 +180,17 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
             return;
           }
 
-          const projectsData = projects.data
-            .map((project) => ({
-              project,
-              sessions: timerSessions.data.filter(
-                (session) => session.project_id === project.id
-              ),
-            }))
-            .sort(
-              (a, b) =>
-                new Date(b.project.created_at).getTime() -
-                new Date(a.project.created_at).getTime()
-            );
-
           const stillValidId =
-            storedActiveId &&
-            projectsData.find((p) => p.project.id === storedActiveId)
+            storedActiveId && projects.data.find((p) => p.id === storedActiveId)
               ? storedActiveId
               : storedLastActiveId &&
-                  projectsData.find((p) => p.project.id === storedLastActiveId)
+                  projects.data.find((p) => p.id === storedLastActiveId)
                 ? storedLastActiveId
-                : (projectsData[0]?.project.id ?? null);
+                : (projects.data[0]?.id ?? null);
 
           set({
             folders: folders.data,
-            projects: projectsData,
+            projects: projects.data,
             timerSessions: timerSessions.data,
           });
           setActiveProjectId(stillValidId);
@@ -241,7 +228,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
       },
 
       updateStore(
-        updatedProjects: TimerProject[],
+        updatedProjects: StoreTimerProject[],
         updatedSessions: Tables<"timer_session">[]
       ) {
         set({ projects: updatedProjects, timerSessions: updatedSessions });
@@ -249,35 +236,55 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         if (!activeProjectId) {
           const firstProject = updatedProjects[0];
           if (firstProject) {
-            set({ activeProjectId: firstProject.project.id });
+            set({ activeProjectId: firstProject.id });
           } else {
             set({ activeProjectId: null });
           }
         }
       },
 
-      async updateProject(project) {
+      async updateProject(updatedProject) {
         const { updateStore, timerSessions, projectTree } = get();
-        const updatedProject = await actions.updateProject({ project });
-        if (!updatedProject.success) {
+
+        const oldProject = get().projects.find(
+          (p) => p.id === updatedProject.id
+        );
+        if (!oldProject) return null;
+
+        const updateCategories = {
+          deleteIds: oldProject.categoryIds.filter(
+            (id) => !updatedProject.categoryIds.includes(id)
+          ),
+          addIds: updatedProject.categoryIds.filter(
+            (id) => !oldProject.categoryIds.includes(id)
+          ),
+        };
+
+        const updatedProjectResponse = await actions.updateTimerProject({
+          project: updatedProject,
+          categoryUpdates: updateCategories,
+        });
+
+        if (!updatedProjectResponse.success) {
           return null;
         }
 
         const updatedProjects = get().projects.map((p) =>
-          p.project.id === project.id
-            ? { project: updatedProject.data, sessions: p.sessions }
-            : p
+          p.id === updatedProject.id ? updatedProject : p
         );
+
+        const updatedTitle = updatedProject.title !== oldProject.title;
+
         updateStore(updatedProjects, timerSessions);
-        if (project.id && project.title) {
+        if (updatedTitle) {
           const newProjectTree = renameNode(
             projectTree,
-            project.id,
-            updatedProject.data.title
+            updatedProject.id,
+            updatedProject.title
           );
           set({ projectTree: newProjectTree });
         }
-        return updatedProject.data;
+        return updatedProject;
       },
 
       async deleteProject(id) {
@@ -288,21 +295,19 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           projectTree,
           handleChangedNodes,
         } = get();
-        const deleted = await actions.deleteProject({ projectId: id });
+        const deleted = await actions.deleteTimerProjects({ projectIds: [id] });
         if (!deleted.success) {
           return false;
         }
 
         // const nextProjectId = findNextProject(projectTree, id);
-        const updatedProjects = get().projects.filter(
-          (p) => p.project.id !== id
-        );
+        const updatedProjects = get().projects.filter((p) => p.id !== id);
         updateStore(updatedProjects, timerSessions);
         const { tree, changedNodes } = deleteNode(projectTree, id);
         if (activeProjectId === id) {
           const newActiveProject = updatedProjects[0];
           if (newActiveProject) {
-            set({ activeProjectId: newActiveProject.project.id });
+            set({ activeProjectId: newActiveProject.id });
           } else {
             set({ activeProjectId: null });
           }
@@ -312,20 +317,27 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         return true;
       },
 
-      async addProject(project, setActiveProjectId) {
-        const { updateStore, timerSessions, handleChangedNodes, projectTree } =
-          get();
+      async addProject(project, setActiveProjectId, categoryIds) {
+        const {
+          updateStore,
+          timerSessions,
+          handleChangedNodes,
+          projectTree,
+          projects,
+        } = get();
 
-        const newProject = await actions.createProject({ project });
+        const newProject = await actions.createTimerProject({
+          project,
+          categoryIds,
+        });
         if (!newProject.success) {
           return null;
         }
 
-        const updatedProjects = [
-          ...get().projects,
-          { project: newProject.data, sessions: [] },
-        ];
+        const updatedProjects = [...projects, newProject.data];
+
         updateStore(updatedProjects, timerSessions);
+
         const { tree, changedNodes } = addNode(
           projectTree,
           null,
@@ -351,9 +363,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         const { updateStore, projects, timerSessions } = get();
 
         // Find project
-        const project = projects.find(
-          (p) => p.project.id === session.project_id
-        );
+        const project = projects.find((p) => p.id === session.project_id);
 
         // Check if project was found
         if (!project) {
@@ -374,8 +384,12 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         }
 
         // Filter out existing sessions that overlap with the new session
+        const existingSessions = timerSessions.filter(
+          (s) => s.project_id === session.project_id
+        );
+
         const { adjustedTimeSpans, overlappingSessions } =
-          resolveSessionOverlaps(project.sessions, newSession);
+          resolveSessionOverlaps(existingSessions, newSession);
 
         if (!adjustedTimeSpans) {
           return {
@@ -401,15 +415,8 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
 
         // Update sessions and projects
         const updatedSessions = [...timerSessions, ...newSessions.data];
-        const updatedProjects = projects.map((p) =>
-          p.project.id === session.project_id
-            ? {
-                project: p.project,
-                sessions: [...p.sessions, ...newSessions.data],
-              }
-            : p
-        );
-        updateStore(updatedProjects, updatedSessions);
+
+        updateStore(projects, updatedSessions);
         return {
           createdSessions: newSessions.data,
           completeOverlap: false,
@@ -428,19 +435,14 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         const updatedSessions = timerSessions.filter(
           (s) => !ids.includes(s.id)
         );
-        const updatedProjects = projects.map((p) => ({
-          project: p.project,
-          sessions: p.sessions.filter((s) => !ids.includes(s.id)),
-        }));
-        updateStore(updatedProjects, updatedSessions);
+
+        updateStore(projects, updatedSessions);
         return true;
       },
 
       async updateTimerSession(oldSession, newSession, roundingSettings) {
         const { updateStore, projects, timerSessions } = get();
-        const project = projects.find(
-          (p) => p.project.id === newSession.project_id
-        );
+        const project = projects.find((p) => p.id === newSession.project_id);
         if (!project) {
           return {
             success: false,
@@ -461,9 +463,14 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
               newSession
             );
           }
+
+          const existingSessions = timerSessions.filter(
+            (s) => s.project_id === newSession.project_id
+          );
+
           const { adjustedTimeSpans, overlappingSessions } =
             resolveSessionOverlaps(
-              project.sessions.filter((s) => s.id !== newSession.id),
+              existingSessions.filter((s) => s.id !== newSession.id),
               updatedSession
             );
           if (!adjustedTimeSpans || overlappingSessions.length > 0) {
@@ -488,13 +495,8 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         const updatedSessions = timerSessions.map((s) =>
           s.id === newSession.id ? updatedSession.data : s
         );
-        const updatedProjects = projects.map((p) => ({
-          project: p.project,
-          sessions: p.sessions.map((s) =>
-            s.id === newSession.id ? updatedSession.data : s
-          ),
-        }));
-        updateStore(updatedProjects, updatedSessions);
+
+        updateStore(projects, updatedSessions);
         return {
           success: true,
           overlapDetected: false,
@@ -515,13 +517,8 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         const updatedSessions = timerSessions.map((s) =>
           sessionIds.includes(s.id) ? { ...s, ...update } : s
         );
-        const updatedProjects = projects.map((p) => ({
-          project: p.project,
-          sessions: p.sessions.map((s) =>
-            sessionIds.includes(s.id) ? { ...s, ...update } : s
-          ),
-        }));
-        updateStore(updatedProjects, updatedSessions);
+
+        updateStore(projects, updatedSessions);
         return true;
       },
 
@@ -534,13 +531,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
             ? { ...s, paid: true, payout_id: payoutId }
             : s
         );
-        const updatedProjects = projects.map((p) => ({
-          project: p.project,
-          sessions: p.sessions.map((s) =>
-            sessionIds.includes(s.id) ? { ...s, paid: true } : s
-          ),
-        }));
-        updateStore(updatedProjects, updatedSessions);
+        updateStore(projects, updatedSessions);
         return true;
       },
 
@@ -634,7 +625,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
 
       async moveProject(projectId, newFolderId, index) {
         const { handleChangedNodes } = get();
-        const project = get().projects.find((p) => p.project.id === projectId);
+        const project = get().projects.find((p) => p.id === projectId);
         if (!project) return false;
 
         const { tree, changedNodes } = moveNode(
@@ -646,10 +637,14 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         set({ projectTree: tree });
         handleChangedNodes(changedNodes);
 
-        const updatedProject = await actions.updateProject({
+        const updatedProject = await actions.updateTimerProject({
           project: {
             id: projectId,
             folder_id: newFolderId,
+          },
+          categoryUpdates: {
+            deleteIds: [],
+            addIds: [],
           },
         });
         if (!updatedProject.success) {
@@ -706,7 +701,13 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           actions.updateProjectFolder({ folder });
         }
         for (const project of updatedProjects) {
-          actions.updateProject({ project });
+          actions.updateTimerProject({
+            project,
+            categoryUpdates: {
+              deleteIds: [],
+              addIds: [],
+            },
+          });
         }
       },
     }),

@@ -757,7 +757,6 @@ export type Database = {
       recurring_cash_flow: {
         Row: {
           amount: number;
-          category_id: string | null;
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
           description: string;
@@ -772,7 +771,6 @@ export type Database = {
         };
         Insert: {
           amount: number;
-          category_id?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           description: string;
@@ -787,7 +785,6 @@ export type Database = {
         };
         Update: {
           amount?: number;
-          category_id?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           description?: string;
@@ -972,7 +969,6 @@ export type Database = {
       single_cash_flow: {
         Row: {
           amount: number;
-          category_id: string | null;
           changed_date: string | null;
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
@@ -989,7 +985,6 @@ export type Database = {
         };
         Insert: {
           amount: number;
-          category_id?: string | null;
           changed_date?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
@@ -1006,7 +1001,6 @@ export type Database = {
         };
         Update: {
           amount?: number;
-          category_id?: string | null;
           changed_date?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
@@ -1138,7 +1132,6 @@ export type Database = {
       };
       timer_project: {
         Row: {
-          cash_flow_category_id: string | null;
           color: string | null;
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
@@ -1161,7 +1154,6 @@ export type Database = {
           user_id: string;
         };
         Insert: {
-          cash_flow_category_id?: string | null;
           color?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
@@ -1184,7 +1176,6 @@ export type Database = {
           user_id?: string;
         };
         Update: {
-          cash_flow_category_id?: string | null;
           color?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];

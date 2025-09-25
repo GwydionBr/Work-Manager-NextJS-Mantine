@@ -35,7 +35,7 @@ export default function EditSessionDrawer({
   const { updateTimerSession, deleteTimerSessions, addProject } =
     useWorkStore();
   const [submitting, setSubmitting] = useState(false);
-  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [categoryIds, setCategoryIds] = useState<string[]>([]);
   const [currentProject, setCurrentProject] =
     useState<Tables<"timer_project">>(project);
 
@@ -190,8 +190,8 @@ export default function EditSessionDrawer({
         >
           <ProjectForm
             onCancel={() => drawerStack.close("add-project")}
-            categoryId={categoryId}
-            setCategoryId={setCategoryId}
+            categoryIds={categoryIds}
+            setCategoryIds={setCategoryIds}
             onSuccess={(project) => setCurrentProject(project)}
             onOpenCategoryForm={() => drawerStack.open("category-form")}
           />
@@ -203,7 +203,7 @@ export default function EditSessionDrawer({
         >
           <FinanceCategoryForm
             onClose={() => drawerStack.close("category-form")}
-            onSuccess={(category) => setCategoryId(category.id)}
+            onSuccess={(category) => setCategoryIds([...categoryIds, category.id])}
           />
         </Drawer>
         <Drawer

@@ -47,8 +47,8 @@ export default function PayoutTab() {
         : null,
       timer_project: payout.timer_project_id
         ? (projects.find(
-            (project) => project.project.id === payout.timer_project_id
-          )?.project ?? null)
+            (project) => project.id === payout.timer_project_id
+          ) ?? null)
         : null,
       timer_sessions:
         timerSessions
@@ -56,8 +56,8 @@ export default function PayoutTab() {
           .filter((session) => session !== null) ?? [],
       timer_session_project: payout.timer_session_project_id
         ? (projects.find(
-            (project) => project.project.id === payout.timer_session_project_id
-          )?.project ?? null)
+            (project) => project.id === payout.timer_session_project_id
+          ) ?? null)
         : null,
     }));
   }, [payouts, singleCashFlows, projects, timerSessions]);

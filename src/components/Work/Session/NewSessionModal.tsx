@@ -44,7 +44,7 @@ export default function NewSessionModal({
     Tables<"timer_project"> | undefined
   >(project);
   const { addTimerSession } = useWorkStore();
-  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [categoryIds, setCategoryIds] = useState<string[]>([]);
   const [submittingSession, setSubmittingSession] = useState(false);
 
   useEffect(() => {
@@ -162,8 +162,8 @@ export default function NewSessionModal({
         <ProjectForm
           onCancel={() => stack.close("project-form")}
           onClose={() => stack.close("project-form")}
-          categoryId={categoryId}
-          setCategoryId={setCategoryId}
+          categoryIds={categoryIds}
+          setCategoryIds={setCategoryIds}
           onOpenCategoryForm={() => stack.open("category-form")}
           onSuccess={(project) => setCurrentProject(project)}
         />
@@ -176,7 +176,7 @@ export default function NewSessionModal({
       >
         <FinanceCategoryForm
           onClose={() => stack.close("category-form")}
-          onSuccess={(category) => setCategoryId(category.id)}
+          onSuccess={(category) => setCategoryIds([...categoryIds, category.id])}
         />
       </Modal>
     </Modal.Stack>

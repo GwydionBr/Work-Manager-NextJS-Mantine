@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useSettingsStore } from "@/stores/settingsStore";
 import type { Tables } from "@/types/db.types";
 import { startOfDay, endOfDay } from "date-fns";
+import { StoreTimerProject } from "@/types/work.types";
 
 // Filter logic determines how multiple filters are combined
 export type FilterLogic = "AND" | "OR";
@@ -31,12 +31,10 @@ export interface FilterState {
 export function useSessionFiltering(
   sessions: Tables<"timer_session">[],
   timeSpan: [Date | null, Date | null],
-  projects?: Tables<"timer_project">[],
+  projects?: StoreTimerProject[],
   folders?: Tables<"timer_project_folder">[],
   isOverview = false
 ) {
-  const { locale } = useSettingsStore();
-
   // Unified filter state for all filters
   const [filterState, setFilterState] = useState<FilterState>({
     timeFilterDays: 7,
@@ -109,8 +107,8 @@ export function useSessionFiltering(
         // Category filter
         if (filterState.selectedCategories.length > 0) {
           conditions.push(
-            filterState.selectedCategories.includes(
-              sessionProject.cash_flow_category_id || ""
+            filterState.selectedCategories.some((categoryId) =>
+              sessionProject.categoryIds.includes(categoryId)
             )
           );
         }
@@ -160,8 +158,8 @@ export function useSessionFiltering(
       // Category filter
       if (filterState.selectedCategories.length > 0) {
         projectConditions.push(
-          filterState.selectedCategories.includes(
-            sessionProject.cash_flow_category_id || ""
+          filterState.selectedCategories.some((categoryId) =>
+            sessionProject.categoryIds.includes(categoryId)
           )
         );
       }

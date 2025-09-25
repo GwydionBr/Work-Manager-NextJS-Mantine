@@ -15,17 +15,18 @@ import {
   Indicator,
 } from "@mantine/core";
 
-import { CalendarDay, VisibleProject } from "@/types/workCalendar.types";
+import { CalendarDay } from "@/types/workCalendar.types";
 import { formatDate, formatMoney, formatTime } from "@/utils/formatFunctions";
 import { calculateSessionTimeForDay } from "../calendarUtils";
 import { isToday } from "date-fns";
 import { TimerState } from "@/types/timeTracker.types";
+import { StoreTimerProject } from "@/types/work.types";
 
 interface ColumnHeaderProps {
   day?: CalendarDay;
   setReferenceDate?: (date: Date) => void;
   icon?: React.ReactNode;
-  visibleProjects: VisibleProject[];
+  visibleProjects: StoreTimerProject[];
 }
 
 export default function ColumnHeader({
@@ -128,7 +129,12 @@ export default function ColumnHeader({
             return (
               <Card withBorder key={p.id}>
                 <Group>
-                  <Box w={10} h={10} bg={p.color} style={{ borderRadius: 5 }} />
+                  <Box
+                    w={10}
+                    h={10}
+                    bg={p.color ?? "var(--mantine-color-teal-6)"}
+                    style={{ borderRadius: 5 }}
+                  />
                   <Stack gap={4}>
                     <Text size="sm" fw={500}>
                       {p.title}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useFinanceStore } from "@/stores/financeStore";
@@ -46,6 +46,7 @@ import {
   showActionErrorNotification,
 } from "@/utils/notificationFunctions";
 import HourlyPayoutModal from "@/components/Finances/Payout/PayoutConversionModal";
+import { TimerProject } from "@/types/work.types";
 
 export default function WorkPage() {
   const [oldActiveProjectId, setOldActiveProjectId] = useState<string | null>(
@@ -58,23 +59,46 @@ export default function WorkPage() {
     activeProjectId,
     lastActiveProjectId,
     isFetching,
+    projects,
+    timerSessions,
     setActiveProjectId,
     payoutWorkSessions,
   } = useWorkStore();
-  const { sessionPayout } = useFinanceStore();
+  const { sessionPayout, financeCategories } = useFinanceStore();
   const { locale, showChangeCurrencyWindow, defaultFinanceCurrency } =
     useSettingsStore();
-  const activeProject = useWorkStore((state) =>
-    state.projects.find((p) => {
-      if (activeProjectId) {
-        return p.project.id === activeProjectId;
-      }
-      if (lastActiveProjectId) {
-        return p.project.id === lastActiveProjectId;
-      }
-      return false;
-    })
-  );
+  // const activeProject = useWorkStore((state) =>
+  //   state.projects.find((p) => {
+  //     if (activeProjectId) {
+  //       return p.id === activeProjectId;
+  //     }
+  //     if (lastActiveProjectId) {
+  //       return p.id === lastActiveProjectId;
+  //     }
+  //     return false;
+  //   })
+  // );
+
+  const activeProject: TimerProject | undefined = useMemo(() => {
+    let project = projects.find((p) => p.id === activeProjectId);
+    if (!project) {
+      project = projects.find((p) => p.id === lastActiveProjectId);
+    }
+    if (!project) {
+      return undefined;
+    }
+    const categories = financeCategories.filter((c) =>
+      project.categoryIds.includes(c.id)
+    );
+    const sessions = timerSessions.filter((s) => s.project_id === project.id);
+
+    const { categoryIds, ...rest } = project;
+    return {
+      project: rest,
+      categories,
+      sessions,
+    };
+  }, [projects, activeProjectId, financeCategories, timerSessions]);
 
   const [isProcessingPayout, setIsProcessingPayout] = useState(false);
   const [payoutSessionIds, setPayoutSessionIds] = useState<string[]>([]);
@@ -107,6 +131,7 @@ export default function WorkPage() {
       open: activateSelectedMode,
     },
   ] = useDisclosure(false);
+
   const [
     sessionFormOpened,
     { open: openSessionForm, close: closeSessionForm },
@@ -279,13 +304,13 @@ export default function WorkPage() {
         startValue: sessionPayoutAmount,
         endValue: null,
         endCurrency: null,
-        project: activeProject.project,
+        project: activeProject,
       });
     }
   };
 
   async function handleSessionPayout(values: {
-    project: Tables<"timer_project">;
+    project: TimerProject;
     selectedSessionIds?: string[];
     startValue?: number;
     endValue: number | null;
@@ -309,20 +334,18 @@ export default function WorkPage() {
       });
 
       // Race between the payout operation and the timeout
-      const title = `Payout (${values.project.title}) ${formatDate(new Date(), locale)}`;
-      const categoryIds = values.project.cash_flow_category_id
-        ? [values.project.cash_flow_category_id]
-        : [];
+      const title = `Payout (${values.project.project.title}) ${formatDate(new Date(), locale)}`;
+      const categoryIds = values.project.categories.map((c) => c.id);
       const payoutResult = await Promise.race([
         sessionPayout(
           values.selectedSessionIds ?? payoutSessionIds,
           {
             title,
             start_value: values.startValue ?? payoutStartValue,
-            start_currency: values.project.currency,
+            start_currency: values.project.project.currency,
             end_value: values.endValue,
             end_currency: values.endCurrency,
-            timer_session_project_id: values.project.id,
+            timer_session_project_id: values.project.project.id,
           },
           categoryIds
         ),
@@ -570,7 +593,7 @@ export default function WorkPage() {
         onSubmit={(values) =>
           handleSessionPayout({
             ...values,
-            project: activeProject.project,
+            project: activeProject,
           })
         }
         isProcessing={isProcessingPayout}

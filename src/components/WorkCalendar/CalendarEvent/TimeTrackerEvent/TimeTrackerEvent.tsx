@@ -23,9 +23,9 @@ export default function TimeTrackerEvent({
   const timer = getRunningTimer();
   const { locale, format24h } = useSettingsStore();
 
-  const project = projects.find((p) => p.project.id === timer?.projectId);
+  const project = projects.find((p) => p.id === timer?.projectId);
 
-  const color = project?.project.color ?? "var(--mantine-color-red-6)";
+  const color = project?.color ?? "var(--mantine-color-red-6)";
   const backgroundColor = alpha(color, 0.1);
 
   if (!isToday(day)) {

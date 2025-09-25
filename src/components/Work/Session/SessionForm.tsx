@@ -120,8 +120,8 @@ export default function SessionForm({
   const projects = useMemo(() => {
     return (
       timerProjects.map((timerProject) => ({
-        value: timerProject.project.id,
-        label: timerProject.project.title,
+        value: timerProject.id,
+        label: timerProject.title,
       })) || []
     );
   }, [timerProjects]);
@@ -211,7 +211,7 @@ export default function SessionForm({
 
   function handleProjectChange(value: string | null) {
     if (!value) return;
-    const project = timerProjects.find((p) => p.project.id === value)?.project;
+    const project = timerProjects.find((p) => p.id === value);
     if (project) {
       if (onProjectChange) {
         onProjectChange(project);

@@ -68,19 +68,6 @@ export async function payoutSessions({
     return { success: false, data: null, error: payoutError.message };
   }
 
-  const { error: payoutCategoriesError } = await supabase
-    .from("payout_category")
-    .insert(
-      categoryIds.map((id) => ({
-        payout_id: payoutData.id,
-        finance_category_id: id,
-      }))
-    );
-
-  if (payoutCategoriesError) {
-    return { success: false, data: null, error: payoutCategoriesError.message };
-  }
-
   for (const sessionId of sessionIds) {
     const { error: sessionError } = await supabase
       .from("timer_session")

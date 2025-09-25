@@ -55,8 +55,8 @@ export default function AppointmentForm({
   const projects = useMemo(() => {
     return (
       timerProjects.map((timerProject) => ({
-        value: timerProject.project.id,
-        label: timerProject.project.title,
+        value: timerProject.id,
+        label: timerProject.title,
       })) || []
     );
   }, [timerProjects]);
