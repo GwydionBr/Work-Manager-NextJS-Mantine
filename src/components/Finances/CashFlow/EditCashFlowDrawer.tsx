@@ -162,7 +162,22 @@ export default function EditCashFlowDrawer({
           ...values,
         });
         if (success) {
+          showActionSuccessNotification(
+            getLocalizedText(
+              "Wiederkehrender Cashflow erfolgreich aktualisiert",
+              "Recurring cash flow updated successfully"
+            ),
+            locale
+          );
           onClose();
+        } else {
+          showActionErrorNotification(
+            getLocalizedText(
+              "Wiederkehrender Cashflow konnte nicht aktualisiert werden",
+              "Recurring cash flow could not be updated"
+            ),
+            locale
+          );
         }
       }
     }
@@ -261,7 +276,7 @@ export default function EditCashFlowDrawer({
         amount: pendingValues.amount,
         currency: pendingValues.currency,
         type: pendingValues.type,
-        categoryIds: pendingValues.categoryIds,
+        // categoryIds: pendingValues.categoryIds,
       };
 
       const singleSuccess = await updateMultipleSingleCashFlows(
@@ -270,8 +285,22 @@ export default function EditCashFlowDrawer({
       );
 
       if (singleSuccess) {
-        drawerStack.close("update-cash-flow");
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Einmal-Cashflows erfolgreich aktualisiert",
+            "Single cash flows updated successfully"
+          ),
+          locale
+        );
         onClose();
+      } else {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Einmal-Cashflows konnten nicht aktualisiert werden",
+            "Single cash flows could not be updated"
+          ),
+          locale
+        );
       }
     }
 

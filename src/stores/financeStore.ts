@@ -514,6 +514,8 @@ export const useFinanceStore = create<
           updates,
         });
 
+        console.log(result);
+
         if (!result.success) return false;
 
         // Update all single cash flows that belong to this recurring cash flow
