@@ -38,7 +38,6 @@ export default function PayoutTab() {
   >("all");
 
   const payoutData = useMemo<Payout[]>(() => {
-    console.log("rerender");
     return payouts.map((payout) => ({
       ...payout,
       cashflow: payout.cashflow_id

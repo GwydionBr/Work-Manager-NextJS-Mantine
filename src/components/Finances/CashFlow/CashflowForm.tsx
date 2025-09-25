@@ -23,7 +23,7 @@ import {
 } from "@tabler/icons-react";
 import SingleFinanceForm, {
   SingleFinanceFormValues,
-} from "./SingleFinanceForm";
+} from "./Single/SingleFinanceForm";
 import RecurringFinanceForm, {
   RecurringFinanceFormValues,
 } from "./RecurringFinanceForm";

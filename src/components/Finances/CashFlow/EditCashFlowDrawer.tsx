@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -10,16 +9,14 @@ import {
   Drawer,
   Flex,
   SegmentedControl,
-  Select,
   Group,
   Text,
   useDrawersStack,
   Button,
   Stack,
-  Popover,
   MultiSelect,
 } from "@mantine/core";
-import SingleCashFlowForm from "@/components/Finances/CashFlow/SingleFinanceForm";
+import SingleCashFlowForm from "@/components/Finances/CashFlow/Single/SingleFinanceForm";
 import RecurringCashFlowForm from "@/components/Finances/CashFlow/RecurringFinanceForm";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 
@@ -41,7 +38,11 @@ import {
   showActionSuccessNotification,
 } from "@/utils/notificationFunctions";
 import { Radio } from "@mantine/core";
-import { DeleteRecurringCashFlowMode, StoreRecurringCashFlow, StoreSingleCashFlow } from "@/types/finance.types";
+import {
+  DeleteRecurringCashFlowMode,
+  StoreRecurringCashFlow,
+  StoreSingleCashFlow,
+} from "@/types/finance.types";
 
 // Type guard to distinguish between single and recurring cash flows
 function isSingleCashFlow(
@@ -59,7 +60,7 @@ export default function EditCashFlowDrawer({
   opened: boolean;
   onClose: () => void;
 }) {
-  const { locale } = useSettingsStore();
+  const { locale, getLocalizedText } = useSettingsStore();
   const [isLoading, setIsLoading] = useState(false);
   const [deleteMode, setDeleteMode] = useState<DeleteRecurringCashFlowMode>(
     DeleteRecurringCashFlowMode.delete_all
@@ -117,7 +118,22 @@ export default function EditCashFlowDrawer({
         ...values,
       });
       if (success) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Einmal-Cashflow erfolgreich aktualisiert",
+            "Single cash flow updated successfully"
+          ),
+          locale
+        );
         onClose();
+      } else {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Einmal-Cashflow konnte nicht aktualisiert werden",
+            "Single cash flow could not be updated"
+          ),
+          locale
+        );
       }
     } else {
       // For recurring cash flows, check if any fields that affect single cash flows have changed
@@ -158,17 +174,19 @@ export default function EditCashFlowDrawer({
     const success = await deleteSingleCashFlows([cashFlow.id]);
     if (success) {
       showActionSuccessNotification(
-        locale === "de-DE"
-          ? "Cashflow erfolgreich gelöscht"
-          : "Cashflow deleted successfully",
+        getLocalizedText(
+          "Cashflow erfolgreich gelöscht",
+          "Cashflow deleted successfully"
+        ),
         locale
       );
       onClose();
     } else {
       showActionErrorNotification(
-        locale === "de-DE"
-          ? "Cashflow konnte nicht gelöscht werden"
-          : "Cashflow could not be deleted",
+        getLocalizedText(
+          "Cashflow konnte nicht gelöscht werden",
+          "Cashflow could not be deleted"
+        ),
         locale
       );
     }
@@ -181,17 +199,19 @@ export default function EditCashFlowDrawer({
     const success = await deleteRecurringCashFlow(cashFlow.id, mode);
     if (success) {
       showActionSuccessNotification(
-        locale === "de-DE"
-          ? "Wiederkehrender Cashflow erfolgreich gelöscht"
-          : "Recurring cash flow deleted successfully",
+        getLocalizedText(
+          "Wiederkehrender Cashflow erfolgreich gelöscht",
+          "Recurring cash flow deleted successfully"
+        ),
         locale
       );
       onClose();
     } else {
       showActionErrorNotification(
-        locale === "de-DE"
-          ? "Wiederkehrender Cashflow konnte nicht gelöscht werden"
-          : "Recurring cash flow could not be deleted",
+        getLocalizedText(
+          "Wiederkehrender Cashflow konnte nicht gelöscht werden",
+          "Recurring cash flow could not be deleted"
+        ),
         locale
       );
     }
@@ -207,17 +227,19 @@ export default function EditCashFlowDrawer({
     });
     if (success) {
       showActionSuccessNotification(
-        locale === "de-DE"
-          ? "Wiederkehrender Cashflow erfolgreich deaktiviert"
-          : "Recurring cash flow deactivated successfully",
+        getLocalizedText(
+          "Wiederkehrender Cashflow erfolgreich deaktiviert",
+          "Recurring cash flow deactivated successfully"
+        ),
         locale
       );
       onClose();
     } else {
       showActionErrorNotification(
-        locale === "de-DE"
-          ? "Wiederkehrender Cashflow konnte nicht deaktiviert werden"
-          : "Recurring cash flow could not be deactivated",
+        getLocalizedText(
+          "Wiederkehrender Cashflow konnte nicht deaktiviert werden",
+          "Recurring cash flow could not be deactivated"
+        ),
         locale
       );
     }
@@ -263,17 +285,19 @@ export default function EditCashFlowDrawer({
     const success = await updateRecurringCashFlow(pendingValues);
     if (success) {
       showActionSuccessNotification(
-        locale === "de-DE"
-          ? "Wiederkehrender Cashflow erfolgreich aktualisiert"
-          : "Recurring cash flow updated successfully",
+        getLocalizedText(
+          "Wiederkehrender Cashflow erfolgreich aktualisiert",
+          "Recurring cash flow updated successfully"
+        ),
         locale
       );
       onClose();
     } else {
       showActionErrorNotification(
-        locale === "de-DE"
-          ? "Wiederkehrender Cashflow konnte nicht aktualisiert werden"
-          : "Recurring cash flow could not be updated",
+        getLocalizedText(
+          "Wiederkehrender Cashflow konnte nicht aktualisiert werden",
+          "Recurring cash flow could not be updated"
+        ),
         locale
       );
     }
@@ -292,13 +316,14 @@ export default function EditCashFlowDrawer({
         title={
           <Group>
             <DeleteActionIcon
-              tooltipLabel={
-                locale === "de-DE" ? "Cashflow löschen" : "Delete Cash Flow"
-              }
+              tooltipLabel={getLocalizedText(
+                "Cashflow löschen",
+                "Delete Cash Flow"
+              )}
               onClick={() => drawerStack.open("delete-cash-flow")}
             />
             <Text>
-              {locale === "de-DE" ? "Cashflow bearbeiten" : "Edit Cash Flow"}
+              {getLocalizedText("Cashflow bearbeiten", "Edit Cash Flow")}
             </Text>
             <IconCashMove />
           </Group>
@@ -317,7 +342,7 @@ export default function EditCashFlowDrawer({
                 label: (
                   <Center style={{ gap: 10 }}>
                     <IconPlus size={16} />
-                    <span>{locale === "de-DE" ? "Einnahme" : "Income"}</span>
+                    <Text>{getLocalizedText("Einnahme", "Income")}</Text>
                   </Center>
                 ),
               },
@@ -326,7 +351,7 @@ export default function EditCashFlowDrawer({
                 label: (
                   <Center style={{ gap: 10 }}>
                     <IconMinus size={16} />
-                    <span>{locale === "de-DE" ? "Ausgabe" : "Expense"}</span>
+                    <Text>{getLocalizedText("Ausgabe", "Expense")}</Text>
                   </Center>
                 ),
               },
@@ -339,19 +364,19 @@ export default function EditCashFlowDrawer({
                 label: category.title,
                 value: category.id,
               }))}
-              label={locale === "de-DE" ? "Kategorie" : "Category"}
-              placeholder={
-                locale === "de-DE" ? "Kategorie auswählen" : "Select a category"
-              }
+              label={getLocalizedText("Kategorie", "Category")}
+              placeholder={getLocalizedText(
+                "Kategorie auswählen",
+                "Select a category"
+              )}
               value={categoryIds}
               onChange={(value) => setCategoryIds(value)}
               searchable
               clearable
-              nothingFoundMessage={
-                locale === "de-DE"
-                  ? "Keine Kategorien gefunden"
-                  : "No categories found"
-              }
+              nothingFoundMessage={getLocalizedText(
+                "Keine Kategorien gefunden",
+                "No categories found"
+              )}
               size="sm"
             />
             <Button
@@ -365,7 +390,7 @@ export default function EditCashFlowDrawer({
               leftSection={<IconPlus size={20} />}
             >
               <Text fz="xs" c="dimmed">
-                {locale === "de-DE" ? "Neue Kategorie" : "Add Category"}
+                {getLocalizedText("Neue Kategorie", "Add Category")}
               </Text>
             </Button>
           </Group>
@@ -388,7 +413,7 @@ export default function EditCashFlowDrawer({
           )}
           <CancelButton
             onClick={onClose}
-            tooltipLabel={locale === "de-DE" ? "Abbrechen" : "Cancel"}
+            tooltipLabel={getLocalizedText("Abbrechen", "Cancel")}
           />
         </Flex>
       </Drawer>
@@ -400,15 +425,16 @@ export default function EditCashFlowDrawer({
           <Group>
             <IconAlertHexagonFilled size={25} color="red" />
             <Text>
-              {locale === "de-DE" ? "Cashflow löschen" : "Delete Cash Flow"}
+              {getLocalizedText("Cashflow löschen", "Delete Cash Flow")}
             </Text>
           </Group>
         }
       >
         <Text>
-          {locale === "de-DE"
-            ? "Sind Sie sicher, dass Sie diesen Cashflow löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
-            : "Are you sure you want to delete this cash flow? This action cannot be undone."}
+          {getLocalizedText(
+            "Sind Sie sicher, dass Sie diesen Cashflow löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+            "Are you sure you want to delete this cash flow? This action cannot be undone."
+          )}
         </Text>
         <Group mt="md" justify="flex-end" gap="sm">
           <CancelButton
@@ -437,18 +463,20 @@ export default function EditCashFlowDrawer({
           <Group>
             <IconAlertHexagonFilled size={25} color="red" />
             <Text>
-              {locale === "de-DE"
-                ? "Wiederkehrender Cashflow löschen"
-                : "Delete Recurring Cash Flow"}
+              {getLocalizedText(
+                "Wiederkehrender Cashflow löschen",
+                "Delete Recurring Cash Flow"
+              )}
             </Text>
           </Group>
         }
       >
         <Stack gap="md">
           <Text>
-            {locale === "de-DE"
-              ? "Wie möchten Sie mit den verknüpften Einmal-Cashflows verfahren?"
-              : "How should linked single cash flows be handled?"}
+            {getLocalizedText(
+              "Wie möchten Sie mit den verknüpften Einmal-Cashflows verfahren?",
+              "How should linked single cash flows be handled?"
+            )}
           </Text>
           <Radio.Group
             value={deleteMode}
@@ -457,19 +485,17 @@ export default function EditCashFlowDrawer({
             <Stack gap={6}>
               <Radio
                 value={DeleteRecurringCashFlowMode.delete_all}
-                label={
-                  locale === "de-DE"
-                    ? "Alle verknüpften Einmal-Cashflows ebenfalls löschen"
-                    : "Also delete all linked single cash flows"
-                }
+                label={getLocalizedText(
+                  "Alle verknüpften Einmal-Cashflows ebenfalls löschen",
+                  "Also delete all linked single cash flows"
+                )}
               />
               <Radio
                 value={DeleteRecurringCashFlowMode.keep_unlinked}
-                label={
-                  locale === "de-DE"
-                    ? "Einmal-Cashflows behalten (Verknüpfung entfernen)"
-                    : "Keep single cash flows (unlink from recurring)"
-                }
+                label={getLocalizedText(
+                  "Einmal-Cashflows behalten (Verknüpfung entfernen)",
+                  "Keep single cash flows (unlink from recurring)"
+                )}
               />
             </Stack>
           </Radio.Group>
@@ -481,9 +507,10 @@ export default function EditCashFlowDrawer({
               onClick={handleDeactivateRecurring}
               loading={isLoading}
             >
-              {locale === "de-DE"
-                ? "Stattdessen deaktivieren"
-                : "Deactivate instead"}
+              {getLocalizedText(
+                "Stattdessen deaktivieren",
+                "Deactivate instead"
+              )}
             </Button>
             <Group gap="sm">
               <CancelButton
@@ -504,26 +531,27 @@ export default function EditCashFlowDrawer({
       <Drawer
         {...drawerStack.register("update-cash-flow")}
         onClose={() => drawerStack.close("update-cash-flow")}
-        title={
-          locale === "de-DE"
-            ? "Bestehende Cashflows aktualisieren"
-            : "Update Existing Cash Flows"
-        }
+        title={getLocalizedText(
+          "Bestehende Cashflows aktualisieren",
+          "Update Existing Cash Flows"
+        )}
       >
         <Stack gap="md">
           <Group gap="sm">
             <IconAlertTriangle size={24} color="orange" />
             <Text size="sm" c="dimmed">
-              {locale === "de-DE"
-                ? "Sie haben Änderungen an einem wiederkehrenden Cashflow vorgenommen. Möchten Sie alle bestehenden Einmalzahlungen, die aus diesem Wiederholungsmuster erstellt wurden, aktualisieren?"
-                : "You've made changes to a recurring cash flow. Would you like to update all existing single cash flows that were created from this recurring pattern?"}
+              {getLocalizedText(
+                "Sie haben Änderungen an einem wiederkehrenden Cashflow vorgenommen. Möchten Sie alle bestehenden Einmalzahlungen, die aus diesem Wiederholungsmuster erstellt wurden, aktualisieren?",
+                "You've made changes to a recurring cash flow. Would you like to update all existing single cash flows that were created from this recurring pattern?"
+              )}
             </Text>
           </Group>
 
           <Text size="sm" c="dimmed">
-            {locale === "de-DE"
-              ? "Dies wird den Titel, den Betrag, die Währung und die Kategorie aller vergangenen und aktuellen Cashflows aktualisieren, die aus diesem Wiederholungsmuster generiert wurden. Zukünftige Cashflows werden automatisch die neuen Einstellungen verwenden."
-              : "This will update the title, amount, currency, and category of all past and current cash flows that were generated from this recurring pattern. Future cash flows will automatically use the new settings."}
+            {getLocalizedText(
+              "Dies wird den Titel, den Betrag, die Währung und die Kategorie aller vergangenen und aktuellen Cashflows aktualisieren, die aus diesem Wiederholungsmuster generiert wurden. Zukünftige Cashflows werden automatisch die neuen Einstellungen verwenden.",
+              "This will update the title, amount, currency, and category of all past and current cash flows that were generated from this recurring pattern. Future cash flows will automatically use the new settings."
+            )}
           </Text>
 
           <Group justify="flex-end" gap="sm">
@@ -532,10 +560,10 @@ export default function EditCashFlowDrawer({
               onClick={handleUpdateRecurringOnly}
               disabled={isLoading}
             >
-              {locale === "de-DE" ? "Nein, beibehalten" : "No, keep existing"}
+              {getLocalizedText("Nein, beibehalten", "No, keep existing")}
             </Button>
             <Button color="blue" onClick={handleUpdateAll} loading={isLoading}>
-              {locale === "de-DE" ? "Ja, aktualisieren" : "Yes, update all"}
+              {getLocalizedText("Ja, aktualisieren", "Yes, update all")}
             </Button>
           </Group>
         </Stack>
@@ -547,7 +575,7 @@ export default function EditCashFlowDrawer({
           <Group>
             <IconCategoryPlus />
             <Text>
-              {locale === "de-DE" ? "Kategorie hinzufügen" : "Add Category"}
+              {getLocalizedText("Kategorie hinzufügen", "Add Category")}
             </Text>
           </Group>
         }

@@ -1,6 +1,6 @@
 "use client ";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
@@ -39,6 +39,10 @@ export default function FinanceCategoryBadges({
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
     categories.map((c) => c.id)
   );
+
+  useEffect(() => {
+    setSelectedCategories(categories.map((c) => c.id));
+  }, [categories]);
 
   const [
     isCategoryFormOpen,

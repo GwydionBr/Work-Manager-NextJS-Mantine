@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useHover, useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
@@ -19,6 +19,11 @@ import { formatMoney } from "@/utils/formatFunctions";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import FinanceCategoryBadges from "../../FinanceCategory/FinanceCategoryBadges";
 import { StoreSingleCashFlow } from "@/types/finance.types";
+import { Tables } from "@/types/db.types";
+import {
+  showActionErrorNotification,
+  showActionSuccessNotification,
+} from "@/utils/notificationFunctions";
 
 interface SingleCashflowRowProps extends CardProps {
   cashflow: StoreSingleCashFlow;
@@ -36,8 +41,9 @@ export default function SingleCashflowRow({
   onToggleSelected,
   ...props
 }: SingleCashflowRowProps) {
-  const { locale } = useSettingsStore();
-  const { financeCategories } = useFinanceStore();
+  const { locale, getLocalizedText } = useSettingsStore();
+  const [isLoading, setIsLoading] = useState(false);
+  const { financeCategories, updateSingleCashFlow } = useFinanceStore();
   const { hovered, ref } = useHover();
   const [
     isCategoryPopoverOpen,
@@ -49,6 +55,39 @@ export default function SingleCashflowRow({
       cashflow.categoryIds.includes(category.id)
     );
   }, [financeCategories, cashflow.categoryIds]);
+
+  const handleCategoryClose = async (
+    updatedCategories: Tables<"finance_category">[] | null
+  ) => {
+    if (isLoading) return;
+    closeCategoryPopover();
+    if (updatedCategories) {
+      setIsLoading(true);
+
+      const success = await updateSingleCashFlow({
+        ...cashflow,
+        categoryIds: updatedCategories.map((c) => c.id),
+      });
+      if (success) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Kategorie erfolgreich aktualisiert",
+            "Category updated successfully"
+          ),
+          locale
+        );
+      } else {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Kategorie konnte nicht aktualisiert werden",
+            "Category could not be updated"
+          ),
+          locale
+        );
+      }
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Card
@@ -112,7 +151,7 @@ export default function SingleCashflowRow({
           <FinanceCategoryBadges
             categories={currentCategories}
             onPopoverOpen={openCategoryPopover}
-            onPopoverClose={closeCategoryPopover}
+            onPopoverClose={handleCategoryClose}
           />
         </Grid.Col>
       </Grid>

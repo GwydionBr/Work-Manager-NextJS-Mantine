@@ -14,9 +14,13 @@ export async function updateSingleCashFlow({
   categoryUpdates,
 }: UpdateSingleCashFlowProps): Promise<ApiResponseSingle<StoreSingleCashFlow>> {
   const supabase = await createClient();
+
+  const { categoryIds, ...singleCashFlowData } = updateSingleCashFlow;
+
+  // Update the single cash flow
   const { data, error } = await supabase
     .from("single_cash_flow")
-    .update(updateSingleCashFlow)
+    .update(singleCashFlowData)
     .eq("id", updateSingleCashFlow.id)
     .select()
     .single();
@@ -25,17 +29,20 @@ export async function updateSingleCashFlow({
     return { success: false, data: null, error: error.message };
   }
 
+  // Delete the categories
   if (categoryUpdates.deleteIds.length > 0) {
     const { error: categoryErrorDelete } = await supabase
       .from("single_cash_flow_category")
       .delete()
-      .in("id", categoryUpdates.deleteIds);
+      .eq("single_cash_flow_id", data.id)
+      .in("finance_category_id", categoryUpdates.deleteIds);
 
     if (categoryErrorDelete) {
       return { success: false, data: null, error: categoryErrorDelete.message };
     }
   }
 
+  // Add the categories
   if (categoryUpdates.addIds.length > 0) {
     const { error: categoryErrorAdd } = await supabase
       .from("single_cash_flow_category")
@@ -51,5 +58,22 @@ export async function updateSingleCashFlow({
     }
   }
 
-  return { success: true, data: updateSingleCashFlow, error: null };
+  // Update the categoryIds
+  let newCategoryIds = categoryIds;
+  // Add the categories
+  if (categoryUpdates.addIds.length > 0) {
+    newCategoryIds = [...newCategoryIds, ...categoryUpdates.addIds];
+  }
+  // Delete the categories
+  if (categoryUpdates.deleteIds.length > 0) {
+    newCategoryIds = newCategoryIds.filter(
+      (id) => !categoryUpdates.deleteIds.includes(id)
+    );
+  }
+
+  // Update the single cash flow
+  const newSingleCashFlow = { ...data, categoryIds: newCategoryIds };
+
+  // Return the new single cash flow
+  return { success: true, data: newSingleCashFlow, error: null };
 }

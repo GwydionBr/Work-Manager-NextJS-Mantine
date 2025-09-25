@@ -473,11 +473,13 @@ export const useFinanceStore = create<
       async updateSingleCashFlow(singleCashFlow) {
         const { singleCashFlows } = get();
 
+        // Find the original single cash flow
         const originalSingleCashFlow = singleCashFlows.find(
           (c) => c.id === singleCashFlow.id
         );
         if (!originalSingleCashFlow) return false;
 
+        // Update the database single cash flow
         const updatedSingleCashFlow = await actions.updateSingleCashFlow({
           updateSingleCashFlow: singleCashFlow,
           categoryUpdates: {
@@ -492,6 +494,7 @@ export const useFinanceStore = create<
 
         if (!updatedSingleCashFlow.success) return false;
 
+        // Update the store single cash flows
         const updatedSingleCashFlows = singleCashFlows.map((c) =>
           c.id === singleCashFlow.id ? updatedSingleCashFlow.data : c
         );

@@ -16,9 +16,12 @@ export async function updateRecurringCashFlow({
   ApiResponseSingle<StoreRecurringCashFlow>
 > {
   const supabase = await createClient();
+
+  const { categoryIds, ...recurringCashFlowData } = updateRecurringCashFlow;
+
   const { data, error } = await supabase
     .from("recurring_cash_flow")
-    .update(updateRecurringCashFlow)
+    .update(recurringCashFlowData)
     .eq("id", updateRecurringCashFlow.id!)
     .select()
     .single();
@@ -31,7 +34,8 @@ export async function updateRecurringCashFlow({
     const { error: categoryErrorDelete } = await supabase
       .from("recurring_cash_flow_category")
       .delete()
-      .in("id", categoryUpdates.deleteIds);
+      .eq("recurring_cash_flow_id", data.id)
+      .in("finance_category_id", categoryUpdates.deleteIds);
 
     if (categoryErrorDelete) {
       return { success: false, data: null, error: categoryErrorDelete.message };
@@ -39,17 +43,32 @@ export async function updateRecurringCashFlow({
   }
 
   if (categoryUpdates.addIds.length > 0) {
-    const { error: categoryErrorAdd } = await supabase.from("recurring_cash_flow_category").insert(
-      categoryUpdates.addIds.map((id) => ({
-        recurring_cash_flow_id: data.id,
-        finance_category_id: id
-      }))
-    );
+    const { error: categoryErrorAdd } = await supabase
+      .from("recurring_cash_flow_category")
+      .insert(
+        categoryUpdates.addIds.map((id) => ({
+          recurring_cash_flow_id: data.id,
+          finance_category_id: id,
+        }))
+      );
 
     if (categoryErrorAdd) {
       return { success: false, data: null, error: categoryErrorAdd.message };
     }
   }
 
-  return { success: true, data: updateRecurringCashFlow, error: null };
+  // Update the categoryIds
+  let newCategoryIds = updateRecurringCashFlow.categoryIds;
+  if (categoryUpdates.deleteIds.length > 0) {
+    newCategoryIds = newCategoryIds.filter(
+      (id) => !categoryUpdates.deleteIds.includes(id)
+    );
+  }
+  if (categoryUpdates.addIds.length > 0) {
+    newCategoryIds = [...newCategoryIds, ...categoryUpdates.addIds];
+  }
+
+  const newRecurringCashFlow = { ...data, categoryIds: newCategoryIds };
+
+  return { success: true, data: newRecurringCashFlow, error: null };
 }
