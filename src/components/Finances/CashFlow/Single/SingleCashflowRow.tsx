@@ -17,7 +17,7 @@ import {
 
 import { formatMoney } from "@/utils/formatFunctions";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
-import FinanceCategoryBadges from "../../FinanceCategory/FinanceCategoryBadges";
+import FinanceCategoryBadges from "../../FinanceCategoryBadges";
 import { StoreSingleCashFlow } from "@/types/finance.types";
 import { Tables } from "@/types/db.types";
 import {

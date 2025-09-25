@@ -40,7 +40,7 @@ import {
 import MoreActionIcon from "@/components/UI/ActionIcons/MoreActionIcon";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import FinanceClientBadge from "../FinanceClient/FinanceClientBadge";
-import FinanceCategoryBadges from "../FinanceCategory/FinanceCategoryBadges";
+import FinanceCategoryBadges from "../FinanceCategoryBadges";
 import { Tables } from "@/types/db.types";
 
 interface FinanceProjectCardProps extends CardProps {
