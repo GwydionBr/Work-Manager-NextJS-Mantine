@@ -39,7 +39,7 @@ import {
 import MoreActionIcon from "@/components/UI/ActionIcons/MoreActionIcon";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import FinanceClientBadge from "../FinanceClient/FinanceClientBadge";
-import FinanceCategoryBadge from "../FinanceCategory/FinanceCategoryBadge";
+import FinanceCategoryBadges from "../FinanceCategory/FinanceCategoryBadges";
 
 interface FinanceProjectCardProps extends CardProps {
   project: FinanceProject;
@@ -189,15 +189,11 @@ export default function FinanceProjectCard({
                   onPopoverClose={closeBadgePopover}
                 />
               ))}
-            {project.categories.length > 0 &&
-              project.categories.map((category) => (
-                <FinanceCategoryBadge
-                  key={category.id}
-                  category={category}
-                  onPopoverOpen={openBadgePopover}
-                  onPopoverClose={closeBadgePopover}
-                />
-              ))}
+            <FinanceCategoryBadges
+              categories={project.categories}
+              onPopoverOpen={openBadgePopover}
+              onPopoverClose={closeBadgePopover}
+            />
           </Group>
 
           {/* Right Side */}

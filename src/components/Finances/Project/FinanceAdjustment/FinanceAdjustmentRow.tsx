@@ -4,7 +4,7 @@ import { useHover } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Group, Text, Badge, ThemeIcon, Card } from "@mantine/core";
+import { Group, Text, Badge, ThemeIcon, Card, Transition } from "@mantine/core";
 import {
   IconArrowRight,
   IconMinus,
@@ -17,6 +17,7 @@ import { formatMoney, formatDate } from "@/utils/formatFunctions";
 
 import { Currency } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
+import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
 
 interface FinanceAdjustmentRowProps {
   adjustment: Tables<"finance_project_adjustment">;
@@ -70,6 +71,17 @@ export default function FinanceAdjustmentRow({
               </Text>
             )}
           </Group>
+          <Transition mounted={hovered} transition="fade-left" duration={200}>
+            {(styles) => (
+              <PayoutActionIcon
+                ml={10}
+                size="sm"
+                onClick={() => {}}
+                tooltipLabel={locale === "de-DE" ? "Auszahlung" : "Payout"}
+                style={styles}
+              />
+            )}
+          </Transition>
         </Group>
 
         <Group gap="xs" align="center">

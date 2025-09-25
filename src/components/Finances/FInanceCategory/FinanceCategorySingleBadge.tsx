@@ -1,0 +1,50 @@
+"use client";
+
+import { useHover } from "@mantine/hooks";
+
+import { Tables } from "@/types/db.types";
+import { Badge } from "@mantine/core";
+import { IconTag, IconTagPlus } from "@tabler/icons-react";
+
+interface FinanceCategorySingleBadgeProps {
+  category?: Tables<"finance_category">;
+}
+
+export default function FinanceCategorySingleBadge({
+  category,
+}: FinanceCategorySingleBadgeProps) {
+  const { hovered, ref } = useHover();
+
+  if (!category) {
+    return (
+      <Badge
+        ref={ref}
+        color="grape"
+        variant="light"
+        leftSection={<IconTagPlus size={16} />}
+        style={{
+          cursor: "pointer",
+          border: hovered
+            ? "1px solid var(--mantine-color-grape-5)"
+            : "1px solid transparent",
+        }}
+      />
+    );
+  }
+  return (
+    <Badge
+      ref={ref}
+      color="grape"
+      variant="light"
+      leftSection={<IconTag size={12} />}
+      style={{
+        cursor: "pointer",
+        border: hovered
+          ? "1px solid var(--mantine-color-grape-5)"
+          : "1px solid transparent",
+      }}
+    >
+      {category.title}
+    </Badge>
+  );
+}

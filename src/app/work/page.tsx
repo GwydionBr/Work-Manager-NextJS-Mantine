@@ -45,7 +45,7 @@ import {
   showActionSuccessNotification,
   showActionErrorNotification,
 } from "@/utils/notificationFunctions";
-import HourlyPayoutModal from "@/components/Finances/Payout/HourlyPayout/HourlyPayoutModal";
+import HourlyPayoutModal from "@/components/Finances/Payout/PayoutConversionModal";
 
 export default function WorkPage() {
   const [oldActiveProjectId, setOldActiveProjectId] = useState<string | null>(
