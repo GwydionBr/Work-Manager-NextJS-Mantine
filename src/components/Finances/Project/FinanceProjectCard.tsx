@@ -7,6 +7,7 @@ import {
   mergeRefs,
 } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFinanceStore } from "@/stores/financeStore";
 
 import {
   Card,
@@ -40,6 +41,7 @@ import MoreActionIcon from "@/components/UI/ActionIcons/MoreActionIcon";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import FinanceClientBadge from "../FinanceClient/FinanceClientBadge";
 import FinanceCategoryBadges from "../FinanceCategory/FinanceCategoryBadges";
+import { Tables } from "@/types/db.types";
 
 interface FinanceProjectCardProps extends CardProps {
   project: FinanceProject;
@@ -64,6 +66,7 @@ export default function FinanceProjectCard({
   ...props
 }: FinanceProjectCardProps) {
   const { locale } = useSettingsStore();
+  const { updateFinanceProject } = useFinanceStore();
   const [isEditing, { open: openEditing, close: closeEditing }] =
     useDisclosure(false);
   const { hovered, ref: hoverRef } = useHover();
@@ -100,6 +103,19 @@ export default function FinanceProjectCard({
   const handleAdjustmentClose = () => {
     if (!isDropdownOpen) {
       closeAdjustmentForm();
+    }
+  };
+
+  const handleCategoryClose = (
+    updatedCategories: Tables<"finance_category">[] | null
+  ) => {
+    if (updatedCategories) {
+      const { clients, categories, ...projectData } = project;
+      updateFinanceProject({
+        ...projectData,
+        categoryIds: updatedCategories.map((c) => c.id),
+        clientIds: clients.map((c) => c.id),
+      });
     }
   };
 
@@ -192,7 +208,7 @@ export default function FinanceProjectCard({
             <FinanceCategoryBadges
               categories={project.categories}
               onPopoverOpen={openBadgePopover}
-              onPopoverClose={closeBadgePopover}
+              onPopoverClose={handleCategoryClose}
             />
           </Group>
 

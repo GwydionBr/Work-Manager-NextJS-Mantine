@@ -1,6 +1,6 @@
 "use client ";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
@@ -25,7 +25,7 @@ import FinanceCategoryForm from "./FinanceCategoryForm";
 interface FinanceCategoryBadgesProps {
   categories: Tables<"finance_category">[];
   onPopoverOpen: () => void;
-  onPopoverClose: () => void;
+  onPopoverClose: (categories: Tables<"finance_category">[] | null) => void;
 }
 
 export default function FinanceCategoryBadges({
@@ -58,10 +58,20 @@ export default function FinanceCategoryBadges({
 
   const handlePopoverClose = () => {
     if (!isDropdownOpen) {
-      onPopoverClose();
+      onPopoverClose(
+        currentCategorySelection !== categories
+          ? currentCategorySelection
+          : null
+      );
       closeCategoryPopover();
     }
   };
+
+  const currentCategorySelection = useMemo(() => {
+    return financeCategories.filter((category) =>
+      selectedCategories.includes(category.id)
+    );
+  }, [financeCategories, selectedCategories]);
 
   return (
     <Box>
@@ -82,8 +92,8 @@ export default function FinanceCategoryBadges({
               cursor: "pointer",
             }}
           >
-            {categories.length > 0 ? (
-              categories.map((category) => (
+            {currentCategorySelection.length > 0 ? (
+              currentCategorySelection.map((category) => (
                 <FinanceCategorySingleBadge
                   key={category.id}
                   category={category}
