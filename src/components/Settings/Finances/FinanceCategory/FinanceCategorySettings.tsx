@@ -16,7 +16,7 @@ import {
 } from "@mantine/core";
 import FinanceCategoryRow from "./FinanceCategoryRow";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
-import FinanceCategoryForm from "@/components/Finances/FInanceCategory/FinanceCategoryForm";
+import FinanceCategoryForm from "@/components/Finances/FinanceCategory/FinanceCategoryForm";
 import { useCallback, useMemo, useState } from "react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";

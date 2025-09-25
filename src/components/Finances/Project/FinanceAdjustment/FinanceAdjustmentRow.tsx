@@ -1,7 +1,10 @@
 "use client";
 
-import { Tables } from "@/types/db.types";
-import { Group, Text, Box, Badge, ThemeIcon, Card } from "@mantine/core";
+import { useHover } from "@mantine/hooks";
+import { useFinanceStore } from "@/stores/financeStore";
+import { useSettingsStore } from "@/stores/settingsStore";
+
+import { Group, Text, Badge, ThemeIcon, Card } from "@mantine/core";
 import {
   IconArrowRight,
   IconMinus,
@@ -9,10 +12,11 @@ import {
   IconUser,
   IconArrowLeft,
 } from "@tabler/icons-react";
+
 import { formatMoney, formatDate } from "@/utils/formatFunctions";
-import { useSettingsStore } from "@/stores/settingsStore";
+
 import { Currency } from "@/types/settings.types";
-import { useFinanceStore } from "@/stores/financeStore";
+import { Tables } from "@/types/db.types";
 
 interface FinanceAdjustmentRowProps {
   adjustment: Tables<"finance_project_adjustment">;
@@ -25,13 +29,16 @@ export default function FinanceAdjustmentRow({
 }: FinanceAdjustmentRowProps) {
   const { locale } = useSettingsStore();
   const { financeClients } = useFinanceStore();
+
+  const { hovered, ref } = useHover();
+
   const isIncome = adjustment.amount > 0;
   const client = financeClients.find(
     (client) => client.id === adjustment.finance_client_id
   );
 
   return (
-    <Card p="sm" withBorder shadow="sm" radius="md">
+    <Card p="sm" withBorder shadow="sm" radius="md" ref={ref}>
       <Group justify="space-between" align="flex-start">
         <Group gap="xs" align="center">
           <ThemeIcon

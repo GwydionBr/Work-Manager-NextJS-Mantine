@@ -5,8 +5,8 @@ import dayjs from "dayjs";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Text, Stack, Card, Group, Loader } from "@mantine/core";
-import { IconBrandCashapp } from "@tabler/icons-react";
-import QuickPayoutButton from "@/components/Finances/Payout/Hourly/QuickPayoutButton";
+import { IconCashBanknotePlus } from "@tabler/icons-react";
+import QuickPayoutButton from "@/components/Finances/Payout/HourlyPayout/QuickPayoutButton";
 
 import { Tables } from "@/types/db.types";
 import { TimerProject } from "@/types/work.types";
@@ -40,7 +40,7 @@ export default function HourlyPayoutCard({
     <Card withBorder radius="md" mb="md" p="md" shadow="md" w="100%" maw={400}>
       <Card.Section>
         <Group p="md" gap="md">
-          <IconBrandCashapp />
+          <IconCashBanknotePlus />
           <Text size="sm" fw={500}>
             {getLocalizedText("Schnelle Auszahlung", "Quick Payout")}
           </Text>

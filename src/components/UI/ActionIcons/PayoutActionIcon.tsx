@@ -1,5 +1,5 @@
 import { ActionIcon, ActionIconProps } from "@mantine/core";
-import { IconCash, IconBrandCashapp } from "@tabler/icons-react";
+import { IconCashBanknotePlus } from "@tabler/icons-react";
 import DelayedTooltip from "../DelayedTooltip";
 
 interface PayoutActionIconProps extends ActionIconProps {
@@ -27,7 +27,7 @@ export default function PayoutActionIcon({
         color={opened ? "violet" : "violet"}
         {...props}
       >
-        <IconBrandCashapp
+        <IconCashBanknotePlus
           size={iconSize}
           color={iconColor}
           fill={opened ? "currentColor" : "none"}

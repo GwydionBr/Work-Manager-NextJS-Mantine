@@ -9,7 +9,7 @@ import {
   IconCircleDashedNumber1,
   IconBriefcase,
   IconPresentationAnalytics,
-  IconBrandCashapp,
+  IconCashBanknotePlus,
 } from "@tabler/icons-react";
 import FinanceOverviewTab from "@/components/Finances/Overview/FinanceOverviewTab";
 import FinanceRecurringTab from "@/components/Finances/CashFlow/Recurring/FinanceRecurringTab";
@@ -60,7 +60,7 @@ export default function FinanceTabs() {
           {locale === "de-DE" ? "Projekte" : "Projects"}
         </Tabs.Tab>
         <Tabs.Tab
-          leftSection={<IconBrandCashapp color="light-dark(blue, cyan)" />}
+          leftSection={<IconCashBanknotePlus color="light-dark(blue, cyan)" />}
           value="Payout"
         >
           {locale === "de-DE" ? "Auszahlung" : "Payout"}

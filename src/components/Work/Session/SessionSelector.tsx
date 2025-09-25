@@ -8,7 +8,7 @@ import { Group, Text, Divider, Stack, Button, Collapse } from "@mantine/core";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import { Tables } from "@/types/db.types";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
-import { IconBrandCashapp, IconPencil } from "@tabler/icons-react";
+import { IconCashBanknotePlus, IconPencil } from "@tabler/icons-react";
 import {
   showActionErrorNotification,
   showActionSuccessNotification,
@@ -111,7 +111,7 @@ export default function SessionSelector({
                 )
               )
             }
-            leftSection={<IconBrandCashapp />}
+            leftSection={<IconCashBanknotePlus />}
             color="violet"
           >
             {locale === "de-DE" ? "Auswahl auszahlen" : "Pay Selection"}

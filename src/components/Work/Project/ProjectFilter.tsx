@@ -6,7 +6,7 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import { Button, Card, Divider, Text, Stack } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { Tables } from "@/types/db.types";
-import { IconBrandCashapp, IconSquareRoundedCheck } from "@tabler/icons-react";
+import { IconCashBanknotePlus, IconSquareRoundedCheck } from "@tabler/icons-react";
 import { formatMoney } from "@/utils/formatFunctions";
 
 interface ProjectFilterProps {
@@ -139,7 +139,7 @@ export default function ProjectFilter({
           color="violet"
           onClick={handlePayoutClick}
           disabled={sessionPayout <= 0}
-          leftSection={<IconBrandCashapp />}
+          leftSection={<IconCashBanknotePlus />}
           loading={isProcessingPayout}
         >
           {locale === "de-DE" ? "" : "Payout"}{" "}

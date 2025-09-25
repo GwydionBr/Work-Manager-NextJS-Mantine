@@ -13,7 +13,7 @@ import { showDeleteConfirmationModal } from "@/utils/notificationFunctions";
 import { FinanceProject } from "@/types/finance.types";
 import FinanceProjectForm from "./FinanceProjectForm";
 import FinanceClientForm from "../FinanceClient/FinanceClientForm";
-import FinanceCategoryForm from "../FInanceCategory/FinanceCategoryForm";
+import FinanceCategoryForm from "../FinanceCategory/FinanceCategoryForm";
 
 interface EditFinanceProjectDrawerProps {
   opened: boolean;

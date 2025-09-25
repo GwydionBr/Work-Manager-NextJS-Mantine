@@ -6,7 +6,7 @@ import { Modal, useModalsStack, Group, Text } from "@mantine/core";
 import FinanceProjectForm from "./FinanceProjectForm";
 import useSettingsStore from "@/stores/settingsStore";
 import FinanceClientForm from "../FinanceClient/FinanceClientForm";
-import FinanceCategoryForm from "../FInanceCategory/FinanceCategoryForm";
+import FinanceCategoryForm from "../FinanceCategory/FinanceCategoryForm";
 import {
   IconCategoryPlus,
   IconMoneybagPlus,

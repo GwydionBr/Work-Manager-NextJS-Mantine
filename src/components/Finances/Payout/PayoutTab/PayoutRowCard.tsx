@@ -137,9 +137,6 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
               {locale === "de-DE" ? "Auszahlungsbetrag" : "Payout Amount"}
             </Text>
             <Group gap="xs" align="center">
-              <ThemeIcon size="sm" color="green" variant="light">
-                <IconCurrencyDollar size={14} />
-              </ThemeIcon>
               <Text size="lg" fw={700} c="green">
                 {formatMoney(payout.start_value, payout.start_currency, locale)}
               </Text>
@@ -158,9 +155,6 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
                     : "After Conversion"}
                 </Text>
                 <Group gap="xs" align="center">
-                  <ThemeIcon size="sm" color="blue" variant="light">
-                    <IconCurrencyDollar size={14} />
-                  </ThemeIcon>
                   <Text size="lg" fw={700} c="blue">
                     {formatMoney(
                       payout.end_value!,

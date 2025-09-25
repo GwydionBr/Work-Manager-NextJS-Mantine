@@ -30,8 +30,8 @@ import ProjectFilter from "@/components/Work/Project/ProjectFilter";
 
 import { formatMoney } from "@/utils/formatFunctions";
 import { groupSessions } from "@/utils/sessionHelperFunctions";
-import HourlyPayoutCard from "@/components/Finances/Payout/Hourly/HourlyPayoutCard";
-import ProjectPayoutCard from "@/components/Finances/Payout/Project/ProjectPayoutCard";
+import HourlyPayoutCard from "@/components/Finances/Payout/HourlyPayout/HourlyPayoutCard";
+import ProjectPayoutCard from "@/components/Finances/Payout/ProjectPayout/ProjectPayoutCard";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import NewSessionModal from "@/components/Work/Session/NewSessionModal";
 import SessionSelector from "@/components/Work/Session/SessionSelector";
@@ -45,7 +45,7 @@ import {
   showActionSuccessNotification,
   showActionErrorNotification,
 } from "@/utils/notificationFunctions";
-import HourlyPayoutModal from "@/components/Finances/Payout/Hourly/HourlyPayoutModal";
+import HourlyPayoutModal from "@/components/Finances/Payout/HourlyPayout/HourlyPayoutModal";
 
 export default function WorkPage() {
   const [oldActiveProjectId, setOldActiveProjectId] = useState<string | null>(

@@ -18,7 +18,7 @@ import {
 import { IconCash } from "@tabler/icons-react";
 import FinanceForm from "@/components/Finances/CashFlow/CashflowForm";
 import { SettingsTab } from "../Settings/SettingsModal";
-import FinanceCategoryForm from "./FInanceCategory/FinanceCategoryForm";
+import FinanceCategoryForm from "./FinanceCategory/FinanceCategoryForm";
 
 export default function FinanceInitializer() {
   const [opened, { open, close }] = useDisclosure(false);

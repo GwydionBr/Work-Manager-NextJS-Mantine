@@ -5,7 +5,7 @@ import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Modal, useModalsStack } from "@mantine/core";
 import ProjectForm from "./ProjectForm";
-import FinanceCategoryForm from "@/components/Finances/FInanceCategory/FinanceCategoryForm";
+import FinanceCategoryForm from "@/components/Finances/FinanceCategory/FinanceCategoryForm";
 
 interface NewProjectModalProps {
   opened: boolean;

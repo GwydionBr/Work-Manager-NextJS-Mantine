@@ -13,7 +13,7 @@ import ProjectForm from "../Project/ProjectForm";
 import { IconClockPlus } from "@tabler/icons-react";
 import { NewSession } from "@/types/timerSession.types";
 import { TimerRoundingSettings } from "@/types/timeTracker.types";
-import FinanceCategoryForm from "@/components/Finances/FInanceCategory/FinanceCategoryForm";
+import FinanceCategoryForm from "@/components/Finances/FinanceCategory/FinanceCategoryForm";
 
 interface NewSessionModalProps {
   opened: boolean;
