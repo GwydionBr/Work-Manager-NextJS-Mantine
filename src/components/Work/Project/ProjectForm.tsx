@@ -51,9 +51,9 @@ import CancelButton from "@/components/UI/Buttons/CancelButton";
 import { StoreTimerProject } from "@/types/work.types";
 
 interface ProjectFormProps {
-  project?: Tables<"timer_project">;
+  project?: StoreTimerProject;
   onClose?: () => void;
-  onSuccess?: (project: Tables<"timer_project">) => void;
+  onSuccess?: (project: StoreTimerProject) => void;
   onCancel?: () => void;
   categoryIds: string[];
   setCategoryIds: (categoryIds: string[]) => void;
@@ -151,7 +151,7 @@ export default function ProjectForm({
 
   useEffect(() => {
     if (categoryIds) {
-      form.setFieldValue("cash_flow_category_id", categoryIds);
+      form.setFieldValue("cash_flow_category_ids", categoryIds);
     }
   }, [categoryIds]);
 
@@ -196,10 +196,11 @@ export default function ProjectForm({
 
   const handleSubmit = async (values: z.infer<typeof schema>) => {
     setSubmitting(true);
+    const { cash_flow_category_ids, ...cleanValues } = values;
     if (project) {
       const updatedProject: StoreTimerProject = {
         ...project,
-        ...values,
+        ...cleanValues,
         currency: values.currency as Currency,
         rounding_direction: values.rounding_direction as RoundingDirection,
         categoryIds: categoryIds,
@@ -210,7 +211,9 @@ export default function ProjectForm({
         updatedProject.round_in_time_fragments = null;
         updatedProject.time_fragment_interval = null;
       }
+      console.log("updatedProject", updatedProject);
       const success = await updateProject(updatedProject);
+      console.log("success", success);
       if (success) {
         showActionSuccessNotification(
           locale === "de-DE"
@@ -230,7 +233,7 @@ export default function ProjectForm({
       }
     } else {
       const newProject: TablesInsert<"timer_project"> = {
-        ...values,
+        ...cleanValues,
         currency: values.currency as Currency,
         rounding_direction: values.rounding_direction as RoundingDirection,
       };

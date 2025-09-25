@@ -67,18 +67,8 @@ export default function WorkPage() {
   const { sessionPayout, financeCategories } = useFinanceStore();
   const { locale, showChangeCurrencyWindow, defaultFinanceCurrency } =
     useSettingsStore();
-  // const activeProject = useWorkStore((state) =>
-  //   state.projects.find((p) => {
-  //     if (activeProjectId) {
-  //       return p.id === activeProjectId;
-  //     }
-  //     if (lastActiveProjectId) {
-  //       return p.id === lastActiveProjectId;
-  //     }
-  //     return false;
-  //   })
-  // );
 
+  // Use memo to get the active project
   const activeProject: TimerProject | undefined = useMemo(() => {
     let project = projects.find((p) => p.id === activeProjectId);
     if (!project) {
@@ -93,6 +83,7 @@ export default function WorkPage() {
     const sessions = timerSessions.filter((s) => s.project_id === project.id);
 
     const { categoryIds, ...rest } = project;
+
     return {
       project: rest,
       categories,
@@ -100,15 +91,16 @@ export default function WorkPage() {
     };
   }, [projects, activeProjectId, financeCategories, timerSessions]);
 
+  // State for payout processing
   const [isProcessingPayout, setIsProcessingPayout] = useState(false);
   const [payoutSessionIds, setPayoutSessionIds] = useState<string[]>([]);
   const [payoutStartValue, setPayoutStartValue] = useState<number>(0);
-
   const [
     openedPayoutModal,
     { open: openPayoutModal, close: closePayoutModal },
   ] = useDisclosure(false);
 
+  // State for filter time span
   const [filterTimeSpan, setFilterTimeSpan] = useState<
     [Date | null, Date | null]
   >([null, null]);

@@ -37,6 +37,7 @@ export default function EditProjectDrawer({
   const activeProject = useWorkStore((state) =>
     state.projects.find((p) => p.id === activeProjectId)
   );
+  console.log("activeProject", activeProject);
   const [isLoading, setIsLoading] = useState(false);
   const [categoryIds, setCategoryIds] = useState<string[]>([]);
   const drawersStack = useDrawersStack([

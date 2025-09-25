@@ -14,6 +14,7 @@ export async function updateTimerProject({
   categoryUpdates,
 }: UpdateTimerProjectProps): Promise<SimpleResponse> {
   const supabase = await createClient();
+
   const { data, error } = await supabase
     .from("timer_project")
     .update(project)

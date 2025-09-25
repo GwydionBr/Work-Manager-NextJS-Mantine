@@ -249,6 +249,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         const oldProject = get().projects.find(
           (p) => p.id === updatedProject.id
         );
+        console.log("oldProject", oldProject);
         if (!oldProject) return null;
 
         const updateCategories = {
@@ -260,8 +261,10 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           ),
         };
 
+        const { categoryIds, ...projectData } = updatedProject;
+
         const updatedProjectResponse = await actions.updateTimerProject({
-          project: updatedProject,
+          project: projectData,
           categoryUpdates: updateCategories,
         });
 
