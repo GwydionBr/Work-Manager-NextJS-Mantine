@@ -16,21 +16,9 @@ export async function createSingleCashFlow({
 }: CreateSingleCashFlowProps): Promise<ApiResponseSingle<StoreSingleCashFlow>> {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return {
-      data: null,
-      error: "User not found",
-      success: false,
-    };
-  }
-
   const { data, error } = await supabase
     .from("single_cash_flow")
-    .insert({ ...cashFlow, user_id: user.id })
+    .insert({ ...cashFlow })
     .select()
     .single();
 

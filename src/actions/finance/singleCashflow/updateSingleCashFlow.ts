@@ -43,7 +43,6 @@ export async function updateSingleCashFlow({
         categoryUpdates.addIds.map((id) => ({
           single_cash_flow_id: data.id,
           finance_category_id: id,
-          user_id: data.user_id,
         }))
       );
 

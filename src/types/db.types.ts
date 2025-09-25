@@ -718,45 +718,6 @@ export type Database = {
           },
         ];
       };
-      payout_category: {
-        Row: {
-          created_at: string;
-          finance_category_id: string;
-          id: string;
-          payout_id: string;
-          user_id: string;
-        };
-        Insert: {
-          created_at?: string;
-          finance_category_id: string;
-          id?: string;
-          payout_id: string;
-          user_id?: string;
-        };
-        Update: {
-          created_at?: string;
-          finance_category_id?: string;
-          id?: string;
-          payout_id?: string;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "payout_category_finance_category_id_fkey";
-            columns: ["finance_category_id"];
-            isOneToOne: false;
-            referencedRelation: "finance_category";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "payout_category_payout_id_fkey";
-            columns: ["payout_id"];
-            isOneToOne: false;
-            referencedRelation: "payout";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
       profiles: {
         Row: {
           avatar_url: string | null;
@@ -796,6 +757,7 @@ export type Database = {
       recurring_cash_flow: {
         Row: {
           amount: number;
+          category_id: string | null;
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
           description: string;
@@ -810,6 +772,7 @@ export type Database = {
         };
         Insert: {
           amount: number;
+          category_id?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           description: string;
@@ -824,6 +787,7 @@ export type Database = {
         };
         Update: {
           amount?: number;
+          category_id?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           description?: string;
@@ -866,7 +830,7 @@ export type Database = {
           finance_category_id: string;
           id?: string;
           recurring_cash_flow_id: string;
-          user_id: string;
+          user_id?: string;
         };
         Update: {
           created_at?: string;
@@ -1008,6 +972,7 @@ export type Database = {
       single_cash_flow: {
         Row: {
           amount: number;
+          category_id: string | null;
           changed_date: string | null;
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
@@ -1024,6 +989,7 @@ export type Database = {
         };
         Insert: {
           amount: number;
+          category_id?: string | null;
           changed_date?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
@@ -1040,6 +1006,7 @@ export type Database = {
         };
         Update: {
           amount?: number;
+          category_id?: string | null;
           changed_date?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
@@ -1259,6 +1226,45 @@ export type Database = {
             columns: ["folder_id"];
             isOneToOne: false;
             referencedRelation: "timer_project_folder";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      timer_project_category: {
+        Row: {
+          created_at: string;
+          finance_category_id: string;
+          id: string;
+          timer_project_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          finance_category_id: string;
+          id?: string;
+          timer_project_id: string;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          finance_category_id?: string;
+          id?: string;
+          timer_project_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "timer_project_category_finance_category_id_fkey";
+            columns: ["finance_category_id"];
+            isOneToOne: false;
+            referencedRelation: "finance_category";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "timer_project_category_timer_project_id_fkey";
+            columns: ["timer_project_id"];
+            isOneToOne: false;
+            referencedRelation: "timer_project";
             referencedColumns: ["id"];
           },
         ];

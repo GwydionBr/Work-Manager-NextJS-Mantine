@@ -32,7 +32,7 @@ export async function createRecurringCashFlow({
 
   const { data, error } = await supabase
     .from("recurring_cash_flow")
-    .insert({ ...cashFlow, user_id: user.id })
+    .insert({ ...cashFlow })
     .select()
     .single();
 
@@ -46,8 +46,6 @@ export async function createRecurringCashFlow({
       categoryIds.map((categoryId) => ({
         recurring_cash_flow_id: data.id,
         finance_category_id: categoryId,
-        // User Id is not nesesarry soon
-        user_id: user.id,
       }))
     )
     .select();

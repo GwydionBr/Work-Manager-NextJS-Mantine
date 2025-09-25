@@ -42,8 +42,7 @@ export async function updateRecurringCashFlow({
     const { error: categoryErrorAdd } = await supabase.from("recurring_cash_flow_category").insert(
       categoryUpdates.addIds.map((id) => ({
         recurring_cash_flow_id: data.id,
-        finance_category_id: id,
-        user_id: data.user_id,
+        finance_category_id: id
       }))
     );
 
