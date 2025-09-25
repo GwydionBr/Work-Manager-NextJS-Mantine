@@ -3,7 +3,6 @@
 import { useHover } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useFinanceStore } from "@/stores/financeStore";
-import { Tables } from "@/types/db.types";
 import { formatDate, formatMoney } from "@/utils/formatFunctions";
 import { Badge, Card, CardProps, Group, Text, ThemeIcon } from "@mantine/core";
 import {
@@ -16,9 +15,10 @@ import { FinanceInterval } from "@/types/settings.types";
 import { useMemo } from "react";
 import { getNextDate } from "@/utils/financeHelperFunction";
 import { isToday } from "date-fns";
+import { StoreRecurringCashFlow } from "@/types/finance.types";
 
 interface RecurringCashFlowRowProps extends CardProps {
-  cashflow: Tables<"recurring_cash_flow">;
+  cashflow: StoreRecurringCashFlow;
   showEndDate?: boolean;
   showStartDate?: boolean;
   showNextDate?: boolean;
@@ -108,7 +108,7 @@ export default function RecurringCashFlowRow({
               </Group>
             )}
           </Group>
-          {cashflow.category_id && (
+          {cashflow.categoryIds.length > 0 && (
             <Badge
               color="grape"
               variant="light"
@@ -116,7 +116,7 @@ export default function RecurringCashFlowRow({
             >
               {
                 financeCategories.find(
-                  (category) => category.id === cashflow.category_id
+                  (category) => cashflow.categoryIds.includes(category.id)
                 )?.title
               }
             </Badge>

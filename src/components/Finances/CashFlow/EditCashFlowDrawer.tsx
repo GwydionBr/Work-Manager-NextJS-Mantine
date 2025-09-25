@@ -17,6 +17,7 @@ import {
   Button,
   Stack,
   Popover,
+  MultiSelect,
 } from "@mantine/core";
 import SingleCashFlowForm from "@/components/Finances/CashFlow/SingleFinanceForm";
 import RecurringCashFlowForm from "@/components/Finances/CashFlow/RecurringFinanceForm";
@@ -40,7 +41,7 @@ import {
   showActionSuccessNotification,
 } from "@/utils/notificationFunctions";
 import { Radio } from "@mantine/core";
-import { DeleteRecurringCashFlowMode } from "@/types/finance.types";
+import { DeleteRecurringCashFlowMode, StoreRecurringCashFlow, StoreSingleCashFlow } from "@/types/finance.types";
 
 // Type guard to distinguish between single and recurring cash flows
 function isSingleCashFlow(
@@ -54,7 +55,7 @@ export default function EditCashFlowDrawer({
   opened,
   onClose,
 }: {
-  cashFlow: Tables<"single_cash_flow"> | Tables<"recurring_cash_flow">;
+  cashFlow: StoreSingleCashFlow | StoreRecurringCashFlow;
   opened: boolean;
   onClose: () => void;
 }) {
@@ -64,8 +65,8 @@ export default function EditCashFlowDrawer({
     DeleteRecurringCashFlowMode.delete_all
   );
   const [type, setType] = useState<CashFlowType>("income");
-  const [categoryId, setCategoryId] = useState<string | null>(
-    cashFlow.category_id ?? null
+  const [categoryIds, setCategoryIds] = useState<string[]>(
+    cashFlow.categoryIds ?? []
   );
   const [pendingValues, setPendingValues] = useState<any>(null);
   const {
@@ -99,8 +100,8 @@ export default function EditCashFlowDrawer({
   }, [opened]);
 
   useEffect(() => {
-    if (categoryId !== cashFlow.category_id) {
-      setCategoryId(cashFlow.category_id);
+    if (categoryIds !== cashFlow.categoryIds) {
+      setCategoryIds(cashFlow.categoryIds);
     }
   }, [cashFlow]);
 
@@ -112,7 +113,7 @@ export default function EditCashFlowDrawer({
       success = await updateSingleCashFlow({
         id: cashFlow.id,
         type,
-        category_id: categoryId,
+        categoryIds,
         ...values,
       });
       if (success) {
@@ -125,14 +126,14 @@ export default function EditCashFlowDrawer({
         values.amount !== cashFlow.amount ||
         values.currency !== cashFlow.currency ||
         type !== cashFlow.type ||
-        categoryId !== cashFlow.category_id;
+        categoryIds !== cashFlow.categoryIds;
 
       if (hasChanges) {
         // Store the values and show the update modal
         setPendingValues({
           id: cashFlow.id,
           type,
-          category_id: categoryId,
+          categoryIds,
           ...values,
         });
         drawerStack.open("update-cash-flow");
@@ -141,7 +142,7 @@ export default function EditCashFlowDrawer({
         success = await updateRecurringCashFlow({
           id: cashFlow.id,
           type,
-          category_id: categoryId,
+          categoryIds,
           ...values,
         });
         if (success) {
@@ -200,8 +201,9 @@ export default function EditCashFlowDrawer({
     if (isSingleCashFlow(cashFlow)) return;
     setIsLoading(true);
     const success = await updateRecurringCashFlow({
-      id: cashFlow.id,
+      ...cashFlow,
       end_date: new Date().toISOString(),
+      categoryIds,
     });
     if (success) {
       showActionSuccessNotification(
@@ -237,7 +239,7 @@ export default function EditCashFlowDrawer({
         amount: pendingValues.amount,
         currency: pendingValues.currency,
         type: pendingValues.type,
-        category_id: pendingValues.category_id,
+        categoryIds: pendingValues.categoryIds,
       };
 
       const singleSuccess = await updateMultipleSingleCashFlows(
@@ -279,7 +281,7 @@ export default function EditCashFlowDrawer({
   }
 
   const handleAddCategory = (category: Tables<"finance_category">) => {
-    setCategoryId(category.id);
+    setCategoryIds((prev) => [...prev, category.id]);
   };
 
   return (
@@ -331,7 +333,7 @@ export default function EditCashFlowDrawer({
             ]}
           />
           <Group wrap="nowrap">
-            <Select
+            <MultiSelect
               w="100%"
               data={financeCategories.map((category) => ({
                 label: category.title,
@@ -341,8 +343,8 @@ export default function EditCashFlowDrawer({
               placeholder={
                 locale === "de-DE" ? "Kategorie auswählen" : "Select a category"
               }
-              value={categoryId}
-              onChange={(value) => setCategoryId(value)}
+              value={categoryIds}
+              onChange={(value) => setCategoryIds(value)}
               searchable
               clearable
               nothingFoundMessage={

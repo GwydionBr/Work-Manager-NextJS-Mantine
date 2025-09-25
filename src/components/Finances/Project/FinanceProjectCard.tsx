@@ -109,6 +109,7 @@ export default function FinanceProjectCard({
   const handleCategoryClose = (
     updatedCategories: Tables<"finance_category">[] | null
   ) => {
+    closeBadgePopover();
     if (updatedCategories) {
       const { clients, categories, ...projectData } = project;
       updateFinanceProject({

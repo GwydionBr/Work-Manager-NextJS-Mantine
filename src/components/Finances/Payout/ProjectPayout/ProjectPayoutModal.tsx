@@ -59,34 +59,34 @@ export default function ProjectModalForm({
 
   async function onSubmit(values: z.infer<typeof schema>) {
     setIsProcessing(true);
-    const payoutResult = await payoutProjectSalary(
-      project.id,
-      startValue,
-      startCurrency,
-      categoryId,
-      values.endValue !== startValue ? values.endValue : null,
-      values.endCurrency !== startCurrency
-        ? (values.endCurrency as Currency)
-        : null
-    );
+    // const payoutResult = await payoutProjectSalary(
+    //   project.id,
+    //   startValue,
+    //   startCurrency,
+    //   categoryId,
+    //   values.endValue !== startValue ? values.endValue : null,
+    //   values.endCurrency !== startCurrency
+    //     ? (values.endCurrency as Currency)
+    //     : null
+    // );
 
-    if (payoutResult.success) {
-      addExistingSingleCashFlow(payoutResult.data.cashFlow);
-      updateProject({
-        ...project,
-        total_payout: startValue + project.total_payout,
-      });
-      handleClose();
-    } else {
-      setError(
-        locale === "de-DE"
-          ? "Fehler beim Auszahlen"
-          : "Failed to process payout"
-      );
-      setTimeout(() => {
-        setError(null);
-      }, 3000);
-    }
+    // if (payoutResult.success) {
+    //   addExistingSingleCashFlow(payoutResult.data.cashFlow);
+    //   updateProject({
+    //     ...project,
+    //     total_payout: startValue + project.total_payout,
+    //   });
+    //   handleClose();
+    // } else {
+    //   setError(
+    //     locale === "de-DE"
+    //       ? "Fehler beim Auszahlen"
+    //       : "Failed to process payout"
+    //   );
+    //   setTimeout(() => {
+    //     setError(null);
+    //   }, 3000);
+    // }
     setIsProcessing(false);
   }
 

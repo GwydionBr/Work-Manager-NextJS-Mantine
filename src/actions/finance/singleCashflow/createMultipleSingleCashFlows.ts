@@ -1,14 +1,24 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { TablesInsert, Tables } from "@/types/db.types";
+import { TablesInsert } from "@/types/db.types";
 import { ApiResponseList } from "@/types/action.types";
+import {
+  StoreRecurringCashFlow,
+  StoreSingleCashFlow,
+} from "@/types/finance.types";
+
+interface CreateMultipleSingleCashFlowsProps {
+  cashFlows: TablesInsert<"single_cash_flow">[];
+  recurringCashFlows: StoreRecurringCashFlow[];
+}
 
 export async function createMultipleSingleCashFlows({
   cashFlows,
-}: {
-  cashFlows: TablesInsert<"single_cash_flow">[];
-}): Promise<ApiResponseList<Tables<"single_cash_flow">>> {
+  recurringCashFlows,
+}: CreateMultipleSingleCashFlowsProps): Promise<
+  ApiResponseList<StoreSingleCashFlow>
+> {
   const supabase = await createClient();
 
   const {
@@ -16,26 +26,47 @@ export async function createMultipleSingleCashFlows({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return {
-      data: null,
-      error: "User not found",
-      success: false,
-    };
+    return { success: false, data: null, error: "User not found" };
   }
-
-  const insertData = cashFlows.map((cashFlow) => ({
-    ...cashFlow,
-    user_id: user.id,
-  }));
 
   const { data, error } = await supabase
     .from("single_cash_flow")
-    .insert(insertData)
+    .insert(cashFlows)
     .select();
 
   if (error) {
     return { success: false, data: null, error: error.message };
   }
 
-  return { success: true, data, error: null };
+  const categoryLinkRows = data.flatMap(
+    (cashFlow) =>
+      recurringCashFlows
+        .find(
+          (recurringCashFlow) =>
+            recurringCashFlow.id === cashFlow.recurring_cash_flow_id
+        )
+        ?.categoryIds.map((categoryId) => ({
+          single_cash_flow_id: cashFlow.id,
+          finance_category_id: categoryId,
+          user_id: user.id,
+        })) ?? []
+  );
+
+  const { data: categories, error: categoriesError } = await supabase
+    .from("single_cash_flow_category")
+    .insert(categoryLinkRows)
+    .select();
+
+  if (categoriesError) {
+    return { success: false, data: null, error: categoriesError.message };
+  }
+
+  const formattedData = data.map((cashFlow) => ({
+    ...cashFlow,
+    categoryIds: categories
+      .filter((category) => category.single_cash_flow_id === cashFlow.id)
+      .map((category) => category.finance_category_id),
+  }));
+
+  return { success: true, data: formattedData, error: null };
 }

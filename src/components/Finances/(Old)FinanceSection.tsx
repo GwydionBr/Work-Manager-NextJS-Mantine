@@ -118,11 +118,11 @@ export default function FinanceSection({
               >
                 <Group justify="center">
                   <Text size="sm" fw={700}>
-                    {
+                    {/* {
                       financeCategories.find(
-                        (category) => category.id === cashFlow.category_id
+                        (category) => category.id === cashFlow.categoryIds[0]
                       )?.title
-                    }
+                    } */}
                   </Text>
                 </Group>
                 <Grid gutter="xs" align="center">
@@ -148,13 +148,13 @@ export default function FinanceSection({
           ))}
         </ScrollArea>
       )}
-      {selectedCashFlow && (
+      {/* {selectedCashFlow && (
         <EditCashFlowDrawer
           cashFlow={selectedCashFlow}
           opened={editCashFlowOpened}
           onClose={closeEditCashFlow}
         />
-      )}
+      )} */}
     </Container>
   );
 }

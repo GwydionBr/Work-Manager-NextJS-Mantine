@@ -3,6 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { ApiResponseSingle } from "@/types/action.types";
 import { Tables, TablesInsert } from "@/types/db.types";
+import { StoreSingleCashFlow } from "@/types/finance.types";
 
 interface PayoutSessionsProps {
   date: Date;
@@ -18,7 +19,7 @@ export async function payoutSessions({
   categoryIds,
 }: PayoutSessionsProps): Promise<
   ApiResponseSingle<{
-    cashflow: Tables<"single_cash_flow">;
+    cashflow: StoreSingleCashFlow;
     payout: Tables<"payout">;
   }>
 > {
@@ -40,7 +41,7 @@ export async function payoutSessions({
     return { success: false, data: null, error: cashFlowError.message };
   }
 
-  const { data: categories, error: categoriesError } = await supabase
+  const { error: categoriesError } = await supabase
     .from("single_cash_flow_category")
     .insert(
       categoryIds.map((id) => ({
@@ -67,6 +68,19 @@ export async function payoutSessions({
     return { success: false, data: null, error: payoutError.message };
   }
 
+  const { error: payoutCategoriesError } = await supabase
+    .from("payout_category")
+    .insert(
+      categoryIds.map((id) => ({
+        payout_id: payoutData.id,
+        finance_category_id: id,
+      }))
+    );
+
+  if (payoutCategoriesError) {
+    return { success: false, data: null, error: payoutCategoriesError.message };
+  }
+
   for (const sessionId of sessionIds) {
     const { error: sessionError } = await supabase
       .from("timer_session")
@@ -82,7 +96,10 @@ export async function payoutSessions({
 
   return {
     success: true,
-    data: { cashflow, payout: payoutData },
+    data: {
+      cashflow: { ...cashflow, categoryIds: categoryIds },
+      payout: payoutData,
+    },
     error: null,
   };
 }

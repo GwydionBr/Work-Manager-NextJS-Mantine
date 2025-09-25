@@ -7,6 +7,11 @@ export interface ErrorResponse {
   error: string;
 }
 
+export interface UpdateManyToMany {
+  deleteIds: string[];
+  addIds: string[];
+}
+
 export interface SuccessResponseList<T> {
   success: true;
   data: T[];

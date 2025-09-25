@@ -12,7 +12,7 @@ import {
   Switch,
   Group,
   Alert,
-  Select,
+  MultiSelect,
   Button,
 } from "@mantine/core";
 import {
@@ -37,16 +37,16 @@ interface FinanceFormProps {
   onClose: () => void;
   isSingle?: boolean;
   onOpenCategoryForm: () => void;
-  categoryId: string | null;
-  setCategoryId: (categoryId: string | null) => void;
+  categoryIds: string[];
+  setCategoryIds: (categoryIds: string[]) => void;
 }
 
 export default function FinanceForm({
   onClose,
   isSingle = true,
   onOpenCategoryForm,
-  categoryId,
-  setCategoryId,
+  categoryIds,
+  setCategoryIds,
 }: FinanceFormProps) {
   const [type, setType] = useState<CashFlowType>("income");
   const [isRecurring, setIsRecurring] = useState<boolean>(!isSingle);
@@ -59,12 +59,14 @@ export default function FinanceForm({
 
   async function handleSingleFinanceSubmit(values: SingleFinanceFormValues) {
     setIsLoading(true);
-    const success = await addSingleCashFlow({
-      ...values,
-      date: values.date.toISOString(),
-      category_id: categoryId,
-      type,
-    });
+    const success = await addSingleCashFlow(
+      {
+        ...values,
+        date: values.date.toISOString(),
+        type,
+      },
+      categoryIds
+    );
     if (!success) {
       setError("Failed to add single cash flow. Please try again.");
       setIsLoading(false);
@@ -78,13 +80,15 @@ export default function FinanceForm({
     values: RecurringFinanceFormValues
   ) {
     setIsLoading(true);
-    const success = await addRecurringCashFlow({
-      ...values,
-      end_date: values.end_date?.toISOString(),
-      start_date: values.start_date.toISOString(),
-      category_id: categoryId,
-      type,
-    });
+    const success = await addRecurringCashFlow(
+      {
+        ...values,
+        end_date: values.end_date?.toISOString(),
+        start_date: values.start_date.toISOString(),
+        type,
+      },
+      categoryIds
+    );
     if (!success) {
       setError("Failed to add recurring cash flow. Please try again.");
       setIsLoading(false);
@@ -135,7 +139,7 @@ export default function FinanceForm({
           <Text>{locale === "de-DE" ? "Wiederkehrend" : "Recurring"}</Text>
         </Group>
         <Group wrap="nowrap">
-          <Select
+          <MultiSelect
             w="100%"
             data={financeCategories.map((category) => ({
               label: category.title,
@@ -145,8 +149,8 @@ export default function FinanceForm({
             placeholder={
               locale === "de-DE" ? "Kategorie auswählen" : "Select a category"
             }
-            value={categoryId}
-            onChange={(value) => setCategoryId(value)}
+            value={categoryIds}
+            onChange={(value) => setCategoryIds(value)}
             searchable
             clearable
             nothingFoundMessage={

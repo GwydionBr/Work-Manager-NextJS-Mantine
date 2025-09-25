@@ -22,7 +22,7 @@ import FinanceCategoryForm from "./FinanceCategory/FinanceCategoryForm";
 
 export default function FinanceInitializer() {
   const [opened, { open, close }] = useDisclosure(false);
-  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [categoryIds, setCategoryIds] = useState<string[]>([]);
   const { locale } = useSettingsStore();
   const { setIsModalOpen, setSelectedTab } = useSettingsStore();
   return (
@@ -82,8 +82,8 @@ export default function FinanceInitializer() {
             <FinanceForm
               onClose={() => {}}
               onOpenCategoryForm={open}
-              categoryId={categoryId}
-              setCategoryId={setCategoryId}
+              categoryIds={categoryIds}
+              setCategoryIds={setCategoryIds}
             />
           </Box>
           <Modal
@@ -95,7 +95,9 @@ export default function FinanceInitializer() {
           >
             <FinanceCategoryForm
               onClose={close}
-              onSuccess={(category) => setCategoryId(category.id)}
+              onSuccess={(category) =>
+                setCategoryIds((prev) => [...prev, category.id])
+              }
             />
           </Modal>
         </Stack>

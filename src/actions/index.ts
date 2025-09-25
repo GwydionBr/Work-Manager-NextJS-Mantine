@@ -32,7 +32,7 @@ export { deleteAppointment } from "./appointments/deleteAppointment";
 
 // Payout Actions
 
-export { payoutSessions } from "./finance/payout/sessionPayout";
+export { payoutSessions } from "./finance/payout/payoutSessions";
 export { createPayout } from "./finance/payout/createPayout";
 export { getAllPayouts } from "./finance/payout/getAllPayouts";
 
@@ -82,9 +82,9 @@ export { deleteFinanceAdjustments } from "./finance/financeAdjustment/deleteFina
 export {
   getAllRecurringCashFlows,
   createRecurringCashFlow,
-  updateRecurringCashFlow,
   deleteRecurringCashFlow,
 } from "./finance/recurringCashflow/recurringCashFlowActions";
+export { updateRecurringCashFlow } from "./finance/recurringCashflow/updateRecurringCashflow";
 
 export {
   getAllFinanceCategories,

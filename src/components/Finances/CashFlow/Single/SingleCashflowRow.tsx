@@ -1,11 +1,11 @@
 "use client";
 
-import { useHover } from "@mantine/hooks";
+import { useMemo } from "react";
+import { useHover, useDisclosure } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
-  Badge,
   Card,
   CardProps,
   Grid,
@@ -14,14 +14,14 @@ import {
   Transition,
   Box,
 } from "@mantine/core";
-import { IconTag } from "@tabler/icons-react";
 
 import { formatMoney } from "@/utils/formatFunctions";
-import { Tables } from "@/types/db.types";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
+import FinanceCategoryBadges from "../../FinanceCategory/FinanceCategoryBadges";
+import { StoreSingleCashFlow } from "@/types/finance.types";
 
 interface SingleCashflowRowProps extends CardProps {
-  cashflow: Tables<"single_cash_flow">;
+  cashflow: StoreSingleCashFlow;
   onEdit: () => void;
   selectedModeActive: boolean;
   isSelected: boolean;
@@ -39,11 +39,21 @@ export default function SingleCashflowRow({
   const { locale } = useSettingsStore();
   const { financeCategories } = useFinanceStore();
   const { hovered, ref } = useHover();
+  const [
+    isCategoryPopoverOpen,
+    { open: openCategoryPopover, close: closeCategoryPopover },
+  ] = useDisclosure(false);
+
+  const currentCategories = useMemo(() => {
+    return financeCategories.filter((category) =>
+      cashflow.categoryIds.includes(category.id)
+    );
+  }, [financeCategories, cashflow.categoryIds]);
+
   return (
     <Card
       withBorder
       shadow="sm"
-      h={45}
       radius="md"
       p="xs"
       bg={
@@ -56,10 +66,12 @@ export default function SingleCashflowRow({
         border: hovered ? "1px solid var(--mantine-color-blue-6)" : "",
       }}
       onClick={(e) => {
-        if (selectedModeActive) {
-          onToggleSelected(e as any);
-        } else {
-          onEdit();
+        if (!isCategoryPopoverOpen) {
+          if (selectedModeActive) {
+            onToggleSelected(e as any);
+          } else {
+            onEdit();
+          }
         }
       }}
       {...props}
@@ -97,19 +109,11 @@ export default function SingleCashflowRow({
           <Text>{cashflow.title}</Text>
         </Grid.Col>
         <Grid.Col span={3}>
-          {cashflow.category_id && (
-            <Badge
-              color="grape"
-              variant="light"
-              leftSection={<IconTag size={12} />}
-            >
-              {
-                financeCategories.find(
-                  (category) => category.id === cashflow.category_id
-                )?.title
-              }
-            </Badge>
-          )}
+          <FinanceCategoryBadges
+            categories={currentCategories}
+            onPopoverOpen={openCategoryPopover}
+            onPopoverClose={closeCategoryPopover}
+          />
         </Grid.Col>
       </Grid>
     </Card>

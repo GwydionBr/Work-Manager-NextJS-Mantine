@@ -20,7 +20,7 @@ export default function CashFlowModal({
   isSingle = true,
 }: CashFlowModalProps) {
   const modalStack = useModalsStack(["cash-flow", "category-form"]);
-  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [categoryIds, setCategoryIds] = useState<string[]>([]);
   const { locale } = useSettingsStore();
   useEffect(() => {
     if (opened) {
@@ -47,8 +47,8 @@ export default function CashFlowModal({
         <FinanceForm
           onClose={onClose}
           onOpenCategoryForm={() => modalStack.open("category-form")}
-          categoryId={categoryId}
-          setCategoryId={setCategoryId}
+          categoryIds={categoryIds}
+          setCategoryIds={setCategoryIds}
           isSingle={isSingle}
         />
       </Modal>
@@ -66,7 +66,9 @@ export default function CashFlowModal({
       >
         <FinanceCategoryForm
           onClose={() => modalStack.close("category-form")}
-          onSuccess={(category) => setCategoryId(category.id)}
+          onSuccess={(category) =>
+            setCategoryIds((prev) => [...prev, category.id])
+          }
         />
       </Modal>
     </Modal.Stack>

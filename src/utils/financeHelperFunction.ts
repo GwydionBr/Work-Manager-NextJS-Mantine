@@ -1,4 +1,8 @@
 import { Tables, TablesInsert } from "@/types/db.types";
+import {
+  StoreRecurringCashFlow,
+  StoreSingleCashFlow,
+} from "@/types/finance.types";
 import { FinanceInterval } from "@/types/settings.types";
 import {
   addMonths,
@@ -79,16 +83,20 @@ export const getNextDate = (
 };
 
 interface ProcessedRecurringCashFlows {
-  pastAndCurrentFlows: TablesInsert<"single_cash_flow">[];
-  futureFlows: Tables<"single_cash_flow">[];
+  pastAndCurrentFlows: (TablesInsert<"single_cash_flow"> & {
+    categoryIds: string[];
+  })[];
+  futureFlows: StoreSingleCashFlow[];
 }
 
 export const processRecurringCashFlows = (
-  recurringCashFlows: Tables<"recurring_cash_flow">[],
-  existingSingleCashFlows: Tables<"single_cash_flow">[]
+  recurringCashFlows: StoreRecurringCashFlow[],
+  existingSingleCashFlows: StoreSingleCashFlow[]
 ): ProcessedRecurringCashFlows => {
-  const pastAndCurrentFlows: TablesInsert<"single_cash_flow">[] = [];
-  const futureFlows: Tables<"single_cash_flow">[] = [];
+  const pastAndCurrentFlows: (TablesInsert<"single_cash_flow"> & {
+    categoryIds: string[];
+  })[] = [];
+  const futureFlows: StoreSingleCashFlow[] = [];
   const today = new Date();
   const sixMonthsFromNow = addMonths(today, 6);
 
@@ -121,8 +129,8 @@ export const processRecurringCashFlows = (
           is_active: true,
           user_id: flow.user_id,
           recurring_cash_flow_id: flow.id,
-          category_id: flow.category_id,
           finance_client_id: flow.finance_client_id,
+          categoryIds: flow.categoryIds,
         };
 
         if (currentDate <= today) {
@@ -135,7 +143,6 @@ export const processRecurringCashFlows = (
             id: crypto.randomUUID(),
             created_at: new Date().toISOString(),
             changed_date: null,
-            category_id: flow.category_id,
             finance_project_adjustment_id: null,
             finance_project_id: null,
             finance_client_id: flow.finance_client_id,

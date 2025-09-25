@@ -796,7 +796,6 @@ export type Database = {
       recurring_cash_flow: {
         Row: {
           amount: number;
-          category_id: string | null;
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
           description: string;
@@ -811,7 +810,6 @@ export type Database = {
         };
         Insert: {
           amount: number;
-          category_id?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           description: string;
@@ -826,7 +824,6 @@ export type Database = {
         };
         Update: {
           amount?: number;
-          category_id?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
           description?: string;
@@ -852,6 +849,45 @@ export type Database = {
             columns: ["finance_client_id"];
             isOneToOne: false;
             referencedRelation: "finance_client";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      recurring_cash_flow_category: {
+        Row: {
+          created_at: string;
+          finance_category_id: string;
+          id: string;
+          recurring_cash_flow_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          finance_category_id: string;
+          id?: string;
+          recurring_cash_flow_id: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          finance_category_id?: string;
+          id?: string;
+          recurring_cash_flow_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "recurring_cash_flow_category_finance_category_id_fkey";
+            columns: ["finance_category_id"];
+            isOneToOne: false;
+            referencedRelation: "finance_category";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "recurring_cash_flow_category_recurring_cash_flow_id_fkey";
+            columns: ["recurring_cash_flow_id"];
+            isOneToOne: false;
+            referencedRelation: "recurring_cash_flow";
             referencedColumns: ["id"];
           },
         ];
@@ -972,7 +1008,6 @@ export type Database = {
       single_cash_flow: {
         Row: {
           amount: number;
-          category_id: string | null;
           changed_date: string | null;
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
@@ -989,7 +1024,6 @@ export type Database = {
         };
         Insert: {
           amount: number;
-          category_id?: string | null;
           changed_date?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
@@ -1006,7 +1040,6 @@ export type Database = {
         };
         Update: {
           amount?: number;
-          category_id?: string | null;
           changed_date?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];

@@ -20,7 +20,6 @@ import {
 import EditCashFlowButton from "@/components/Finances/CashFlow/EditCashFlowDrawer";
 import CashFlowModal from "@/components/Finances/CashFlow/CashFlowModal";
 import { FinanceInterval } from "@/types/settings.types";
-import { Tables } from "@/types/db.types";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import {
   IconCalendarEvent,
@@ -34,7 +33,7 @@ import FinancesNavbar from "../../FinancesNavbar";
 import RecurringCashFlowRow from "./RecurringCashFlowRow";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 import { SettingsTab } from "@/components/Settings/SettingsModal";
-import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
+import { StoreRecurringCashFlow } from "@/types/finance.types";
 
 export default function FinanceRecurringTab() {
   const { recurringCashFlows, isFetching } = useFinanceStore();
@@ -48,20 +47,13 @@ export default function FinanceRecurringTab() {
     "all"
   );
 
-  // Bulk selection
-  const [
-    bulkSelectionActive,
-    { toggle: toggleBulkSelection, close: closeBulkSelection },
-  ] = useDisclosure(false);
-  const [selectedCashFlows, setSelectedCashFlows] = useState<string[]>([]);
-
   // Single Edit
   const [
     editCashFlowOpened,
     { open: openEditCashFlow, close: closeEditCashFlow },
   ] = useDisclosure(false);
   const [selectedCashFlow, setSelectedCashFlow] =
-    useState<Tables<"recurring_cash_flow"> | null>(null);
+      useState<StoreRecurringCashFlow | null>(null);
 
   // Single Add
   const [
@@ -72,8 +64,6 @@ export default function FinanceRecurringTab() {
   useEffect(() => {
     if (recurringCashFlows.length === 0) {
       setFilter("all");
-      closeBulkSelection();
-      setSelectedCashFlows([]);
       setSelectedCashFlow(null);
     } else if (recurringCashFlows.length > 0 && selectedCashFlow === null) {
       setSelectedCashFlow(recurringCashFlows[0]);
@@ -312,7 +302,7 @@ export default function FinanceRecurringTab() {
               </ActionIcon>
             </DelayedTooltip>
             {/* <SelectActionIcon
-              iconSize={20}
+              iconSize={20}   
               onClick={toggleBulkSelection}
               selected={bulkSelectionActive}
               partiallySelected={

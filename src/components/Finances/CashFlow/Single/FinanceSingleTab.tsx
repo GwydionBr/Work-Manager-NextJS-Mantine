@@ -22,7 +22,6 @@ import EditCashFlowDrawer from "@/components/Finances/CashFlow/EditCashFlowDrawe
 import CashFlowModal from "@/components/Finances/CashFlow/CashFlowModal";
 
 import { formatDate, formatMoney } from "@/utils/formatFunctions";
-import { Tables } from "@/types/db.types";
 import {
   IconCashMove,
   IconCashMoveBack,
@@ -41,6 +40,7 @@ import {
   showActionSuccessNotification,
   showDeleteConfirmationModal,
 } from "@/utils/notificationFunctions";
+import { StoreSingleCashFlow } from "@/types/finance.types";
 
 export default function FinanceSingleTab() {
   const { singleCashFlows, deleteSingleCashFlows, isFetching } =
@@ -69,7 +69,7 @@ export default function FinanceSingleTab() {
 
   // Single Edit
   const [selectedCashFlow, setSelectedCashFlow] =
-    useState<Tables<"single_cash_flow"> | null>(null);
+    useState<StoreSingleCashFlow | null>(null);
   const [
     editCashFlowOpened,
     { open: openEditCashFlow, close: closeEditCashFlow },

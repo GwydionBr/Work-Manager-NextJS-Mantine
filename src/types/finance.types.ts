@@ -23,6 +23,14 @@ export interface FetchedFinanceProject extends Tables<"finance_project"> {
   categoryIds: string[];
 }
 
+export interface StoreSingleCashFlow extends Tables<"single_cash_flow"> {
+  categoryIds: string[];
+}
+
+export interface StoreRecurringCashFlow extends Tables<"recurring_cash_flow"> {
+  categoryIds: string[];
+}
+
 export interface FinanceProject extends Tables<"finance_project"> {
   adjustments: Tables<"finance_project_adjustment">[];
   clients: Tables<"finance_client">[];

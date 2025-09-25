@@ -77,7 +77,6 @@ export default function FinanceCategoryBadges({
     <Box>
       <Popover
         trapFocus
-        withOverlay
         onDismiss={handlePopoverClose}
         opened={isCategoryPopoverOpen}
         onClose={handlePopoverClose}
@@ -105,7 +104,7 @@ export default function FinanceCategoryBadges({
           </Group>
         </Popover.Target>
         <Popover.Dropdown p={0}>
-          <Card miw={200}>
+          <Card miw={200} withBorder shadow="sm">
             <Stack align="center">
               <Group>
                 <MultiSelect

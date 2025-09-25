@@ -3,12 +3,17 @@
 import { createClient } from "@/utils/supabase/server";
 import { TablesInsert, Tables } from "@/types/db.types";
 import { ApiResponseSingle } from "@/types/action.types";
+import { StoreSingleCashFlow } from "@/types/finance.types";
+
+interface CreateSingleCashFlowProps {
+  cashFlow: TablesInsert<"single_cash_flow">;
+  categoryIds: string[];
+}
 
 export async function createSingleCashFlow({
   cashFlow,
-}: {
-  cashFlow: TablesInsert<"single_cash_flow">;
-}): Promise<ApiResponseSingle<Tables<"single_cash_flow">>> {
+  categoryIds,
+}: CreateSingleCashFlowProps): Promise<ApiResponseSingle<StoreSingleCashFlow>> {
   const supabase = await createClient();
 
   const {
@@ -33,5 +38,19 @@ export async function createSingleCashFlow({
     return { success: false, data: null, error: error.message };
   }
 
-  return { success: true, data, error: null };
+  const { error: categoriesError } = await supabase
+    .from("single_cash_flow_category")
+    .insert(
+      categoryIds.map((id) => ({
+        single_cash_flow_id: data.id,
+        finance_category_id: id,
+      }))
+    )
+    .select();
+
+  if (categoriesError) {
+    return { success: false, data: null, error: categoriesError.message };
+  }
+
+  return { success: true, data: { ...data, categoryIds }, error: null };
 }

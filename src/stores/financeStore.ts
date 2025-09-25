@@ -10,12 +10,14 @@ import {
   FinanceTab,
   DeleteRecurringCashFlowMode,
   FetchedFinanceProject,
+  StoreSingleCashFlow,
+  StoreRecurringCashFlow,
 } from "@/types/finance.types";
 
 interface FinanceStoreState {
-  singleCashFlows: Tables<"single_cash_flow">[];
-  futureSingleCashFlows: Tables<"single_cash_flow">[];
-  recurringCashFlows: Tables<"recurring_cash_flow">[];
+  singleCashFlows: StoreSingleCashFlow[];
+  futureSingleCashFlows: StoreSingleCashFlow[];
+  recurringCashFlows: StoreRecurringCashFlow[];
   financeCategories: Tables<"finance_category">[];
   financeClients: Tables<"finance_client">[];
   financeProjects: FetchedFinanceProject[];
@@ -44,13 +46,13 @@ interface FinanceStoreActions {
   ) => Promise<Tables<"finance_project"> | null>;
   deleteFinanceProjects: (ids: string[]) => Promise<boolean>;
   addSingleCashFlow: (
-    singleCashFlow: TablesInsert<"single_cash_flow">
+    singleCashFlow: TablesInsert<"single_cash_flow">,
+    categoryIds: string[]
   ) => Promise<boolean>;
-  addExistingSingleCashFlow: (
-    singleCashFlow: Tables<"single_cash_flow">
-  ) => boolean;
+  addExistingSingleCashFlow: (singleCashFlow: StoreSingleCashFlow) => boolean;
   addRecurringCashFlow: (
-    recurringCashFlow: TablesInsert<"recurring_cash_flow">
+    recurringCashFlow: TablesInsert<"recurring_cash_flow">,
+    categoryIds: string[]
   ) => Promise<boolean>;
   updateFinanceProject: (
     project: FetchedFinanceProject
@@ -59,10 +61,10 @@ interface FinanceStoreActions {
     client: TablesUpdate<"finance_client">
   ) => Promise<Tables<"finance_client"> | null>;
   updateSingleCashFlow: (
-    singleCashFlow: TablesUpdate<"single_cash_flow">
+    singleCashFlow: StoreSingleCashFlow
   ) => Promise<boolean>;
   updateRecurringCashFlow: (
-    recurringCashFlow: TablesUpdate<"recurring_cash_flow">
+    recurringCashFlow: StoreRecurringCashFlow
   ) => Promise<boolean>;
   updateMultipleSingleCashFlows: (
     recurringCashFlowId: string,
@@ -197,6 +199,7 @@ export const useFinanceStore = create<
           const newSingleCashFlows =
             await actions.createMultipleSingleCashFlows({
               cashFlows: pastAndCurrentFlows,
+              recurringCashFlows: recurringCashFlows.data,
             });
 
           // Check if fetch was aborted
@@ -334,11 +337,12 @@ export const useFinanceStore = create<
         return true;
       },
 
-      async addSingleCashFlow(singleCashFlow) {
+      async addSingleCashFlow(singleCashFlow, categoryIds) {
         const { singleCashFlows } = get();
 
         const newSingleCashFlow = await actions.createSingleCashFlow({
           cashFlow: singleCashFlow,
+          categoryIds,
         });
         if (!newSingleCashFlow.success) return false;
 
@@ -360,12 +364,13 @@ export const useFinanceStore = create<
         return true;
       },
 
-      async addRecurringCashFlow(recurringCashFlow) {
+      async addRecurringCashFlow(recurringCashFlow, categoryIds) {
         const { recurringCashFlows, futureSingleCashFlows, singleCashFlows } =
           get();
 
         const newRecurringCashFlow = await actions.createRecurringCashFlow({
           cashFlow: recurringCashFlow,
+          categoryIds,
         });
         if (!newRecurringCashFlow.success) return false;
 
@@ -388,6 +393,7 @@ export const useFinanceStore = create<
           success: newSingleCashFlowsSuccess,
         } = await actions.createMultipleSingleCashFlows({
           cashFlows: pastAndCurrentFlows,
+          recurringCashFlows: [newRecurringCashFlow.data],
         });
 
         if (!newSingleCashFlowsSuccess) return false;
@@ -435,11 +441,22 @@ export const useFinanceStore = create<
       async updateRecurringCashFlow(recurringCashFlow) {
         const { recurringCashFlows } = get();
 
+        const originalRecurringCashFlow = recurringCashFlows.find(
+          (c) => c.id === recurringCashFlow.id
+        );
+        if (!originalRecurringCashFlow) return false;
+
         const updatedRecurringCashFlow = await actions.updateRecurringCashFlow({
           updateRecurringCashFlow: recurringCashFlow,
+          categoryUpdates: {
+            deleteIds: originalRecurringCashFlow.categoryIds.filter(
+              (id) => !recurringCashFlow.categoryIds.includes(id)
+            ),
+            addIds: recurringCashFlow.categoryIds.filter(
+              (id) => !originalRecurringCashFlow.categoryIds.includes(id)
+            ),
+          },
         });
-
-        console.log(updatedRecurringCashFlow);
 
         if (!updatedRecurringCashFlow.success) return false;
 
@@ -456,10 +473,23 @@ export const useFinanceStore = create<
       async updateSingleCashFlow(singleCashFlow) {
         const { singleCashFlows } = get();
 
+        const originalSingleCashFlow = singleCashFlows.find(
+          (c) => c.id === singleCashFlow.id
+        );
+        if (!originalSingleCashFlow) return false;
+
         const updatedSingleCashFlow = await actions.updateSingleCashFlow({
           updateSingleCashFlow: singleCashFlow,
+          categoryUpdates: {
+            deleteIds: originalSingleCashFlow.categoryIds.filter(
+              (id) => !singleCashFlow.categoryIds.includes(id)
+            ),
+            addIds: singleCashFlow.categoryIds.filter(
+              (id) => !originalSingleCashFlow.categoryIds.includes(id)
+            ),
+          },
         });
-        console.log(updatedSingleCashFlow);
+
         if (!updatedSingleCashFlow.success) return false;
 
         const updatedSingleCashFlows = singleCashFlows.map((c) =>
@@ -473,6 +503,7 @@ export const useFinanceStore = create<
       },
 
       async updateMultipleSingleCashFlows(recurringCashFlowId, updates) {
+        // TODO: Add categoryIds to the updates
         const { singleCashFlows } = get();
 
         const result = await actions.updateMultipleSingleCashFlows({
@@ -665,7 +696,7 @@ export const useFinanceStore = create<
           return null;
         }
 
-        const updatedPayouts = [ payoutResult.data.payout, ...payouts];
+        const updatedPayouts = [payoutResult.data.payout, ...payouts];
         const updatedSingleCashFlows = [
           ...singleCashFlows,
           payoutResult.data.cashflow,

@@ -1,19 +1,23 @@
 "use server";
 
-import { TablesUpdate, Tables } from "@/types/db.types";
-import { ApiResponseSingle } from "@/types/action.types";
+import { ApiResponseSingle, UpdateManyToMany } from "@/types/action.types";
 import { createClient } from "@/utils/supabase/server";
+import { StoreSingleCashFlow } from "@/types/finance.types";
+
+interface UpdateSingleCashFlowProps {
+  updateSingleCashFlow: StoreSingleCashFlow;
+  categoryUpdates: UpdateManyToMany;
+}
 
 export async function updateSingleCashFlow({
   updateSingleCashFlow,
-}: {
-  updateSingleCashFlow: TablesUpdate<"single_cash_flow">;
-}): Promise<ApiResponseSingle<Tables<"single_cash_flow">>> {
+  categoryUpdates,
+}: UpdateSingleCashFlowProps): Promise<ApiResponseSingle<StoreSingleCashFlow>> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("single_cash_flow")
     .update(updateSingleCashFlow)
-    .eq("id", updateSingleCashFlow.id!)
+    .eq("id", updateSingleCashFlow.id)
     .select()
     .single();
 
@@ -21,5 +25,32 @@ export async function updateSingleCashFlow({
     return { success: false, data: null, error: error.message };
   }
 
-  return { success: true, data, error: null };
+  if (categoryUpdates.deleteIds.length > 0) {
+    const { error: categoryErrorDelete } = await supabase
+      .from("single_cash_flow_category")
+      .delete()
+      .in("id", categoryUpdates.deleteIds);
+
+    if (categoryErrorDelete) {
+      return { success: false, data: null, error: categoryErrorDelete.message };
+    }
+  }
+
+  if (categoryUpdates.addIds.length > 0) {
+    const { error: categoryErrorAdd } = await supabase
+      .from("single_cash_flow_category")
+      .insert(
+        categoryUpdates.addIds.map((id) => ({
+          single_cash_flow_id: data.id,
+          finance_category_id: id,
+          user_id: data.user_id,
+        }))
+      );
+
+    if (categoryErrorAdd) {
+      return { success: false, data: null, error: categoryErrorAdd.message };
+    }
+  }
+
+  return { success: true, data: updateSingleCashFlow, error: null };
 }
