@@ -144,9 +144,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       }
 
       // Background fetching for other data (best-effort)
-      if (priorityFetch !== FetchPriority.Finance)
+      if (priorityFetch !== FetchPriority.Finance) {
         console.log("fetching finance background");
         fetchFinanceIfStale(interval);
+      }
       if (
         priorityFetch !== FetchPriority.Work &&
         priorityFetch !== FetchPriority.Calendar

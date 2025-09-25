@@ -153,21 +153,34 @@ export const useFinanceStore = create<
 
         try {
           console.log("start fetching finances");
-          const [
-            singleCashFlows,
-            recurringCashFlows,
-            financeCategories,
-            financeClients,
-            financeProjects,
-            payouts,
-          ] = await Promise.all([
-            actions.getAllSingleCashFlows(),
-            actions.getAllRecurringCashFlows(),
-            actions.getAllFinanceCategories(),
-            actions.getAllFinanceClients(),
-            actions.getAllFinanceProjects(),
-            actions.getAllPayouts(),
-          ]);
+
+          // Fetch each API call individually to identify which one is failing
+          console.log("fetching singleCashFlows...");
+          const singleCashFlows = await actions.getAllSingleCashFlows();
+          console.log("singleCashFlows fetched:", singleCashFlows.success);
+
+          console.log("fetching recurringCashFlows...");
+          const recurringCashFlows = await actions.getAllRecurringCashFlows();
+          console.log(
+            "recurringCashFlows fetched:",
+            recurringCashFlows.success
+          );
+
+          console.log("fetching financeCategories...");
+          const financeCategories = await actions.getAllFinanceCategories();
+          console.log("financeCategories fetched:", financeCategories.success);
+
+          console.log("fetching financeClients...");
+          const financeClients = await actions.getAllFinanceClients();
+          console.log("financeClients fetched:", financeClients.success);
+
+          console.log("fetching financeProjects...");
+          const financeProjects = await actions.getAllFinanceProjects();
+          console.log("financeProjects fetched:", financeProjects.success);
+
+          console.log("fetching payouts...");
+          const payouts = await actions.getAllPayouts();
+          console.log("payouts fetched:", payouts.success);
 
           console.log("finances fetched");
 
