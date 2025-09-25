@@ -345,6 +345,7 @@ export default function FinanceSingleTab() {
       />
       <ScrollArea mb="md" ml={230} w="100%">
         <Collapse
+          transitionDuration={400}
           in={bulkSelectionActive && filteredSingleCashFlows.length > 0}
           w="100%"
         >

@@ -9,6 +9,7 @@ import {
   MantineProvider,
 } from "@mantine/core";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 // import Script from "next/script";
 import { ContextMenuProvider } from "mantine-contextmenu";
 import { Notifications } from "@mantine/notifications";
@@ -56,6 +57,7 @@ export default function RootLayout({ children }: { children: any }) {
             <ModalsProvider>
               <Layout>
                 <Analytics />
+                <SpeedInsights />
                 <Notifications />
                 {children}
               </Layout>

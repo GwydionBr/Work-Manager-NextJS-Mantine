@@ -311,7 +311,7 @@ export default function FinanceRecurringTab() {
                 <IconCashPlus size={22} />
               </ActionIcon>
             </DelayedTooltip>
-            <SelectActionIcon
+            {/* <SelectActionIcon
               iconSize={20}
               onClick={toggleBulkSelection}
               selected={bulkSelectionActive}
@@ -330,7 +330,7 @@ export default function FinanceRecurringTab() {
                     : "Activate bulk select"
               }
               mainControl
-            />
+            /> */}
           </Group>
         }
         isNavbar
