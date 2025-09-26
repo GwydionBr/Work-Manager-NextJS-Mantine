@@ -140,6 +140,7 @@ export const useFinanceStore = create<
 
         // Abort any existing fetch
         if (abortController) {
+          console.log("aborting finance fetch", new Date().toISOString())
           abortController.abort();
         }
 
@@ -152,37 +153,38 @@ export const useFinanceStore = create<
         set({ isFetching: true, abortController });
 
         try {
-          console.log("start fetching finances");
+          console.log("start fetching finances", new Date().toISOString());
 
           // Fetch each API call individually to identify which one is failing
-          console.log("fetching singleCashFlows...");
+          console.log("fetching singleCashFlows..." , new Date().toISOString());
           const singleCashFlows = await actions.getAllSingleCashFlows();
-          console.log("singleCashFlows fetched:", singleCashFlows.success);
+          console.log("singleCashFlows fetched:", singleCashFlows.success, new Date().toISOString());
 
-          console.log("fetching recurringCashFlows...");
+          console.log("fetching recurringCashFlows..." , new Date().toISOString());
           const recurringCashFlows = await actions.getAllRecurringCashFlows();
           console.log(
             "recurringCashFlows fetched:",
+            new Date().toISOString(),
             recurringCashFlows.success
           );
 
-          console.log("fetching financeCategories...");
+          console.log("fetching financeCategories..." , new Date().toISOString());
           const financeCategories = await actions.getAllFinanceCategories();
-          console.log("financeCategories fetched:", financeCategories.success);
+          console.log("financeCategories fetched:", financeCategories.success, new Date().toISOString());
 
-          console.log("fetching financeClients...");
+          console.log("fetching financeClients..." , new Date().toISOString());
           const financeClients = await actions.getAllFinanceClients();
-          console.log("financeClients fetched:", financeClients.success);
+          console.log("financeClients fetched:", financeClients.success, new Date().toISOString());
 
-          console.log("fetching financeProjects...");
+          console.log("fetching financeProjects..." , new Date().toISOString());
           const financeProjects = await actions.getAllFinanceProjects();
-          console.log("financeProjects fetched:", financeProjects.success);
+          console.log("financeProjects fetched:", financeProjects.success, new Date().toISOString());
 
-          console.log("fetching payouts...");
+          console.log("fetching payouts..." , new Date().toISOString());
           const payouts = await actions.getAllPayouts();
-          console.log("payouts fetched:", payouts.success);
+          console.log("payouts fetched:", payouts.success, new Date().toISOString());
 
-          console.log("finances fetched");
+          console.log("finances fetched", new Date().toISOString());
 
           // Check if fetch was aborted
           if (abortController.signal.aborted) {
@@ -261,6 +263,7 @@ export const useFinanceStore = create<
       abortFetch() {
         const { abortController } = get();
         if (abortController) {
+          console.log("aborting finance fetch", new Date().toISOString())
           abortController.abort();
           set({ isFetching: false, abortController: null });
         }

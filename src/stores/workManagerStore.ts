@@ -160,11 +160,14 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         set({ isFetching: true, abortController });
 
         try {
+          console.log("start fetching work", new Date().toISOString());
           const [projects, timerSessions, folders] = await Promise.all([
             actions.getAllTimerProjects(),
             actions.getAllSessions(),
             actions.getAllProjectFolders(),
           ]);
+
+          console.log("work fetched", new Date().toISOString());
 
           // Check if fetch was aborted
           if (abortController.signal.aborted) {
@@ -172,6 +175,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           }
 
           if (!projects.success || !timerSessions.success || !folders.success) {
+            console.log("work fetch failed", new Date().toISOString());
             set({
               isFetching: false,
               initialized: false,
@@ -195,6 +199,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           });
           setActiveProjectId(stillValidId);
           createProjectTree(projects.data, folders.data);
+          console.log("work fetched and set", new Date().toISOString());
           set({
             isFetching: false,
             lastFetch: new Date(),
@@ -202,6 +207,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
             abortController: null,
           });
         } catch (error) {
+          console.log("work fetch error", error, new Date().toISOString());
           // If fetch was aborted, don't update state
           if (abortController.signal.aborted) {
             return;
@@ -215,6 +221,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
       abortFetch() {
         const { abortController } = get();
         if (abortController) {
+          console.log("aborting work fetch", new Date().toISOString());
           abortController.abort();
           set({ isFetching: false, abortController: null });
         }
