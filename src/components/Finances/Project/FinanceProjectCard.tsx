@@ -111,10 +111,9 @@ export default function FinanceProjectCard({
   ) => {
     closeBadgePopover();
     if (updatedCategories) {
-      const { categories, ...projectData } = project;
       updateFinanceProject({
-        ...projectData,
-        categoryIds: updatedCategories.map((c) => c.id),
+        ...project,
+        categories: updatedCategories,
       });
     }
   };

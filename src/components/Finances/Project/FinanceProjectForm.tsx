@@ -27,6 +27,7 @@ import {
   showActionErrorNotification,
   showActionSuccessNotification,
 } from "@/utils/notificationFunctions";
+import UpdateButton from "@/components/UI/Buttons/UpdateButton";
 
 const projectSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -103,16 +104,18 @@ export default function FinanceProjectForm({
   const handleSubmit = async (values: z.infer<typeof projectSchema>) => {
     setIsLoading(true);
     if (financeProject) {
-      const { categories, ...projectData } = financeProject;
       const newProject = {
-        ...projectData,
+        ...financeProject,
         title: values.title,
         currency: values.currency,
         start_amount: values.start_amount,
         due_date: values.due_date || null,
         finance_client_id: values.finance_client_id,
-        categoryIds: values.finance_category_ids,
+        categories: financeCategories.filter((c) =>
+          values.finance_category_ids.includes(c.id)
+        ),
       };
+      console.log(newProject);
       const success = await updateFinanceProject(newProject);
       if (success) {
         showActionSuccessNotification(
@@ -139,7 +142,7 @@ export default function FinanceProjectForm({
           due_date: values.due_date || null,
           finance_client_id: values.finance_client_id,
         },
-        values.finance_category_ids,
+        values.finance_category_ids
       );
       if (success) {
         showActionSuccessNotification(
@@ -288,11 +291,19 @@ export default function FinanceProjectForm({
           </Button>
         </Group>
         <Stack mt="md">
-          <CreateButton
-            type="submit"
-            onClick={form.onSubmit(handleSubmit)}
-            loading={isLoading}
-          />
+          {financeProject ? (
+            <UpdateButton
+              type="submit"
+              onClick={form.onSubmit(handleSubmit)}
+              loading={isLoading}
+            />
+          ) : (
+            <CreateButton
+              type="submit"
+              onClick={form.onSubmit(handleSubmit)}
+              loading={isLoading}
+            />
+          )}
           <CancelButton
             onClick={() => {
               form.reset();

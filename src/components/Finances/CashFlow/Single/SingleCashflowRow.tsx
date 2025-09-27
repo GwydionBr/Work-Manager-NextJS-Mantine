@@ -20,10 +20,6 @@ import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import FinanceCategoryBadges from "../../FinanceCategoryBadges";
 import { StoreSingleCashFlow } from "@/types/finance.types";
 import { Tables } from "@/types/db.types";
-import {
-  showActionErrorNotification,
-  showActionSuccessNotification,
-} from "@/utils/notificationFunctions";
 
 interface SingleCashflowRowProps extends CardProps {
   cashflow: StoreSingleCashFlow;
@@ -41,7 +37,7 @@ export default function SingleCashflowRow({
   onToggleSelected,
   ...props
 }: SingleCashflowRowProps) {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { locale } = useSettingsStore();
   const [isLoading, setIsLoading] = useState(false);
   const { financeCategories, updateSingleCashFlow } = useFinanceStore();
   const { hovered, ref } = useHover();
@@ -68,23 +64,6 @@ export default function SingleCashflowRow({
         ...cashflow,
         categoryIds: updatedCategories.map((c) => c.id),
       });
-      if (success) {
-        showActionSuccessNotification(
-          getLocalizedText(
-            "Kategorie erfolgreich aktualisiert",
-            "Category updated successfully"
-          ),
-          locale
-        );
-      } else {
-        showActionErrorNotification(
-          getLocalizedText(
-            "Kategorie konnte nicht aktualisiert werden",
-            "Category could not be updated"
-          ),
-          locale
-        );
-      }
       setIsLoading(false);
     }
   };

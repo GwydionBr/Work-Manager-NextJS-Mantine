@@ -52,8 +52,6 @@ export default function FinanceCategoryBadges({
     isCategoryPopoverOpen,
     { open: openCategoryPopover, close: closeCategoryPopover },
   ] = useDisclosure(false);
-  const [isDropdownOpen, { open: openDropdown, close: closeDropdown }] =
-    useDisclosure(false);
 
   const handlePopoverOpen = () => {
     onPopoverOpen();
@@ -61,14 +59,10 @@ export default function FinanceCategoryBadges({
   };
 
   const handlePopoverClose = () => {
-    if (!isDropdownOpen) {
-      onPopoverClose(
-        currentCategorySelection !== categories
-          ? currentCategorySelection
-          : null
-      );
-      closeCategoryPopover();
-    }
+    onPopoverClose(
+      currentCategorySelection !== categories ? currentCategorySelection : null
+    );
+    closeCategoryPopover();
   };
 
   const currentCategorySelection = useMemo(() => {
@@ -107,60 +101,60 @@ export default function FinanceCategoryBadges({
             )}
           </Group>
         </Popover.Target>
-        <Popover.Dropdown p={0}>
-          <Card miw={200} withBorder shadow="sm">
-            <Stack align="center">
-              <Group>
-                <MultiSelect
-                  onDropdownClose={closeDropdown}
-                  onDropdownOpen={openDropdown}
-                  searchable
-                  clearable
-                  hidePickedOptions
-                  nothingFoundMessage={
-                    locale === "de-DE"
-                      ? "Keine Kategorien gefunden"
-                      : "No categories found"
-                  }
-                  data={financeCategories.map((c) => ({
-                    label: c.title,
-                    value: c.id,
-                  }))}
-                  value={selectedCategories}
-                  onChange={(value) => {
-                    setSelectedCategories(value);
+        <Popover.Dropdown
+          style={{
+            border:
+              "1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-2))",
+          }}
+        >
+          <Stack align="center">
+            <Group>
+              <MultiSelect
+                searchable
+                clearable
+                comboboxProps={{ withinPortal: false }}
+                hidePickedOptions
+                nothingFoundMessage={
+                  locale === "de-DE"
+                    ? "Keine Kategorien gefunden"
+                    : "No categories found"
+                }
+                data={financeCategories.map((c) => ({
+                  label: c.title,
+                  value: c.id,
+                }))}
+                value={selectedCategories}
+                onChange={(value) => {
+                  setSelectedCategories(value);
+                }}
+                data-autofocus
+              />
+              <Button
+                onClick={openCategoryForm}
+                size="compact-sm"
+                variant="subtle"
+                leftSection={<IconPlus size={16} />}
+              >
+                {locale === "de-DE" ? "Kategorie" : "Category"}
+              </Button>
+            </Group>
+            <Collapse in={isCategoryFormOpen}>
+              <Fieldset
+                legend={locale === "de-DE" ? "Neue Kategorie" : "New Category"}
+                mt="lg"
+                maw={400}
+                miw={300}
+              >
+                <FinanceCategoryForm
+                  onClose={closeCategoryForm}
+                  onSuccess={(category) => {
+                    setSelectedCategories((prev) => [...prev, category.id]);
+                    closeCategoryForm();
                   }}
-                  data-autofocus
                 />
-                <Button
-                  onClick={openCategoryForm}
-                  size="compact-sm"
-                  variant="subtle"
-                  leftSection={<IconPlus size={16} />}
-                >
-                  {locale === "de-DE" ? "Kategorie" : "Category"}
-                </Button>
-              </Group>
-              <Collapse in={isCategoryFormOpen}>
-                <Fieldset
-                  legend={
-                    locale === "de-DE" ? "Neue Kategorie" : "New Category"
-                  }
-                  mt="lg"
-                  maw={400}
-                  miw={300}
-                >
-                  <FinanceCategoryForm
-                    onClose={closeCategoryForm}
-                    onSuccess={(category) => {
-                      setSelectedCategories((prev) => [...prev, category.id]);
-                      closeCategoryForm();
-                    }}
-                  />
-                </Fieldset>
-              </Collapse>
-            </Stack>
-          </Card>
+              </Fieldset>
+            </Collapse>
+          </Stack>
         </Popover.Dropdown>
       </Popover>
     </Box>

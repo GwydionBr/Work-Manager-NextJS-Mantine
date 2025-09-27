@@ -12,6 +12,7 @@ import {
   StoreFinanceProject,
   StoreSingleCashFlow,
   StoreRecurringCashFlow,
+  FinanceProject,
 } from "@/types/finance.types";
 
 interface FinanceStoreState {
@@ -54,7 +55,7 @@ interface FinanceStoreActions {
     categoryIds: string[]
   ) => Promise<boolean>;
   updateFinanceProject: (
-    project: StoreFinanceProject
+    project: FinanceProject
   ) => Promise<StoreFinanceProject | null>;
   updateFinanceClient: (
     client: TablesUpdate<"finance_client">
@@ -140,7 +141,7 @@ export const useFinanceStore = create<
 
         // Abort any existing fetch
         if (abortController) {
-          console.log("aborting finance fetch", new Date().toISOString())
+          console.log("aborting finance fetch", new Date().toISOString());
           abortController.abort();
         }
 
@@ -156,11 +157,18 @@ export const useFinanceStore = create<
           console.log("start fetching finances", new Date().toISOString());
 
           // Fetch each API call individually to identify which one is failing
-          console.log("fetching singleCashFlows..." , new Date().toISOString());
+          console.log("fetching singleCashFlows...", new Date().toISOString());
           const singleCashFlows = await actions.getAllSingleCashFlows();
-          console.log("singleCashFlows fetched:", singleCashFlows.success, new Date().toISOString());
+          console.log(
+            "singleCashFlows fetched:",
+            singleCashFlows.success,
+            new Date().toISOString()
+          );
 
-          console.log("fetching recurringCashFlows..." , new Date().toISOString());
+          console.log(
+            "fetching recurringCashFlows...",
+            new Date().toISOString()
+          );
           const recurringCashFlows = await actions.getAllRecurringCashFlows();
           console.log(
             "recurringCashFlows fetched:",
@@ -168,21 +176,40 @@ export const useFinanceStore = create<
             recurringCashFlows.success
           );
 
-          console.log("fetching financeCategories..." , new Date().toISOString());
+          console.log(
+            "fetching financeCategories...",
+            new Date().toISOString()
+          );
           const financeCategories = await actions.getAllFinanceCategories();
-          console.log("financeCategories fetched:", financeCategories.success, new Date().toISOString());
+          console.log(
+            "financeCategories fetched:",
+            financeCategories.success,
+            new Date().toISOString()
+          );
 
-          console.log("fetching financeClients..." , new Date().toISOString());
+          console.log("fetching financeClients...", new Date().toISOString());
           const financeClients = await actions.getAllFinanceClients();
-          console.log("financeClients fetched:", financeClients.success, new Date().toISOString());
+          console.log(
+            "financeClients fetched:",
+            financeClients.success,
+            new Date().toISOString()
+          );
 
-          console.log("fetching financeProjects..." , new Date().toISOString());
+          console.log("fetching financeProjects...", new Date().toISOString());
           const financeProjects = await actions.getAllFinanceProjects();
-          console.log("financeProjects fetched:", financeProjects.success, new Date().toISOString());
+          console.log(
+            "financeProjects fetched:",
+            financeProjects.success,
+            new Date().toISOString()
+          );
 
-          console.log("fetching payouts..." , new Date().toISOString());
+          console.log("fetching payouts...", new Date().toISOString());
           const payouts = await actions.getAllPayouts();
-          console.log("payouts fetched:", payouts.success, new Date().toISOString());
+          console.log(
+            "payouts fetched:",
+            payouts.success,
+            new Date().toISOString()
+          );
 
           console.log("finances fetched", new Date().toISOString());
 
@@ -263,7 +290,7 @@ export const useFinanceStore = create<
       abortFetch() {
         const { abortController } = get();
         if (abortController) {
-          console.log("aborting finance fetch", new Date().toISOString())
+          console.log("aborting finance fetch", new Date().toISOString());
           abortController.abort();
           set({ isFetching: false, abortController: null });
         }
@@ -439,13 +466,17 @@ export const useFinanceStore = create<
         const oldProject = financeProjects.find((p) => p.id === project.id);
         if (!oldProject) return null;
 
-        const updatedProject = await actions.updateFinanceProject(
-          oldProject,
-          project
-        );
+        const { categories, finance_client, ...projectData } = project;
+
+        const updatedProject = await actions.updateFinanceProject(oldProject, {
+          ...projectData,
+          categoryIds: categories.map((c) => c.id),
+        });
+
         if (!updatedProject.success) {
           return null;
         }
+
         const updatedFinanceProjects = financeProjects.map((p) =>
           p.id === project.id ? updatedProject.data : p
         );

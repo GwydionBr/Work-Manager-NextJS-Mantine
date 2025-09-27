@@ -91,13 +91,19 @@ export default function FinanceProjectTab() {
   );
 
   const formattedFinanceProjects = useMemo(() => {
-    return financeProjects.map((project) => ({
-      ...project,
-      finance_client: financeClients.find((client) => client.id === project.finance_client_id) || null,
-      categories: financeCategories.filter((category) =>
-        project.categoryIds.includes(category.id)
-      ),
-    }));
+    return financeProjects.map((project) => {
+      const { categoryIds, ...rest } = project;
+      return {
+        ...rest,
+        finance_client:
+          financeClients.find(
+            (client) => client.id === project.finance_client_id
+          ) || null,
+        categories: financeCategories.filter((category) =>
+          categoryIds.includes(category.id)
+        ),
+      };
+    });
   }, [financeProjects, financeClients, financeCategories]);
 
   useEffect(() => {

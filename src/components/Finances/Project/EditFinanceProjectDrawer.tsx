@@ -46,6 +46,7 @@ export default function EditFinanceProjectDrawer({
   useEffect(() => {
     if (opened) {
       drawerStack.open("edit-finance-project");
+      setCategoryIds(financeProject.categories.map((category) => category.id));
     } else {
       drawerStack.closeAll();
     }
