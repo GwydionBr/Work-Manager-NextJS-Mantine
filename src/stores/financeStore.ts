@@ -215,6 +215,7 @@ export const useFinanceStore = create<
 
           // Check if fetch was aborted
           if (abortController.signal.aborted) {
+            console.log("fetch aborted", new Date().toISOString());
             return;
           }
 
@@ -231,6 +232,7 @@ export const useFinanceStore = create<
               initialized: false,
               abortController: null,
             });
+            console.log("fetch failed", new Date().toISOString());
             return;
           }
 
@@ -248,6 +250,7 @@ export const useFinanceStore = create<
 
           // Check if fetch was aborted
           if (abortController.signal.aborted) {
+            console.log("fetch aborted", new Date().toISOString());
             return;
           }
 
@@ -276,6 +279,7 @@ export const useFinanceStore = create<
             initialized: true,
             abortController: null,
           });
+          console.log("data", recurringCashFlows.data.length);
         } catch (error) {
           // If fetch was aborted, don't update state
           if (abortController.signal.aborted) {
@@ -432,6 +436,7 @@ export const useFinanceStore = create<
           []
         );
 
+        console.log("start creating single cash flows", new Date().toISOString());
         const {
           data: newSingleCashFlowsData,
           success: newSingleCashFlowsSuccess,
@@ -440,7 +445,14 @@ export const useFinanceStore = create<
           recurringCashFlows: [newRecurringCashFlow.data],
         });
 
-        if (!newSingleCashFlowsSuccess) return false;
+        
+        if (!newSingleCashFlowsSuccess) {
+          await actions.deleteRecurringCashFlow({
+            recurringCashFlowId: newRecurringCashFlow.data.id,
+            mode: DeleteRecurringCashFlowMode.delete_all,
+          });
+          return false;
+        }
 
         const newFutureSingleCashFlows = [
           ...futureSingleCashFlows,
@@ -457,6 +469,7 @@ export const useFinanceStore = create<
           futureSingleCashFlows: newFutureSingleCashFlows,
         });
 
+        console.log("recurring cash flow added", new Date().toISOString());
         return true;
       },
 

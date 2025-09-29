@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Group, Modal, Text, useModalsStack } from "@mantine/core";
-import FinanceForm from "@/components/Finances/CashFlow/CashflowForm";
+import CashflowForm from "@/components/Finances/CashFlow/CashflowForm";
 import FinanceCategoryForm from "@/components/Finances/FinanceCategoryForm";
 import { IconCashPlus, IconCategoryPlus } from "@tabler/icons-react";
 
@@ -44,7 +44,7 @@ export default function CashFlowModal({
           </Group>
         }
       >
-        <FinanceForm
+        <CashflowForm
           onClose={onClose}
           onOpenCategoryForm={() => modalStack.open("category-form")}
           categoryIds={categoryIds}

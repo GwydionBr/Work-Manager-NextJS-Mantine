@@ -14,7 +14,7 @@ import {
   Stack,
 } from "@mantine/core";
 import FinanceSection from "@/components/Finances/(Old)FinanceSection";
-import CashFlowModal from "@/components/Finances/CashFlow/CashFlowModal";
+import CashFlowModal from "@/components/Finances/CashFlow/AddCashFlowModal";
 import FinanceProjectModal from "@/components/Finances/Project/FinanceProjectModal";
 import CashFlowActionIcon from "@/components/UI/ActionIcons/CashFlowActionIcon";
 import FinanceProjectActionIcon from "@/components/UI/ActionIcons/FinanceProjectActionIcon";

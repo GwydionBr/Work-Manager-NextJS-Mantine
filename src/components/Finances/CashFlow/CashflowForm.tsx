@@ -11,7 +11,6 @@ import {
   Center,
   Switch,
   Group,
-  Alert,
   MultiSelect,
   Button,
 } from "@mantine/core";
@@ -26,12 +25,16 @@ import SingleFinanceForm, {
 } from "./Single/SingleFinanceForm";
 import RecurringFinanceForm, {
   RecurringFinanceFormValues,
-} from "./RecurringFinanceForm";
+} from "./Recurring/RecurringFinanceForm";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 
 import { CashFlowType } from "@/types/settings.types";
 
 import classes from "../../UI/Switch.module.css";
+import {
+  showActionErrorNotification,
+  showActionSuccessNotification,
+} from "@/utils/notificationFunctions";
 
 interface FinanceFormProps {
   onClose: () => void;
@@ -51,9 +54,11 @@ export default function FinanceForm({
   const [type, setType] = useState<CashFlowType>("income");
   const [isRecurring, setIsRecurring] = useState<boolean>(!isSingle);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const { locale, defaultFinanceCurrency: financeCurrency } =
-    useSettingsStore();
+  const {
+    locale,
+    getLocalizedText,
+    defaultFinanceCurrency: financeCurrency,
+  } = useSettingsStore();
   const { addSingleCashFlow, addRecurringCashFlow, financeCategories } =
     useFinanceStore();
 
@@ -67,12 +72,25 @@ export default function FinanceForm({
       },
       categoryIds
     );
-    if (!success) {
-      setError("Failed to add single cash flow. Please try again.");
+    if (success) {
+      showActionSuccessNotification(
+        getLocalizedText(
+          "Einmalige Zahlung erfolgreich hinzugefügt",
+          "Single cash flow added successfully"
+        ),
+        locale
+      );
+      onClose();
       setIsLoading(false);
     } else {
+      showActionErrorNotification(
+        getLocalizedText(
+          "Fehler beim Hinzufügen der einmaligen Zahlung",
+          "Failed to add single cash flow. Please try again."
+        ),
+        locale
+      );
       setIsLoading(false);
-      onClose();
     }
   }
 
@@ -89,12 +107,25 @@ export default function FinanceForm({
       },
       categoryIds
     );
-    if (!success) {
-      setError("Failed to add recurring cash flow. Please try again.");
+    if (success) {
+      showActionSuccessNotification(
+        getLocalizedText(
+          "Wiederkehrender Cashflow erfolgreich hinzugefügt",
+          "Recurring cash flow added successfully"
+        ),
+        locale
+      );
+      onClose();
       setIsLoading(false);
     } else {
+      showActionErrorNotification(
+        getLocalizedText(
+          "Fehler beim Hinzufügen der wiederkehrenden Zahlung",
+          "Failed to add recurring cash flow. Please try again."
+        ),
+        locale
+      );
       setIsLoading(false);
-      onClose();
     }
   }
 
@@ -192,17 +223,6 @@ export default function FinanceForm({
         />
       )}
       <CancelButton onClick={onClose} />
-      {error && (
-        <Alert
-          color="red"
-          variant="filled"
-          title={locale === "de-DE" ? "Fehler" : "Error"}
-          withCloseButton
-          onClose={() => setError(null)}
-        >
-          <Text>{error}</Text>
-        </Alert>
-      )}
     </Stack>
   );
 }

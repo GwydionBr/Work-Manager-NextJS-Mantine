@@ -17,7 +17,7 @@ import {
   MultiSelect,
 } from "@mantine/core";
 import SingleCashFlowForm from "@/components/Finances/CashFlow/Single/SingleFinanceForm";
-import RecurringCashFlowForm from "@/components/Finances/CashFlow/RecurringFinanceForm";
+import RecurringCashFlowForm from "@/components/Finances/CashFlow/Recurring/RecurringFinanceForm";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 
 import { Tables } from "@/types/db.types";

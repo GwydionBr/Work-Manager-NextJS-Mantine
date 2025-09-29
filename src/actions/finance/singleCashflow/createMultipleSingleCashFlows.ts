@@ -9,7 +9,9 @@ import {
 } from "@/types/finance.types";
 
 interface CreateMultipleSingleCashFlowsProps {
-  cashFlows: TablesInsert<"single_cash_flow">[];
+  cashFlows: (TablesInsert<"single_cash_flow"> & {
+    categoryIds: string[];
+  })[];
   recurringCashFlows: StoreRecurringCashFlow[];
 }
 
@@ -29,9 +31,14 @@ export async function createMultipleSingleCashFlows({
     return { success: false, data: null, error: "User not found" };
   }
 
+  const cashFlowsToInsert = cashFlows.map((cashFlow) => {
+    const { categoryIds, ...rest } = cashFlow;
+    return rest;
+  });
+
   const { data, error } = await supabase
     .from("single_cash_flow")
-    .insert(cashFlows)
+    .insert(cashFlowsToInsert)
     .select();
 
   if (error) {

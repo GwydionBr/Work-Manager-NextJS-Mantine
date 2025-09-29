@@ -19,7 +19,7 @@ import {
   Skeleton,
 } from "@mantine/core";
 import EditCashFlowDrawer from "@/components/Finances/CashFlow/EditCashFlowDrawer";
-import CashFlowModal from "@/components/Finances/CashFlow/CashFlowModal";
+import CashFlowModal from "@/components/Finances/CashFlow/AddCashFlowModal";
 
 import { formatDate, formatMoney } from "@/utils/formatFunctions";
 import {
