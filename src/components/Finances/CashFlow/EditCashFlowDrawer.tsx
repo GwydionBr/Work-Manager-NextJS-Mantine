@@ -275,8 +275,6 @@ export default function EditCashFlowDrawer({
       ),
     };
 
-    console.log()
-
     // First update the recurring cash flow
     const recurringSuccess = await updateRecurringCashFlow(pendingValues);
 

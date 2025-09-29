@@ -438,7 +438,6 @@ export const useFinanceStore = create<
           []
         );
 
-
         const {
           data: newSingleCashFlowsData,
           success: newSingleCashFlowsSuccess,
@@ -447,7 +446,6 @@ export const useFinanceStore = create<
           recurringCashFlows: [newRecurringCashFlow.data],
         });
 
-        
         if (!newSingleCashFlowsSuccess) {
           await actions.deleteRecurringCashFlow({
             recurringCashFlowId: newRecurringCashFlow.data.id,
@@ -567,8 +565,11 @@ export const useFinanceStore = create<
         return true;
       },
 
-      async updateMultipleSingleCashFlows(recurringCashFlowId, updates, categoryUpdates) {
-        // TODO: Add categoryIds to the updates
+      async updateMultipleSingleCashFlows(
+        recurringCashFlowId,
+        updates,
+        categoryUpdates
+      ) {
         const { singleCashFlows, recurringCashFlows } = get();
 
         const originalRecurringCashFlow = recurringCashFlows.find(
@@ -582,14 +583,19 @@ export const useFinanceStore = create<
           categoryUpdates,
         });
 
-        console.log(result);
-
         if (!result.success) return false;
 
         // Update all single cash flows that belong to this recurring cash flow
         const updatedSingleCashFlows = singleCashFlows.map((flow) => {
           if (flow.recurring_cash_flow_id === recurringCashFlowId) {
-            return { ...flow, ...updates };
+            const filteredCategoryIds = flow.categoryIds.filter(
+              (id) => !categoryUpdates.deleteIds.includes(id)
+            );
+            const newCategoryIds = [
+              ...filteredCategoryIds,
+              ...categoryUpdates.addIds,
+            ];
+            return { ...flow, ...updates, categoryIds: newCategoryIds };
           }
           return flow;
         });
