@@ -62,6 +62,7 @@ export default function FinanceCategoryBadges({
     onPopoverClose(
       currentCategorySelection !== categories ? currentCategorySelection : null
     );
+    closeCategoryForm();
     closeCategoryPopover();
   };
 

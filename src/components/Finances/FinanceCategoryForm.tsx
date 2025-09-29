@@ -104,9 +104,9 @@ export default function FinanceCategoryForm({
       <Stack>
         <TextInput
           withAsterisk
-          label={locale === "de-DE" ? "Name" : "Title"}
+          label={locale === "de-DE" ? "Name" : "Name"}
           placeholder={
-            locale === "de-DE" ? "Name eingeben" : "Enter category title"
+            locale === "de-DE" ? "Name eingeben" : "Enter category name"
           }
           {...form.getInputProps("title")}
           data-autofocus
