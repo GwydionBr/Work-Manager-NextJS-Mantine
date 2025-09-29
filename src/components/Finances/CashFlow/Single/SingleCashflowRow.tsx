@@ -59,8 +59,7 @@ export default function SingleCashflowRow({
     closeCategoryPopover();
     if (updatedCategories) {
       setIsLoading(true);
-
-      const success = await updateSingleCashFlow({
+      await updateSingleCashFlow({
         ...cashflow,
         categoryIds: updatedCategories.map((c) => c.id),
       });

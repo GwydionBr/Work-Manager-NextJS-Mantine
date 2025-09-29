@@ -1,21 +1,25 @@
 "use client";
 
-import { useHover } from "@mantine/hooks";
+import { useMemo, useState } from "react";
+import { useDisclosure, useHover } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useFinanceStore } from "@/stores/financeStore";
+
 import { formatDate, formatMoney } from "@/utils/formatFunctions";
 import { Badge, Card, CardProps, Group, Text, ThemeIcon } from "@mantine/core";
 import {
   IconCalendar,
   IconCalendarOff,
   IconCalendarTime,
-  IconTag,
 } from "@tabler/icons-react";
-import { FinanceInterval } from "@/types/settings.types";
-import { useMemo } from "react";
+import FinanceCategoryBadges from "../../FinanceCategoryBadges";
+
 import { getNextDate } from "@/utils/financeHelperFunction";
 import { isToday } from "date-fns";
+
 import { StoreRecurringCashFlow } from "@/types/finance.types";
+import { FinanceInterval } from "@/types/settings.types";
+import { Tables } from "@/types/db.types";
 
 interface RecurringCashFlowRowProps extends CardProps {
   cashflow: StoreRecurringCashFlow;
@@ -35,14 +39,41 @@ export default function RecurringCashFlowRow({
   getIntervalLabel,
   ...props
 }: RecurringCashFlowRowProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const { locale } = useSettingsStore();
-  const { financeCategories } = useFinanceStore();
+  const { financeCategories, updateRecurringCashFlow } = useFinanceStore();
   const { hovered, ref } = useHover();
+  const [
+    isCategoryPopoverOpen,
+    { open: openCategoryPopover, close: closeCategoryPopover },
+  ] = useDisclosure(false);
+
+  const currentCategories = useMemo(() => {
+    return financeCategories.filter((category) =>
+      cashflow.categoryIds.includes(category.id)
+    );
+  }, [financeCategories, cashflow.categoryIds]);
 
   const nextDate = useMemo(() => {
     if (!showNextDate) return null;
     return getNextDate(cashflow.interval, new Date(cashflow.start_date));
   }, [cashflow.interval, cashflow.start_date]);
+
+  const handleCategoryClose = async (
+    updatedCategories: Tables<"finance_category">[] | null
+  ) => {
+    if (isLoading) return;
+    closeCategoryPopover();
+    if (updatedCategories) {
+      setIsLoading(true);
+      const success = await updateRecurringCashFlow({
+        ...cashflow,
+        categoryIds: updatedCategories.map((c) => c.id),
+      });
+      console.log(success);
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Card
@@ -57,7 +88,11 @@ export default function RecurringCashFlowRow({
       }
       {...props}
       ref={ref}
-      onClick={onEdit}
+      onClick={() => {
+        if (!isCategoryPopoverOpen) {
+          onEdit();
+        }
+      }}
       style={{
         border: hovered ? "1px solid var(--mantine-color-blue-6)" : "",
         cursor: hovered ? "pointer" : "default",
@@ -108,19 +143,11 @@ export default function RecurringCashFlowRow({
               </Group>
             )}
           </Group>
-          {cashflow.categoryIds.length > 0 && (
-            <Badge
-              color="grape"
-              variant="light"
-              leftSection={<IconTag size={12} />}
-            >
-              {
-                financeCategories.find(
-                  (category) => cashflow.categoryIds.includes(category.id)
-                )?.title
-              }
-            </Badge>
-          )}
+          <FinanceCategoryBadges
+            categories={currentCategories}
+            onPopoverOpen={openCategoryPopover}
+            onPopoverClose={handleCategoryClose}
+          />
         </Group>
       </Group>
     </Card>
