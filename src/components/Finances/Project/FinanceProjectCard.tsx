@@ -42,6 +42,7 @@ import FinanceClientBadge from "../FinanceClient/FinanceClientBadge";
 import FinanceCategoryBadges from "../Category/FinanceCategoryBadges";
 import { Tables } from "@/types/db.types";
 import EmptyFinanceClientBadge from "../FinanceClient/EmptyFinanceClientBadge";
+import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
 
 interface FinanceProjectCardProps extends CardProps {
   project: FinanceProject;
@@ -211,7 +212,7 @@ export default function FinanceProjectCard({
             {/* Adjustments */}
             <Group gap="xs" align="center">
               <Divider orientation="vertical" />
-              {hasAdjustments && (
+              {hasAdjustments ? (
                 <Group gap="xs" align="center">
                   <ThemeIcon
                     size="sm"
@@ -229,6 +230,26 @@ export default function FinanceProjectCard({
                     {formatMoney(adjustmentTotal, project.currency, locale)}
                   </Text>
                 </Group>
+              ) : (
+                <Transition
+                  mounted={hovered}
+                  transition="fade-left"
+                  duration={200}
+                >
+                  {(styles) => (
+                    <PayoutActionIcon
+                      style={styles}
+                      variant="subtle"
+                      onClick={(e) => {
+                        e?.stopPropagation();
+                      }}
+                      tooltipLabel={getLocalizedText(
+                        "Finanz Projekt auszahlen",
+                        "Payout Finance Project"
+                      )}
+                    />
+                  )}
+                </Transition>
               )}
             </Group>
             {/* More Actions */}

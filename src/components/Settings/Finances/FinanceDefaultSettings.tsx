@@ -39,7 +39,7 @@ export default function FinanceDefaultSettings() {
     <Stack w="100%">
       <SettingsRow
         title={getLocalizedText(
-          "Default Finance Currency",
+          "Standard Finanzwährung",
           "Default Finance Currency"
         )}
         children={

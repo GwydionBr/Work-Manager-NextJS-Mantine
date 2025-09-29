@@ -3,7 +3,7 @@ import { IconCashBanknotePlus } from "@tabler/icons-react";
 import DelayedTooltip from "../DelayedTooltip";
 
 interface PayoutActionIconProps extends ActionIconProps {
-  onClick: () => void;
+  onClick: (e?: React.MouseEvent<HTMLButtonElement>) => void;
   iconSize?: number;
   iconColor?: string;
   tooltipLabel?: string;
