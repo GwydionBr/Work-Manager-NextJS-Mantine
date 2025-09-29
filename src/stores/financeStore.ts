@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import * as actions from "@/actions";
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
+import { UpdateManyToMany } from "@/types/action.types";
 import { processRecurringCashFlows } from "@/utils/financeHelperFunction";
 import {
   FinanceRule,
@@ -68,7 +69,8 @@ interface FinanceStoreActions {
   ) => Promise<boolean>;
   updateMultipleSingleCashFlows: (
     recurringCashFlowId: string,
-    updates: Partial<TablesUpdate<"single_cash_flow">>
+    updates: Partial<TablesUpdate<"single_cash_flow">>,
+    categoryUpdates: UpdateManyToMany
   ) => Promise<boolean>;
   updateFinanceAdjustment: (
     adjustment: TablesUpdate<"finance_project_adjustment">
@@ -436,7 +438,7 @@ export const useFinanceStore = create<
           []
         );
 
-        console.log("start creating single cash flows", new Date().toISOString());
+
         const {
           data: newSingleCashFlowsData,
           success: newSingleCashFlowsSuccess,
@@ -469,7 +471,6 @@ export const useFinanceStore = create<
           futureSingleCashFlows: newFutureSingleCashFlows,
         });
 
-        console.log("recurring cash flow added", new Date().toISOString());
         return true;
       },
 
@@ -566,13 +567,19 @@ export const useFinanceStore = create<
         return true;
       },
 
-      async updateMultipleSingleCashFlows(recurringCashFlowId, updates) {
+      async updateMultipleSingleCashFlows(recurringCashFlowId, updates, categoryUpdates) {
         // TODO: Add categoryIds to the updates
-        const { singleCashFlows } = get();
+        const { singleCashFlows, recurringCashFlows } = get();
+
+        const originalRecurringCashFlow = recurringCashFlows.find(
+          (c) => c.id === recurringCashFlowId
+        );
+        if (!originalRecurringCashFlow) return false;
 
         const result = await actions.updateMultipleSingleCashFlows({
           recurringCashFlowId,
           updates,
+          categoryUpdates,
         });
 
         console.log(result);

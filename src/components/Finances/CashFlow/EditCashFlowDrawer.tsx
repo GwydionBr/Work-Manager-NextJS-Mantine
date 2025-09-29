@@ -266,6 +266,17 @@ export default function EditCashFlowDrawer({
 
     setIsLoading(true);
 
+    const categoryUpdates = {
+      deleteIds: cashFlow.categoryIds.filter(
+        (id: string) => !pendingValues.categoryIds.includes(id)
+      ),
+      addIds: pendingValues.categoryIds.filter(
+        (id: string) => !cashFlow.categoryIds.includes(id)
+      ),
+    };
+
+    console.log()
+
     // First update the recurring cash flow
     const recurringSuccess = await updateRecurringCashFlow(pendingValues);
 
@@ -281,7 +292,8 @@ export default function EditCashFlowDrawer({
 
       const singleSuccess = await updateMultipleSingleCashFlows(
         cashFlow.id,
-        singleUpdates
+        singleUpdates,
+        categoryUpdates
       );
 
       if (singleSuccess) {
