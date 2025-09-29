@@ -113,7 +113,8 @@ export default function FinanceCategoryBadges({
         <Popover.Dropdown
           style={{
             border:
-              "1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-2))",
+              "1px solid light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-2))",
+              shadow: "var(--mantine-shadow-md)",
           }}
         >
           <Stack align="center">
