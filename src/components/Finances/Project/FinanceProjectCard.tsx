@@ -40,7 +40,7 @@ import {
 import MoreActionIcon from "@/components/UI/ActionIcons/MoreActionIcon";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import FinanceClientBadge from "../FinanceClient/FinanceClientBadge";
-import FinanceCategoryBadges from "../FinanceCategoryBadges";
+import FinanceCategoryBadges from "../Category/FinanceCategoryBadges";
 import { Tables } from "@/types/db.types";
 
 interface FinanceProjectCardProps extends CardProps {
@@ -195,14 +195,12 @@ export default function FinanceProjectCard({
           </Group>
 
           <Group gap="md" wrap="wrap" flex={2}>
-            {project.finance_client && (
-              <FinanceClientBadge
-                key={project.finance_client.id}
-                client={project.finance_client}
-                onPopoverOpen={openBadgePopover}
-                onPopoverClose={closeBadgePopover}
-              />
-            )}
+            <FinanceClientBadge
+              client={project.finance_client}
+              onPopoverOpen={openBadgePopover}
+              onPopoverClose={closeBadgePopover}
+              showAddClient={hovered || isEditing}
+            />
             <FinanceCategoryBadges
               categories={project.categories}
               onPopoverOpen={openBadgePopover}

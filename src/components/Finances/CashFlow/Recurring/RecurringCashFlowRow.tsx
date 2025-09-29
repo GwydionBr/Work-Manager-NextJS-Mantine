@@ -12,7 +12,7 @@ import {
   IconCalendarOff,
   IconCalendarTime,
 } from "@tabler/icons-react";
-import FinanceCategoryBadges from "../../FinanceCategoryBadges";
+import FinanceCategoryBadges from "../../Category/FinanceCategoryBadges";
 
 import { getNextDate } from "@/utils/financeHelperFunction";
 import { isToday } from "date-fns";

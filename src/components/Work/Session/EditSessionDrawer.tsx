@@ -16,7 +16,7 @@ import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 import ProjectForm from "../Project/ProjectForm";
 import { TimerRoundingSettings } from "@/types/timeTracker.types";
 import { notifications } from "@mantine/notifications";
-import FinanceCategoryForm from "@/components/Finances/FinanceCategoryForm";
+import FinanceCategoryForm from "@/components/Finances/Category/FinanceCategoryForm";
 
 interface TimerSessionModalProps {
   timerSession: Tables<"timer_session">;

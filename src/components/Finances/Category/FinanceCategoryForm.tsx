@@ -4,7 +4,6 @@ import { useForm } from "@mantine/form";
 import { useState } from "react";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { notifications } from "@mantine/notifications";
 
 import { TextInput, Stack, Textarea } from "@mantine/core";
 import { z } from "zod";
@@ -13,7 +12,10 @@ import CancelButton from "@/components/UI/Buttons/CancelButton";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
 import UpdateButton from "@/components/UI/Buttons/UpdateButton";
 import { Tables } from "@/types/db.types";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import {
+  showActionErrorNotification,
+  showActionSuccessNotification,
+} from "@/utils/notificationFunctions";
 
 const schema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters"),
@@ -31,7 +33,7 @@ export default function FinanceCategoryForm({
   onSuccess,
   category,
 }: FinanceCategoryFormProps) {
-  const { locale } = useSettingsStore();
+  const { locale, getLocalizedText } = useSettingsStore();
   const { addFinanceCategory, updateFinanceCategory } = useFinanceStore();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -69,32 +71,22 @@ export default function FinanceCategoryForm({
 
     if (currentCategory) {
       onSuccess?.(currentCategory);
-      notifications.show({
-        title: locale === "de-DE" ? "Erfolg" : "Success",
-        message:
-          locale === "de-DE"
-            ? `Kategorie erfolgreich ${category ? "bearbeitet" : "erstellt"}`
-            : `Category ${category ? "edited" : "created"} successfully`,
-        icon: <IconCheck />,
-        color: "green",
-        autoClose: 4000,
-        withBorder: true,
-        position: "top-center",
-      });
+      showActionSuccessNotification(
+        getLocalizedText(
+          `Kategorie erfolgreich ${category ? "bearbeitet" : "erstellt"}`,
+          `Category successfully ${category ? "edited" : "created"}`
+        ),
+        locale
+      );
       handleClose();
     } else {
-      notifications.show({
-        title: locale === "de-DE" ? "Fehler" : "Error",
-        message:
-          locale === "de-DE"
-            ? `Kategorie konnte nicht ${category ? "bearbeitet" : "erstellt"} werden`
-            : `Category could not ${category ? "edited" : "created"}`,
-        icon: <IconX />,
-        color: "red",
-        autoClose: 4000,
-        position: "top-center",
-        withBorder: true,
-      });
+      showActionErrorNotification(
+        getLocalizedText(
+          `Kategorie konnte nicht ${category ? "bearbeitet" : "erstellt"} werden`,
+          `Category could not ${category ? "edited" : "created"}`
+        ),
+        locale
+      );
     }
     setIsLoading(false);
   }
@@ -104,19 +96,17 @@ export default function FinanceCategoryForm({
       <Stack>
         <TextInput
           withAsterisk
-          label={locale === "de-DE" ? "Name" : "Name"}
+          label={getLocalizedText("Name", "Name")}
           placeholder={
-            locale === "de-DE" ? "Name eingeben" : "Enter category name"
+            getLocalizedText("Name eingeben", "Enter category name")
           }
           {...form.getInputProps("title")}
           data-autofocus
         />
         <Textarea
-          label={locale === "de-DE" ? "Beschreibung" : "Description"}
+          label={getLocalizedText("Beschreibung", "Description")}
           placeholder={
-            locale === "de-DE"
-              ? "Beschreibung eingeben"
-              : "Enter category description"
+            getLocalizedText("Beschreibung eingeben", "Enter category description")
           }
           {...form.getInputProps("description")}
         />

@@ -18,7 +18,7 @@ import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import React from "react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import PencilActionIcon from "@/components/UI/ActionIcons/PencilActionIcon";
-import FinanceCategoryForm from "@/components/Finances/FinanceCategoryForm";
+import FinanceCategoryForm from "@/components/Finances/Category/FinanceCategoryForm";
 import { IconPencil } from "@tabler/icons-react";
 
 interface FinanceCategoryRowProps {

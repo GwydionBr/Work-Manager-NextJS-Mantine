@@ -6,7 +6,6 @@ import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
-  Card,
   Popover,
   MultiSelect,
   Group,

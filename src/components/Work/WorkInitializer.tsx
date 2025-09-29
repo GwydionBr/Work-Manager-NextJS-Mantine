@@ -17,7 +17,7 @@ import {
 } from "@mantine/core";
 import { IconBriefcase } from "@tabler/icons-react";
 import ProjectForm from "./Project/ProjectForm";
-import FinanceCategoryForm from "@/components/Finances/FinanceCategoryForm";
+import FinanceCategoryForm from "@/components/Finances/Category/FinanceCategoryForm";
 import { SettingsTab } from "../Settings/SettingsModal";
 
 export default function WorkInitializer() {
