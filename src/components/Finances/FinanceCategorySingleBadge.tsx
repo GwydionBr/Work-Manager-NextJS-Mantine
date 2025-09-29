@@ -3,15 +3,16 @@
 import { useHover } from "@mantine/hooks";
 
 import { Tables } from "@/types/db.types";
-import { Badge } from "@mantine/core";
+import { Badge, BadgeProps } from "@mantine/core";
 import { IconTag, IconTagPlus } from "@tabler/icons-react";
 
-interface FinanceCategorySingleBadgeProps {
+interface FinanceCategorySingleBadgeProps extends BadgeProps {
   category?: Tables<"finance_category">;
 }
 
 export default function FinanceCategorySingleBadge({
   category,
+  ...props
 }: FinanceCategorySingleBadgeProps) {
   const { hovered, ref } = useHover();
 
@@ -22,11 +23,13 @@ export default function FinanceCategorySingleBadge({
         color="grape"
         variant="light"
         leftSection={<IconTagPlus size={16} />}
+        {...props}
         style={{
           cursor: "pointer",
           border: hovered
             ? "1px solid var(--mantine-color-grape-5)"
             : "1px solid transparent",
+          ...props.style,
         }}
       />
     );

@@ -15,6 +15,7 @@ import {
   Collapse,
   Fieldset,
   Stack,
+  Transition,
 } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 
@@ -24,12 +25,14 @@ import FinanceCategoryForm from "./FinanceCategoryForm";
 
 interface FinanceCategoryBadgesProps {
   categories: Tables<"finance_category">[];
+  showAddCategory?: boolean;
   onPopoverOpen: () => void;
   onPopoverClose: (categories: Tables<"finance_category">[] | null) => void;
 }
 
 export default function FinanceCategoryBadges({
   categories,
+  showAddCategory = true,
   onPopoverOpen,
   onPopoverClose,
 }: FinanceCategoryBadgesProps) {
@@ -98,7 +101,13 @@ export default function FinanceCategoryBadges({
                 />
               ))
             ) : (
-              <FinanceCategorySingleBadge />
+              <Transition
+                mounted={showAddCategory || isCategoryPopoverOpen}
+                transition="fade-left"
+                duration={200}
+              >
+                {(styles) => <FinanceCategorySingleBadge style={styles} />}
+              </Transition>
             )}
           </Group>
         </Popover.Target>

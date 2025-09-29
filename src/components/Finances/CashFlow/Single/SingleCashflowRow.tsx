@@ -130,6 +130,7 @@ export default function SingleCashflowRow({
             categories={currentCategories}
             onPopoverOpen={openCategoryPopover}
             onPopoverClose={handleCategoryClose}
+            showAddCategory={hovered}
           />
         </Grid.Col>
       </Grid>

@@ -147,6 +147,7 @@ export default function RecurringCashFlowRow({
             categories={currentCategories}
             onPopoverOpen={openCategoryPopover}
             onPopoverClose={handleCategoryClose}
+            showAddCategory={hovered}
           />
         </Group>
       </Group>

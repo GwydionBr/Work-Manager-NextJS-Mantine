@@ -207,6 +207,7 @@ export default function FinanceProjectCard({
               categories={project.categories}
               onPopoverOpen={openBadgePopover}
               onPopoverClose={handleCategoryClose}
+              showAddCategory={hovered || isEditing}
             />
           </Group>
 
