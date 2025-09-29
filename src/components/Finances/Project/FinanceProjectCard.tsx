@@ -31,7 +31,6 @@ import FinanceAdjustmentForm from "./FinanceAdjustment/FinanceAdjustmentForm";
 import FinanceAdjustmentRow from "./FinanceAdjustment/FinanceAdjustmentRow";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import {
-  IconLinkPlus,
   IconTrendingUp,
   IconTrendingDown,
   IconEdit,
@@ -248,7 +247,7 @@ export default function FinanceProjectCard({
                       {getLocalizedText("Finanz Projekt", "Finance Project")}
                     </Menu.Label>
                     <Menu.Divider />
-                    <Menu.Item
+                    {/* <Menu.Item
                       leftSection={<IconLinkPlus size={16} />}
                       onClick={() => {}}
                     >
@@ -256,7 +255,7 @@ export default function FinanceProjectCard({
                         "Mit Arbeitsprojekt verknüpfen",
                         "Link with Work Project"
                       )}
-                    </Menu.Item>
+                    </Menu.Item> */}
                     <Menu.Item
                       leftSection={<IconEdit size={16} />}
                       onClick={() => {
@@ -337,8 +336,16 @@ export default function FinanceProjectCard({
                         key={adjustment.id}
                         adjustment={adjustment}
                         currency={project.currency}
+                        adultClientId={project.finance_client_id}
                       />
                     ))}
+                  <Divider />
+                  <FinanceAdjustmentRow
+                    key={project.id}
+                    financeProject={project}
+                    currency={project.currency}
+                    adultClientId={project.finance_client_id}
+                  />
                 </Stack>
               )}
             </Stack>

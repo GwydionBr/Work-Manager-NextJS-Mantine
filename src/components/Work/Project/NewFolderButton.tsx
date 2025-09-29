@@ -71,6 +71,7 @@ export default function NewFolderButton() {
             <Group justify="flex-end">
               <CancelButton onClick={handleClose} />
               <CreateButton
+                type="submit"
                 onClick={form.onSubmit(handleSubmit)}
                 loading={submitting}
                 variant="filled"

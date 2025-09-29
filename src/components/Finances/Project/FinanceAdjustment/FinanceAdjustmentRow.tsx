@@ -4,12 +4,11 @@ import { useHover } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Group, Text, Badge, ThemeIcon, Card, Transition } from "@mantine/core";
+import { Group, Text, ThemeIcon, Card, Transition } from "@mantine/core";
 import {
   IconArrowRight,
   IconMinus,
   IconPlus,
-  IconUser,
   IconArrowLeft,
 } from "@tabler/icons-react";
 
@@ -18,28 +17,70 @@ import { formatMoney, formatDate } from "@/utils/formatFunctions";
 import { Currency } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
+import FinanceClientBadge from "../../FinanceClient/FinanceClientBadge";
+import { FinanceProject } from "@/types/finance.types";
 
 interface FinanceAdjustmentRowProps {
-  adjustment: Tables<"finance_project_adjustment">;
+  adultClientId: string | null;
+  financeProject?: FinanceProject;
+  adjustment?: Tables<"finance_project_adjustment">;
   currency: Currency;
 }
 
 export default function FinanceAdjustmentRow({
+  adultClientId,
+  financeProject,
   adjustment,
   currency,
 }: FinanceAdjustmentRowProps) {
-  const { locale } = useSettingsStore();
+  const { locale, getLocalizedText } = useSettingsStore();
   const { financeClients } = useFinanceStore();
 
   const { hovered, ref } = useHover();
 
-  const isIncome = adjustment.amount > 0;
-  const client = financeClients.find(
-    (client) => client.id === adjustment.finance_client_id
-  );
+  if (!adjustment && !financeProject) return null;
+
+  let isIncome = false;
+  let client = null;
+  let amount = 0;
+  let description = null;
+  let createdAt = new Date();
+
+  if (adjustment) {
+    isIncome = adjustment.amount > 0;
+    amount = adjustment.amount;
+    client = financeClients.find(
+      (client) =>
+        client.id === adjustment.finance_client_id ||
+        client.id === adultClientId
+    );
+    description = adjustment.description;
+    createdAt = new Date(adjustment.created_at);
+  } else if (financeProject) {
+    amount = financeProject.start_amount;
+    isIncome = financeProject.start_amount > 0;
+    client = financeClients.find(
+      (client) => client.id === financeProject.finance_client_id
+    );
+    description = getLocalizedText("Startbetrag", "Start amount");
+    createdAt = new Date(financeProject.created_at);
+  }
 
   return (
-    <Card p="sm" withBorder shadow="sm" radius="md" ref={ref}>
+    <Card
+      p="sm"
+      withBorder
+      shadow="sm"
+      radius="md"
+      ref={ref}
+      style={{
+        border: hovered
+          ? "1px solid light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2))"
+          : financeProject
+            ? "1px solid light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-3))"
+            : "",
+      }}
+    >
       <Group justify="space-between" align="flex-start">
         <Group gap="xs" align="center">
           <ThemeIcon
@@ -62,12 +103,12 @@ export default function FinanceAdjustmentRow({
           </ThemeIcon>
           <Group gap="xs">
             <Text size="sm" fw={500} c={isIncome ? "green" : "red"}>
-              {formatMoney(Math.abs(adjustment.amount), currency, locale)}
+              {formatMoney(Math.abs(amount), currency, locale)}
             </Text>
 
-            {adjustment.description && (
+            {description && (
               <Text size="sm" c="dimmed">
-                {adjustment.description}
+                {description}
               </Text>
             )}
           </Group>
@@ -85,19 +126,10 @@ export default function FinanceAdjustmentRow({
         </Group>
 
         <Group gap="xs" align="center">
-          {client && (
-            <Badge
-              color="blue"
-              variant="light"
-              leftSection={<IconUser size={10} />}
-              size="xs"
-            >
-              {client.name}
-            </Badge>
-          )}
+          {client && <FinanceClientBadge client={client} />}
 
           <Text size="xs" c="dimmed">
-            {formatDate(new Date(adjustment.created_at), locale)}
+            {formatDate(createdAt, locale)}
           </Text>
         </Group>
       </Group>
