@@ -147,10 +147,11 @@ export type Database = {
         Row: {
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
+          description: string | null;
           due_date: string | null;
           finance_client_id: string | null;
           id: string;
-          paid: boolean;
+          single_cash_flow_id: string | null;
           start_amount: number;
           title: string;
           user_id: string;
@@ -158,10 +159,11 @@ export type Database = {
         Insert: {
           created_at?: string;
           currency: Database["public"]["Enums"]["currency"];
+          description?: string | null;
           due_date?: string | null;
           finance_client_id?: string | null;
           id?: string;
-          paid?: boolean;
+          single_cash_flow_id?: string | null;
           start_amount: number;
           title: string;
           user_id?: string;
@@ -169,10 +171,11 @@ export type Database = {
         Update: {
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
+          description?: string | null;
           due_date?: string | null;
           finance_client_id?: string | null;
           id?: string;
-          paid?: boolean;
+          single_cash_flow_id?: string | null;
           start_amount?: number;
           title?: string;
           user_id?: string;
@@ -183,6 +186,13 @@ export type Database = {
             columns: ["finance_client_id"];
             isOneToOne: false;
             referencedRelation: "finance_client";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "finance_project_single_cash_flow_id_fkey";
+            columns: ["single_cash_flow_id"];
+            isOneToOne: false;
+            referencedRelation: "single_cash_flow";
             referencedColumns: ["id"];
           },
         ];
@@ -681,7 +691,7 @@ export type Database = {
           user_id: string;
         };
         Insert: {
-          cashflow_id?: string;
+          cashflow_id: string;
           created_at?: string;
           end_currency?: Database["public"]["Enums"]["currency"] | null;
           end_value?: number | null;
@@ -1013,7 +1023,7 @@ export type Database = {
           changed_date?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
-          date: string;
+          date?: string;
           finance_client_id?: string | null;
           finance_project_id?: string | null;
           id?: string;
@@ -1333,6 +1343,7 @@ export type Database = {
           project_id: string;
           real_start_time: string | null;
           salary: number;
+          single_cash_flow_id: string | null;
           start_time: string;
           time_fragments_interval: number | null;
           true_end_time: string;
@@ -1352,6 +1363,7 @@ export type Database = {
           project_id?: string;
           real_start_time?: string | null;
           salary: number;
+          single_cash_flow_id?: string | null;
           start_time: string;
           time_fragments_interval?: number | null;
           true_end_time: string;
@@ -1371,12 +1383,20 @@ export type Database = {
           project_id?: string;
           real_start_time?: string | null;
           salary?: number;
+          single_cash_flow_id?: string | null;
           start_time?: string;
           time_fragments_interval?: number | null;
           true_end_time?: string;
           user_id?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: "timer_session_single_cash_flow_id_fkey";
+            columns: ["single_cash_flow_id"];
+            isOneToOne: false;
+            referencedRelation: "single_cash_flow";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "timerSession_payout_id_fkey";
             columns: ["payout_id"];

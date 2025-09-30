@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import {
   useDisclosure,
   useClickOutside,
@@ -44,8 +43,6 @@ import FinanceClientBadge from "../FinanceClient/FinanceClientBadge";
 import FinanceCategoryBadges from "../Category/FinanceCategoryBadges";
 import { Tables } from "@/types/db.types";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
-import { Currency } from "@/types/settings.types";
-import PayoutConversionModal from "../Payout/PayoutConversionModal";
 
 interface FinanceProjectCardProps extends CardProps {
   project: FinanceProject;
@@ -69,25 +66,9 @@ export default function FinanceProjectCard({
   onOpenEditProject,
   ...props
 }: FinanceProjectCardProps) {
-  const {
-    locale,
-    getLocalizedText,
-    showChangeCurrencyWindow,
-    defaultFinanceCurrency,
-  } = useSettingsStore();
-  const [startValue, setStartValue] = useState<number>(project.start_amount);
-  const [startCurrency, setStartCurrency] = useState<Currency>(
-    project.currency
-  );
-  const { updateFinanceProject } = useFinanceStore();
-  const [
-    isPayoutModalOpen,
-    { open: openPayoutModal, close: closePayoutModal },
-  ] = useDisclosure(false);
-  const [
-    isProcessingPayout,
-    { open: openProcessingPayout, close: closeProcessingPayout },
-  ] = useDisclosure(false);
+  const { locale, getLocalizedText } = useSettingsStore();
+  const { updateFinanceProject, financeProjectAdjustmentPayout, financeProjectPayout } =
+    useFinanceStore();
   const [isEditing, { open: openEditing, close: closeEditing }] =
     useDisclosure(false);
   const { hovered, ref: hoverRef } = useHover();
@@ -103,11 +84,6 @@ export default function FinanceProjectCard({
   ] = useDisclosure(false);
   const [isDropdownOpen, { open: openDropdown, close: closeDropdown }] =
     useDisclosure(false);
-
-  useEffect(() => {
-    setStartValue(project.start_amount);
-    setStartCurrency(project.currency);
-  }, [project]);
 
   const ref = useClickOutside(() => {
     if (
@@ -151,37 +127,24 @@ export default function FinanceProjectCard({
     0
   );
 
-  const handlePayoutClick = (id?: string) => {
-
-    if (id) {
-      const adjustment = project.adjustments.find((adj) => adj.id === id);
+  const handlePayoutClick = (adjustmentId?: string, isStartValue?: boolean) => {
+    if (adjustmentId) {
+      const adjustment = project.adjustments.find(
+        (adj) => adj.id === adjustmentId
+      );
       if (adjustment) {
-        setStartValue(adjustment.amount);
+        financeProjectAdjustmentPayout(
+          adjustment,
+          project.categories.map((category) => category.id),
+          `${adjustment.description} (${getLocalizedText("für das Finanz Projekt:", "for the Finance Project:")} ${project.title})`
+        );
       }
+    } else if (isStartValue) {
+      //  handle start value payout
+      financeProjectPayout(project, `${project.title} (${getLocalizedText("Startwert", "Start Value")})`, true);
     } else {
-      setStartValue(totalAmount);
-      setStartCurrency(project.currency);
+      //  handle all payout
     }
-    if (
-      showChangeCurrencyWindow === null ||
-      (showChangeCurrencyWindow === true &&
-        startCurrency !== defaultFinanceCurrency)
-    ) {
-      openPayoutModal();
-    } else {
-      handlePayout({
-        endValue: startValue,
-        endCurrency: startCurrency,
-      });
-    }
-  };
-
-  const handlePayout = (values: {
-    endValue: number;
-    endCurrency: Currency;
-  }) => {
-    console.log(values);
-    closePayoutModal();
   };
 
   return (
@@ -332,9 +295,15 @@ export default function FinanceProjectCard({
                         "Link with Work Project"
                       )}
                     </Menu.Item> */}
-                    <Menu.Item leftSection={<IconCashBanknotePlus size={16} />}>
+                    <Menu.Item
+                      leftSection={<IconCashBanknotePlus size={16} />}
+                      onClick={() => handlePayoutClick()}
+                    >
                       <Text>
-                        {getLocalizedText("Projekt Auszahlen", "Payout Project")}
+                        {getLocalizedText(
+                          "Projekt Auszahlen",
+                          "Payout Project"
+                        )}
                       </Text>
                     </Menu.Item>
                     <Menu.Item
@@ -435,14 +404,6 @@ export default function FinanceProjectCard({
           </Stack>
         </Collapse>
       </Stack>
-      <PayoutConversionModal
-        opened={isPayoutModalOpen}
-        handleClose={closePayoutModal}
-        startValue={startValue}
-        startCurrency={startCurrency}
-        onSubmit={handlePayout}
-        isProcessing={isProcessingPayout}
-      />
     </Card>
   );
 }

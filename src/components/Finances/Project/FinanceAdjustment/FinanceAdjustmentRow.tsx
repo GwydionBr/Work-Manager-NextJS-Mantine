@@ -4,12 +4,13 @@ import { useHover } from "@mantine/hooks";
 import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Group, Text, ThemeIcon, Card, Transition } from "@mantine/core";
+import { Group, Text, ThemeIcon, Card, Transition, Paper } from "@mantine/core";
 import {
   IconArrowRight,
   IconMinus,
   IconPlus,
   IconArrowLeft,
+  IconCheck,
 } from "@tabler/icons-react";
 
 import { formatMoney, formatDate } from "@/utils/formatFunctions";
@@ -25,7 +26,7 @@ interface FinanceAdjustmentRowProps {
   financeProject?: FinanceProject;
   adjustment?: Tables<"finance_project_adjustment">;
   currency: Currency;
-  handlePayout: (id?: string) => void;
+  handlePayout: (id?: string, isStartValue?: boolean) => void;
 }
 
 export default function FinanceAdjustmentRow({
@@ -47,8 +48,9 @@ export default function FinanceAdjustmentRow({
   let amount = 0;
   let description = null;
   let createdAt = new Date();
-  let isAdjustment = false;
+  let isStartValue = true;
   let id = undefined;
+  let isPaid = false;
 
   if (adjustment) {
     isIncome = adjustment.amount > 0;
@@ -60,8 +62,9 @@ export default function FinanceAdjustmentRow({
     );
     description = adjustment.description;
     createdAt = new Date(adjustment.created_at);
-    isAdjustment = true;
+    isStartValue = false;
     id = adjustment.id;
+    isPaid = !!adjustment.single_cash_flow_id;
   } else if (financeProject) {
     amount = financeProject.start_amount;
     isIncome = financeProject.start_amount > 0;
@@ -70,24 +73,35 @@ export default function FinanceAdjustmentRow({
     );
     description = getLocalizedText("Startbetrag", "Start amount");
     createdAt = new Date(financeProject.created_at);
+    isPaid = !!financeProject.single_cash_flow_id;
   }
 
   return (
     <Card
       p="sm"
       withBorder
+      bg={
+        isPaid
+          ? "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8))"
+          : "light-dark(var(--mantine-color-white), var(--mantine-color-dark-6))"
+      }
       shadow="sm"
       radius="md"
       ref={ref}
       style={{
-        border: hovered
-          ? "1px solid light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2))"
-          : financeProject
-            ? "1px solid light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-3))"
-            : "",
+        border:
+          hovered && !isPaid
+            ? "1px solid light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2))"
+            : financeProject
+              ? "1px solid light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-3))"
+              : "",
       }}
     >
-      <Group justify="space-between" align="flex-start">
+      <Group
+        justify="space-between"
+        w="100%"
+        style={{ opacity: isPaid ? 0.5 : 1 }}
+      >
         <Group gap="xs" align="center">
           <ThemeIcon
             size="sm"
@@ -117,13 +131,27 @@ export default function FinanceAdjustmentRow({
                 {description}
               </Text>
             )}
+            {isPaid && (
+              <Group wrap="nowrap" gap={5}>
+                <ThemeIcon size="sm" color="green" variant="transparent">
+                  <IconCheck size={14} />
+                </ThemeIcon>
+                <Text size="xs" c="green">
+                  Paid
+                </Text>
+              </Group>
+            )}
           </Group>
-          <Transition mounted={hovered} transition="fade-left" duration={200}>
+          <Transition
+            mounted={hovered && !isPaid}
+            transition="fade-left"
+            duration={200}
+          >
             {(styles) => (
               <PayoutActionIcon
                 ml={10}
                 size="sm"
-                onClick={() => handlePayout(id)}
+                onClick={() => handlePayout(id, isStartValue)}
                 tooltipLabel={locale === "de-DE" ? "Auszahlung" : "Payout"}
                 style={styles}
               />

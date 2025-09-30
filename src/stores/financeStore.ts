@@ -49,7 +49,7 @@ interface FinanceStoreActions {
   addSingleCashFlow: (
     singleCashFlow: TablesInsert<"single_cash_flow">,
     categoryIds: string[]
-  ) => Promise<boolean>;
+  ) => Promise<Tables<"single_cash_flow"> | null>;
   addExistingSingleCashFlow: (singleCashFlow: StoreSingleCashFlow) => boolean;
   addRecurringCashFlow: (
     recurringCashFlow: TablesInsert<"recurring_cash_flow">,
@@ -91,6 +91,16 @@ interface FinanceStoreActions {
     category: TablesUpdate<"finance_category">
   ) => Promise<Tables<"finance_category"> | null>;
   deleteFinanceCategories: (ids: string[]) => Promise<boolean>;
+  financeProjectAdjustmentPayout: (
+    adjustment: Tables<"finance_project_adjustment">,
+    categoryIds: string[],
+    title: string
+  ) => Promise<Tables<"finance_project_adjustment"> | null>;
+  financeProjectPayout: (
+    project: FinanceProject,
+    title: string,
+    justStartValue?: boolean
+  ) => Promise<StoreFinanceProject | null>;
   sessionPayout: (
     sessionIds: string[],
     payout: TablesInsert<"payout">,
@@ -394,7 +404,7 @@ export const useFinanceStore = create<
           cashFlow: singleCashFlow,
           categoryIds,
         });
-        if (!newSingleCashFlow.success) return false;
+        if (!newSingleCashFlow.success) return null;
 
         const newSingleCashFlows = [...singleCashFlows, newSingleCashFlow.data];
 
@@ -402,7 +412,7 @@ export const useFinanceStore = create<
           singleCashFlows: newSingleCashFlows,
         });
 
-        return true;
+        return newSingleCashFlow.data;
       },
 
       addExistingSingleCashFlow(singleCashFlow) {
@@ -759,6 +769,81 @@ export const useFinanceStore = create<
           financeProjects: updatedFinanceProjects,
         });
         return true;
+      },
+
+      async financeProjectAdjustmentPayout(adjustment, categoryIds, title) {
+        const { financeProjects, addSingleCashFlow } = get();
+        const project = financeProjects.find(
+          (p) => p.id === adjustment.finance_project_id
+        );
+        if (!project) return null;
+
+        const singleCashFlow = await addSingleCashFlow(
+          {
+            title,
+            amount: adjustment.amount,
+            currency: project.currency,
+          },
+          categoryIds
+        );
+
+        if (!singleCashFlow) return null;
+
+        const updatedFinanceAdjustment = await actions.updateFinanceAdjustment({
+          ...adjustment,
+          single_cash_flow_id: singleCashFlow.id,
+        });
+
+        if (!updatedFinanceAdjustment.success) return null;
+
+        const updatedFinanceProjects = financeProjects.map((p) =>
+          p.id === adjustment.finance_project_id
+            ? {
+                ...p,
+                adjustments: p.adjustments.map((a) =>
+                  a.id === adjustment.id ? updatedFinanceAdjustment.data : a
+                ),
+              }
+            : p
+        );
+        set({
+          financeProjects: updatedFinanceProjects,
+        });
+
+        return updatedFinanceAdjustment.data;
+      },
+
+      async financeProjectPayout(project, title, justStartValue = true) {
+        const { financeProjects, addSingleCashFlow, updateFinanceProject } =
+          get();
+
+        const singleCashFlow = await addSingleCashFlow(
+          {
+            title,
+            amount: project.start_amount,
+            currency: project.currency,
+          },  
+          project.categories.map((c) => c.id)
+        );
+
+        if (!singleCashFlow) return null;
+
+        const updatedFinanceProject = await updateFinanceProject({
+          ...project,
+          single_cash_flow_id: singleCashFlow.id,
+        });
+
+        if (!updatedFinanceProject) return null;
+
+        const updatedFinanceProjects = financeProjects.map((p) =>
+          p.id === project.id ? updatedFinanceProject : p
+        );
+
+        set({
+          financeProjects: updatedFinanceProjects,
+        });
+
+        return updatedFinanceProject;
       },
 
       async sessionPayout(sessionIds, payout, categoryIds) {
