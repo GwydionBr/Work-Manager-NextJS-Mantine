@@ -6,10 +6,10 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import { Tabs } from "@mantine/core";
 import {
   IconReload,
-  IconCircleDashedNumber1,
   IconBriefcase,
   IconPresentationAnalytics,
   IconCashBanknotePlus,
+  IconCashBanknote,
 } from "@tabler/icons-react";
 import FinanceOverviewTab from "@/components/Finances/Overview/FinanceOverviewTab";
 import FinanceRecurringTab from "@/components/Finances/CashFlow/Recurring/FinanceRecurringTab";
@@ -41,7 +41,7 @@ export default function FinanceTabs() {
       >
         <Tabs.Tab
           leftSection={
-            <IconCircleDashedNumber1 color="light-dark(blue, cyan)" />
+            <IconCashBanknote color="light-dark(blue, cyan)" />
           }
           value="Single"
         >

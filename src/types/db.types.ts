@@ -196,6 +196,7 @@ export type Database = {
           finance_client_id: string | null;
           finance_project_id: string;
           id: string;
+          single_cash_flow_id: string | null;
           user_id: string;
         };
         Insert: {
@@ -206,6 +207,7 @@ export type Database = {
           finance_client_id?: string | null;
           finance_project_id: string;
           id?: string;
+          single_cash_flow_id?: string | null;
           user_id?: string;
         };
         Update: {
@@ -216,6 +218,7 @@ export type Database = {
           finance_client_id?: string | null;
           finance_project_id?: string;
           id?: string;
+          single_cash_flow_id?: string | null;
           user_id?: string;
         };
         Relationships: [
@@ -238,6 +241,13 @@ export type Database = {
             columns: ["finance_project_id"];
             isOneToOne: false;
             referencedRelation: "finance_project";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "finance_project_adjustment_single_cash_flow_id_fkey";
+            columns: ["single_cash_flow_id"];
+            isOneToOne: false;
+            referencedRelation: "single_cash_flow";
             referencedColumns: ["id"];
           },
         ];
@@ -989,7 +999,6 @@ export type Database = {
           currency: Database["public"]["Enums"]["currency"];
           date: string;
           finance_client_id: string | null;
-          finance_project_adjustment_id: string | null;
           finance_project_id: string | null;
           id: string;
           is_active: boolean;
@@ -1006,7 +1015,6 @@ export type Database = {
           currency?: Database["public"]["Enums"]["currency"];
           date: string;
           finance_client_id?: string | null;
-          finance_project_adjustment_id?: string | null;
           finance_project_id?: string | null;
           id?: string;
           is_active?: boolean;
@@ -1023,7 +1031,6 @@ export type Database = {
           currency?: Database["public"]["Enums"]["currency"];
           date?: string;
           finance_client_id?: string | null;
-          finance_project_adjustment_id?: string | null;
           finance_project_id?: string | null;
           id?: string;
           is_active?: boolean;
@@ -1045,13 +1052,6 @@ export type Database = {
             columns: ["finance_client_id"];
             isOneToOne: false;
             referencedRelation: "finance_client";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "single_cash_flow_finance_project_adjustment_id_fkey";
-            columns: ["finance_project_adjustment_id"];
-            isOneToOne: false;
-            referencedRelation: "finance_project_adjustment";
             referencedColumns: ["id"];
           },
           {

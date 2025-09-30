@@ -18,7 +18,7 @@ import {
   Text,
   Modal,
 } from "@mantine/core";
-import { IconArrowDown, IconBrandCashapp } from "@tabler/icons-react";
+import { IconArrowDown, IconCashBanknotePlus } from "@tabler/icons-react";
 import { currencies } from "@/constants/settings";
 import { formatMoney } from "@/utils/formatFunctions";
 
@@ -70,7 +70,7 @@ export default function SessionModalForm({
       onClose={handleClose}
       title={
         <Group gap="xs">
-          <IconBrandCashapp size={20} />
+          <IconCashBanknotePlus size={20} />
           <Text fw={600}>{locale === "de-DE" ? "Auszahlung" : "Payout"}</Text>
         </Group>
       }
@@ -118,7 +118,7 @@ export default function SessionModalForm({
             color="violet"
             type="submit"
             loading={isProcessing}
-            leftSection={<IconBrandCashapp />}
+            leftSection={<IconCashBanknotePlus />}
           >
             {locale === "de-DE" ? "Auszahlen" : "Payout"}
           </Button>

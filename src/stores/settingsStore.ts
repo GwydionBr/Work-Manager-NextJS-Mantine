@@ -28,7 +28,7 @@ interface SettingsState {
   automaticlyStopOtherTimer: boolean;
   locale: Locale;
   format24h: boolean;
-  showChangeCurrencyWindow: boolean | null;
+  showChangeCurrencyWindow: boolean | null; // true: show if difference, false: hide, null: always show
   initialized: boolean | null;
   abortController: AbortController | null;
 }

@@ -25,6 +25,7 @@ interface FinanceAdjustmentRowProps {
   financeProject?: FinanceProject;
   adjustment?: Tables<"finance_project_adjustment">;
   currency: Currency;
+  handlePayout: (id?: string) => void;
 }
 
 export default function FinanceAdjustmentRow({
@@ -32,6 +33,7 @@ export default function FinanceAdjustmentRow({
   financeProject,
   adjustment,
   currency,
+  handlePayout,
 }: FinanceAdjustmentRowProps) {
   const { locale, getLocalizedText } = useSettingsStore();
   const { financeClients } = useFinanceStore();
@@ -45,6 +47,8 @@ export default function FinanceAdjustmentRow({
   let amount = 0;
   let description = null;
   let createdAt = new Date();
+  let isAdjustment = false;
+  let id = undefined;
 
   if (adjustment) {
     isIncome = adjustment.amount > 0;
@@ -56,6 +60,8 @@ export default function FinanceAdjustmentRow({
     );
     description = adjustment.description;
     createdAt = new Date(adjustment.created_at);
+    isAdjustment = true;
+    id = adjustment.id;
   } else if (financeProject) {
     amount = financeProject.start_amount;
     isIncome = financeProject.start_amount > 0;
@@ -117,7 +123,7 @@ export default function FinanceAdjustmentRow({
               <PayoutActionIcon
                 ml={10}
                 size="sm"
-                onClick={() => {}}
+                onClick={() => handlePayout(id)}
                 tooltipLabel={locale === "de-DE" ? "Auszahlung" : "Payout"}
                 style={styles}
               />

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   useDisclosure,
   useClickOutside,
@@ -35,14 +36,16 @@ import {
   IconTrendingDown,
   IconEdit,
   IconTrash,
+  IconCashBanknotePlus,
 } from "@tabler/icons-react";
 import MoreActionIcon from "@/components/UI/ActionIcons/MoreActionIcon";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import FinanceClientBadge from "../FinanceClient/FinanceClientBadge";
 import FinanceCategoryBadges from "../Category/FinanceCategoryBadges";
 import { Tables } from "@/types/db.types";
-import EmptyFinanceClientBadge from "../FinanceClient/EmptyFinanceClientBadge";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
+import { Currency } from "@/types/settings.types";
+import PayoutConversionModal from "../Payout/PayoutConversionModal";
 
 interface FinanceProjectCardProps extends CardProps {
   project: FinanceProject;
@@ -66,8 +69,25 @@ export default function FinanceProjectCard({
   onOpenEditProject,
   ...props
 }: FinanceProjectCardProps) {
-  const { locale } = useSettingsStore();
+  const {
+    locale,
+    getLocalizedText,
+    showChangeCurrencyWindow,
+    defaultFinanceCurrency,
+  } = useSettingsStore();
+  const [startValue, setStartValue] = useState<number>(project.start_amount);
+  const [startCurrency, setStartCurrency] = useState<Currency>(
+    project.currency
+  );
   const { updateFinanceProject } = useFinanceStore();
+  const [
+    isPayoutModalOpen,
+    { open: openPayoutModal, close: closePayoutModal },
+  ] = useDisclosure(false);
+  const [
+    isProcessingPayout,
+    { open: openProcessingPayout, close: closeProcessingPayout },
+  ] = useDisclosure(false);
   const [isEditing, { open: openEditing, close: closeEditing }] =
     useDisclosure(false);
   const { hovered, ref: hoverRef } = useHover();
@@ -83,6 +103,11 @@ export default function FinanceProjectCard({
   ] = useDisclosure(false);
   const [isDropdownOpen, { open: openDropdown, close: closeDropdown }] =
     useDisclosure(false);
+
+  useEffect(() => {
+    setStartValue(project.start_amount);
+    setStartCurrency(project.currency);
+  }, [project]);
 
   const ref = useClickOutside(() => {
     if (
@@ -126,8 +151,37 @@ export default function FinanceProjectCard({
     0
   );
 
-  const getLocalizedText = (de: string, en: string) => {
-    return locale === "de-DE" ? de : en;
+  const handlePayoutClick = (id?: string) => {
+
+    if (id) {
+      const adjustment = project.adjustments.find((adj) => adj.id === id);
+      if (adjustment) {
+        setStartValue(adjustment.amount);
+      }
+    } else {
+      setStartValue(totalAmount);
+      setStartCurrency(project.currency);
+    }
+    if (
+      showChangeCurrencyWindow === null ||
+      (showChangeCurrencyWindow === true &&
+        startCurrency !== defaultFinanceCurrency)
+    ) {
+      openPayoutModal();
+    } else {
+      handlePayout({
+        endValue: startValue,
+        endCurrency: startCurrency,
+      });
+    }
+  };
+
+  const handlePayout = (values: {
+    endValue: number;
+    endCurrency: Currency;
+  }) => {
+    console.log(values);
+    closePayoutModal();
   };
 
   return (
@@ -242,6 +296,7 @@ export default function FinanceProjectCard({
                       variant="subtle"
                       onClick={(e) => {
                         e?.stopPropagation();
+                        handlePayoutClick();
                       }}
                       tooltipLabel={getLocalizedText(
                         "Finanz Projekt auszahlen",
@@ -277,6 +332,11 @@ export default function FinanceProjectCard({
                         "Link with Work Project"
                       )}
                     </Menu.Item> */}
+                    <Menu.Item leftSection={<IconCashBanknotePlus size={16} />}>
+                      <Text>
+                        {getLocalizedText("Projekt Auszahlen", "Payout Project")}
+                      </Text>
+                    </Menu.Item>
                     <Menu.Item
                       leftSection={<IconEdit size={16} />}
                       onClick={() => {
@@ -358,6 +418,7 @@ export default function FinanceProjectCard({
                         adjustment={adjustment}
                         currency={project.currency}
                         adultClientId={project.finance_client_id}
+                        handlePayout={handlePayoutClick}
                       />
                     ))}
                   <Divider />
@@ -366,6 +427,7 @@ export default function FinanceProjectCard({
                     financeProject={project}
                     currency={project.currency}
                     adultClientId={project.finance_client_id}
+                    handlePayout={handlePayoutClick}
                   />
                 </Stack>
               )}
@@ -373,6 +435,14 @@ export default function FinanceProjectCard({
           </Stack>
         </Collapse>
       </Stack>
+      <PayoutConversionModal
+        opened={isPayoutModalOpen}
+        handleClose={closePayoutModal}
+        startValue={startValue}
+        startCurrency={startCurrency}
+        onSubmit={handlePayout}
+        isProcessing={isProcessingPayout}
+      />
     </Card>
   );
 }

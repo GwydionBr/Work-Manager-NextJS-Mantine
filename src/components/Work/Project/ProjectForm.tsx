@@ -367,22 +367,27 @@ export default function ProjectForm({
                   }
                   error={form.errors.salary}
                 />
-                <DelayedTooltip
-                  label={getLocalizedText("Zahlungsmethode", "Payment method")}
-                >
-                  <Switch
-                    size="xl"
-                    onLabel={getLocalizedText("Stündlich", "Hourly")}
-                    offLabel={getLocalizedText("Projekt", "Project")}
-                    checked={form.values.hourly_payment}
-                    onChange={(event) =>
-                      handleWorkFieldChange(
-                        "hourly_payment",
-                        event.currentTarget.checked
-                      )
-                    }
-                  />
-                </DelayedTooltip>
+                {project === undefined && (
+                  <DelayedTooltip
+                    label={getLocalizedText(
+                      "Zahlungsmethode",
+                      "Payment method"
+                    )}
+                  >
+                    <Switch
+                      size="xl"
+                      onLabel={getLocalizedText("Stündlich", "Hourly")}
+                      offLabel={getLocalizedText("Projekt", "Project")}
+                      checked={form.values.hourly_payment}
+                      onChange={(event) =>
+                        handleWorkFieldChange(
+                          "hourly_payment",
+                          event.currentTarget.checked
+                        )
+                      }
+                    />
+                  </DelayedTooltip>
+                )}
               </Group>
             </Collapse>
             {/* Currency - only show for work projects */}

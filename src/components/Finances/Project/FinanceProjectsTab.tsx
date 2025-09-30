@@ -57,7 +57,7 @@ export default function FinanceProjectTab() {
     financeClients,
     financeCategories,
   } = useFinanceStore();
-  const { locale, setIsModalOpen, setSelectedTab, getLocalizedText } =
+  const { locale, showChangeCurrencyWindow, setIsModalOpen, setSelectedTab, getLocalizedText } =
     useSettingsStore();
 
   // Bulk selection
