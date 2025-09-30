@@ -67,8 +67,11 @@ export default function FinanceProjectCard({
   ...props
 }: FinanceProjectCardProps) {
   const { locale, getLocalizedText } = useSettingsStore();
-  const { updateFinanceProject, financeProjectAdjustmentPayout, financeProjectPayout } =
-    useFinanceStore();
+  const {
+    updateFinanceProject,
+    financeProjectAdjustmentPayout,
+    financeProjectPayout,
+  } = useFinanceStore();
   const [isEditing, { open: openEditing, close: closeEditing }] =
     useDisclosure(false);
   const { hovered, ref: hoverRef } = useHover();
@@ -121,6 +124,9 @@ export default function FinanceProjectCard({
   };
 
   const hasAdjustments = project.adjustments.length > 0;
+  const isPaidTotally =
+    !!project.single_cash_flow_id &&
+    project.adjustments.filter((a) => !a.finance_category_id).length !== 0;
   const isPositive = totalAmount > 0;
   const adjustmentTotal = project.adjustments.reduce(
     (acc, adj) => acc + adj.amount,
@@ -141,7 +147,11 @@ export default function FinanceProjectCard({
       }
     } else if (isStartValue) {
       //  handle start value payout
-      financeProjectPayout(project, `${project.title} (${getLocalizedText("Startwert", "Start Value")})`, true);
+      financeProjectPayout(
+        project,
+        `${project.title} (${getLocalizedText("Startwert", "Start Value")})`,
+        true
+      );
     } else {
       //  handle all payout
     }
@@ -156,6 +166,7 @@ export default function FinanceProjectCard({
       bg="light-dark(var(--mantine-color-white), var(--mantine-color-dark-6))"
       shadow="sm"
       style={{
+        opacity: isPaidTotally ? 0.5 : 1,
         cursor: isEditing ? "default" : "pointer",
         border: isSelected
           ? "2px solid var(--mantine-color-blue-5)"
@@ -296,8 +307,9 @@ export default function FinanceProjectCard({
                       )}
                     </Menu.Item> */}
                     <Menu.Item
-                      leftSection={<IconCashBanknotePlus size={16} />}
+                      leftSection={<IconCashBanknotePlus size={16} color={isPaidTotally ? "gray" : "violet"} />}
                       onClick={() => handlePayoutClick()}
+                      disabled={isPaidTotally}
                     >
                       <Text>
                         {getLocalizedText(
@@ -312,11 +324,12 @@ export default function FinanceProjectCard({
                         setEditProject(project);
                         onOpenEditProject();
                       }}
+                      disabled={isPaidTotally}
                     >
                       <Text>{getLocalizedText("Bearbeiten", "Edit")}</Text>
                     </Menu.Item>
                     <Menu.Item
-                      leftSection={<IconTrash size={16} />}
+                      leftSection={<IconTrash size={16} color="red"/>}
                       onClick={onDelete}
                     >
                       <Text>{getLocalizedText("Löschen", "Delete")}</Text>

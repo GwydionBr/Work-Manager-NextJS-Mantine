@@ -117,7 +117,7 @@ export default function SingleCashflowRow({
       >
         <Grid.Col span={2}>
           <Group>
-            <Text fw={700} c={cashflow.type === "expense" ? "red" : "green"}>
+            <Text fw={700} c={cashflow.amount < 0 ? "red" : "green"}>
               {formatMoney(cashflow.amount, cashflow.currency, locale)}
             </Text>
           </Group>

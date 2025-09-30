@@ -106,7 +106,7 @@ export default function FinanceSingleTab() {
         sortedSingleCashFlows
           .filter((cashFlow) => {
             const date = new Date(cashFlow.date);
-            if (cashFlow.type === "income") return false;
+            if (cashFlow.amount >= 0) return false;
             return (
               date.getMonth() === new Date().getMonth() &&
               date.getFullYear() === new Date().getFullYear()
@@ -116,7 +116,7 @@ export default function FinanceSingleTab() {
         sortedSingleCashFlows
           .filter((cashFlow) => {
             const date = new Date(cashFlow.date);
-            if (cashFlow.type === "income") return false;
+            if (cashFlow.amount >= 0) return false;
             return (
               date.getMonth() === new Date().getMonth() - 1 &&
               date.getFullYear() === new Date().getFullYear()
@@ -128,7 +128,7 @@ export default function FinanceSingleTab() {
         sortedSingleCashFlows
           .filter((cashFlow) => {
             const date = new Date(cashFlow.date);
-            if (cashFlow.type === "expense") return false;
+            if (cashFlow.amount < 0) return false;
             return (
               date.getMonth() === new Date().getMonth() &&
               date.getFullYear() === new Date().getFullYear()
@@ -138,7 +138,7 @@ export default function FinanceSingleTab() {
         sortedSingleCashFlows
           .filter((cashFlow) => {
             const date = new Date(cashFlow.date);
-            if (cashFlow.type === "expense") return false;
+            if (cashFlow.amount < 0) return false;
             return (
               date.getMonth() === new Date().getMonth() - 1 &&
               date.getFullYear() === new Date().getFullYear()
@@ -152,8 +152,8 @@ export default function FinanceSingleTab() {
   const filteredSingleCashFlows = useMemo(() => {
     return sortedSingleCashFlows.filter((cashFlow) => {
       if (typeFilter === "all") return true;
-      if (typeFilter === "expense") return cashFlow.type === "expense";
-      if (typeFilter === "income") return cashFlow.type === "income";
+      if (typeFilter === "expense") return cashFlow.amount < 0;
+      if (typeFilter === "income") return cashFlow.amount >= 0;
       return false;
     });
   }, [sortedSingleCashFlows, typeFilter]);
@@ -242,7 +242,7 @@ export default function FinanceSingleTab() {
           active: typeFilter === "expense",
           onClick: () => setTypeFilter("expense"),
           disabled:
-            singleCashFlows.filter((cashFlow) => cashFlow.type === "expense")
+            singleCashFlows.filter((cashFlow) => cashFlow.amount < 0)
               .length === 0,
         },
         {
@@ -255,7 +255,7 @@ export default function FinanceSingleTab() {
           active: typeFilter === "income",
           onClick: () => setTypeFilter("income"),
           disabled:
-            singleCashFlows.filter((cashFlow) => cashFlow.type === "income")
+            singleCashFlows.filter((cashFlow) => cashFlow.amount >= 0)
               .length === 0,
         },
       ],
