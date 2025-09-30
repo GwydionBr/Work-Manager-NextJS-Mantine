@@ -103,9 +103,9 @@ interface FinanceStoreActions {
   ) => Promise<StoreFinanceProject | null>;
   sessionPayout: (
     sessionIds: string[],
-    payout: TablesInsert<"payout">,
+    cashflow: TablesInsert<"single_cash_flow">,
     categoryIds: string[]
-  ) => Promise<Tables<"payout"> | null>;
+  ) => Promise<StoreSingleCashFlow | null>;
   setActiveTab: (tab: FinanceTab) => void;
 }
 
@@ -822,7 +822,7 @@ export const useFinanceStore = create<
             title,
             amount: project.start_amount,
             currency: project.currency,
-          },  
+          },
           project.categories.map((c) => c.id)
         );
 
@@ -846,12 +846,12 @@ export const useFinanceStore = create<
         return updatedFinanceProject;
       },
 
-      async sessionPayout(sessionIds, payout, categoryIds) {
+      async sessionPayout(sessionIds, cashflow, categoryIds) {
         const { payouts, singleCashFlows } = get();
 
         const payoutResult = await actions.payoutSessions({
           date: new Date(),
-          payout,
+          cashflow,
           sessionIds,
           categoryIds,
         });
@@ -860,17 +860,15 @@ export const useFinanceStore = create<
           return null;
         }
 
-        const updatedPayouts = [payoutResult.data.payout, ...payouts];
         const updatedSingleCashFlows = [
           ...singleCashFlows,
-          payoutResult.data.cashflow,
+          payoutResult.data,
         ];
         set({
-          payouts: updatedPayouts,
           singleCashFlows: updatedSingleCashFlows,
         });
 
-        return payoutResult.data.payout;
+        return payoutResult.data;
       },
 
       setActiveTab(tab) {

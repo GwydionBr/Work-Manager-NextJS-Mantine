@@ -7,33 +7,22 @@ import { StoreSingleCashFlow } from "@/types/finance.types";
 
 interface PayoutSessionsProps {
   date: Date;
-  payout: TablesInsert<"payout">;
+  cashflow: TablesInsert<"single_cash_flow">;
   sessionIds: string[];
   categoryIds: string[];
 }
 
 export async function payoutSessions({
   date,
-  payout,
+  cashflow,
   sessionIds,
   categoryIds,
-}: PayoutSessionsProps): Promise<
-  ApiResponseSingle<{
-    cashflow: StoreSingleCashFlow;
-    payout: Tables<"payout">;
-  }>
-> {
+}: PayoutSessionsProps): Promise<ApiResponseSingle<StoreSingleCashFlow>> {
   const supabase = await createClient();
 
-  const { data: cashflow, error: cashFlowError } = await supabase
+  const { data: cashflowData, error: cashFlowError } = await supabase
     .from("single_cash_flow")
-    .insert({
-      title: payout.title,
-      type: "income",
-      amount: payout.end_value ?? payout.start_value,
-      currency: payout.end_currency ?? payout.start_currency,
-      date: date.toISOString(),
-    })
+    .insert(cashflow)
     .select()
     .single();
 
@@ -45,7 +34,7 @@ export async function payoutSessions({
     .from("single_cash_flow_category")
     .insert(
       categoryIds.map((id) => ({
-        single_cash_flow_id: cashflow.id,
+        single_cash_flow_id: cashflowData.id,
         finance_category_id: id,
       }))
     )
@@ -55,25 +44,12 @@ export async function payoutSessions({
     return { success: false, data: null, error: categoriesError.message };
   }
 
-  const { data: payoutData, error: payoutError } = await supabase
-    .from("payout")
-    .insert({
-      ...payout,
-      cashflow_id: cashflow.id,
-    })
-    .select()
-    .single();
-
-  if (payoutError) {
-    return { success: false, data: null, error: payoutError.message };
-  }
-
   for (const sessionId of sessionIds) {
     const { error: sessionError } = await supabase
       .from("timer_session")
       .update({
         paid: true,
-        payout_id: payoutData.id,
+        cashflow_id: cashflowData.id,
       })
       .eq("id", sessionId);
     if (sessionError) {
@@ -83,10 +59,7 @@ export async function payoutSessions({
 
   return {
     success: true,
-    data: {
-      cashflow: { ...cashflow, categoryIds: categoryIds },
-      payout: payoutData,
-    },
+    data: { ...cashflowData, categoryIds: categoryIds },
     error: null,
   };
 }

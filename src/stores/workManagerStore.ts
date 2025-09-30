@@ -72,7 +72,7 @@ interface WorkStoreActions {
   ) => Promise<boolean>;
   deleteProject: (id: string) => Promise<boolean>;
   deleteTimerSessions: (ids: string[]) => Promise<boolean>;
-  payoutWorkSessions: (sessionIds: string[], payoutId: string) => boolean;
+  payoutWorkSessions: (sessionIds: string[], cashflowId: string) => boolean;
   payoutProjectSalary: (
     projectId: string,
     startValue: number,
@@ -532,13 +532,13 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         return true;
       },
 
-      payoutWorkSessions(sessionIds, payoutId) {
+      payoutWorkSessions(sessionIds, cashflowId) {
         const { updateStore, projects, timerSessions } = get();
 
         // Update sessions to mark them as paid
         const updatedSessions = timerSessions.map((s) =>
           sessionIds.includes(s.id)
-            ? { ...s, paid: true, payout_id: payoutId }
+            ? { ...s, paid: true, cashflow_id: cashflowId }
             : s
         );
         updateStore(projects, updatedSessions);

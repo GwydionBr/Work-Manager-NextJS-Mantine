@@ -190,7 +190,7 @@ export default function FinanceProjectTab() {
 
     // Paid
     const paidFilteredProjects = formattedFinanceProjects.filter((project) => {
-      return project.paid;
+      return project.single_cash_flow_id;
     });
 
     const paidTotalAmount = paidFilteredProjects.reduce((acc, project) => {
@@ -251,7 +251,7 @@ export default function FinanceProjectTab() {
           project.due_date < new Date().toISOString() &&
           !isToday(new Date(project.due_date))
         );
-      if (tab === FinanceProjectNavbarTab.Paid) return project.paid;
+      if (tab === FinanceProjectNavbarTab.Paid) return project.single_cash_flow_id;
     });
   }, [sortedFinanceProjects, tab]);
 

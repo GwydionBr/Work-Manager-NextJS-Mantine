@@ -39,13 +39,11 @@ import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import { IconClockPlus } from "@tabler/icons-react";
 
 import { formatDate } from "@/utils/formatFunctions";
-import { Currency } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
 import {
   showActionSuccessNotification,
   showActionErrorNotification,
 } from "@/utils/notificationFunctions";
-import HourlyPayoutModal from "@/components/Finances/Payout/PayoutConversionModal";
 import { TimerProject } from "@/types/work.types";
 
 export default function WorkPage() {
@@ -65,8 +63,7 @@ export default function WorkPage() {
     payoutWorkSessions,
   } = useWorkStore();
   const { sessionPayout, financeCategories } = useFinanceStore();
-  const { locale, showChangeCurrencyWindow, defaultFinanceCurrency } =
-    useSettingsStore();
+  const { locale, getLocalizedText } = useSettingsStore();
 
   // Use memo to get the active project
   const activeProject: TimerProject | undefined = useMemo(() => {
@@ -93,12 +90,6 @@ export default function WorkPage() {
 
   // State for payout processing
   const [isProcessingPayout, setIsProcessingPayout] = useState(false);
-  const [payoutSessionIds, setPayoutSessionIds] = useState<string[]>([]);
-  const [payoutStartValue, setPayoutStartValue] = useState<number>(0);
-  const [
-    openedPayoutModal,
-    { open: openPayoutModal, close: closePayoutModal },
-  ] = useDisclosure(false);
 
   // State for filter time span
   const [filterTimeSpan, setFilterTimeSpan] = useState<
@@ -141,7 +132,7 @@ export default function WorkPage() {
     } else {
       setSelectedSessions(
         timeFilteredSessions
-          .filter((session) => !session.paid)
+          .filter((session) => !session.single_cash_flow_id)
           .map((session) => session.id)
       );
     }
@@ -151,7 +142,7 @@ export default function WorkPage() {
     activateSelectedMode();
     setSelectedSessions(
       timeFilteredSessions
-        .filter((session) => !session.paid)
+        .filter((session) => !session.single_cash_flow_id)
         .map((session) => session.id)
     );
   }, [timeFilteredSessions]);
@@ -159,7 +150,7 @@ export default function WorkPage() {
   const toggleGroupSelection = useCallback(
     (sessionIds: string[]) => {
       const groupIds = sessionIds.filter((id) =>
-        timeFilteredSessions.some((s) => s.id === id && !s.paid)
+        timeFilteredSessions.some((s) => s.id === id && !s.single_cash_flow_id)
       );
       const isAnySelected = groupIds.some((id) =>
         selectedSessions.includes(id)
@@ -184,7 +175,7 @@ export default function WorkPage() {
         const end = Math.max(lastSelectedIndex, index);
         const rangeIds = timeFilteredSessions
           .slice(start, end + 1)
-          .filter((session) => !session.paid)
+          .filter((session) => !session.single_cash_flow_id)
           .map((session) => session.id);
         setSelectedSessions((prev) =>
           Array.from(new Set([...prev, ...rangeIds]))
@@ -277,40 +268,37 @@ export default function WorkPage() {
     toggleSelectedMode();
   };
 
-  const handleSessionPayoutClick = (sessions: Tables<"timer_session">[]) => {
+  // const handleSessionPayoutClick = (sessions: Tables<"timer_session">[]) => {
+  //   const selectedSessionIds = sessions.map((session) => session.id);
+  //   setPayoutSessionIds(selectedSessionIds);
+  //   const sessionPayoutAmount = sessions.reduce((acc, session) => {
+  //     return acc + session.salary * (session.active_seconds / 3600);
+  //   }, 0);
+  //   setPayoutStartValue(sessionPayoutAmount);
+  //   if (
+  //     showChangeCurrencyWindow === null ||
+  //     (showChangeCurrencyWindow === true &&
+  //       activeProject.project.currency !== defaultFinanceCurrency)
+  //   ) {
+  //     openPayoutModal();
+  //   } else {
+  //     handleSessionPayout({
+  //       selectedSessionIds,
+  //       startValue: sessionPayoutAmount,
+  //       endValue: null,
+  //       endCurrency: null,
+  //       project: activeProject,
+  //     });
+  //   }
+  // };
+
+  async function handleSessionPayout(sessions: Tables<"timer_session">[]) {
+    if (isProcessingPayout || !activeProject) return;
+    setIsProcessingPayout(true);
     const selectedSessionIds = sessions.map((session) => session.id);
-    setPayoutSessionIds(selectedSessionIds);
     const sessionPayoutAmount = sessions.reduce((acc, session) => {
       return acc + session.salary * (session.active_seconds / 3600);
     }, 0);
-    setPayoutStartValue(sessionPayoutAmount);
-    if (
-      showChangeCurrencyWindow === null ||
-      (showChangeCurrencyWindow === true &&
-        activeProject.project.currency !== defaultFinanceCurrency)
-    ) {
-      openPayoutModal();
-    } else {
-      handleSessionPayout({
-        selectedSessionIds,
-        startValue: sessionPayoutAmount,
-        endValue: null,
-        endCurrency: null,
-        project: activeProject,
-      });
-    }
-  };
-
-  async function handleSessionPayout(values: {
-    project: TimerProject;
-    selectedSessionIds?: string[];
-    startValue?: number;
-    endValue: number | null;
-    endCurrency: Currency | null;
-  }) {
-    if (isProcessingPayout) return;
-    setIsProcessingPayout(true);
-
     try {
       // Create a timeout promise that rejects after 15 seconds
       const timeoutPromise = new Promise<never>((_, reject) => {
@@ -326,18 +314,15 @@ export default function WorkPage() {
       });
 
       // Race between the payout operation and the timeout
-      const title = `Payout (${values.project.project.title}) ${formatDate(new Date(), locale)}`;
-      const categoryIds = values.project.categories.map((c) => c.id);
+      const title = `${getLocalizedText("Auszahlung", "Payout")} (${activeProject.project.title}) ${formatDate(new Date(), locale)}`;
+      const categoryIds = activeProject.categories.map((c) => c.id);
       const payoutResult = await Promise.race([
         sessionPayout(
-          values.selectedSessionIds ?? payoutSessionIds,
+          selectedSessionIds,
           {
             title,
-            start_value: values.startValue ?? payoutStartValue,
-            start_currency: values.project.project.currency,
-            end_value: values.endValue,
-            end_currency: values.endCurrency,
-            timer_session_project_id: values.project.project.id,
+            amount: sessionPayoutAmount,
+            currency: activeProject.project.currency,
           },
           categoryIds
         ),
@@ -345,15 +330,11 @@ export default function WorkPage() {
       ]);
 
       if (payoutResult) {
-        payoutWorkSessions(
-          values.selectedSessionIds ?? payoutSessionIds,
-          payoutResult.id
-        );
+        payoutWorkSessions(selectedSessionIds, payoutResult.id);
         showActionSuccessNotification(
           locale === "de-DE" ? "Auszahlung erfolgreich" : "Payout successful",
           locale
         );
-        closePayoutModal();
       } else {
         showActionErrorNotification(
           locale === "de-DE" ? "Auszahlung fehlgeschlagen" : "Payout failed",
@@ -373,7 +354,7 @@ export default function WorkPage() {
   }
 
   const selectableSessions = timeFilteredSessions.filter(
-    (session) => !session.paid
+    (session) => !session.single_cash_flow_id
   );
 
   const isPayoutAvailable = activeProject.project.hourly_payment
@@ -494,7 +475,7 @@ export default function WorkPage() {
                     project={activeProject.project}
                     isProcessingPayout={isProcessingPayout}
                     onSelectAll={selectAllSessions}
-                    handleSessionPayoutClick={handleSessionPayoutClick}
+                    handleSessionPayoutClick={handleSessionPayout}
                   />
                 </Collapse>
                 <Collapse in={payoutOpened}>
@@ -502,7 +483,7 @@ export default function WorkPage() {
                     {activeProject.project.hourly_payment ? (
                       <HourlyPayoutCard
                         project={activeProject}
-                        handlePayoutClick={handleSessionPayoutClick}
+                        handlePayoutClick={handleSessionPayout}
                         isProcessing={isProcessingPayout}
                       />
                     ) : (
@@ -517,7 +498,7 @@ export default function WorkPage() {
                     selectedSessions={selectedSessions}
                     timeFilteredSessions={timeFilteredSessions}
                     toggleAllSessions={toggleAllSessions}
-                    handleSessionPayoutClick={handleSessionPayoutClick}
+                    handleSessionPayoutClick={handleSessionPayout}
                   />
                 </Collapse>
               </Grid.Col>
@@ -543,7 +524,7 @@ export default function WorkPage() {
                   selectableIdSet={
                     new Set(
                       timeFilteredSessions
-                        .filter((s) => !s.paid)
+                        .filter((s) => !s.single_cash_flow_id)
                         .map((s) => s.id)
                     )
                   }
@@ -579,7 +560,7 @@ export default function WorkPage() {
           />
         </Collapse>
       </Stack>
-      <HourlyPayoutModal
+      {/* <HourlyPayoutModal
         opened={openedPayoutModal}
         handleClose={closePayoutModal}
         onSubmit={(values) =>
@@ -591,7 +572,7 @@ export default function WorkPage() {
         isProcessing={isProcessingPayout}
         startValue={payoutStartValue}
         startCurrency={activeProject.project.currency}
-      />
+      /> */}
     </ScrollArea>
   );
 }

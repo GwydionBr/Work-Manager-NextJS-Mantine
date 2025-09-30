@@ -143,7 +143,6 @@ export const processRecurringCashFlows = (
             id: crypto.randomUUID(),
             created_at: new Date().toISOString(),
             changed_date: null,
-            finance_project_adjustment_id: null,
             finance_project_id: null,
             finance_client_id: flow.finance_client_id,
             category_id: null,
