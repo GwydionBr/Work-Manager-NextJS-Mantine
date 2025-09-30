@@ -196,13 +196,13 @@ export function useSessionFiltering(
 
       // For hourly payment projects, check if session is paid
       if (sessionProject.hourly_payment) {
-        return !session.paid;
+        return !session.single_cash_flow_id;
       }
       return false;
     }
 
     // Normal mode - just check session.payed
-    return !session.paid;
+    return !session.single_cash_flow_id;
   });
 
   const handleCustomDaysChange = (days: number) => {

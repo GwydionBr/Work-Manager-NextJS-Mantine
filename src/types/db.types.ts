@@ -1337,7 +1337,7 @@ export type Database = {
           hourly_payment: boolean;
           id: string;
           memo: string | null;
-          paid: boolean;
+          // paid: boolean;
           paused_seconds: number;
           payout_id: string | null;
           project_id: string;

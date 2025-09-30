@@ -81,12 +81,12 @@ export default function SessionSelector({
             onClick={() => {}}
             selected={
               selectedSessions.length ===
-              timeFilteredSessions.filter((session) => !session.paid).length
+              timeFilteredSessions.filter((session) => !session.single_cash_flow_id).length
             }
             partiallySelected={
               selectedSessions.length > 0 &&
               selectedSessions.length <
-                timeFilteredSessions.filter((session) => !session.paid).length
+                timeFilteredSessions.filter((session) => !session.single_cash_flow_id).length
             }
           />
 
@@ -97,7 +97,7 @@ export default function SessionSelector({
         <Divider orientation="vertical" />
         <Text size="xs" c="dimmed">
           {selectedSessions.length} /{" "}
-          {timeFilteredSessions.filter((session) => !session.paid).length}{" "}
+          {timeFilteredSessions.filter((session) => !session.single_cash_flow_id).length}{" "}
           {locale === "de-DE" ? "Sitzungen" : "Sessions"}
         </Text>
       </Group>

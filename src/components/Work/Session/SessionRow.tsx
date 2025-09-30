@@ -83,10 +83,10 @@ export default function SessionRow({
 
   // Determine if session should be considered paid
   const isSessionPaid = () => {
-    if (!project) return session.paid;
+    if (!project) return session.single_cash_flow_id;
     // For hourly payment projects, check if session is paid
     if (project.hourly_payment) {
-      return session.paid;
+      return session.single_cash_flow_id;
     }
 
     // For non-hourly payment projects, check if project is fully paid

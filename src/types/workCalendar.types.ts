@@ -18,16 +18,16 @@ export type VisibleProject = {
 };
 
 export type CalendarSession = Pick<
-  Tables<"timer_session">,
+  Tables<"timer_session">, 
   | "id"
   | "start_time"
   | "end_time"
   | "project_id"
   | "memo"
-  | "paid"
   | "active_seconds"
   | "currency"
   | "salary"
+  | "single_cash_flow_id"
 > & {
   projectTitle: string;
   color: string;

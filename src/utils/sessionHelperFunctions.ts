@@ -45,7 +45,7 @@ export function groupSessions(
         months: {},
       };
 
-      if (session.paid) {
+      if (session.single_cash_flow_id) {
         acc[year].totalEarnings.paid = addEarnings(
           acc[year].totalEarnings.paid,
           earnings
@@ -67,7 +67,7 @@ export function groupSessions(
         weeks: {},
       };
 
-      if (session.paid) {
+      if (session.single_cash_flow_id) {
         acc[year].months[month].totalEarnings.paid = addEarnings(
           acc[year].months[month].totalEarnings.paid,
           earnings
@@ -91,7 +91,7 @@ export function groupSessions(
         days: {},
       };
 
-      if (session.paid) {
+      if (session.single_cash_flow_id) {
         acc[year].months[month].weeks[week].totalEarnings.paid = addEarnings(
           acc[year].months[month].weeks[week].totalEarnings.paid,
           earnings
@@ -114,7 +114,7 @@ export function groupSessions(
         sessions: [],
       };
 
-      if (session.paid) {
+      if (session.single_cash_flow_id) {
         acc[year].months[month].weeks[week].days[day].totalEarnings.paid =
           addEarnings(
             acc[year].months[month].weeks[week].days[day].totalEarnings.paid,

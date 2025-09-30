@@ -30,7 +30,7 @@ export default function ProjectFilter({
 }: ProjectFilterProps) {
   const { locale } = useSettingsStore();
   const today = dayjs();
-  const unpaidSessions = sessions.filter((session) => !session.paid);
+  const unpaidSessions = sessions.filter((session) => !session.single_cash_flow_id);
 
   const sessionPayout = unpaidSessions.reduce(
     (acc, session) => acc + session.salary * (session.active_seconds / 3600),
@@ -41,7 +41,7 @@ export default function ProjectFilter({
     if (!project.hourly_payment) {
       // TODO: Implement project payout
     } else if (sessionPayout > 0) {
-      handleSessionPayoutClick(sessions.filter((session) => !session.paid));
+      handleSessionPayoutClick(sessions.filter((session) => !session.single_cash_flow_id));
     }
   }
 

@@ -32,7 +32,7 @@ export default function QuickPayoutButton({
   const { locale } = useSettingsStore();
   const { hovered, ref } = useHover();
 
-  const unpaidSessions = sessions.filter((session) => !session.paid);
+  const unpaidSessions = sessions.filter((session) => !session.single_cash_flow_id);
   const unpaidTotal = unpaidSessions.reduce(
     (acc, session) => acc + salary * (session.active_seconds / 3600),
     0
