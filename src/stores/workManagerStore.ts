@@ -538,7 +538,7 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         // Update sessions to mark them as paid
         const updatedSessions = timerSessions.map((s) =>
           sessionIds.includes(s.id)
-            ? { ...s, paid: true, cashflow_id: cashflowId }
+            ? { ...s, paid: true, single_cash_flow_id: cashflowId }
             : s
         );
         updateStore(projects, updatedSessions);

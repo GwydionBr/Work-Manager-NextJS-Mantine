@@ -49,7 +49,7 @@ export async function payoutSessions({
       .from("timer_session")
       .update({
         paid: true,
-        cashflow_id: cashflowData.id,
+        single_cash_flow_id: cashflowData.id,
       })
       .eq("id", sessionId);
     if (sessionError) {

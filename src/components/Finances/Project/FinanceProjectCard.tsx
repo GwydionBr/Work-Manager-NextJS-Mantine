@@ -307,7 +307,7 @@ export default function FinanceProjectCard({
                       )}
                     </Menu.Item> */}
                     <Menu.Item
-                      leftSection={<IconCashBanknotePlus size={16} color={isPaidTotally ? "gray" : "violet"} />}
+                      leftSection={<IconCashBanknotePlus size={16} color={isPaidTotally ? "gray" : "var(--mantine-color-violet-5)"} />}
                       onClick={() => handlePayoutClick()}
                       disabled={isPaidTotally}
                     >
