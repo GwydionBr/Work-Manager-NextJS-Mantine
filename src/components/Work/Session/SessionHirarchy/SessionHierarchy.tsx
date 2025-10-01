@@ -75,7 +75,9 @@ export default function SessionHierarchy({
           <Accordion.Item
             value={String(yearData.totalEarnings)}
             style={{
-              borderColor: getBorderColor(yearData.sessionIds),
+              borderColor:
+                getBorderColor(yearData.sessionIds) ||
+                "light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2))",
               backgroundColor: getBackgroundColor(yearData.sessionIds),
             }}
           >

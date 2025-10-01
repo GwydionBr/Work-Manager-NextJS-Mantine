@@ -134,8 +134,11 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
         if (!stale || isFetching) return;
 
         // Abort any existing fetch
-        if (abortController) {
-          abortController.abort();
+        if (
+          abortController &&
+          typeof (abortController as any).abort === "function"
+        ) {
+          (abortController as AbortController).abort();
         }
 
         await get().fetchSettings();
@@ -197,8 +200,11 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
 
       abortFetch() {
         const { abortController } = get();
-        if (abortController) {
-          abortController.abort();
+        if (
+          abortController &&
+          typeof (abortController as any).abort === "function"
+        ) {
+          (abortController as AbortController).abort();
           set({ isFetching: false, abortController: null });
         }
       },

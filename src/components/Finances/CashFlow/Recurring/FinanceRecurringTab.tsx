@@ -34,6 +34,7 @@ import RecurringCashFlowRow from "./RecurringCashFlowRow";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 import { SettingsTab } from "@/components/Settings/SettingsModal";
 import { StoreRecurringCashFlow } from "@/types/finance.types";
+import { formatMoney } from "@/utils/formatFunctions";
 
 export default function FinanceRecurringTab() {
   const { recurringCashFlows, isFetching } = useFinanceStore();
@@ -332,12 +333,11 @@ export default function FinanceRecurringTab() {
                 <Text>{locale === "de-DE" ? "Ausgaben" : "Expense"}:</Text>
                 <Text c="red" fw={700}>
                   {activeExpenseSum
-                    ? activeExpenseSum.toLocaleString(locale, {
-                        style: "currency",
-                        currency: defaultFinanceCurrency,
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 2,
-                      })
+                    ? formatMoney(
+                        activeExpenseSum,
+                        defaultFinanceCurrency,
+                        locale
+                      )
                     : 0}
                 </Text>
               </Group>
@@ -345,12 +345,11 @@ export default function FinanceRecurringTab() {
                 <Text>{locale === "de-DE" ? "Einnahmen" : "Income"}:</Text>
                 <Text c="green" fw={700}>
                   {activeIncomeSum
-                    ? activeIncomeSum.toLocaleString(locale, {
-                        style: "currency",
-                        currency: defaultFinanceCurrency,
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 2,
-                      })
+                    ? formatMoney(
+                        activeIncomeSum,
+                        defaultFinanceCurrency,
+                        locale
+                      )
                     : 0}
                 </Text>
               </Group>
@@ -362,7 +361,9 @@ export default function FinanceRecurringTab() {
                 c={activeTotalSum && activeTotalSum > 0 ? "green" : "red"}
                 fw={700}
               >
-                {activeTotalSum ? activeTotalSum : 0}
+                {activeTotalSum
+                  ? formatMoney(activeTotalSum, defaultFinanceCurrency, locale)
+                  : 0}
               </Text>
             </Group>
           </Stack>
