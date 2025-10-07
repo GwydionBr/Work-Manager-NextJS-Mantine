@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useFinanceStore } from "@/stores/financeStore";
+import { useAddSingleCashflowMutation } from "@/utils/queries/finances/use-single-cashflow";
+import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-categories";
 
 import {
   Stack,
@@ -59,39 +61,21 @@ export default function FinanceForm({
     getLocalizedText,
     defaultFinanceCurrency: financeCurrency,
   } = useSettingsStore();
-  const { addSingleCashFlow, addRecurringCashFlow, financeCategories } =
-    useFinanceStore();
+  const { addRecurringCashFlow } = useFinanceStore();
+  const { data: financeCategories, isPending: isFinanceCategoriesPending } =
+    useFinanceCategoriesQuery();
+  const { mutate: addSingleCashFlow, isPending: isAddingSingleCashFlow } =
+    useAddSingleCashflowMutation(() => onClose());
 
   async function handleSingleFinanceSubmit(values: SingleFinanceFormValues) {
-    setIsLoading(true);
-    const success = await addSingleCashFlow(
-      {
+    addSingleCashFlow({
+      cashflow: {
         ...values,
         date: values.date.toISOString(),
         type,
       },
-      categoryIds
-    );
-    if (success) {
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Einmalige Zahlung erfolgreich hinzugefügt",
-          "Single cash flow added successfully"
-        ),
-        locale
-      );
-      onClose();
-      setIsLoading(false);
-    } else {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Fehler beim Hinzufügen der einmaligen Zahlung",
-          "Failed to add single cash flow. Please try again."
-        ),
-        locale
-      );
-      setIsLoading(false);
-    }
+      categoryIds,
+    });
   }
 
   async function handleRecurringFinanceSubmit(
@@ -141,7 +125,7 @@ export default function FinanceForm({
             label: (
               <Center style={{ gap: 10 }}>
                 <IconPlus size={16} />
-                <Text>{locale === "de-DE" ? "Einnahme" : "Income"}</Text>
+                <Text>{getLocalizedText("Einnahme", "Income")}</Text>
               </Center>
             ),
           },
@@ -150,7 +134,7 @@ export default function FinanceForm({
             label: (
               <Center style={{ gap: 10 }}>
                 <IconMinus size={16} />
-                <Text>{locale === "de-DE" ? "Ausgabe" : "Expense"}</Text>
+                <Text>{getLocalizedText("Ausgabe", "Expense")}</Text>
               </Center>
             ),
           },
@@ -158,7 +142,7 @@ export default function FinanceForm({
       />
       <Stack gap="xs">
         <Group justify="center">
-          <Text>{locale === "de-DE" ? "Einmalig" : "Single"}</Text>
+          <Text>{getLocalizedText("Einmalig", "Single")}</Text>
           <IconCircleDashedNumber1 size={16} />
           <Switch
             checked={isRecurring}
@@ -167,28 +151,29 @@ export default function FinanceForm({
             size="md"
           />
           <IconReload size={16} />
-          <Text>{locale === "de-DE" ? "Wiederkehrend" : "Recurring"}</Text>
+          <Text>{getLocalizedText("Wiederkehrend", "Recurring")}</Text>
         </Group>
         <Group wrap="nowrap">
           <MultiSelect
             w="100%"
-            data={financeCategories.map((category) => ({
+            data={financeCategories?.map((category) => ({
               label: category.title,
               value: category.id,
             }))}
-            label={locale === "de-DE" ? "Kategorie" : "Category"}
+            label={getLocalizedText("Kategorie", "Category")}
             placeholder={
-              locale === "de-DE" ? "Kategorie auswählen" : "Select a category"
+              isFinanceCategoriesPending
+                ? getLocalizedText("Lädt...", "Loading...")
+                : getLocalizedText("Kategorie auswählen", "Select a category")
             }
             value={categoryIds}
             onChange={(value) => setCategoryIds(value)}
             searchable
             clearable
-            nothingFoundMessage={
-              locale === "de-DE"
-                ? "Keine Kategorien gefunden"
-                : "No categories found"
-            }
+            nothingFoundMessage={getLocalizedText(
+              "Keine Kategorien gefunden",
+              "No categories found"
+            )}
             size="sm"
           />
           <Button
@@ -202,7 +187,7 @@ export default function FinanceForm({
             leftSection={<IconPlus size={20} />}
           >
             <Text fz="xs" c="dimmed">
-              {locale === "de-DE" ? "Neue Kategorie" : "Add Category"}
+              {getLocalizedText("Neue Kategorie", "Add Category")}
             </Text>
           </Button>
         </Group>
@@ -219,7 +204,7 @@ export default function FinanceForm({
           type={type}
           financeCurrency={financeCurrency}
           handleSubmit={handleSingleFinanceSubmit}
-          isLoading={isLoading}
+          isLoading={isAddingSingleCashFlow}
         />
       )}
       <CancelButton onClick={onClose} />

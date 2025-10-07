@@ -13,7 +13,8 @@ export const showDeleteConfirmationModal = (
   title: string,
   message: React.ReactNode,
   onConfirm: () => void,
-  locale: Locale
+  locale: Locale,
+  loading?: boolean
 ) => {
   modals.openConfirmModal({
     title: (
@@ -23,7 +24,11 @@ export const showDeleteConfirmationModal = (
       </Group>
     ),
     children: message,
-    confirmProps: { color: "red", leftSection: <IconTrash size={24} /> },
+    confirmProps: {
+      color: "red",
+      leftSection: <IconTrash size={24} />,
+      loading,
+    },
     cancelProps: { variant: "outline", leftSection: <IconX size={24} /> },
     labels: {
       confirm: locale === "de-DE" ? "Löschen" : "Delete",

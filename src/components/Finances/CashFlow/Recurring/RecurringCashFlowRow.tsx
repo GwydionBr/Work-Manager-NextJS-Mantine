@@ -20,8 +20,7 @@ import { isToday } from "date-fns";
 import { RecurringCashFlow } from "@/types/finance.types";
 import { FinanceInterval } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
-import useFinanceCategoriesQuery from "@/utils/queries/finances/use-finance-categories-query";
-
+import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-categories";
 
 interface RecurringCashFlowRowProps extends CardProps {
   cashflow: RecurringCashFlow;
@@ -53,7 +52,9 @@ export default function RecurringCashFlowRow({
 
   const currentCategories = useMemo(() => {
     return financeCategories?.filter((category) =>
-      cashflow.categories.map((category) => category.finance_category.id).includes(category.id)
+      cashflow.categories
+        .map((category) => category.finance_category.id)
+        .includes(category.id)
     );
   }, [financeCategories, cashflow.categories]);
 

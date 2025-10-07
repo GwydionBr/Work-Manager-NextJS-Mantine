@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
@@ -35,16 +34,21 @@ import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIc
 import { SettingsTab } from "@/components/Settings/SettingsModal";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
-import {
-  showActionErrorNotification,
-  showActionSuccessNotification,
-  showDeleteConfirmationModal,
-} from "@/utils/notificationFunctions";
+import { showDeleteConfirmationModal } from "@/utils/notificationFunctions";
 import { SingleCashFlow } from "@/types/finance.types";
-import useSingleCashflowQuery from "@/utils/queries/finances/use-single-cashflow-query";
+import {
+  useDeleteSingleCashflowMutation,
+  useSingleCashflowQuery,
+} from "@/utils/queries/finances/use-single-cashflow";
 
 export default function FinanceSingleTab() {
-  const { deleteSingleCashFlows } = useFinanceStore();
+  const { mutate: deleteSingleCashFlows, isPending: isDeletingSingleCashFlows } = useDeleteSingleCashflowMutation(
+    () => {
+      setSelectedCashFlows([]);
+      closeBulkSelection();
+      setLastSelectedIndex(null);
+    }
+  );
   const { data: singleCashFlows = [], isPending: isSingleCashFlowsPending } =
     useSingleCashflowQuery();
   const { locale, setIsModalOpen, setSelectedTab, getLocalizedText } =
@@ -206,24 +210,10 @@ export default function FinanceSingleTab() {
         "Are you sure you want to delete these income?"
       ),
       async () => {
-        const deleted = await deleteSingleCashFlows(selectedCashFlows);
-        if (deleted) {
-          setSelectedCashFlows([]);
-          showActionSuccessNotification(
-            getLocalizedText("Einnahmen gelöscht", "Income deleted"),
-            locale
-          );
-        } else {
-          showActionErrorNotification(
-            getLocalizedText(
-              "Einnahmen konnten nicht gelöscht werden",
-              "Income could not be deleted"
-            ),
-            locale
-          );
-        }
+        deleteSingleCashFlows(selectedCashFlows);
       },
-      locale
+      locale,
+      isDeletingSingleCashFlows
     );
   };
 

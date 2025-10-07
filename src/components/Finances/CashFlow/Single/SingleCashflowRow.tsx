@@ -20,7 +20,7 @@ import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import FinanceCategoryBadges from "../../Category/FinanceCategoryBadges";
 import { SingleCashFlow } from "@/types/finance.types";
 import { Tables } from "@/types/db.types";
-import useFinanceCategoriesQuery from "@/utils/queries/finances/use-finance-categories-query";
+import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-categories";
 
 interface SingleCashflowRowProps extends CardProps {
   cashflow: SingleCashFlow;

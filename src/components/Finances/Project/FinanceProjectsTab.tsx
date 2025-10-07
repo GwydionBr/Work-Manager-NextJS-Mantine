@@ -49,7 +49,7 @@ import FinancesNavbar from "../FinancesNavbar";
 import { SettingsTab } from "@/components/Settings/SettingsModal";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 import useFinanceProjectQuery from "@/utils/queries/finances/use-finance-project-query";
-import useFinanceCategoriesQuery from "@/utils/queries/finances/use-finance-categories-query";
+import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-categories";
 
 export default function FinanceProjectTab() {
   const { deleteFinanceProjects, financeClients } = useFinanceStore();
@@ -124,7 +124,7 @@ export default function FinanceProjectTab() {
     } else if (editProject === null) {
       setEditProject(formattedFinanceProjects[0]);
     }
-  }, [formattedFinanceProjects]);
+  }, []);
 
   const navbarItems = useMemo<FinanceNavbarItems>(() => {
     const items: FinanceNavbarItems = {
