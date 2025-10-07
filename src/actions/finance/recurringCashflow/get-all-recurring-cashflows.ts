@@ -1,8 +1,9 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { RecurringCashFlow } from "@/types/finance.types";
 
-export async function getAllRecurringCashFlows(){
+export async function getAllRecurringCashFlows() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("recurring_cash_flow")
@@ -15,12 +16,5 @@ export async function getAllRecurringCashFlows(){
     throw new Error(error.message);
   }
 
-  return data.map((cashFlow) => {
-    const { categories, ...rest } = cashFlow;
-    return {
-      ...rest,
-      categoryIds: categories.map((category) => category.finance_category.id),
-    };
-  });
-
+  return data as RecurringCashFlow[];
 }

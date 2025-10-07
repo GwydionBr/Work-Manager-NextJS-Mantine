@@ -11,6 +11,10 @@ export type SingleCashFlow = Tables<"single_cash_flow"> & {
   categories: { finance_category: Tables<"finance_category"> }[];
 };
 
+export type RecurringCashFlow = Tables<"recurring_cash_flow"> & {
+  categories: { finance_category: Tables<"finance_category"> }[];
+};
+
 export enum DeleteRecurringCashFlowMode {
   delete_all = "delete_all",
   keep_unlinked = "keep_unlinked",

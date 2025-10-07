@@ -33,11 +33,12 @@ import FinancesNavbar from "../../FinancesNavbar";
 import RecurringCashFlowRow from "./RecurringCashFlowRow";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 import { SettingsTab } from "@/components/Settings/SettingsModal";
-import { StoreRecurringCashFlow } from "@/types/finance.types";
+import { RecurringCashFlow } from "@/types/finance.types";
 import { formatMoney } from "@/utils/formatFunctions";
+import useRecurringCashflowQuery from "@/utils/queries/finances/use_recurring-cashflow-query";
 
 export default function FinanceRecurringTab() {
-  const { recurringCashFlows, isFetching } = useFinanceStore();
+  const { data: recurringCashFlows = [], isPending } = useRecurringCashflowQuery();
   const { locale, defaultFinanceCurrency, setIsModalOpen, setSelectedTab } =
     useSettingsStore();
 
@@ -54,7 +55,7 @@ export default function FinanceRecurringTab() {
     { open: openEditCashFlow, close: closeEditCashFlow },
   ] = useDisclosure(false);
   const [selectedCashFlow, setSelectedCashFlow] =
-    useState<StoreRecurringCashFlow | null>(null);
+    useState<RecurringCashFlow | null>(null);
 
   // Single Add
   const [
@@ -63,7 +64,7 @@ export default function FinanceRecurringTab() {
   ] = useDisclosure(false);
 
   useEffect(() => {
-    if (recurringCashFlows.length === 0) {
+    if (recurringCashFlows?.length === 0) {
       setFilter("all");
       setSelectedCashFlow(null);
     } else if (recurringCashFlows.length > 0 && selectedCashFlow === null) {
@@ -371,7 +372,7 @@ export default function FinanceRecurringTab() {
       />
       {/* Tables */}
       <Stack gap="sm" mb="xl" ml={230} w="100%">
-        {isFetching ? (
+        {isPending ? (
           Array.from({ length: 5 }, (_, i) => (
             <Skeleton height={45} w="100%" key={i} />
           ))

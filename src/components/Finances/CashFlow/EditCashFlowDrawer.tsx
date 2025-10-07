@@ -40,6 +40,8 @@ import {
 import { Radio } from "@mantine/core";
 import {
   DeleteRecurringCashFlowMode,
+  RecurringCashFlow,
+  SingleCashFlow,
   StoreRecurringCashFlow,
   StoreSingleCashFlow,
 } from "@/types/finance.types";
@@ -56,7 +58,7 @@ export default function EditCashFlowDrawer({
   opened,
   onClose,
 }: {
-  cashFlow: StoreSingleCashFlow | StoreRecurringCashFlow;
+  cashFlow: SingleCashFlow | RecurringCashFlow;
   opened: boolean;
   onClose: () => void;
 }) {
@@ -67,7 +69,7 @@ export default function EditCashFlowDrawer({
   );
   const [type, setType] = useState<CashFlowType>("income");
   const [categoryIds, setCategoryIds] = useState<string[]>(
-    cashFlow.categoryIds ?? []
+    cashFlow.categories.map((category) => category.finance_category.id)
   );
   const [pendingValues, setPendingValues] = useState<any>(null);
   const {
@@ -101,8 +103,8 @@ export default function EditCashFlowDrawer({
   }, [opened]);
 
   useEffect(() => {
-    if (categoryIds !== cashFlow.categoryIds) {
-      setCategoryIds(cashFlow.categoryIds);
+    if (categoryIds !== cashFlow.categories.map((category) => category.finance_category.id)) {
+      setCategoryIds(cashFlow.categories.map((category) => category.finance_category.id));
     }
   }, [cashFlow]);
 
@@ -142,7 +144,7 @@ export default function EditCashFlowDrawer({
         values.amount !== cashFlow.amount ||
         values.currency !== cashFlow.currency ||
         type !== cashFlow.type ||
-        categoryIds !== cashFlow.categoryIds;
+        categoryIds !== cashFlow.categories.map((category) => category.finance_category.id);
 
       if (hasChanges) {
         // Store the values and show the update modal
@@ -267,11 +269,11 @@ export default function EditCashFlowDrawer({
     setIsLoading(true);
 
     const categoryUpdates = {
-      deleteIds: cashFlow.categoryIds.filter(
+      deleteIds: cashFlow.categories.map((category) => category.finance_category.id).filter(
         (id: string) => !pendingValues.categoryIds.includes(id)
       ),
       addIds: pendingValues.categoryIds.filter(
-        (id: string) => !cashFlow.categoryIds.includes(id)
+        (id: string) => !cashFlow.categories.map((category) => category.finance_category.id).includes(id)
       ),
     };
 

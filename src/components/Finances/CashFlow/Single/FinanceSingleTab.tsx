@@ -41,7 +41,7 @@ import {
   showDeleteConfirmationModal,
 } from "@/utils/notificationFunctions";
 import { SingleCashFlow } from "@/types/finance.types";
-import useSingleCashflowQuery from "@/utils/queries/finances/use-singleCashflow-query";
+import useSingleCashflowQuery from "@/utils/queries/finances/use-single-cashflow-query";
 
 export default function FinanceSingleTab() {
   const { deleteSingleCashFlows } = useFinanceStore();
@@ -449,13 +449,13 @@ export default function FinanceSingleTab() {
           )}
         </Stack>
       </ScrollArea>
-      {/* {selectedCashFlow && (
+      {selectedCashFlow && (
         <EditCashFlowDrawer
           cashFlow={selectedCashFlow}
           opened={editCashFlowOpened}
           onClose={closeEditCashFlow}
         />
-      )} */}
+      )}
       <CashFlowModal
         opened={cashFlowModalOpened}
         onClose={closeCashFlowModal}

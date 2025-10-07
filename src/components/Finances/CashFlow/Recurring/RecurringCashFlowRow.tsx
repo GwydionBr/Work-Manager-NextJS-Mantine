@@ -17,12 +17,14 @@ import FinanceCategoryBadges from "../../Category/FinanceCategoryBadges";
 import { getNextDate } from "@/utils/financeHelperFunction";
 import { isToday } from "date-fns";
 
-import { StoreRecurringCashFlow } from "@/types/finance.types";
+import { RecurringCashFlow } from "@/types/finance.types";
 import { FinanceInterval } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
+import useFinanceCategoriesQuery from "@/utils/queries/finances/use-finance-categories-query";
+
 
 interface RecurringCashFlowRowProps extends CardProps {
-  cashflow: StoreRecurringCashFlow;
+  cashflow: RecurringCashFlow;
   showEndDate?: boolean;
   showStartDate?: boolean;
   showNextDate?: boolean;
@@ -41,7 +43,8 @@ export default function RecurringCashFlowRow({
 }: RecurringCashFlowRowProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { locale } = useSettingsStore();
-  const { financeCategories, updateRecurringCashFlow } = useFinanceStore();
+  const { updateRecurringCashFlow } = useFinanceStore();
+  const { data: financeCategories } = useFinanceCategoriesQuery();
   const { hovered, ref } = useHover();
   const [
     isCategoryPopoverOpen,
@@ -49,10 +52,10 @@ export default function RecurringCashFlowRow({
   ] = useDisclosure(false);
 
   const currentCategories = useMemo(() => {
-    return financeCategories.filter((category) =>
-      cashflow.categoryIds.includes(category.id)
+    return financeCategories?.filter((category) =>
+      cashflow.categories.map((category) => category.finance_category.id).includes(category.id)
     );
-  }, [financeCategories, cashflow.categoryIds]);
+  }, [financeCategories, cashflow.categories]);
 
   const nextDate = useMemo(() => {
     if (!showNextDate) return null;
@@ -144,7 +147,7 @@ export default function RecurringCashFlowRow({
             )}
           </Group>
           <FinanceCategoryBadges
-            categories={currentCategories}
+            categories={currentCategories ?? []}
             onPopoverOpen={openCategoryPopover}
             onPopoverClose={handleCategoryClose}
             showAddCategory={hovered}
