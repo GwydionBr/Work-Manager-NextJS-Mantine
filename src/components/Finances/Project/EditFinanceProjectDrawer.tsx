@@ -10,7 +10,7 @@ import CancelButton from "@/components/UI/Buttons/CancelButton";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import { showDeleteConfirmationModal } from "@/utils/notificationFunctions";
-import { FinanceProject } from "@/types/finance.types";
+import { OldFinanceProject } from "@/types/finance.types";
 import FinanceProjectForm from "./FinanceProjectForm";
 import FinanceClientForm from "../FinanceClient/FinanceClientForm";
 import FinanceCategoryForm from "../Category/FinanceCategoryForm";
@@ -18,7 +18,7 @@ import FinanceCategoryForm from "../Category/FinanceCategoryForm";
 interface EditFinanceProjectDrawerProps {
   opened: boolean;
   onClose: () => void;
-  financeProject: FinanceProject;
+  financeProject: OldFinanceProject;
 }
 
 export default function EditFinanceProjectDrawer({

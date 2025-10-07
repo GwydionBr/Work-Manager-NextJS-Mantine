@@ -13,7 +13,7 @@ import {
   StoreFinanceProject,
   StoreSingleCashFlow,
   StoreRecurringCashFlow,
-  FinanceProject,
+  OldFinanceProject,
 } from "@/types/finance.types";
 
 interface FinanceStoreState {
@@ -56,7 +56,7 @@ interface FinanceStoreActions {
     categoryIds: string[]
   ) => Promise<boolean>;
   updateFinanceProject: (
-    project: FinanceProject
+    project: OldFinanceProject
   ) => Promise<StoreFinanceProject | null>;
   updateFinanceClient: (
     client: TablesUpdate<"finance_client">
@@ -97,7 +97,7 @@ interface FinanceStoreActions {
     title: string
   ) => Promise<Tables<"finance_project_adjustment"> | null>;
   financeProjectPayout: (
-    project: FinanceProject,
+    project: OldFinanceProject,
     title: string,
     justStartValue?: boolean
   ) => Promise<StoreFinanceProject | null>;
@@ -862,10 +862,7 @@ export const useFinanceStore = create<
           return null;
         }
 
-        const updatedSingleCashFlows = [
-          ...singleCashFlows,
-          payoutResult.data,
-        ];
+        const updatedSingleCashFlows = [...singleCashFlows, payoutResult.data];
         set({
           singleCashFlows: updatedSingleCashFlows,
         });

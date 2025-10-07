@@ -36,7 +36,7 @@ import { formatDate, formatMoney } from "@/utils/formatFunctions";
 import { isToday } from "date-fns";
 import {
   FinanceNavbarItems,
-  FinanceProject,
+  OldFinanceProject,
   FinanceProjectNavbarTab,
 } from "@/types/finance.types";
 import {
@@ -48,17 +48,23 @@ import EditFinanceProjectDrawer from "./EditFinanceProjectDrawer";
 import FinancesNavbar from "../FinancesNavbar";
 import { SettingsTab } from "@/components/Settings/SettingsModal";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
+import useFinanceProjectQuery from "@/utils/queries/finances/use-finance-project-query";
+import useFinanceCategoriesQuery from "@/utils/queries/finances/use-finance-categories-query";
 
 export default function FinanceProjectTab() {
+  const { deleteFinanceProjects, financeClients } = useFinanceStore();
+  const { data: financeProjects = [], isPending } = useFinanceProjectQuery();
   const {
-    financeProjects,
-    isFetching,
-    deleteFinanceProjects,
-    financeClients,
-    financeCategories,
-  } = useFinanceStore();
-  const { locale, showChangeCurrencyWindow, setIsModalOpen, setSelectedTab, getLocalizedText } =
-    useSettingsStore();
+    data: financeCategories = [],
+    isPending: isFinanceCategoriesPending,
+  } = useFinanceCategoriesQuery();
+  const {
+    locale,
+    showChangeCurrencyWindow,
+    setIsModalOpen,
+    setSelectedTab,
+    getLocalizedText,
+  } = useSettingsStore();
 
   // Bulk selection
   const [
@@ -83,7 +89,9 @@ export default function FinanceProjectTab() {
     editProjectModalOpened,
     { close: closeEditProjectModal, toggle: toggleEditProjectModal },
   ] = useDisclosure(false);
-  const [editProject, setEditProject] = useState<FinanceProject | null>(null);
+  const [editProject, setEditProject] = useState<OldFinanceProject | null>(
+    null
+  );
 
   // Tab
   const [tab, setTab] = useState<FinanceProjectNavbarTab>(
@@ -92,7 +100,7 @@ export default function FinanceProjectTab() {
 
   const formattedFinanceProjects = useMemo(() => {
     return financeProjects.map((project) => {
-      const { categoryIds, ...rest } = project;
+      const { categories, ...rest } = project;
       return {
         ...rest,
         finance_client:
@@ -100,7 +108,9 @@ export default function FinanceProjectTab() {
             (client) => client.id === project.finance_client_id
           ) || null,
         categories: financeCategories.filter((category) =>
-          categoryIds.includes(category.id)
+          categories
+            .map((category) => category.finance_category.id)
+            .includes(category.id)
         ),
       };
     });
@@ -251,7 +261,8 @@ export default function FinanceProjectTab() {
           project.due_date < new Date().toISOString() &&
           !isToday(new Date(project.due_date))
         );
-      if (tab === FinanceProjectNavbarTab.Paid) return project.single_cash_flow_id;
+      if (tab === FinanceProjectNavbarTab.Paid)
+        return project.single_cash_flow_id;
     });
   }, [sortedFinanceProjects, tab]);
 
@@ -445,7 +456,7 @@ export default function FinanceProjectTab() {
 
             <SelectActionIcon
               iconSize={20}
-              disabled={isFetching || filteredFinanceProjects.length === 0}
+              disabled={isPending || filteredFinanceProjects.length === 0}
               tooltipLabel={
                 selectedModeActive
                   ? getLocalizedText(
@@ -540,7 +551,7 @@ export default function FinanceProjectTab() {
           </Collapse>
           {/* Projects */}
           <Stack w="100%" align="center">
-            {isFetching ? (
+            {isPending ? (
               Array.from({ length: 5 }, (_, i) => (
                 <Skeleton height={65} w="100%" key={i} />
               ))

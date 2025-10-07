@@ -26,7 +26,7 @@ import {
   Popover,
 } from "@mantine/core";
 
-import { FinanceProject } from "@/types/finance.types";
+import { OldFinanceProject } from "@/types/finance.types";
 import { formatMoney } from "@/utils/formatFunctions";
 import FinanceAdjustmentForm from "./FinanceAdjustment/FinanceAdjustmentForm";
 import FinanceAdjustmentRow from "./FinanceAdjustment/FinanceAdjustmentRow";
@@ -46,13 +46,13 @@ import { Tables } from "@/types/db.types";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
 
 interface FinanceProjectCardProps extends CardProps {
-  project: FinanceProject;
+  project: OldFinanceProject;
   selectedModeActive: boolean;
   isSelected: boolean;
   editProjectModalOpened: boolean;
   onToggleSelected: (e: React.MouseEvent<HTMLButtonElement>) => void;
   onDelete: () => void;
-  setEditProject: (project: FinanceProject) => void;
+  setEditProject: (project: OldFinanceProject) => void;
   onOpenEditProject: () => void;
 }
 

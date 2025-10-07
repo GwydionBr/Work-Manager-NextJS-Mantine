@@ -22,7 +22,7 @@ import { Currency } from "@/types/settings.types";
 import LocaleDatePickerInput from "@/components/UI/Locale/LocaleDatePickerInput";
 import { IconPlus } from "@tabler/icons-react";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
-import { FinanceProject } from "@/types/finance.types";
+import { OldFinanceProject } from "@/types/finance.types";
 import {
   showActionErrorNotification,
   showActionSuccessNotification,
@@ -42,7 +42,7 @@ const projectSchema = z.object({
 
 interface FinanceProjectFormProps {
   onClose: () => void;
-  financeProject?: FinanceProject;
+  financeProject?: OldFinanceProject;
   clientId: string | null;
   categoryIds: string[];
   onOpenClientForm: () => void;

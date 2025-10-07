@@ -19,11 +19,11 @@ import { Currency } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
 import FinanceClientBadge from "../../FinanceClient/FinanceClientBadge";
-import { FinanceProject } from "@/types/finance.types";
+import { OldFinanceProject } from "@/types/finance.types";
 
 interface FinanceAdjustmentRowProps {
   adultClientId: string | null;
-  financeProject?: FinanceProject;
+  financeProject?: OldFinanceProject;
   adjustment?: Tables<"finance_project_adjustment">;
   currency: Currency;
   handlePayout: (id?: string, isStartValue?: boolean) => void;
