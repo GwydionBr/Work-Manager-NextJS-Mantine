@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import {
   useDisclosure,
   useClickOutside,
@@ -100,9 +101,23 @@ export default function FinanceProjectCard({
     }
   });
   const mergedRef = mergeRefs(ref, hoverRef);
-  const totalAmount = project.adjustments.reduce(
-    (acc, adjustment) => acc + adjustment.amount,
-    project.start_amount
+  const totalAmountOpen = useMemo(
+    () =>
+      project.adjustments.reduce(
+        (acc, adjustment) =>
+          acc + (adjustment.single_cash_flow_id ? 0 : adjustment.amount),
+        project.single_cash_flow_id ? 0 : project.start_amount
+      ),
+    [project.adjustments, project.start_amount]
+  );
+
+  const totalAmount = useMemo(
+    () =>
+      project.adjustments.reduce(
+        (acc, adjustment) => acc + adjustment.amount,
+        project.start_amount
+      ),
+    [project.adjustments, project.start_amount]
   );
 
   const handleAdjustmentClose = () => {
@@ -127,7 +142,7 @@ export default function FinanceProjectCard({
   const isPaidTotally =
     !!project.single_cash_flow_id &&
     project.adjustments.filter((a) => !a.finance_category_id).length !== 0;
-  const isPositive = totalAmount > 0;
+  const isPositive = totalAmountOpen > 0;
   const adjustmentTotal = project.adjustments.reduce(
     (acc, adj) => acc + adj.amount,
     0
@@ -213,7 +228,7 @@ export default function FinanceProjectCard({
         <Group justify="space-between" align="center" w="100%">
           <Group align="center" gap="xs" flex={2}>
             <Text fw={700} c={isPositive ? "green" : "red"}>
-              {formatMoney(totalAmount, project.currency, locale)}
+              {formatMoney(totalAmountOpen, project.currency, locale)}
             </Text>
             <Text c="dimmed" size="sm">
               ({formatMoney(project.start_amount, project.currency, locale)})
@@ -307,7 +322,16 @@ export default function FinanceProjectCard({
                       )}
                     </Menu.Item> */}
                     <Menu.Item
-                      leftSection={<IconCashBanknotePlus size={16} color={isPaidTotally ? "gray" : "var(--mantine-color-violet-5)"} />}
+                      leftSection={
+                        <IconCashBanknotePlus
+                          size={16}
+                          color={
+                            isPaidTotally
+                              ? "gray"
+                              : "var(--mantine-color-violet-5)"
+                          }
+                        />
+                      }
                       onClick={() => handlePayoutClick()}
                       disabled={isPaidTotally}
                     >
@@ -329,7 +353,7 @@ export default function FinanceProjectCard({
                       <Text>{getLocalizedText("Bearbeiten", "Edit")}</Text>
                     </Menu.Item>
                     <Menu.Item
-                      leftSection={<IconTrash size={16} color="red"/>}
+                      leftSection={<IconTrash size={16} color="red" />}
                       onClick={onDelete}
                     >
                       <Text>{getLocalizedText("Löschen", "Delete")}</Text>

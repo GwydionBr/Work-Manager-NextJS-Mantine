@@ -18,11 +18,12 @@ import {
 import { formatMoney } from "@/utils/formatFunctions";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import FinanceCategoryBadges from "../../Category/FinanceCategoryBadges";
-import { StoreSingleCashFlow } from "@/types/finance.types";
+import { SingleCashFlow } from "@/types/finance.types";
 import { Tables } from "@/types/db.types";
+import useFinanceCategoriesQuery from "@/utils/queries/finances/use-finance-categories-query";
 
 interface SingleCashflowRowProps extends CardProps {
-  cashflow: StoreSingleCashFlow;
+  cashflow: SingleCashFlow;
   onEdit: () => void;
   selectedModeActive: boolean;
   isSelected: boolean;
@@ -39,18 +40,22 @@ export default function SingleCashflowRow({
 }: SingleCashflowRowProps) {
   const { locale } = useSettingsStore();
   const [isLoading, setIsLoading] = useState(false);
-  const { financeCategories, updateSingleCashFlow } = useFinanceStore();
+  const { updateSingleCashFlow } = useFinanceStore();
   const { hovered, ref } = useHover();
   const [
     isCategoryPopoverOpen,
     { open: openCategoryPopover, close: closeCategoryPopover },
   ] = useDisclosure(false);
 
+  const { data: financeCategories } = useFinanceCategoriesQuery();
+
   const currentCategories = useMemo(() => {
-    return financeCategories.filter((category) =>
-      cashflow.categoryIds.includes(category.id)
+    return financeCategories?.filter((category) =>
+      cashflow.categories
+        .map((c) => c.finance_category.id)
+        .includes(category.id)
     );
-  }, [financeCategories, cashflow.categoryIds]);
+  }, [financeCategories, cashflow.categories]);
 
   const handleCategoryClose = async (
     updatedCategories: Tables<"finance_category">[] | null
@@ -127,7 +132,7 @@ export default function SingleCashflowRow({
         </Grid.Col>
         <Grid.Col span={3}>
           <FinanceCategoryBadges
-            categories={currentCategories}
+            categories={currentCategories || []}
             onPopoverOpen={openCategoryPopover}
             onPopoverClose={handleCategoryClose}
             showAddCategory={hovered}

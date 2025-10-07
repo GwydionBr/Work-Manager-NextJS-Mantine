@@ -15,12 +15,14 @@ import {
   Fieldset,
   Stack,
   Transition,
+  Skeleton,
 } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 
 import { Tables } from "@/types/db.types";
 import FinanceCategorySingleBadge from "./FinanceCategorySingleBadge";
 import FinanceCategoryForm from "./FinanceCategoryForm";
+import useFinanceCategoriesQuery from "@/utils/queries/finances/use-finance-categories-query";
 
 interface FinanceCategoryBadgesProps {
   categories: Tables<"finance_category">[];
@@ -36,7 +38,8 @@ export default function FinanceCategoryBadges({
   onPopoverClose,
 }: FinanceCategoryBadgesProps) {
   const { locale } = useSettingsStore();
-  const { financeCategories } = useFinanceStore();
+  const { data: financeCategories, isPending: isFinanceCategoriesPending } =
+    useFinanceCategoriesQuery();
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
     categories.map((c) => c.id)
@@ -55,6 +58,16 @@ export default function FinanceCategoryBadges({
     { open: openCategoryPopover, close: closeCategoryPopover },
   ] = useDisclosure(false);
 
+  const currentCategorySelection = useMemo(() => {
+    if (!financeCategories) return [];
+    return financeCategories.filter((category) =>
+      selectedCategories.includes(category.id)
+    );
+  }, [financeCategories, selectedCategories]);
+
+  if (isFinanceCategoriesPending) return <Skeleton height={30} width={100} />;
+  if (!financeCategories) return null;
+
   const handlePopoverOpen = () => {
     onPopoverOpen();
     openCategoryPopover();
@@ -67,12 +80,6 @@ export default function FinanceCategoryBadges({
     closeCategoryForm();
     closeCategoryPopover();
   };
-
-  const currentCategorySelection = useMemo(() => {
-    return financeCategories.filter((category) =>
-      selectedCategories.includes(category.id)
-    );
-  }, [financeCategories, selectedCategories]);
 
   return (
     <Box>
@@ -114,7 +121,7 @@ export default function FinanceCategoryBadges({
           style={{
             border:
               "1px solid light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-2))",
-              shadow: "var(--mantine-shadow-md)",
+            shadow: "var(--mantine-shadow-md)",
           }}
         >
           <Stack align="center">

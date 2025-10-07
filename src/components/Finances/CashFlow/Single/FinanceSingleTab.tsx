@@ -40,11 +40,13 @@ import {
   showActionSuccessNotification,
   showDeleteConfirmationModal,
 } from "@/utils/notificationFunctions";
-import { StoreSingleCashFlow } from "@/types/finance.types";
+import { SingleCashFlow } from "@/types/finance.types";
+import useSingleCashflowQuery from "@/utils/queries/finances/use-singleCashflow-query";
 
 export default function FinanceSingleTab() {
-  const { singleCashFlows, deleteSingleCashFlows, isFetching } =
-    useFinanceStore();
+  const { deleteSingleCashFlows } = useFinanceStore();
+  const { data: singleCashFlows = [], isPending: isSingleCashFlowsPending } =
+    useSingleCashflowQuery();
   const { locale, setIsModalOpen, setSelectedTab, getLocalizedText } =
     useSettingsStore();
   const [typeFilter, setTypeFilter] = useState<"all" | "expense" | "income">(
@@ -69,7 +71,7 @@ export default function FinanceSingleTab() {
 
   // Single Edit
   const [selectedCashFlow, setSelectedCashFlow] =
-    useState<StoreSingleCashFlow | null>(null);
+    useState<SingleCashFlow | null>(null);
   const [
     editCashFlowOpened,
     { open: openEditCashFlow, close: closeEditCashFlow },
@@ -77,7 +79,7 @@ export default function FinanceSingleTab() {
 
   const sortedSingleCashFlows = useMemo(
     () =>
-      singleCashFlows.sort(
+      singleCashFlows?.sort(
         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
       ),
     [singleCashFlows]
@@ -85,14 +87,21 @@ export default function FinanceSingleTab() {
 
   useEffect(() => {
     if (sortedSingleCashFlows.length === 0) {
-      setTypeFilter("all");
-      closeBulkSelection();
-      setSelectedCashFlows([]);
-      setSelectedCashFlow(null);
+      if (typeFilter !== "all") setTypeFilter("all");
+      if (bulkSelectionActive) closeBulkSelection();
+      if (selectedCashFlows.length > 0) setSelectedCashFlows([]);
+      if (selectedCashFlow !== null) setSelectedCashFlow(null);
     } else if (selectedCashFlow === null) {
-      setSelectedCashFlow(sortedSingleCashFlows[0]);
+      setSelectedCashFlow(sortedSingleCashFlows[0] ?? null);
     }
-  }, [sortedSingleCashFlows]);
+    // Only run when the inputs that affect the guards change
+  }, [
+    sortedSingleCashFlows,
+    bulkSelectionActive,
+    selectedCashFlows.length,
+    selectedCashFlow,
+    typeFilter,
+  ]);
 
   const handleToggleBulkSelection = () => {
     toggleBulkSelection();
@@ -242,8 +251,8 @@ export default function FinanceSingleTab() {
           active: typeFilter === "expense",
           onClick: () => setTypeFilter("expense"),
           disabled:
-            singleCashFlows.filter((cashFlow) => cashFlow.amount < 0)
-              .length === 0,
+            singleCashFlows.filter((cashFlow) => cashFlow.amount < 0).length ===
+            0,
         },
         {
           label: getLocalizedText("Einnahmen", "Income"),
@@ -392,7 +401,7 @@ export default function FinanceSingleTab() {
           </Card>
         </Collapse>
         <Stack gap={0}>
-          {isFetching ? (
+          {isSingleCashFlowsPending ? (
             <Stack ml="xl" mt="lg">
               {Array.from({ length: 5 }, (_, i) => (
                 <Skeleton height={45} w="100%" key={i} />
@@ -440,13 +449,13 @@ export default function FinanceSingleTab() {
           )}
         </Stack>
       </ScrollArea>
-      {selectedCashFlow && (
+      {/* {selectedCashFlow && (
         <EditCashFlowDrawer
           cashFlow={selectedCashFlow}
           opened={editCashFlowOpened}
           onClose={closeEditCashFlow}
         />
-      )}
+      )} */}
       <CashFlowModal
         opened={cashFlowModalOpened}
         onClose={closeCashFlowModal}

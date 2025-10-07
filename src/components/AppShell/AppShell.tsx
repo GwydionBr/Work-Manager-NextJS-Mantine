@@ -18,6 +18,8 @@ import { notifications } from "@mantine/notifications";
 
 import { AppShell, Burger, Button, Group, Stack, Text } from "@mantine/core";
 import { IconInfoCircle, IconRefresh } from "@tabler/icons-react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { DatesProvider } from "@mantine/dates";
 import Navbar from "@/components/Navbar/Navbar";
 import Aside from "./Aside";
@@ -32,6 +34,10 @@ enum FetchPriority {
   User = "user",
   Calendar = "calendar",
 }
+
+  const queryClient = new QueryClient({
+    /* ... */
+  });
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { fetchIfStale: fetchGroupIfStale, abortFetch: abortGroupFetch } =
@@ -196,47 +202,50 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         weekendDays: locale === "de-DE" ? [0, 6] : [0],
       }}
     >
-      <AppShell
-        bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))"
-        disabled={isHome || isAuth}
-        navbar={{
-          width: 65,
-          breakpoint: "sm",
-          collapsed: { mobile: !isBurgerOpen },
-        }}
-        aside={{
-          width: isAsideOpen ? 300 : 50,
-          breakpoint: "md",
-          collapsed: { desktop: isHome || isAuth, mobile: true },
-        }}
-      >
-        <AppShell.Header hiddenFrom="sm">
-          <Group h="100%" px="md">
-            <Burger
-              opened={isBurgerOpen}
-              onClick={toggleBurger}
-              hiddenFrom="sm"
-              size="sm"
-            />
-            WM Logo
-          </Group>
-        </AppShell.Header>
-        <AppShell.Navbar>
-          <Navbar />
-        </AppShell.Navbar>
-        <AppShell.Main
-          style={{ transition: "0.4s ease-in" }}
-          bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8))"
+      <QueryClientProvider client={queryClient}>
+        <AppShell
+          bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))"
+          disabled={isHome || isAuth}
+          navbar={{
+            width: 65,
+            breakpoint: "sm",
+            collapsed: { mobile: !isBurgerOpen },
+          }}
+          aside={{
+            width: isAsideOpen ? 300 : 50,
+            breakpoint: "md",
+            collapsed: { desktop: isHome || isAuth, mobile: true },
+          }}
         >
-          {children}
-        </AppShell.Main>
-        <AppShell.Aside
-          bg="var(--mantine-color-body)"
-          style={{ transition: "width 0.4s ease-in", overflow: "hidden" }}
-        >
-          <Aside toggleAside={toggleAside} isAsideOpen={isAsideOpen} />
-        </AppShell.Aside>
-      </AppShell>
+          <AppShell.Header hiddenFrom="sm">
+            <Group h="100%" px="md">
+              <Burger
+                opened={isBurgerOpen}
+                onClick={toggleBurger}
+                hiddenFrom="sm"
+                size="sm"
+              />
+              WM Logo
+            </Group>
+          </AppShell.Header>
+          <AppShell.Navbar>
+            <Navbar />
+          </AppShell.Navbar>
+          <AppShell.Main
+            style={{ transition: "0.4s ease-in" }}
+            bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8))"
+          >
+            {children}
+          </AppShell.Main>
+          <AppShell.Aside
+            bg="var(--mantine-color-body)"
+            style={{ transition: "width 0.4s ease-in", overflow: "hidden" }}
+          >
+            <Aside toggleAside={toggleAside} isAsideOpen={isAsideOpen} />
+          </AppShell.Aside>
+        </AppShell>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
     </DatesProvider>
   );
 }
