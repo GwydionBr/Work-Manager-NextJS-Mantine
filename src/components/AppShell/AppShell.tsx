@@ -35,9 +35,13 @@ enum FetchPriority {
   Calendar = "calendar",
 }
 
-  const queryClient = new QueryClient({
-    /* ... */
-  });
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 2 * 60 * 1000,
+    },
+  },
+});
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { fetchIfStale: fetchGroupIfStale, abortFetch: abortGroupFetch } =

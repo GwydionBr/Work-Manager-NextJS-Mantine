@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
@@ -35,7 +34,7 @@ import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIc
 import { SettingsTab } from "@/components/Settings/SettingsModal";
 import { RecurringCashFlow } from "@/types/finance.types";
 import { formatMoney } from "@/utils/formatFunctions";
-import useRecurringCashflowQuery from "@/utils/queries/finances/use_recurring-cashflow-query";
+import { useRecurringCashflowQuery } from "@/utils/queries/finances/use_recurring-cashflow";
 
 export default function FinanceRecurringTab() {
   const { data: recurringCashFlows = [], isPending } = useRecurringCashflowQuery();

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useFinanceStore } from "@/stores/financeStore";
 import { useAddSingleCashflowMutation } from "@/utils/queries/finances/use-single-cashflow";
 import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-categories";
 
@@ -33,10 +32,7 @@ import CancelButton from "@/components/UI/Buttons/CancelButton";
 import { CashFlowType } from "@/types/settings.types";
 
 import classes from "../../UI/Switch.module.css";
-import {
-  showActionErrorNotification,
-  showActionSuccessNotification,
-} from "@/utils/notificationFunctions";
+import { useAddRecurringCashflowMutation } from "@/utils/queries/finances/use_recurring-cashflow";
 
 interface FinanceFormProps {
   onClose: () => void;
@@ -55,13 +51,12 @@ export default function FinanceForm({
 }: FinanceFormProps) {
   const [type, setType] = useState<CashFlowType>("income");
   const [isRecurring, setIsRecurring] = useState<boolean>(!isSingle);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const {
-    locale,
     getLocalizedText,
     defaultFinanceCurrency: financeCurrency,
   } = useSettingsStore();
-  const { addRecurringCashFlow } = useFinanceStore();
+  const { mutate: addRecurringCashFlow, isPending: isAddingRecurringCashFlow } =
+    useAddRecurringCashflowMutation(() => onClose());
   const { data: financeCategories, isPending: isFinanceCategoriesPending } =
     useFinanceCategoriesQuery();
   const { mutate: addSingleCashFlow, isPending: isAddingSingleCashFlow } =
@@ -81,36 +76,15 @@ export default function FinanceForm({
   async function handleRecurringFinanceSubmit(
     values: RecurringFinanceFormValues
   ) {
-    setIsLoading(true);
-    const success = await addRecurringCashFlow(
-      {
+    addRecurringCashFlow({
+      cashflow: {
         ...values,
         end_date: values.end_date?.toISOString(),
         start_date: values.start_date.toISOString(),
         type,
       },
-      categoryIds
-    );
-    if (success) {
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Wiederkehrender Cashflow erfolgreich hinzugefügt",
-          "Recurring cash flow added successfully"
-        ),
-        locale
-      );
-      onClose();
-      setIsLoading(false);
-    } else {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Fehler beim Hinzufügen der wiederkehrenden Zahlung",
-          "Failed to add recurring cash flow. Please try again."
-        ),
-        locale
-      );
-      setIsLoading(false);
-    }
+      categoryIds,
+    });
   }
 
   return (
@@ -197,7 +171,7 @@ export default function FinanceForm({
           type={type}
           financeCurrency={financeCurrency}
           handleSubmit={handleRecurringFinanceSubmit}
-          isLoading={isLoading}
+          isLoading={isAddingRecurringCashFlow}
         />
       ) : (
         <SingleFinanceForm

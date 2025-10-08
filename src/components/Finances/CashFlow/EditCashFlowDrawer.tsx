@@ -42,9 +42,10 @@ import {
   DeleteRecurringCashFlowMode,
   RecurringCashFlow,
   SingleCashFlow,
-  StoreRecurringCashFlow,
-  StoreSingleCashFlow,
 } from "@/types/finance.types";
+import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-categories";
+import { useDeleteSingleCashflowMutation } from "@/utils/queries/finances/use-single-cashflow";
+import { useDeleteRecurringCashflowMutation } from "@/utils/queries/finances/use_recurring-cashflow";
 
 // Type guard to distinguish between single and recurring cash flows
 function isSingleCashFlow(
@@ -73,12 +74,9 @@ export default function EditCashFlowDrawer({
   );
   const [pendingValues, setPendingValues] = useState<any>(null);
   const {
-    financeCategories,
     updateSingleCashFlow,
     updateRecurringCashFlow,
     updateMultipleSingleCashFlows,
-    deleteSingleCashFlows,
-    deleteRecurringCashFlow,
   } = useFinanceStore();
   const drawerStack = useDrawersStack([
     "edit-cash-flow",
@@ -87,6 +85,18 @@ export default function EditCashFlowDrawer({
     "update-cash-flow",
     "add-category",
   ]);
+  const {
+    data: financeCategories = [],
+    isPending: isFinanceCategoriesPending,
+  } = useFinanceCategoriesQuery();
+  const {
+    mutate: deleteSingleCashFlows,
+    isPending: isDeletingSingleCashFlows,
+  } = useDeleteSingleCashflowMutation(() => onClose());
+  const {
+    mutate: deleteRecurringCashFlow,
+    isPending: isDeletingRecurringCashFlow,
+  } = useDeleteRecurringCashflowMutation(() => onClose());
 
   useEffect(() => {
     if (cashFlow) {
@@ -103,8 +113,13 @@ export default function EditCashFlowDrawer({
   }, [opened]);
 
   useEffect(() => {
-    if (categoryIds !== cashFlow.categories.map((category) => category.finance_category.id)) {
-      setCategoryIds(cashFlow.categories.map((category) => category.finance_category.id));
+    if (
+      categoryIds !==
+      cashFlow.categories.map((category) => category.finance_category.id)
+    ) {
+      setCategoryIds(
+        cashFlow.categories.map((category) => category.finance_category.id)
+      );
     }
   }, [cashFlow]);
 
@@ -144,7 +159,8 @@ export default function EditCashFlowDrawer({
         values.amount !== cashFlow.amount ||
         values.currency !== cashFlow.currency ||
         type !== cashFlow.type ||
-        categoryIds !== cashFlow.categories.map((category) => category.finance_category.id);
+        categoryIds !==
+          cashFlow.categories.map((category) => category.finance_category.id);
 
       if (hasChanges) {
         // Store the values and show the update modal
@@ -188,50 +204,17 @@ export default function EditCashFlowDrawer({
 
   async function handleSingleDelete() {
     if (!isSingleCashFlow(cashFlow)) return;
-    const success = await deleteSingleCashFlows([cashFlow.id]);
-    if (success) {
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Cashflow erfolgreich gelöscht",
-          "Cashflow deleted successfully"
-        ),
-        locale
-      );
-      onClose();
-    } else {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Cashflow konnte nicht gelöscht werden",
-          "Cashflow could not be deleted"
-        ),
-        locale
-      );
-    }
+    deleteSingleCashFlows([cashFlow.id]);
   }
 
   async function handleDeleteRecurringWithMode(
     mode: DeleteRecurringCashFlowMode
   ) {
     if (isSingleCashFlow(cashFlow)) return;
-    const success = await deleteRecurringCashFlow(cashFlow.id, mode);
-    if (success) {
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Wiederkehrender Cashflow erfolgreich gelöscht",
-          "Recurring cash flow deleted successfully"
-        ),
-        locale
-      );
-      onClose();
-    } else {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Wiederkehrender Cashflow konnte nicht gelöscht werden",
-          "Recurring cash flow could not be deleted"
-        ),
-        locale
-      );
-    }
+    deleteRecurringCashFlow({
+      recurringCashFlowId: cashFlow.id,
+      mode,
+    });
   }
 
   async function handleDeactivateRecurring() {
@@ -269,11 +252,14 @@ export default function EditCashFlowDrawer({
     setIsLoading(true);
 
     const categoryUpdates = {
-      deleteIds: cashFlow.categories.map((category) => category.finance_category.id).filter(
-        (id: string) => !pendingValues.categoryIds.includes(id)
-      ),
+      deleteIds: cashFlow.categories
+        .map((category) => category.finance_category.id)
+        .filter((id: string) => !pendingValues.categoryIds.includes(id)),
       addIds: pendingValues.categoryIds.filter(
-        (id: string) => !cashFlow.categories.map((category) => category.finance_category.id).includes(id)
+        (id: string) =>
+          !cashFlow.categories
+            .map((category) => category.finance_category.id)
+            .includes(id)
       ),
     };
 
@@ -483,6 +469,7 @@ export default function EditCashFlowDrawer({
             color="teal"
           />
           <DeleteButton
+            loading={isDeletingSingleCashFlows}
             onClick={() => {
               if (isSingleCashFlow(cashFlow)) {
                 handleSingleDelete();
@@ -563,6 +550,7 @@ export default function EditCashFlowDrawer({
               />
               <DeleteButton
                 onClick={() => handleDeleteRecurringWithMode(deleteMode)}
+                loading={isDeletingRecurringCashFlow}
               />
             </Group>
           </Group>

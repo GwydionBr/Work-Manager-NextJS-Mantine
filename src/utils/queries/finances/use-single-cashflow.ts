@@ -1,3 +1,5 @@
+"use client";
+
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { getAllSingleCashFlows } from "@/actions/finance/singleCashflow/get-all-single-cashflows";

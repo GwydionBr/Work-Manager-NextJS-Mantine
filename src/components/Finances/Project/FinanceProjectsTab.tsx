@@ -48,7 +48,7 @@ import EditFinanceProjectDrawer from "./EditFinanceProjectDrawer";
 import FinancesNavbar from "../FinancesNavbar";
 import { SettingsTab } from "@/components/Settings/SettingsModal";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
-import useFinanceProjectQuery from "@/utils/queries/finances/use-finance-project-query";
+import { useFinanceProjectQuery } from "@/utils/queries/finances/use-finance-project-query";
 import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-categories";
 
 export default function FinanceProjectTab() {
