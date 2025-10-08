@@ -89,8 +89,8 @@ export default function FinanceRecurringTab() {
     () =>
       activeCashFlows.filter((cashFlow) => {
         if (typeFilter === "all") return true;
-        if (typeFilter === "income") return cashFlow.type === "income";
-        if (typeFilter === "expense") return cashFlow.type === "expense";
+        if (typeFilter === "income") return cashFlow.amount > 0;
+        if (typeFilter === "expense") return cashFlow.amount <= 0;
         return false;
       }),
     [activeCashFlows, typeFilter]
@@ -99,7 +99,7 @@ export default function FinanceRecurringTab() {
   const activeExpenseSum = useMemo(
     () =>
       activeCashFlows
-        .filter((cashFlow) => cashFlow.type === "expense")
+        .filter((cashFlow) => cashFlow.amount <= 0)
         .reduce((sum, cashFlow) => {
           return sum + cashFlow.amount;
         }, 0),
@@ -109,7 +109,7 @@ export default function FinanceRecurringTab() {
   const activeIncomeSum = useMemo(
     () =>
       activeCashFlows
-        .filter((cashFlow) => cashFlow.type === "income")
+        .filter((cashFlow) => cashFlow.amount > 0)
         .reduce((sum, cashFlow) => {
           return sum + cashFlow.amount;
         }, 0),
@@ -125,9 +125,9 @@ export default function FinanceRecurringTab() {
         const endDate = new Date(cashFlow.end_date);
         let isCompleted = endDate <= today;
         if (typeFilter === "income")
-          isCompleted = isCompleted && cashFlow.type === "income";
+          isCompleted = isCompleted && cashFlow.amount > 0;
         if (typeFilter === "expense")
-          isCompleted = isCompleted && cashFlow.type === "expense";
+          isCompleted = isCompleted && cashFlow.amount <= 0;
         return isCompleted;
       }),
     [recurringCashFlows, typeFilter]
@@ -137,8 +137,8 @@ export default function FinanceRecurringTab() {
     () =>
       completedCashFlows.filter((cashFlow) => {
         if (typeFilter === "all") return true;
-        if (typeFilter === "income") return cashFlow.type === "income";
-        if (typeFilter === "expense") return cashFlow.type === "expense";
+        if (typeFilter === "income") return cashFlow.amount > 0;
+        if (typeFilter === "expense") return cashFlow.amount <= 0;
         return false;
       }),
     [completedCashFlows, typeFilter]
@@ -150,9 +150,9 @@ export default function FinanceRecurringTab() {
         const startDate = new Date(cashFlow.start_date);
         let isFuture = startDate > today;
         if (typeFilter === "income")
-          isFuture = isFuture && cashFlow.type === "income";
+          isFuture = isFuture && cashFlow.amount > 0;
         if (typeFilter === "expense")
-          isFuture = isFuture && cashFlow.type === "expense";
+          isFuture = isFuture && cashFlow.amount <= 0;
         return isFuture;
       }),
     [recurringCashFlows, typeFilter]
@@ -162,8 +162,8 @@ export default function FinanceRecurringTab() {
     () =>
       futureCashFlows.filter((cashFlow) => {
         if (typeFilter === "all") return true;
-        if (typeFilter === "income") return cashFlow.type === "income";
-        if (typeFilter === "expense") return cashFlow.type === "expense";
+        if (typeFilter === "income") return cashFlow.amount > 0;
+        if (typeFilter === "expense") return cashFlow.amount <= 0;
         return false;
       }),
     [futureCashFlows, typeFilter]
@@ -229,7 +229,7 @@ export default function FinanceRecurringTab() {
           onClick: () =>
             setTypeFilter((prev) => (prev === "expense" ? "all" : "expense")),
           disabled:
-            recurringCashFlows.filter((cashFlow) => cashFlow.type === "expense")
+            recurringCashFlows.filter((cashFlow) => cashFlow.amount <= 0)
               .length === 0,
         },
         {
@@ -243,7 +243,7 @@ export default function FinanceRecurringTab() {
           onClick: () =>
             setTypeFilter((prev) => (prev === "income" ? "all" : "income")),
           disabled:
-            recurringCashFlows.filter((cashFlow) => cashFlow.type === "income")
+            recurringCashFlows.filter((cashFlow) => cashFlow.amount > 0)
               .length === 0,
         },
       ],

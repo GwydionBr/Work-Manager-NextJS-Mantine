@@ -100,7 +100,7 @@ export default function EditCashFlowDrawer({
 
   useEffect(() => {
     if (cashFlow) {
-      setType(cashFlow.type);
+      setType(cashFlow.amount > 0 ? "income" : "expense");
     }
   }, [cashFlow, opened]);
 
@@ -130,7 +130,6 @@ export default function EditCashFlowDrawer({
     if (isSingleCashFlow(cashFlow)) {
       success = await updateSingleCashFlow({
         id: cashFlow.id,
-        type,
         categoryIds,
         ...values,
       });
@@ -158,7 +157,6 @@ export default function EditCashFlowDrawer({
         values.title !== cashFlow.title ||
         values.amount !== cashFlow.amount ||
         values.currency !== cashFlow.currency ||
-        type !== cashFlow.type ||
         categoryIds !==
           cashFlow.categories.map((category) => category.finance_category.id);
 
@@ -166,7 +164,6 @@ export default function EditCashFlowDrawer({
         // Store the values and show the update modal
         setPendingValues({
           id: cashFlow.id,
-          type,
           categoryIds,
           ...values,
         });
@@ -175,7 +172,6 @@ export default function EditCashFlowDrawer({
         // No changes that affect single cash flows, just update the recurring cash flow
         success = await updateRecurringCashFlow({
           id: cashFlow.id,
-          type,
           categoryIds,
           ...values,
         });
@@ -272,7 +268,6 @@ export default function EditCashFlowDrawer({
         title: pendingValues.title,
         amount: pendingValues.amount,
         currency: pendingValues.currency,
-        type: pendingValues.type,
         // categoryIds: pendingValues.categoryIds,
       };
 

@@ -125,7 +125,6 @@ export const processRecurringCashFlows = (
           currency: flow.currency,
           date: currentDate.toISOString(),
           title: flow.title,
-          type: flow.type,
           is_active: true,
           user_id: flow.user_id,
           recurring_cash_flow_id: flow.id,

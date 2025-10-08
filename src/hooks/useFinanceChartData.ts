@@ -288,7 +288,7 @@ export function useFinanceChartData(
 
         // Add cash flow to the appropriate period
         if (groupedData[key]) {
-          if (flow.type === "expense") {
+          if (flow.amount <= 0) {
             groupedData[key].expense += flow.amount;
           } else {
             groupedData[key].income += flow.amount;

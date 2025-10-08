@@ -106,7 +106,7 @@ export default function RecurringCashFlowRow({
         <Group>
           <Text
             fw={700}
-            c={cashflow.type === "expense" ? "red" : "green"}
+            c={cashflow.amount <= 0 ? "red" : "green"}
             w={70}
           >
             {formatMoney(cashflow.amount, cashflow.currency, locale)}

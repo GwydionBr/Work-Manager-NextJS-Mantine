@@ -67,7 +67,6 @@ export default function FinanceForm({
       cashflow: {
         ...values,
         date: values.date.toISOString(),
-        type,
       },
       categoryIds,
     });
@@ -81,7 +80,6 @@ export default function FinanceForm({
         ...values,
         end_date: values.end_date?.toISOString(),
         start_date: values.start_date.toISOString(),
-        type,
       },
       categoryIds,
     });
