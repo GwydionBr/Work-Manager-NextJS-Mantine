@@ -20,8 +20,8 @@ import { isToday } from "date-fns";
 import { RecurringCashFlow } from "@/types/finance.types";
 import { FinanceInterval } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
-import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-categories";
-import { useUpdateRecurringCashflowMutation } from "@/utils/queries/finances/use_recurring-cashflow";
+import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
+import { useUpdateRecurringCashflowMutation } from "@/utils/queries/finances/use-recurring-cashflow";
 
 interface RecurringCashFlowRowProps extends CardProps {
   cashflow: RecurringCashFlow;

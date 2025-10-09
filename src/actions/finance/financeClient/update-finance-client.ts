@@ -1,14 +1,13 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { ApiResponseSingle } from "@/types/action.types";
 import { Tables, TablesUpdate } from "@/types/db.types";
 
 export async function updateFinanceClient(
   client: TablesUpdate<"finance_client">
-): Promise<ApiResponseSingle<Tables<"finance_client">>> {
+): Promise<Tables<"finance_client">> {
   if (!client.id) {
-    return { success: false, data: null, error: "Client id is required" };
+    throw new Error("Client id is required");
   }
 
   const supabase = await createClient();
@@ -20,8 +19,8 @@ export async function updateFinanceClient(
     .single();
 
   if (error) {
-    return { success: false, data: null, error: error.message };
+    throw new Error(error.message);
   }
 
-  return { success: true, data, error: null };
+  return data;
 }

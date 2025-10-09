@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { useForm } from "@mantine/form";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useFinanceStore } from "@/stores/financeStore";
 import { Fieldset, Select, Stack, TextInput } from "@mantine/core";
 
 import { z } from "zod";
@@ -14,8 +12,10 @@ import UpdateButton from "@/components/UI/Buttons/UpdateButton";
 import { Tables } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
-import { IconCheck, IconX } from "@tabler/icons-react";
-import { notifications } from "@mantine/notifications";
+import {
+  useAddFinanceClientMutation,
+  useUpdateFinanceClientMutation,
+} from "@/utils/queries/finances/use-finance-client";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -40,8 +40,16 @@ export default function FinanceClientForm({
   client,
 }: FinanceClientFormProps) {
   const { locale } = useSettingsStore();
-  const { addFinanceClient, updateFinanceClient } = useFinanceStore();
-  const [isLoading, setIsLoading] = useState(false);
+
+  const { mutate: addFinanceClientMutation, isPending: isAddingFinanceClient } =
+    useAddFinanceClientMutation((client: Tables<"finance_client">) => {
+      onSuccess?.(client);
+      handleClose();
+    });
+  const {
+    mutate: updateFinanceClientMutation,
+    isPending: isUpdatingFinanceClient,
+  } = useUpdateFinanceClientMutation(() => handleClose());
   const form = useForm({
     initialValues: {
       name: client?.name || "",
@@ -59,50 +67,17 @@ export default function FinanceClientForm({
     onClose?.();
   };
 
-  async function handleSubmit(values: z.infer<typeof schema>) {
-    setIsLoading(true);
-    let currentClient: Tables<"finance_client"> | null = null;
+  function handleSubmit(values: z.infer<typeof schema>) {
     if (client) {
-      const response = await updateFinanceClient({
+      updateFinanceClientMutation({
         ...client,
         ...values,
         currency: values.currency as Currency,
       });
-      currentClient = response;
     } else {
-      const response = await addFinanceClient({
+      addFinanceClientMutation({
         ...values,
         currency: values.currency as Currency,
-      });
-      currentClient = response;
-    }
-    if (currentClient) {
-      onSuccess?.(currentClient);
-      notifications.show({
-        title: locale === "de-DE" ? "Erfolg" : "Success",
-        message:
-          locale === "de-DE"
-            ? `Kunde erfolgreich ${client ? "bearbeitet" : "erstellt"}`
-            : `Client ${client ? "edited" : "created"} successfully`,
-        icon: <IconCheck />,
-        color: "green",
-        autoClose: 4000,
-        withBorder: true,
-        position: "top-center",
-      });
-      handleClose();
-    } else {
-      notifications.show({
-        title: locale === "de-DE" ? "Fehler" : "Error",
-        message:
-          locale === "de-DE"
-            ? `Kunde konnte nicht ${client ? "bearbeitet" : "erstellt"} werden`
-            : `Client could not ${client ? "edited" : "created"}`,
-        icon: <IconX />,
-        color: "red",
-        autoClose: 4000,
-        position: "top-center",
-        withBorder: true,
       });
     }
   }
@@ -151,13 +126,13 @@ export default function FinanceClientForm({
           <UpdateButton
             type="submit"
             onClick={form.onSubmit(handleSubmit)}
-            loading={isLoading}
+            loading={isUpdatingFinanceClient}
           />
         ) : (
           <CreateButton
             type="submit"
             onClick={form.onSubmit(handleSubmit)}
-            loading={isLoading}
+            loading={isAddingFinanceClient}
           />
         )}
         {onClose && <CancelButton onClick={handleClose} />}

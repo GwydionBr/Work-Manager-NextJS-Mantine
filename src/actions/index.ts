@@ -63,10 +63,6 @@ export { deleteSingleCashFlows } from "./finance/singleCashflow/deleteSingleCash
 export { createMultipleSingleCashFlows } from "./finance/singleCashflow/createMultipleSingleCashFlows";
 export { updateMultipleSingleCashFlows } from "./finance/singleCashflow/updateMultipleSingleCashFlows";
 
-export { getAllFinanceClients } from "./finance/financeClient/getAllFinanceClients";
-export { createFinanceClient } from "./finance/financeClient/createFinanceClient";
-export { updateFinanceClient } from "./finance/financeClient/updateFinanceClient";
-export { deleteFinanceClients } from "./finance/financeClient/deleteFinanceClients";
 
 export { getAllFinanceProjects } from "./finance/financeProject/getAllFinanceProjects";
 export { createFinanceProject } from "./finance/financeProject/createFinanceProject";
@@ -81,13 +77,6 @@ export { getAllRecurringCashFlows } from "./finance/recurringCashflow/getAllRecu
 export { createRecurringCashFlow } from "./finance/recurringCashflow/createRecurringCashflow";
 export { deleteRecurringCashFlow } from "./finance/recurringCashflow/deleteRecurringCashflow";
 export { updateRecurringCashFlow } from "./finance/recurringCashflow/updateRecurringCashflow";
-
-export {
-  getAllFinanceCategories,
-  createFinanceCategory,
-  updateFinanceCategory,
-  deleteFinanceCategories,
-} from "./finance/financeCategory/financeCategoryActions";
 
 // Group Actions
 

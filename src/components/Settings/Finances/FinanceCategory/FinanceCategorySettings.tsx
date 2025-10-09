@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
@@ -22,18 +21,22 @@ import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import { IconCategory, IconCategoryPlus } from "@tabler/icons-react";
 import {
-  showActionErrorNotification,
-  showActionSuccessNotification,
   showDeleteConfirmationModal,
 } from "@/utils/notificationFunctions";
+import {
+  useDeleteFinanceCategoryMutation,
+  useFinanceCategoriesQuery,
+} from "@/utils/queries/finances/use-finance-category";
 
 export default function FinanceCategorySettings() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
     null
   );
-  const { financeCategories, isFetching, deleteFinanceCategories } =
-    useFinanceStore();
+  const { data: financeCategories = [], isPending: isFetchingCategories } =
+    useFinanceCategoriesQuery();
+  const { mutate: deleteFinanceCategoriesMutation } =
+    useDeleteFinanceCategoryMutation();
   const { locale } = useSettingsStore();
   const [
     isCategoryFormOpen,
@@ -106,24 +109,8 @@ export default function FinanceCategorySettings() {
           </List>
         </Stack>
       ),
-      async () => {
-        const deleted = await deleteFinanceCategories(ids);
-        if (deleted) {
-          setSelectedCategories([]);
-          showActionSuccessNotification(
-            locale === "de-DE"
-              ? "Kategorie erfolgreich gelöscht"
-              : "Category deleted successfully",
-            locale
-          );
-        } else {
-          showActionErrorNotification(
-            locale === "de-DE"
-              ? "Kategorie konnte nicht gelöscht werden"
-              : "Category could not be deleted",
-            locale
-          );
-        }
+      () => {
+        deleteFinanceCategoriesMutation(ids);
       },
       locale
     );
@@ -154,7 +141,7 @@ export default function FinanceCategorySettings() {
     <Group w="100%">
       <Stack align="center" w="100%">
         <Group justify="space-between" w="100%">
-          <PlusActionIcon onClick={openCategoryForm} disabled={isFetching} />
+          <PlusActionIcon onClick={openCategoryForm} disabled={isFetchingCategories} />
           <Modal
             opened={isCategoryFormOpen}
             onClose={closeCategoryForm}
@@ -190,7 +177,7 @@ export default function FinanceCategorySettings() {
             </Text>
           </Group>
           <SelectActionIcon
-            disabled={isFetching || financeCategories.length === 0}
+            disabled={isFetchingCategories || financeCategories.length === 0}
             tooltipLabel={
               locale === "de-DE"
                 ? "Aktiviere Mehrfachauswahl"
@@ -201,7 +188,7 @@ export default function FinanceCategorySettings() {
             onClick={toggleSelectedMode}
           />
         </Group>
-        {!isFetching && financeCategories.length === 0 ? (
+        {!isFetchingCategories && financeCategories.length === 0 ? (
           <Text fz="sm" c="dimmed">
             {locale === "de-DE"
               ? "Keine Kategorien gefunden"
@@ -235,7 +222,7 @@ export default function FinanceCategorySettings() {
                 />
               </Group>
             </Collapse>
-            {!isFetching &&
+            {!isFetchingCategories &&
               financeCategories.map((category, index) => (
                 <FinanceCategoryRow
                   key={category.id}
@@ -248,7 +235,7 @@ export default function FinanceCategorySettings() {
                   onDelete={onDelete}
                 />
               ))}
-            {isFetching &&
+            {isFetchingCategories &&
               Array.from({ length: 3 }, (_, i) => (
                 <Skeleton key={i} w="100%" h={60} radius="md" maw={500} />
               ))}

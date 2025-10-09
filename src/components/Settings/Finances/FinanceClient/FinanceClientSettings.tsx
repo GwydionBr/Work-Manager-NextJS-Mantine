@@ -2,9 +2,7 @@
 
 import { useEffect } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { modals } from "@mantine/modals";
 
 import {
   Stack,
@@ -27,14 +25,20 @@ import {
   showActionSuccessNotification,
   showDeleteConfirmationModal,
 } from "@/utils/notificationFunctions";
+import {
+  useDeleteFinanceClientMutation,
+  useFinanceClientQuery,
+} from "@/utils/queries/finances/use-finance-client";
 
 export default function FinanceClientSettings() {
   const [selectedClients, setSelectedClients] = useState<string[]>([]);
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
     null
   );
-  const { financeClients, isFetching, deleteFinanceClients } =
-    useFinanceStore();
+  const { data: financeClients = [], isPending: isFetchingFinanceClients } =
+    useFinanceClientQuery();
+  const { mutate: deleteFinanceClientsMutation } =
+    useDeleteFinanceClientMutation();
   const { locale } = useSettingsStore();
   const [isClientFormOpen, { open: openClientForm, close: closeClientForm }] =
     useDisclosure(false);
@@ -105,24 +109,8 @@ export default function FinanceClientSettings() {
           </List>
         </Stack>
       ),
-      async () => {
-        const deleted = await deleteFinanceClients(ids);
-        if (deleted) {
-          setSelectedClients([]);
-          showActionSuccessNotification(
-            locale === "de-DE"
-              ? "Kunde erfolgreich gelöscht"
-              : "Client deleted successfully",
-            locale
-          );
-        } else {
-          showActionErrorNotification(
-            locale === "de-DE"
-              ? "Kunde konnte nicht gelöscht werden"
-              : "Client could not be deleted",
-            locale
-          );
-        }
+      () => {
+        deleteFinanceClientsMutation(ids);
       },
       locale
     );
@@ -153,7 +141,7 @@ export default function FinanceClientSettings() {
     <Group w="100%">
       <Stack align="center" w="100%">
         <Group justify="space-between" w="100%">
-          <PlusActionIcon onClick={openClientForm} disabled={isFetching} />
+          <PlusActionIcon onClick={openClientForm} disabled={isFetchingFinanceClients} />
           <Modal
             opened={isClientFormOpen}
             onClose={closeClientForm}
@@ -189,7 +177,7 @@ export default function FinanceClientSettings() {
             </Text>
           </Group>
           <SelectActionIcon
-            disabled={isFetching || financeClients.length === 0}
+            disabled={isFetchingFinanceClients || financeClients.length === 0}
             tooltipLabel={
               locale === "de-DE"
                 ? "Aktiviere Mehrfachauswahl"
@@ -200,7 +188,7 @@ export default function FinanceClientSettings() {
             onClick={toggleSelectedMode}
           />
         </Group>
-        {!isFetching && financeClients.length === 0 ? (
+        {!isFetchingFinanceClients && financeClients.length === 0 ? (
           <Text fz="sm" c="dimmed">
             {locale === "de-DE" ? "Keine Kunden gefunden" : "No clients found"}
           </Text>
@@ -227,7 +215,7 @@ export default function FinanceClientSettings() {
                 />
               </Group>
             </Collapse>
-            {!isFetching &&
+            {!isFetchingFinanceClients &&
               financeClients.map((client, index) => (
                 <FinanceClientRow
                   key={client.id}
@@ -240,7 +228,7 @@ export default function FinanceClientSettings() {
                   onDelete={onDelete}
                 />
               ))}
-            {isFetching &&
+            {isFetchingFinanceClients &&
               Array.from({ length: 3 }, (_, i) => (
                 <Skeleton key={i} w="100%" h={60} radius="md" maw={500} />
               ))}

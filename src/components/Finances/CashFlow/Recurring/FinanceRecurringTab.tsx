@@ -34,10 +34,11 @@ import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIc
 import { SettingsTab } from "@/components/Settings/SettingsModal";
 import { RecurringCashFlow } from "@/types/finance.types";
 import { formatMoney } from "@/utils/formatFunctions";
-import { useRecurringCashflowQuery } from "@/utils/queries/finances/use_recurring-cashflow";
+import { useRecurringCashflowQuery } from "@/utils/queries/finances/use-recurring-cashflow";
 
 export default function FinanceRecurringTab() {
-  const { data: recurringCashFlows = [], isPending } = useRecurringCashflowQuery();
+  const { data: recurringCashFlows = [], isPending } =
+    useRecurringCashflowQuery();
   const { locale, defaultFinanceCurrency, setIsModalOpen, setSelectedTab } =
     useSettingsStore();
 
@@ -149,8 +150,7 @@ export default function FinanceRecurringTab() {
       recurringCashFlows.filter((cashFlow) => {
         const startDate = new Date(cashFlow.start_date);
         let isFuture = startDate > today;
-        if (typeFilter === "income")
-          isFuture = isFuture && cashFlow.amount > 0;
+        if (typeFilter === "income") isFuture = isFuture && cashFlow.amount > 0;
         if (typeFilter === "expense")
           isFuture = isFuture && cashFlow.amount <= 0;
         return isFuture;

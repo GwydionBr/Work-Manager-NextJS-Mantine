@@ -1,8 +1,6 @@
 "use client";
 
 import { useForm } from "@mantine/form";
-import { useState } from "react";
-import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { TextInput, Stack, Textarea } from "@mantine/core";
@@ -13,9 +11,9 @@ import CreateButton from "@/components/UI/Buttons/CreateButton";
 import UpdateButton from "@/components/UI/Buttons/UpdateButton";
 import { Tables } from "@/types/db.types";
 import {
-  showActionErrorNotification,
-  showActionSuccessNotification,
-} from "@/utils/notificationFunctions";
+  useAddFinanceCategoryMutation,
+  useUpdateFinanceCategoryMutation,
+} from "@/utils/queries/finances/use-finance-category";
 
 const schema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters"),
@@ -33,9 +31,18 @@ export default function FinanceCategoryForm({
   onSuccess,
   category,
 }: FinanceCategoryFormProps) {
-  const { locale, getLocalizedText } = useSettingsStore();
-  const { addFinanceCategory, updateFinanceCategory } = useFinanceStore();
-  const [isLoading, setIsLoading] = useState(false);
+  const { getLocalizedText } = useSettingsStore();
+  const {
+    mutate: addFinanceCategoryMutation,
+    isPending: isAddingFinanceCategory,
+  } = useAddFinanceCategoryMutation((category) => {
+    onSuccess?.(category);
+    handleClose();
+  });
+  const {
+    mutate: updateFinanceCategoryMutation,
+    isPending: isUpdatingFinanceCategory,
+  } = useUpdateFinanceCategoryMutation(() => handleClose());
 
   const form = useForm({
     initialValues: {
@@ -50,45 +57,19 @@ export default function FinanceCategoryForm({
     onClose?.();
   };
 
-  async function handleFormSubmit(values: z.infer<typeof schema>) {
-    setIsLoading(true);
-    let currentCategory: Tables<"finance_category"> | null = null;
-
+  function handleFormSubmit(values: z.infer<typeof schema>) {
     if (category) {
-      const updatedCategory = await updateFinanceCategory({
+      updateFinanceCategoryMutation({
         id: category.id,
         title: values.title,
         description: values.description,
       });
-      currentCategory = updatedCategory;
     } else {
-      const newCategory = await addFinanceCategory({
+      addFinanceCategoryMutation({
         title: values.title,
         description: values.description,
       });
-      currentCategory = newCategory;
     }
-
-    if (currentCategory) {
-      onSuccess?.(currentCategory);
-      showActionSuccessNotification(
-        getLocalizedText(
-          `Kategorie erfolgreich ${category ? "bearbeitet" : "erstellt"}`,
-          `Category successfully ${category ? "edited" : "created"}`
-        ),
-        locale
-      );
-      handleClose();
-    } else {
-      showActionErrorNotification(
-        getLocalizedText(
-          `Kategorie konnte nicht ${category ? "bearbeitet" : "erstellt"} werden`,
-          `Category could not ${category ? "edited" : "created"}`
-        ),
-        locale
-      );
-    }
-    setIsLoading(false);
   }
 
   return (
@@ -97,30 +78,29 @@ export default function FinanceCategoryForm({
         <TextInput
           withAsterisk
           label={getLocalizedText("Name", "Name")}
-          placeholder={
-            getLocalizedText("Name eingeben", "Enter category name")
-          }
+          placeholder={getLocalizedText("Name eingeben", "Enter category name")}
           {...form.getInputProps("title")}
           data-autofocus
         />
         <Textarea
           label={getLocalizedText("Beschreibung", "Description")}
-          placeholder={
-            getLocalizedText("Beschreibung eingeben", "Enter category description")
-          }
+          placeholder={getLocalizedText(
+            "Beschreibung eingeben",
+            "Enter category description"
+          )}
           {...form.getInputProps("description")}
         />
         {category ? (
           <UpdateButton
             type="submit"
             onClick={form.onSubmit(handleFormSubmit)}
-            loading={isLoading}
+            loading={isUpdatingFinanceCategory}
           />
         ) : (
           <CreateButton
             type="submit"
             onClick={form.onSubmit(handleFormSubmit)}
-            loading={isLoading}
+            loading={isAddingFinanceCategory}
           />
         )}
         {onClose && <CancelButton onClick={handleClose} />}

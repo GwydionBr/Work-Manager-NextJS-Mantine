@@ -19,10 +19,13 @@ import { IconCash } from "@tabler/icons-react";
 import FinanceForm from "@/components/Finances/CashFlow/CashflowForm";
 import { SettingsTab } from "../Settings/SettingsModal";
 import FinanceCategoryForm from "./Category/FinanceCategoryForm";
+import { Tables } from "@/types/db.types";
 
 export default function FinanceInitializer() {
   const [opened, { open, close }] = useDisclosure(false);
-  const [categoryIds, setCategoryIds] = useState<string[]>([]);
+  const [categories, setCategories] = useState<Tables<"finance_category">[]>(
+    []
+  );
   const { locale } = useSettingsStore();
   const { setIsModalOpen, setSelectedTab } = useSettingsStore();
   return (
@@ -82,8 +85,8 @@ export default function FinanceInitializer() {
             <FinanceForm
               onClose={() => {}}
               onOpenCategoryForm={open}
-              categoryIds={categoryIds}
-              setCategoryIds={setCategoryIds}
+              categories={categories}
+              setCategories={setCategories}
             />
           </Box>
           <Modal
@@ -96,7 +99,7 @@ export default function FinanceInitializer() {
             <FinanceCategoryForm
               onClose={close}
               onSuccess={(category) =>
-                setCategoryIds((prev) => [...prev, category.id])
+                setCategories((prev) => [...prev, category])
               }
             />
           </Modal>

@@ -1,12 +1,11 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { ApiResponseSingle } from "@/types/action.types";
 import { Tables, TablesInsert } from "@/types/db.types";
 
 export async function createFinanceClient(
   client: TablesInsert<"finance_client">
-): Promise<ApiResponseSingle<Tables<"finance_client">>> {
+): Promise<Tables<"finance_client">> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -16,8 +15,8 @@ export async function createFinanceClient(
     .single();
 
   if (error) {
-    return { success: false, data: null, error: error.message };
+    throw new Error(error.message);
   }
 
-  return { success: true, data, error: null };
+  return data;
 }

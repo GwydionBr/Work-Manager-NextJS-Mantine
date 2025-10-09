@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useAddSingleCashflowMutation } from "@/utils/queries/finances/use-single-cashflow";
-import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-categories";
+import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
 
 import {
   Stack,
@@ -33,7 +33,7 @@ import { CashFlowType } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
 
 import classes from "../../UI/Switch.module.css";
-import { useAddRecurringCashflowMutation } from "@/utils/queries/finances/use_recurring-cashflow";
+import { useAddRecurringCashflowMutation } from "@/utils/queries/finances/use-recurring-cashflow";
 
 interface FinanceFormProps {
   onClose: () => void;

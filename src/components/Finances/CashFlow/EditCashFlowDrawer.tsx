@@ -40,7 +40,7 @@ import {
   UpdateRecurringCashFlow,
   UpdateSingleCashFlow,
 } from "@/types/finance.types";
-import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-categories";
+import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
 import {
   useDeleteSingleCashflowMutation,
   useUpdateSingleCashflowMutation,
@@ -48,7 +48,7 @@ import {
 import {
   useDeleteRecurringCashflowMutation,
   useUpdateRecurringCashflowMutation,
-} from "@/utils/queries/finances/use_recurring-cashflow";
+} from "@/utils/queries/finances/use-recurring-cashflow";
 
 // Type guard to distinguish between single and recurring cash flows
 function isSingleCashFlow(

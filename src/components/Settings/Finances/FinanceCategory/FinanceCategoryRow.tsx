@@ -7,7 +7,6 @@ import {
   Card,
   Group,
   Modal,
-  Popover,
   Box,
   Stack,
   Text,

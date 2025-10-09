@@ -49,7 +49,7 @@ import FinancesNavbar from "../FinancesNavbar";
 import { SettingsTab } from "@/components/Settings/SettingsModal";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 import { useFinanceProjectQuery } from "@/utils/queries/finances/use-finance-project";
-import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-categories";
+import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
 
 export default function FinanceProjectTab() {
   const { deleteFinanceProjects, financeClients } = useFinanceStore();

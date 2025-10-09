@@ -1,8 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useHover, useDisclosure } from "@mantine/hooks";
-import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
@@ -20,7 +19,8 @@ import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import FinanceCategoryBadges from "../../Category/FinanceCategoryBadges";
 import { SingleCashFlow } from "@/types/finance.types";
 import { Tables } from "@/types/db.types";
-import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-categories";
+import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
+import { useUpdateSingleCashflowMutation } from "@/utils/queries/finances/use-single-cashflow";
 
 interface SingleCashflowRowProps extends CardProps {
   cashflow: SingleCashFlow;
@@ -39,8 +39,10 @@ export default function SingleCashflowRow({
   ...props
 }: SingleCashflowRowProps) {
   const { locale } = useSettingsStore();
-  const [isLoading, setIsLoading] = useState(false);
-  const { updateSingleCashFlow } = useFinanceStore();
+  const {
+    mutate: updateSingleCashFlowMutation,
+    isPending: isUpdatingSingleCashFlow,
+  } = useUpdateSingleCashflowMutation();
   const { hovered, ref } = useHover();
   const [
     isCategoryPopoverOpen,
@@ -60,15 +62,17 @@ export default function SingleCashflowRow({
   const handleCategoryClose = async (
     updatedCategories: Tables<"finance_category">[] | null
   ) => {
-    if (isLoading) return;
+    if (isUpdatingSingleCashFlow) return;
     closeCategoryPopover();
     if (updatedCategories) {
-      setIsLoading(true);
-      await updateSingleCashFlow({
-        ...cashflow,
-        categoryIds: updatedCategories.map((c) => c.id),
+      updateSingleCashFlowMutation({
+        cashflow: {
+          ...cashflow,
+          categories: updatedCategories.map((c) => ({
+            finance_category: c,
+          })),
+        },
       });
-      setIsLoading(false);
     }
   };
 

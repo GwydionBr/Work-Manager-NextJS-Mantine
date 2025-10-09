@@ -21,7 +21,7 @@ import { IconPlus } from "@tabler/icons-react";
 import { Tables } from "@/types/db.types";
 import FinanceCategorySingleBadge from "./FinanceCategorySingleBadge";
 import FinanceCategoryForm from "./FinanceCategoryForm";
-import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-categories";
+import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
 
 interface FinanceCategoryBadgesProps {
   categories: Tables<"finance_category">[];
