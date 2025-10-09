@@ -1,0 +1,61 @@
+"use server";
+
+import { Tables } from "@/types/db.types";
+import { FinanceProject } from "@/types/finance.types";
+import { createClient } from "@/utils/supabase/server";
+
+export async function payoutFinanceProject(
+  financeProject: FinanceProject,
+  getLocalizedText: (de: string, en: string) => string,
+  payoutWholeProject: boolean
+): Promise<{
+  financeProject: FinanceProject;
+  cashflows: Tables<"single_cash_flow">[];
+}> {
+  const supabase = await createClient();
+  const cashflows: Tables<"single_cash_flow">[] = [];
+  let newFinanceProject: FinanceProject = financeProject;
+
+  if (payoutWholeProject) {
+    // TODO handle whole project payout
+    throw new Error("Whole project payout is not implemented yet");
+  } else {
+    const { data: cashflow, error: cashflowError } = await supabase
+      .from("single_cash_flow")
+      .insert({
+        title: `${financeProject.title} (${getLocalizedText("Auszahlung", "Payout")})`,
+        amount: financeProject.start_amount,
+        currency: financeProject.currency,
+        finance_project_id: financeProject.id,
+      })
+      .select()
+      .single();
+
+    if (cashflowError) {
+      throw new Error(cashflowError.message);
+    }
+
+    cashflows.push(cashflow);
+
+    const { data: financeProjectData, error: financeProjectError } =
+      await supabase
+        .from("finance_project")
+        .update({
+          single_cash_flow_id: cashflow.id,
+        })
+        .eq("id", financeProject.id)
+        .select()
+        .single();
+
+    if (financeProjectError) {
+      throw new Error(financeProjectError.message);
+    }
+
+    newFinanceProject = {
+      ...financeProject,
+      ...financeProjectData,
+    };
+  }
+
+  return { financeProject: newFinanceProject, cashflows };
+}

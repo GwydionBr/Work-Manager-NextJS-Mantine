@@ -8,8 +8,10 @@ import {
   mergeRefs,
 } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useFinanceStore } from "@/stores/financeStore";
-import { useUpdateFinanceProjectMutation } from "@/utils/queries/finances/use-finance-project";
+import {
+  usePayoutFinanceProjectMutation,
+  useUpdateFinanceProjectMutation,
+} from "@/utils/queries/finances/use-finance-project";
 
 import {
   Card,
@@ -45,6 +47,7 @@ import FinanceClientBadge from "../FinanceClient/FinanceClientBadge";
 import FinanceCategoryBadges from "../Category/FinanceCategoryBadges";
 import { Tables } from "@/types/db.types";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
+import { usePayoutFinanceAdjustmentMutation } from "@/utils/queries/finances/use-finance-adjustment";
 
 interface FinanceProjectCardProps extends CardProps {
   project: FinanceProject;
@@ -71,8 +74,14 @@ export default function FinanceProjectCard({
   const { locale, getLocalizedText } = useSettingsStore();
   const { mutate: updateFinanceProjectMutation, isPending: isUpdating } =
     useUpdateFinanceProjectMutation();
-  const { financeProjectAdjustmentPayout, financeProjectPayout } =
-    useFinanceStore();
+  const {
+    mutate: payoutFinanceAdjustmentMutation,
+    isPending: isPayingOutAdjustment,
+  } = usePayoutFinanceAdjustmentMutation();
+  const {
+    mutate: payoutFinanceProjectMutation,
+    isPending: isPayingOutProject,
+  } = usePayoutFinanceProjectMutation();
   const [isEditing, { open: openEditing, close: closeEditing }] =
     useDisclosure(false);
   const { hovered, ref: hoverRef } = useHover();
@@ -156,21 +165,23 @@ export default function FinanceProjectCard({
         (adj) => adj.id === adjustmentId
       );
       if (adjustment) {
-        financeProjectAdjustmentPayout(
+        payoutFinanceAdjustmentMutation({
           adjustment,
-          project.categories.map((category) => category.finance_category.id),
-          `${adjustment.description} (${getLocalizedText("für das Finanz Projekt:", "for the Finance Project:")} ${project.title})`
-        );
+          financeProject: project,
+        });
       }
     } else if (isStartValue) {
       //  handle start value payout
-      financeProjectPayout(
-        project,
-        `${project.title} (${getLocalizedText("Startwert", "Start Value")})`,
-        true
-      );
+      payoutFinanceProjectMutation({
+        financeProject: project,
+        payoutWholeProject: false,
+      });
     } else {
       //  handle all payout
+      payoutFinanceProjectMutation({
+        financeProject: project,
+        payoutWholeProject: true,
+      });
     }
   };
 
