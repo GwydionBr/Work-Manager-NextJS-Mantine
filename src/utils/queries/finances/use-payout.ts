@@ -3,7 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { Tables } from "@/types/db.types";
-import { FinanceProject } from "@/types/finance.types";
+import { FinanceProject, SingleCashFlow } from "@/types/finance.types";
 import { payoutFinanceProject } from "@/actions/finance/payout/payout-finance-project";
 import {
   showActionErrorNotification,
@@ -43,7 +43,7 @@ export function usePayoutFinanceProjectMutation(
       );
       context.client.setQueryData(
         ["singleCashFlows"],
-        (old: Tables<"single_cash_flow">[]) => [...data.cashflows, ...old]
+        (old: SingleCashFlow[]) => [...data.cashflows, ...old]
       );
       context.client.invalidateQueries({ queryKey: ["financeProjects"] });
       context.client.invalidateQueries({ queryKey: ["singleCashFlows"] });
@@ -104,7 +104,7 @@ export function usePayoutFinanceAdjustmentMutation(
       );
       context.client.setQueryData(
         ["singleCashFlows"],
-        (old: Tables<"single_cash_flow">[]) => [data.cashflow, ...old]
+        (old: SingleCashFlow[]) => [data.cashflow, ...old]
       );
       context.client.invalidateQueries({ queryKey: ["financeProjects"] });
       context.client.invalidateQueries({ queryKey: ["singleCashFlows"] });
@@ -150,7 +150,7 @@ export function usePayoutHourlyTimerProjectMutation(
     onSuccess: (data, variables, onMutateResult, context) => {
       context.client.setQueryData(
         ["singleCashFlows"],
-        (old: Tables<"single_cash_flow">[]) => [data.singleCashFlow, ...old]
+        (old: SingleCashFlow[]) => [data.singleCashFlow, ...old]
       );
       context.client.invalidateQueries({ queryKey: ["singleCashFlows"] });
       // TODO: UPDATE TIMER PROJECT

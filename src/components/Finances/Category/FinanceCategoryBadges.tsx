@@ -37,8 +37,10 @@ export default function FinanceCategoryBadges({
   onPopoverClose,
 }: FinanceCategoryBadgesProps) {
   const { locale } = useSettingsStore();
-  const { data: financeCategories, isPending: isFinanceCategoriesPending } =
-    useFinanceCategoriesQuery();
+  const {
+    data: financeCategories = [],
+    isPending: isFinanceCategoriesPending,
+  } = useFinanceCategoriesQuery();
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
     categories.map((c) => c.id)
@@ -58,14 +60,13 @@ export default function FinanceCategoryBadges({
   ] = useDisclosure(false);
 
   const currentCategorySelection = useMemo(() => {
-    if (!financeCategories) return [];
     return financeCategories.filter((category) =>
       selectedCategories.includes(category.id)
     );
   }, [financeCategories, selectedCategories]);
 
   if (isFinanceCategoriesPending) return <Skeleton height={30} width={100} />;
-  if (!financeCategories) return null;
+  if (!isFinanceCategoriesPending) return null;
 
   const handlePopoverOpen = () => {
     onPopoverOpen();

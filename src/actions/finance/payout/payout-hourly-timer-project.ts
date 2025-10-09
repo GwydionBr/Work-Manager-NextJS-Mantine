@@ -2,7 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { TimerProject } from "@/types/work.types";
-import { Tables } from "@/types/db.types";
+import { SingleCashFlow } from "@/types/finance.types";
 
 interface PayoutHourlyTimerProjectProps {
   project: TimerProject;
@@ -15,7 +15,7 @@ export async function payoutHourlyTimerProject({
   title,
   sessionIds,
 }: PayoutHourlyTimerProjectProps): Promise<{
-  singleCashFlow: Tables<"single_cash_flow">;
+  singleCashFlow: SingleCashFlow;
   project: TimerProject;
 }> {
   const supabase = await createClient();
@@ -66,7 +66,10 @@ export async function payoutHourlyTimerProject({
   }
 
   return {
-    singleCashFlow: cashflowData,
+    singleCashFlow: {
+      ...cashflowData,
+      categories: project.categories.map((c) => ({ finance_category: c })),
+    },
     project: { ...project, categories: project.categories },
   };
 }

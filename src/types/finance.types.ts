@@ -7,9 +7,9 @@ export interface Payout extends Tables<"payout"> {
   timer_session_project: Tables<"timer_project"> | null;
 }
 
-export type SingleCashFlow = Tables<"single_cash_flow"> & {
+export interface SingleCashFlow extends Tables<"single_cash_flow"> {
   categories: { finance_category: Tables<"finance_category"> }[];
-};
+}
 
 export interface InsertSingleCashFlow extends TablesInsert<"single_cash_flow"> {
   categories: { finance_category: Tables<"finance_category"> }[];
@@ -19,9 +19,9 @@ export interface UpdateSingleCashFlow extends TablesUpdate<"single_cash_flow"> {
   categories: { finance_category: Tables<"finance_category"> }[];
 }
 
-export type RecurringCashFlow = Tables<"recurring_cash_flow"> & {
+export interface RecurringCashFlow extends Tables<"recurring_cash_flow"> {
   categories: { finance_category: Tables<"finance_category"> }[];
-};
+}
 
 export interface InsertRecurringCashFlow
   extends TablesInsert<"recurring_cash_flow"> {

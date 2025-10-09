@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
 import { useHover, useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -19,7 +18,6 @@ import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import FinanceCategoryBadges from "../../Category/FinanceCategoryBadges";
 import { SingleCashFlow } from "@/types/finance.types";
 import { Tables } from "@/types/db.types";
-import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
 import { useUpdateSingleCashflowMutation } from "@/utils/queries/finances/use-single-cashflow";
 
 interface SingleCashflowRowProps extends CardProps {
@@ -48,16 +46,6 @@ export default function SingleCashflowRow({
     isCategoryPopoverOpen,
     { open: openCategoryPopover, close: closeCategoryPopover },
   ] = useDisclosure(false);
-
-  const { data: financeCategories } = useFinanceCategoriesQuery();
-
-  const currentCategories = useMemo(() => {
-    return financeCategories?.filter((category) =>
-      cashflow.categories
-        .map((c) => c.finance_category.id)
-        .includes(category.id)
-    );
-  }, [financeCategories, cashflow.categories]);
 
   const handleCategoryClose = async (
     updatedCategories: Tables<"finance_category">[] | null
@@ -136,7 +124,9 @@ export default function SingleCashflowRow({
         </Grid.Col>
         <Grid.Col span={3}>
           <FinanceCategoryBadges
-            categories={currentCategories || []}
+            categories={
+              cashflow.categories.map((c) => c.finance_category) || []
+            }
             onPopoverOpen={openCategoryPopover}
             onPopoverClose={handleCategoryClose}
             showAddCategory={hovered}

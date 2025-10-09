@@ -1,7 +1,7 @@
 "use server";
 
 import { Tables } from "@/types/db.types";
-import { FinanceProject } from "@/types/finance.types";
+import { FinanceProject, SingleCashFlow } from "@/types/finance.types";
 import { createClient } from "@/utils/supabase/server";
 
 export async function payoutFinanceProject(
@@ -10,10 +10,10 @@ export async function payoutFinanceProject(
   payoutWholeProject: boolean
 ): Promise<{
   financeProject: FinanceProject;
-  cashflows: Tables<"single_cash_flow">[];
+  cashflows: SingleCashFlow[];
 }> {
   const supabase = await createClient();
-  const cashflows: Tables<"single_cash_flow">[] = [];
+  const cashflows: SingleCashFlow[] = [];
   let newFinanceProject: FinanceProject = financeProject;
 
   if (payoutWholeProject) {
@@ -35,7 +35,20 @@ export async function payoutFinanceProject(
       throw new Error(cashflowError.message);
     }
 
-    cashflows.push(cashflow);
+    const { error: categoriesError } = await supabase
+      .from("single_cash_flow_category")
+      .insert(
+        financeProject.categories.map((c) => ({
+          single_cash_flow_id: cashflow.id,
+          finance_category_id: c.finance_category.id,
+        }))
+      );
+
+    if (categoriesError) {
+      throw new Error(categoriesError.message);
+    }
+
+    cashflows.push({ ...cashflow, categories: financeProject.categories });
 
     const { data: financeProjectData, error: financeProjectError } =
       await supabase

@@ -2,7 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { Tables } from "@/types/db.types";
-import { FinanceProject } from "@/types/finance.types";
+import { FinanceProject, SingleCashFlow } from "@/types/finance.types";
 
 export async function payoutFinanceAdjustment(
   adjustment: Tables<"finance_project_adjustment">,
@@ -10,7 +10,7 @@ export async function payoutFinanceAdjustment(
   title: string
 ): Promise<{
   adjustment: Tables<"finance_project_adjustment">;
-  cashflow: Tables<"single_cash_flow">;
+  cashflow: SingleCashFlow;
 }> {
   const supabase = await createClient();
 
@@ -29,6 +29,19 @@ export async function payoutFinanceAdjustment(
     throw new Error(cashflowError.message);
   }
 
+  const { error: categoriesError } = await supabase
+    .from("single_cash_flow_category")
+    .insert(
+      financeProject.categories.map((c) => ({
+        finance_category_id: c.finance_category.id,
+        single_cash_flow_id: cashflow.id,
+      }))
+    );
+
+  if (categoriesError) {
+    throw new Error(categoriesError.message);
+  }
+
   const { error: adjustmentError } = await supabase
     .from("finance_project_adjustment")
     .update({
@@ -40,5 +53,5 @@ export async function payoutFinanceAdjustment(
     throw new Error(adjustmentError.message);
   }
 
-  return { adjustment, cashflow };
+  return { adjustment, cashflow: { ...cashflow, categories: financeProject.categories } };
 }

@@ -48,7 +48,7 @@ export const showActionSuccessNotification = (
     color: "green",
     autoClose: 3000,
     withBorder: true,
-    position: "top-center",
+    // position: "top-center",
     icon: <IconCheck />,
   });
 };
@@ -63,7 +63,7 @@ export const showActionErrorNotification = (
     color: "red",
     autoClose: 3000,
     withBorder: true,
-    position: "top-center",
+    // position: "top-center",
     icon: <IconX />,
   });
 };
