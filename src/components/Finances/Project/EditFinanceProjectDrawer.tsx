@@ -10,15 +10,17 @@ import CancelButton from "@/components/UI/Buttons/CancelButton";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import { showDeleteConfirmationModal } from "@/utils/notificationFunctions";
-import { OldFinanceProject } from "@/types/finance.types";
+import { FinanceProject } from "@/types/finance.types";
 import FinanceProjectForm from "./FinanceProjectForm";
 import FinanceClientForm from "../FinanceClient/FinanceClientForm";
 import FinanceCategoryForm from "../Category/FinanceCategoryForm";
+import { useDeleteFinanceProjectMutation } from "@/utils/queries/finances/use-finance-project";
+import { Tables } from "@/types/db.types";
 
 interface EditFinanceProjectDrawerProps {
   opened: boolean;
   onClose: () => void;
-  financeProject: OldFinanceProject;
+  financeProject: FinanceProject;
 }
 
 export default function EditFinanceProjectDrawer({
@@ -27,13 +29,13 @@ export default function EditFinanceProjectDrawer({
   financeProject,
 }: EditFinanceProjectDrawerProps) {
   const { locale } = useSettingsStore();
-  const { deleteFinanceProjects } = useFinanceStore();
+  const { mutate: deleteFinanceProjectMutation, isPending: isDeleting } =
+    useDeleteFinanceProjectMutation();
   const [isLoading, setIsLoading] = useState(false);
-  const [clientId, setClientId] = useState<string | null>(
-    financeProject.finance_client_id
-  );
-  const [categoryIds, setCategoryIds] = useState<string[]>(
-    financeProject.categories.map((category) => category.id)
+  const [financeClient, setFinanceClient] =
+    useState<Tables<"finance_client"> | null>(financeProject.finance_client);
+  const [categories, setCategories] = useState<Tables<"finance_category">[]>(
+    financeProject.categories.map((category) => category.finance_category)
   );
 
   const drawerStack = useDrawersStack([
@@ -46,7 +48,9 @@ export default function EditFinanceProjectDrawer({
   useEffect(() => {
     if (opened) {
       drawerStack.open("edit-finance-project");
-      setCategoryIds(financeProject.categories.map((category) => category.id));
+      setCategories(
+        financeProject.categories.map((category) => category.finance_category)
+      );
     } else {
       drawerStack.closeAll();
     }
@@ -59,11 +63,8 @@ export default function EditFinanceProjectDrawer({
       locale === "de-DE"
         ? "Bist du dir sicher, dass du dieses Finanzprojekt löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden."
         : "Are you sure you want to delete this finance project? This action cannot be undone.",
-      async () => {
-        const success = await deleteFinanceProjects([financeProject.id]);
-        if (success) {
-          drawerStack.close("delete-finance-project");
-        }
+      () => {
+        deleteFinanceProjectMutation([financeProject.id]);
       },
       locale
     );
@@ -99,12 +100,12 @@ export default function EditFinanceProjectDrawer({
         <FinanceProjectForm
           onClose={onClose}
           financeProject={financeProject}
-          clientId={clientId}
-          categoryIds={categoryIds}
+          financeClient={financeClient}
+          categories={categories}
           onOpenClientForm={() => drawerStack.open("client-form")}
           onOpenCategoryForm={() => drawerStack.open("category-form")}
-          onClientChange={setClientId}
-          onCategoryChange={setCategoryIds}
+          onClientChange={setFinanceClient}
+          onCategoryChange={setCategories}
         />
       </Drawer>
       <Drawer
@@ -150,7 +151,7 @@ export default function EditFinanceProjectDrawer({
       >
         <FinanceClientForm
           onClose={() => drawerStack.close("client-form")}
-          onSuccess={(client) => setClientId(client.id)}
+          onSuccess={(client) => setFinanceClient(client)}
         />
       </Drawer>
       <Drawer
@@ -161,7 +162,7 @@ export default function EditFinanceProjectDrawer({
         <FinanceCategoryForm
           onClose={() => drawerStack.close("category-form")}
           onSuccess={(category) =>
-            setCategoryIds((prev) => [...prev, category.id])
+            setCategories((prev) => [...prev, category])
           }
         />
       </Drawer>

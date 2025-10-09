@@ -33,12 +33,22 @@ export interface UpdateRecurringCashFlow
   categories: { finance_category: Tables<"finance_category"> }[];
 }
 
-
-export type FinanceProject = Tables<"finance_project"> & {
+export interface FinanceProject extends Tables<"finance_project"> {
   adjustments: Tables<"finance_project_adjustment">[];
   finance_client: Tables<"finance_client"> | null;
   categories: { finance_category: Tables<"finance_category"> }[];
-};
+}
+
+export interface UpdateFinanceProject extends TablesUpdate<"finance_project"> {
+  categories: { finance_category: Tables<"finance_category"> }[];
+  finance_client: Tables<"finance_client"> | null;
+  adjustments: Tables<"finance_project_adjustment">[];
+}
+
+export interface InsertFinanceProject extends TablesInsert<"finance_project"> {
+  categories: { finance_category: Tables<"finance_category"> }[];
+  client: Tables<"finance_client"> | null;
+}
 
 export enum DeleteRecurringCashFlowMode {
   delete_all = "delete_all",

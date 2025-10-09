@@ -45,6 +45,7 @@ import {
   showActionErrorNotification,
 } from "@/utils/notificationFunctions";
 import { TimerProject } from "@/types/work.types";
+import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
 
 export default function WorkPage() {
   const [oldActiveProjectId, setOldActiveProjectId] = useState<string | null>(
@@ -62,7 +63,8 @@ export default function WorkPage() {
     setActiveProjectId,
     payoutWorkSessions,
   } = useWorkStore();
-  const { sessionPayout, financeCategories } = useFinanceStore();
+  const { sessionPayout } = useFinanceStore();
+  const { data: financeCategories = [] } = useFinanceCategoriesQuery();
   const { locale, getLocalizedText } = useSettingsStore();
 
   // Use memo to get the active project

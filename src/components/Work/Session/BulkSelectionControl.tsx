@@ -1,6 +1,6 @@
 "use client";
 
-import { useFinanceStore } from "@/stores/financeStore";
+import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
@@ -75,7 +75,7 @@ export default function SessionFilter({
   onClearAllFilters,
 }: SessionFilterProps) {
   const { locale } = useSettingsStore();
-  const { financeCategories } = useFinanceStore();
+  const { data: financeCategories = [] } = useFinanceCategoriesQuery();
 
   // Toggle between selecting all sessions or none
   const handleSelectAll = () => {

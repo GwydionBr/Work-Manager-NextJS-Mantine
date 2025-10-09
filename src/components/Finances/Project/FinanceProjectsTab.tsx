@@ -2,8 +2,11 @@
 
 import { useCallback, useMemo, useState, useEffect } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFinanceProjectQuery } from "@/utils/queries/finances/use-finance-project";
+import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
+import { useDeleteFinanceProjectMutation } from "@/utils/queries/finances/use-finance-project";
+import { useFinanceClientQuery } from "@/utils/queries/finances/use-finance-client";
 
 import {
   ActionIcon,
@@ -36,35 +39,27 @@ import { formatDate, formatMoney } from "@/utils/formatFunctions";
 import { isToday } from "date-fns";
 import {
   FinanceNavbarItems,
-  OldFinanceProject,
+  FinanceProject,
   FinanceProjectNavbarTab,
 } from "@/types/finance.types";
-import {
-  showActionSuccessNotification,
-  showActionErrorNotification,
-  showDeleteConfirmationModal,
-} from "@/utils/notificationFunctions";
+import { showDeleteConfirmationModal } from "@/utils/notificationFunctions";
 import EditFinanceProjectDrawer from "./EditFinanceProjectDrawer";
 import FinancesNavbar from "../FinancesNavbar";
 import { SettingsTab } from "@/components/Settings/SettingsModal";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
-import { useFinanceProjectQuery } from "@/utils/queries/finances/use-finance-project";
-import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
 
 export default function FinanceProjectTab() {
-  const { deleteFinanceProjects, financeClients } = useFinanceStore();
+  const { mutate: deleteFinanceProjectMutation, isPending: isDeleting } =
+    useDeleteFinanceProjectMutation(() => {
+      setSelectedFinanceProjects([]);
+      closeSelectedMode();
+    });
+
+  const { data: financeClients = [] } = useFinanceClientQuery();
   const { data: financeProjects = [], isPending } = useFinanceProjectQuery();
-  const {
-    data: financeCategories = [],
-    isPending: isFinanceCategoriesPending,
-  } = useFinanceCategoriesQuery();
-  const {
-    locale,
-    showChangeCurrencyWindow,
-    setIsModalOpen,
-    setSelectedTab,
-    getLocalizedText,
-  } = useSettingsStore();
+  const { data: financeCategories = [] } = useFinanceCategoriesQuery();
+  const { locale, setIsModalOpen, setSelectedTab, getLocalizedText } =
+    useSettingsStore();
 
   // Bulk selection
   const [
@@ -89,9 +84,7 @@ export default function FinanceProjectTab() {
     editProjectModalOpened,
     { close: closeEditProjectModal, toggle: toggleEditProjectModal },
   ] = useDisclosure(false);
-  const [editProject, setEditProject] = useState<OldFinanceProject | null>(
-    null
-  );
+  const [editProject, setEditProject] = useState<FinanceProject | null>(null);
 
   // Tab
   const [tab, setTab] = useState<FinanceProjectNavbarTab>(
@@ -107,11 +100,11 @@ export default function FinanceProjectTab() {
           financeClients.find(
             (client) => client.id === project.finance_client_id
           ) || null,
-        categories: financeCategories.filter((category) =>
-          categories
-            .map((category) => category.finance_category.id)
-            .includes(category.id)
-        ),
+        categories: financeCategories
+          .filter((category) =>
+            categories.map((c) => c.finance_category.id).includes(category.id)
+          )
+          .map((category) => ({ finance_category: category })),
       };
     });
   }, [financeProjects, financeClients, financeCategories]);
@@ -318,26 +311,8 @@ export default function FinanceProjectTab() {
             "Sind Sie sicher, dass Sie diese Finanzprojekte löschen möchten?",
             "Are you sure you want to delete these finance projects?"
           ),
-      async () => {
-        const deleted = await deleteFinanceProjects(ids);
-        if (deleted) {
-          setSelectedFinanceProjects([]);
-          showActionSuccessNotification(
-            getLocalizedText(
-              "Finanzprojekt erfolgreich gelöscht",
-              "Finance project deleted successfully"
-            ),
-            locale
-          );
-        } else {
-          showActionErrorNotification(
-            getLocalizedText(
-              "Finanzprojekt konnte nicht gelöscht werden",
-              "Finance project could not be deleted"
-            ),
-            locale
-          );
-        }
+      () => {
+        deleteFinanceProjectMutation(ids);
       },
       locale
     );

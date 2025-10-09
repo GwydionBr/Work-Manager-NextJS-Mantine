@@ -9,6 +9,7 @@ import {
 } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useFinanceStore } from "@/stores/financeStore";
+import { useUpdateFinanceProjectMutation } from "@/utils/queries/finances/use-finance-project";
 
 import {
   Card,
@@ -26,7 +27,7 @@ import {
   Popover,
 } from "@mantine/core";
 
-import { OldFinanceProject } from "@/types/finance.types";
+import { FinanceProject } from "@/types/finance.types";
 import { formatMoney } from "@/utils/formatFunctions";
 import FinanceAdjustmentForm from "./FinanceAdjustment/FinanceAdjustmentForm";
 import FinanceAdjustmentRow from "./FinanceAdjustment/FinanceAdjustmentRow";
@@ -46,13 +47,13 @@ import { Tables } from "@/types/db.types";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
 
 interface FinanceProjectCardProps extends CardProps {
-  project: OldFinanceProject;
+  project: FinanceProject;
   selectedModeActive: boolean;
   isSelected: boolean;
   editProjectModalOpened: boolean;
   onToggleSelected: (e: React.MouseEvent<HTMLButtonElement>) => void;
   onDelete: () => void;
-  setEditProject: (project: OldFinanceProject) => void;
+  setEditProject: (project: FinanceProject) => void;
   onOpenEditProject: () => void;
 }
 
@@ -68,11 +69,10 @@ export default function FinanceProjectCard({
   ...props
 }: FinanceProjectCardProps) {
   const { locale, getLocalizedText } = useSettingsStore();
-  const {
-    updateFinanceProject,
-    financeProjectAdjustmentPayout,
-    financeProjectPayout,
-  } = useFinanceStore();
+  const { mutate: updateFinanceProjectMutation, isPending: isUpdating } =
+    useUpdateFinanceProjectMutation();
+  const { financeProjectAdjustmentPayout, financeProjectPayout } =
+    useFinanceStore();
   const [isEditing, { open: openEditing, close: closeEditing }] =
     useDisclosure(false);
   const { hovered, ref: hoverRef } = useHover();
@@ -131,9 +131,11 @@ export default function FinanceProjectCard({
   ) => {
     closeBadgePopover();
     if (updatedCategories) {
-      updateFinanceProject({
+      updateFinanceProjectMutation({
         ...project,
-        categories: updatedCategories,
+        categories: updatedCategories.map((category) => ({
+          finance_category: category,
+        })),
       });
     }
   };
@@ -156,7 +158,7 @@ export default function FinanceProjectCard({
       if (adjustment) {
         financeProjectAdjustmentPayout(
           adjustment,
-          project.categories.map((category) => category.id),
+          project.categories.map((category) => category.finance_category.id),
           `${adjustment.description} (${getLocalizedText("für das Finanz Projekt:", "for the Finance Project:")} ${project.title})`
         );
       }
@@ -243,7 +245,9 @@ export default function FinanceProjectCard({
               <FinanceClientBadge client={project.finance_client} />
             )}
             <FinanceCategoryBadges
-              categories={project.categories}
+              categories={project.categories.map(
+                (category) => category.finance_category
+              )}
               onPopoverOpen={openBadgePopover}
               onPopoverClose={handleCategoryClose}
               showAddCategory={hovered || isEditing}

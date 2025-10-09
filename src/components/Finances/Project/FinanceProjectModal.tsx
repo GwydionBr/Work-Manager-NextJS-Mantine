@@ -12,6 +12,7 @@ import {
   IconMoneybagPlus,
   IconUserPlus,
 } from "@tabler/icons-react";
+import { Tables } from "@/types/db.types";
 
 interface FinanceProjectFormModalProps {
   opened: boolean;
@@ -22,8 +23,8 @@ export default function FinanceProjectFormModal({
   opened,
   onClose,
 }: FinanceProjectFormModalProps) {
-  const [clientId, setClientId] = useState<string | null>(null);
-  const [categoryIds, setCategoryIds] = useState<string[]>([]);
+  const [financeClient, setFinanceClient] = useState<Tables<"finance_client"> | null>(null);
+  const [categories, setCategories] = useState<Tables<"finance_category">[]>([]);
   const stack = useModalsStack([
     "project-form",
     "client-form",
@@ -59,12 +60,12 @@ export default function FinanceProjectFormModal({
       >
         <FinanceProjectForm
           onClose={onClose}
-          clientId={clientId}
-          categoryIds={categoryIds}
+          financeClient={financeClient}
+          categories={categories}
           onOpenClientForm={() => stack.open("client-form")}
           onOpenCategoryForm={() => stack.open("category-form")}
-          onClientChange={setClientId}
-          onCategoryChange={setCategoryIds}
+          onClientChange={setFinanceClient}
+          onCategoryChange={setCategories}
         />
       </Modal>
       <Modal
@@ -81,7 +82,7 @@ export default function FinanceProjectFormModal({
       >
         <FinanceClientForm
           onClose={() => stack.close("client-form")}
-          onSuccess={(client) => setClientId(client.id)}
+          onSuccess={(client) => setFinanceClient(client)}
         />
       </Modal>
       <Modal
@@ -103,7 +104,7 @@ export default function FinanceProjectFormModal({
         <FinanceCategoryForm
           onClose={() => stack.close("category-form")}
           onSuccess={(category) =>
-            setCategoryIds((prev) => [...prev, category.id])
+            setCategories((prev) => [...prev, category])
           }
         />
       </Modal>

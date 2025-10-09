@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Stack, Group, ThemeIcon, Skeleton } from "@mantine/core";
@@ -18,16 +17,17 @@ import {
   IconMoneybag,
 } from "@tabler/icons-react";
 import { useWorkStore } from "@/stores/workManagerStore";
+import { useSingleCashflowQuery } from "@/utils/queries/finances/use-single-cashflow";
 import { Payout } from "@/types/finance.types";
 
 export default function PayoutTab() {
   const { setIsModalOpen, setSelectedTab, getLocalizedText } =
     useSettingsStore();
-  const {
-    singleCashFlows,
-    isFetching: isFinanceFetching,
-    payouts,
-  } = useFinanceStore();
+
+  // TODO: Add payouts
+  const payouts: Payout[] = [];
+  const { data: singleCashFlows = [], isPending: isSingleCashFlowsPending } =
+    useSingleCashflowQuery();
   const {
     projects,
     timerSessions,
@@ -45,9 +45,8 @@ export default function PayoutTab() {
           null)
         : null,
       timer_project: payout.timer_project_id
-        ? (projects.find(
-            (project) => project.id === payout.timer_project_id
-          ) ?? null)
+        ? (projects.find((project) => project.id === payout.timer_project_id) ??
+          null)
         : null,
       timer_sessions:
         timerSessions
@@ -151,7 +150,7 @@ export default function PayoutTab() {
         navbarItems={navbarItems}
       />
       <Stack w="100%" mb="xl" ml={230}>
-        {isFinanceFetching || isWorkFetching
+        {isSingleCashFlowsPending || isWorkFetching
           ? Array.from({ length: 3 }, (_, i) => (
               <Skeleton height={200} w="100%" key={i} radius="md" />
             ))

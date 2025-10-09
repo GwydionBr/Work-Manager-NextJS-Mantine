@@ -1,10 +1,10 @@
 "use client";
 
 import { useHover } from "@mantine/hooks";
-import { useFinanceStore } from "@/stores/financeStore";
+import { useFinanceClientQuery } from "@/utils/queries/finances/use-finance-client";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Group, Text, ThemeIcon, Card, Transition, Paper } from "@mantine/core";
+import { Group, Text, ThemeIcon, Card, Transition } from "@mantine/core";
 import {
   IconArrowRight,
   IconMinus,
@@ -19,11 +19,11 @@ import { Currency } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
 import FinanceClientBadge from "../../FinanceClient/FinanceClientBadge";
-import { OldFinanceProject } from "@/types/finance.types";
+import { FinanceProject } from "@/types/finance.types";
 
 interface FinanceAdjustmentRowProps {
   adultClientId: string | null;
-  financeProject?: OldFinanceProject;
+  financeProject?: FinanceProject;
   adjustment?: Tables<"finance_project_adjustment">;
   currency: Currency;
   handlePayout: (id?: string, isStartValue?: boolean) => void;
@@ -37,7 +37,7 @@ export default function FinanceAdjustmentRow({
   handlePayout,
 }: FinanceAdjustmentRowProps) {
   const { locale, getLocalizedText } = useSettingsStore();
-  const { financeClients } = useFinanceStore();
+  const { data: financeClients = [] } = useFinanceClientQuery();
 
   const { hovered, ref } = useHover();
 

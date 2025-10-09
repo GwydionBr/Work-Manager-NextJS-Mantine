@@ -1,29 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useForm } from "@mantine/form";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useFinanceStore } from "@/stores/financeStore";
 
-import {
-  Button,
-  Group,
-  NumberInput,
-  Popover,
-  Select,
-  Text,
-} from "@mantine/core";
+import { Group, NumberInput } from "@mantine/core";
 import { TextInput } from "@mantine/core";
-import { IconTag, IconTagPlus, IconUserPlus } from "@tabler/icons-react";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
-import DelayedTooltip from "@/components/UI/DelayedTooltip";
 
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
-import {
-  showActionErrorNotification,
-  showActionSuccessNotification,
-} from "@/utils/notificationFunctions";
+import { useCreateFinanceAdjustmentMutation } from "@/utils/queries/finances/use-finance-adjustment";
+import { useFinanceClientQuery } from "@/utils/queries/finances/use-finance-client";
+import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
 
 const schema = z.object({
   amount: z.number(),
@@ -44,10 +33,11 @@ export default function FinanceAdjustmentForm({
   onDropdownClose,
   projectId,
 }: FinanceAdjustmentFormProps) {
-  const { locale, getLocalizedText } = useSettingsStore();
-  const { financeClients, addFinanceAdjustment, financeCategories } =
-    useFinanceStore();
-  const [isLoading, setIsLoading] = useState(false);
+  const { getLocalizedText } = useSettingsStore();
+  const { mutate: addFinanceAdjustment, isPending: isAdding } =
+    useCreateFinanceAdjustmentMutation(() => handleClose());
+  const { data: financeClients = [] } = useFinanceClientQuery();
+  const { data: financeCategories = [] } = useFinanceCategoriesQuery();
   const form = useForm({
     initialValues: {
       amount: "",
@@ -63,33 +53,13 @@ export default function FinanceAdjustmentForm({
     finance_client_id: string;
     finance_category_id: string;
   }) => {
-    setIsLoading(true);
-    const response = await addFinanceAdjustment({
+    addFinanceAdjustment({
       ...values,
       amount: parseFloat(values.amount === "" ? "0" : values.amount),
       finance_client_id: values.finance_client_id || null,
       finance_category_id: values.finance_category_id || null,
       finance_project_id: projectId,
     });
-    if (response) {
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Anpassung erfolgreich erstellt",
-          "Adjustment created successfully"
-        ),
-        locale
-      );
-      handleClose();
-    } else {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Anpassung konnte nicht erstellt werden",
-          "Adjustment could not be created"
-        ),
-        locale
-      );
-    }
-    setIsLoading(false);
   };
 
   const handleClose = () => {
@@ -191,7 +161,7 @@ export default function FinanceAdjustmentForm({
           mt={25}
           type="submit"
           onClick={form.onSubmit(handleSubmit)}
-          loading={isLoading}
+          loading={isAdding}
         />
       </Group>
     </form>

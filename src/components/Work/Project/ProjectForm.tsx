@@ -4,7 +4,7 @@ import { useForm } from "@mantine/form";
 
 import { useEffect, useState, useMemo } from "react";
 import { useDisclosure, useClickOutside } from "@mantine/hooks";
-import { useFinanceStore } from "@/stores/financeStore";
+import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -93,8 +93,10 @@ export default function ProjectForm({
     defaultProjectHourlyPayment,
     getLocalizedText,
   } = useSettingsStore();
-  const { financeCategories, isFetching: isFetchingFinanceCategories } =
-    useFinanceStore();
+  const {
+    data: financeCategories = [],
+    isPending: isFetchingFinanceCategories,
+  } = useFinanceCategoriesQuery();
 
   const { addProject, updateProject } = useWorkStore();
   const {

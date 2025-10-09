@@ -22,12 +22,15 @@ import { Currency } from "@/types/settings.types";
 import LocaleDatePickerInput from "@/components/UI/Locale/LocaleDatePickerInput";
 import { IconPlus } from "@tabler/icons-react";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
-import { OldFinanceProject } from "@/types/finance.types";
-import {
-  showActionErrorNotification,
-  showActionSuccessNotification,
-} from "@/utils/notificationFunctions";
+import { FinanceProject } from "@/types/finance.types";
 import UpdateButton from "@/components/UI/Buttons/UpdateButton";
+import {
+  useCreateFinanceProjectMutation,
+  useUpdateFinanceProjectMutation,
+} from "@/utils/queries/finances/use-finance-project";
+import { useFinanceClientQuery } from "@/utils/queries/finances/use-finance-client";
+import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
+import { Tables } from "@/types/db.types";
 
 const projectSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -42,20 +45,20 @@ const projectSchema = z.object({
 
 interface FinanceProjectFormProps {
   onClose: () => void;
-  financeProject?: OldFinanceProject;
-  clientId: string | null;
-  categoryIds: string[];
+  financeProject?: FinanceProject;
+  financeClient: Tables<"finance_client"> | null;
+  categories: Tables<"finance_category">[];
   onOpenClientForm: () => void;
   onOpenCategoryForm: () => void;
-  onClientChange: (value: string | null) => void;
-  onCategoryChange: (value: string[]) => void;
+  onClientChange: (value: Tables<"finance_client"> | null) => void;
+  onCategoryChange: (value: Tables<"finance_category">[]) => void;
 }
 
 export default function FinanceProjectForm({
   onClose,
   financeProject,
-  clientId,
-  categoryIds,
+  financeClient,
+  categories,
   onOpenClientForm,
   onOpenCategoryForm,
   onClientChange,
@@ -63,12 +66,15 @@ export default function FinanceProjectForm({
 }: FinanceProjectFormProps) {
   const { locale, defaultFinanceCurrency } = useSettingsStore();
   const {
-    addFinanceProject,
-    financeCategories,
-    financeClients,
-    updateFinanceProject,
-  } = useFinanceStore();
-  const [isLoading, setIsLoading] = useState(false);
+    mutate: addFinanceProjectMutation,
+    isPending: isAddingFinanceProject,
+  } = useCreateFinanceProjectMutation(() => handleClose());
+  const {
+    mutate: updateFinanceProjectMutation,
+    isPending: isUpdatingFinanceProject,
+  } = useUpdateFinanceProjectMutation(() => handleClose());
+  const { data: financeCategories = [] } = useFinanceCategoriesQuery();
+  const { data: financeClients = [] } = useFinanceClientQuery();
   const form = useForm<z.infer<typeof projectSchema>>({
     initialValues: financeProject
       ? {
@@ -76,7 +82,7 @@ export default function FinanceProjectForm({
           currency: financeProject.currency,
           start_amount: financeProject.start_amount,
           finance_category_ids: financeProject.categories.map(
-            (category) => category.id
+            (category) => category.finance_category.id
           ),
           finance_client_id: financeProject.finance_client_id,
           due_date: financeProject.due_date || undefined,
@@ -93,76 +99,54 @@ export default function FinanceProjectForm({
   });
 
   useEffect(() => {
-    if (clientId) {
-      form.setFieldValue("finance_client_id", clientId);
+    if (financeClient) {
+      form.setFieldValue("finance_client_id", financeClient.id);
     }
-    if (categoryIds) {
-      form.setFieldValue("finance_category_ids", categoryIds);
+    if (categories) {
+      form.setFieldValue(
+        "finance_category_ids",
+        categories.map((c) => c.id)
+      );
     }
-  }, [clientId, categoryIds]);
+  }, [financeClient, categories]);
 
   const handleSubmit = async (values: z.infer<typeof projectSchema>) => {
-    setIsLoading(true);
     if (financeProject) {
-      const newProject = {
+      const updateProject = {
         ...financeProject,
         title: values.title,
         currency: values.currency,
         start_amount: values.start_amount,
         due_date: values.due_date || null,
         finance_client_id: values.finance_client_id,
-        categories: financeCategories.filter((c) =>
-          values.finance_category_ids.includes(c.id)
-        ),
+        categories: financeCategories
+          .filter((c) => values.finance_category_ids.includes(c.id))
+          .map((c) => ({
+            finance_category: c,
+          })),
+        finance_client:
+          financeClients.find((c) => c.id === values.finance_client_id) || null,
       };
-      console.log(newProject);
-      const success = await updateFinanceProject(newProject);
-      if (success) {
-        showActionSuccessNotification(
-          locale === "de-DE"
-            ? "Projekt erfolgreich bearbeitet"
-            : "Project successfully updated",
-          locale
-        );
-        handleClose();
-      } else {
-        showActionErrorNotification(
-          locale === "de-DE"
-            ? "Projekt konnte nicht bearbeitet werden"
-            : "Project could not be updated",
-          locale
-        );
-      }
+      updateFinanceProjectMutation(updateProject);
     } else {
-      const success = await addFinanceProject(
-        {
-          title: values.title,
-          currency: values.currency,
-          start_amount: values.start_amount,
-          due_date: values.due_date || null,
-          finance_client_id: values.finance_client_id,
-        },
-        values.finance_category_ids
-      );
-      if (success) {
-        showActionSuccessNotification(
-          locale === "de-DE"
-            ? "Projekt erfolgreich erstellt"
-            : "Project successfully created",
-          locale
-        );
-        handleClose();
-      } else {
-        showActionErrorNotification(
-          locale === "de-DE"
-            ? "Projekt konnte nicht erstellt werden"
-            : "Project could not be created",
-          locale
-        );
-      }
+      const insertProject = {
+        title: values.title,
+        currency: values.currency,
+        start_amount: values.start_amount,
+        due_date: values.due_date || null,
+        finance_client_id: values.finance_client_id,
+        client:
+          financeClients.find((c) => c.id === values.finance_client_id) || null,
+        categories: financeCategories
+          .filter((c) => values.finance_category_ids.includes(c.id))
+          .map((c) => ({
+            finance_category: c,
+          })),
+      };
+      addFinanceProjectMutation(insertProject);
     }
-    setIsLoading(false);
   };
+
   function handleClose() {
     onClose();
     form.reset();
@@ -179,12 +163,12 @@ export default function FinanceProjectForm({
 
   const handleClientChange = (value: string | null) => {
     form.setFieldValue("finance_client_id", value);
-    onClientChange(value);
+    onClientChange(financeClients.find((c) => c.id === value) || null);
   };
 
   const handleCategoryChange = (value: string[]) => {
     form.setFieldValue("finance_category_ids", value);
-    onCategoryChange(value);
+    onCategoryChange(financeCategories.filter((c) => value.includes(c.id)));
   };
 
   return (
@@ -295,13 +279,13 @@ export default function FinanceProjectForm({
             <UpdateButton
               type="submit"
               onClick={form.onSubmit(handleSubmit)}
-              loading={isLoading}
+              loading={isUpdatingFinanceProject}
             />
           ) : (
             <CreateButton
               type="submit"
               onClick={form.onSubmit(handleSubmit)}
-              loading={isLoading}
+              loading={isAddingFinanceProject}
             />
           )}
           <CancelButton

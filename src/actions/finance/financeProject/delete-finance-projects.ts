@@ -1,11 +1,10 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { SimpleResponse } from "@/types/action.types";
 
 export async function deleteFinanceProjects(
   ids: string[]
-): Promise<SimpleResponse> {
+): Promise<boolean> {
   const supabase = await createClient();
   const { error } = await supabase
     .from("finance_project")
@@ -13,8 +12,8 @@ export async function deleteFinanceProjects(
     .in("id", ids);
 
   if (error) {
-    return { success: false, data: null, error: error.message };
+    throw new Error(error.message);
   }
 
-  return { success: true, data: null, error: null };
+  return true;
 }

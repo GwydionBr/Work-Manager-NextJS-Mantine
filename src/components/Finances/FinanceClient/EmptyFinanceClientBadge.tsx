@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useDisclosure, useHover } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useFinanceStore } from "@/stores/financeStore";
+import { useFinanceClientQuery } from "@/utils/queries/finances/use-finance-client";
 
 import {
   Badge,
@@ -40,7 +40,7 @@ export default function EmptyFinanceClientBadge({
     useDisclosure(false);
   const [selectedClient, setSelectedClient] =
     useState<Tables<"finance_client"> | null>(null);
-  const { financeClients } = useFinanceStore();
+  const { data: financeClients = [] } = useFinanceClientQuery();
 
   const handlePopoverClose = () => {
     closeClientForm();

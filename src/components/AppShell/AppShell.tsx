@@ -9,7 +9,6 @@ import { usePathname } from "next/navigation";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useGroupStore } from "@/stores/groupStore";
 import { useUserStore } from "@/stores/userStore";
-import { useFinanceStore } from "@/stores/financeStore";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useTaskStore } from "@/stores/taskStore";
 import { useCalendarStore } from "@/stores/calendarStore";
@@ -27,7 +26,6 @@ import InitializeProfile from "@/components/Account/InitializeProfile";
 
 enum FetchPriority {
   Settings = "settings",
-  Finance = "finance",
   Tasks = "tasks",
   Work = "work",
   Group = "group",
@@ -51,8 +49,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     profile,
     abortFetch: abortUserFetch,
   } = useUserStore();
-  const { fetchIfStale: fetchFinanceIfStale, abortFetch: abortFinanceFetch } =
-    useFinanceStore();
   const { fetchIfStale: fetchCalendarIfStale, abortFetch: abortCalendarFetch } =
     useCalendarStore();
   const {
@@ -134,10 +130,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       fetchUserIfStale(interval);
       fetchSettingsIfStale(interval);
 
-      if (pathname.startsWith("/finances")) {
-        priorityFetch = FetchPriority.Finance;
-        await fetchFinanceIfStale(interval);
-      } else if (pathname.startsWith("/tasks")) {
+      if (pathname.startsWith("/tasks")) {
         priorityFetch = FetchPriority.Tasks;
         await fetchTaskIfStale(interval);
       } else if (pathname.startsWith("/workCalendar")) {
@@ -154,10 +147,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       }
 
       // Background fetching for other data (best-effort)
-      if (priorityFetch !== FetchPriority.Finance) {
-        console.log("fetching finance background");
-        fetchFinanceIfStale(interval);
-      }
       if (
         priorityFetch !== FetchPriority.Work &&
         priorityFetch !== FetchPriority.Calendar
@@ -176,7 +165,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     if (isHome || isAuth) return;
 
     // Abort any ongoing fetches when route changes
-    abortFinanceFetch();
     abortWorkFetch();
     abortTaskFetch();
     abortUserFetch();
