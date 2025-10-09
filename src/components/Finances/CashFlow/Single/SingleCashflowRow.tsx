@@ -66,7 +66,7 @@ export default function SingleCashflowRow({
     closeCategoryPopover();
     if (updatedCategories) {
       updateSingleCashFlowMutation({
-        cashflow: {
+        singleCashFlow: {
           ...cashflow,
           categories: updatedCategories.map((c) => ({
             finance_category: c,

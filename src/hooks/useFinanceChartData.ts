@@ -1,5 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
-import { useFinanceStore } from "@/stores/financeStore";
+import { useMemo, useCallback } from "react";
 import { FinanceInterval } from "@/types/settings.types";
 import {
   dateToISOString,
@@ -14,6 +13,7 @@ import {
   addYearsToDate,
   isDateInInterval,
 } from "@/utils/financeChartHelperFunctions";
+import { useSingleCashflowQuery } from "@/utils/queries/finances/use-single-cashflow";
 
 /**
  * Represents a single data point in the chart
@@ -66,82 +66,10 @@ export function useFinanceChartData(
   interval: FinanceInterval,
   dateRange: DateRange
 ) {
-  // Data and loading state
-  const [chartData, setChartData] = useState<FinanceChartData[]>([]);
-
   // Get data from stores
-  const { singleCashFlows } = useFinanceStore();
+  const { data: singleCashFlows = [] } = useSingleCashflowQuery();
 
-  /**
-   * Calculate comprehensive statistics from chart data
-   * Uses a single iteration for better performance
-   */
-  const stats = useMemo((): ChartStats => {
-    // Return default values if no data available
-    if (chartData.length === 0) {
-      return {
-        totalIncome: 0,
-        totalExpense: 0,
-        netAmount: 0,
-        averageIncome: 0,
-        averageExpense: 0,
-        bestMonth: "",
-        worstMonth: "",
-        totalPeriods: 0,
-        profitMargin: 0,
-      };
-    }
-
-    try {
-      // Single iteration to calculate all stats at once for better performance
-      const totals = chartData.reduce(
-        (acc, item) => ({
-          income: acc.income + item.income,
-          expense: acc.expense + item.expense,
-          best: item.net > acc.best.net ? item : acc.best,
-          worst: item.net < acc.worst.net ? item : acc.worst,
-        }),
-        {
-          income: 0,
-          expense: 0,
-          best: chartData[0],
-          worst: chartData[0],
-        }
-      );
-
-      // Calculate derived statistics
-      const netAmount = totals.income - totals.expense;
-      const averageIncome = totals.income / chartData.length;
-      const averageExpense = totals.expense / chartData.length;
-      const profitMargin =
-        totals.income > 0 ? (netAmount / totals.income) * 100 : 0;
-
-      return {
-        totalIncome: totals.income,
-        totalExpense: totals.expense,
-        netAmount,
-        averageIncome,
-        averageExpense,
-        bestMonth: totals.best.date,
-        worstMonth: totals.worst.date,
-        totalPeriods: chartData.length,
-        profitMargin,
-      };
-    } catch (error) {
-      console.error("Error calculating financial stats:", error);
-      return {
-        totalIncome: 0,
-        totalExpense: 0,
-        netAmount: 0,
-        averageIncome: 0,
-        averageExpense: 0,
-        bestMonth: "",
-        worstMonth: "",
-        totalPeriods: 0,
-        profitMargin: 0,
-      };
-    }
-  }, [chartData]);
+  // stats will be computed after chartData is defined
 
   /**
    * Create a stable key for useEffect dependencies
@@ -314,17 +242,84 @@ export function useFinanceChartData(
    * Fetch and process chart data when dependencies change
    * Handles loading states and error handling
    */
-  useEffect(() => {
+  const chartData: FinanceChartData[] = useMemo(() => {
     const rawChartData = getChartData(interval);
-
-    // Add net calculation to chart data
-    const enhancedChartData = rawChartData.map((item) => ({
+    return rawChartData.map((item) => ({
       ...item,
       net: item.income - item.expense,
     }));
-
-    setChartData(enhancedChartData);
   }, [chartDataKey, getChartData, interval]);
+
+  /**
+   * Calculate comprehensive statistics from chart data
+   * Uses a single iteration for better performance
+   */
+  const stats = useMemo((): ChartStats => {
+    // Return default values if no data available
+    if (chartData.length === 0) {
+      return {
+        totalIncome: 0,
+        totalExpense: 0,
+        netAmount: 0,
+        averageIncome: 0,
+        averageExpense: 0,
+        bestMonth: "",
+        worstMonth: "",
+        totalPeriods: 0,
+        profitMargin: 0,
+      };
+    }
+
+    try {
+      // Single iteration to calculate all stats at once for better performance
+      const totals = chartData.reduce(
+        (acc, item) => ({
+          income: acc.income + item.income,
+          expense: acc.expense + item.expense,
+          best: item.net > acc.best.net ? item : acc.best,
+          worst: item.net < acc.worst.net ? item : acc.worst,
+        }),
+        {
+          income: 0,
+          expense: 0,
+          best: chartData[0],
+          worst: chartData[0],
+        }
+      );
+
+      // Calculate derived statistics
+      const netAmount = totals.income - totals.expense;
+      const averageIncome = totals.income / chartData.length;
+      const averageExpense = totals.expense / chartData.length;
+      const profitMargin =
+        totals.income > 0 ? (netAmount / totals.income) * 100 : 0;
+
+      return {
+        totalIncome: totals.income,
+        totalExpense: totals.expense,
+        netAmount,
+        averageIncome,
+        averageExpense,
+        bestMonth: totals.best.date,
+        worstMonth: totals.worst.date,
+        totalPeriods: chartData.length,
+        profitMargin,
+      };
+    } catch (error) {
+      console.error("Error calculating financial stats:", error);
+      return {
+        totalIncome: 0,
+        totalExpense: 0,
+        netAmount: 0,
+        averageIncome: 0,
+        averageExpense: 0,
+        bestMonth: "",
+        worstMonth: "",
+        totalPeriods: 0,
+        profitMargin: 0,
+      };
+    }
+  }, [chartData]);
 
   return {
     chartData,

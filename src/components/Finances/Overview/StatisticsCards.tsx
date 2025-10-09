@@ -1,3 +1,5 @@
+"use client";
+
 import { Grid } from "@mantine/core";
 import StatisticCard from "./StatisticCard";
 import { ChartStats } from "@/hooks/useFinanceChartData";

@@ -1,6 +1,7 @@
 "use client";
 
-import { useFinanceStore } from "@/stores/financeStore";
+import { useSingleCashflowQuery } from "@/utils/queries/finances/use-single-cashflow";
+import { useRecurringCashflowQuery } from "@/utils/queries/finances/use-recurring-cashflow";
 
 import { Box } from "@mantine/core";
 import FinanceInitializer from "@/components/Finances/FinanceInitializer";
@@ -10,14 +11,16 @@ export default function FinanceLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isFetching, singleCashFlows, recurringCashFlows, initialized } =
-    useFinanceStore();
+  const { data: singleCashFlows, isPending: isSingleCashFlowsPending } =
+    useSingleCashflowQuery();
+  const { data: recurringCashFlows, isPending: isRecurringCashFlowsPending } =
+    useRecurringCashflowQuery();
 
   if (
-    !isFetching &&
-    singleCashFlows.length === 0 &&
-    recurringCashFlows.length === 0 &&
-    initialized
+    !isSingleCashFlowsPending &&
+    !isRecurringCashFlowsPending &&
+    singleCashFlows?.length === 0 &&
+    recurringCashFlows?.length === 0
   ) {
     return <FinanceInitializer />;
   }

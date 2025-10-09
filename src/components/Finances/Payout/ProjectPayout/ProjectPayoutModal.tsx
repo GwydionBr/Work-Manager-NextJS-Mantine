@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
-import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
@@ -54,7 +53,7 @@ export default function ProjectModalForm({
   });
 
   const { payoutProjectSalary, updateProject } = useWorkStore();
-  const { addExistingSingleCashFlow } = useFinanceStore();
+  // const { addExistingSingleCashFlow } = useFinanceStore();
   const { locale } = useSettingsStore();
 
   async function onSubmit(values: z.infer<typeof schema>) {
