@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
-import { useFinanceStore } from "@/stores/financeStore";
 import { useProjectFiltering } from "@/hooks/useProjectFiltering";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -59,8 +58,13 @@ export default function WorkPage() {
     timerSessions,
     setActiveProjectId,
   } = useWorkStore();
-  const { mutate: payoutHourlyTimerProjectMutation, isPending: isProcessingPayout } =
-    usePayoutHourlyTimerProjectMutation();
+  const {
+    mutate: payoutHourlyTimerProjectMutation,
+    isPending: isProcessingPayout,
+  } = usePayoutHourlyTimerProjectMutation(() => {
+    setSelectedSessions([]);
+    deactivateSelectedMode();
+  });
   const { data: financeCategories = [] } = useFinanceCategoriesQuery();
   const { locale, getLocalizedText } = useSettingsStore();
 

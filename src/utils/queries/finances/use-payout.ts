@@ -150,7 +150,7 @@ export function usePayoutHourlyTimerProjectMutation(
     onSuccess: (data, variables, onMutateResult, context) => {
       context.client.setQueryData(
         ["singleCashFlows"],
-        (old: SingleCashFlow[]) => [data.singleCashFlow, ...old]
+        (old: SingleCashFlow[]) => [data.singleCashFlow, ...old || []]
       );
       context.client.invalidateQueries({ queryKey: ["singleCashFlows"] });
       // TODO: UPDATE TIMER PROJECT
@@ -164,6 +164,8 @@ export function usePayoutHourlyTimerProjectMutation(
       onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
+      console.log(error);
+      console.log(variables);
       showActionErrorNotification(
         getLocalizedText(
           "Projekt konnten nicht ausgezahlt werden",

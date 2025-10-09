@@ -22,13 +22,17 @@ export async function payoutHourlyTimerProject({
 
   const totalAmount = project.sessions
     .filter((session) => sessionIds.includes(session.id))
-    .reduce((acc, session) => acc + session.salary, 0);
+    .reduce(
+      (acc, session) => acc + session.salary * (session.active_seconds / 3600),
+      0
+    )
+    .toFixed(2);
 
   const { data: cashflowData, error: cashFlowError } = await supabase
     .from("single_cash_flow")
     .insert({
       title,
-      amount: totalAmount,
+      amount: Number(totalAmount),
       currency: project.project.currency,
     })
     .select()
@@ -56,7 +60,6 @@ export async function payoutHourlyTimerProject({
     const { error: sessionError } = await supabase
       .from("timer_session")
       .update({
-        paid: true,
         single_cash_flow_id: cashflowData.id,
       })
       .eq("id", sessionId);
