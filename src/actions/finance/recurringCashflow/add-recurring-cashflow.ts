@@ -1,23 +1,30 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { TablesInsert } from "@/types/db.types";
-import { RecurringCashFlow } from "@/types/finance.types";
+import {
+  InsertRecurringCashFlow,
+  RecurringCashFlow,
+  SingleCashFlow,
+} from "@/types/finance.types";
+import { processRecurringCashFlows } from "@/utils/financeHelperFunction";
 
 interface AddRecurringCashFlowProps {
-  cashflow: TablesInsert<"recurring_cash_flow">;
-  categoryIds: string[];
+  cashflow: InsertRecurringCashFlow;
 }
 
 export async function addRecurringCashFlow({
   cashflow,
-  categoryIds,
-}: AddRecurringCashFlowProps): Promise<RecurringCashFlow> {
+}: AddRecurringCashFlowProps): Promise<{
+  recurringCashFlow: RecurringCashFlow;
+  singleCashFlows: SingleCashFlow[];
+}> {
   const supabase = await createClient();
+
+  const { categories, ...cashflowData } = cashflow;
 
   const { data, error } = await supabase
     .from("recurring_cash_flow")
-    .insert({ ...cashflow })
+    .insert({ ...cashflowData })
     .select()
     .single();
 
@@ -28,9 +35,9 @@ export async function addRecurringCashFlow({
   const { error: categoriesError } = await supabase
     .from("recurring_cash_flow_category")
     .insert(
-      categoryIds.map((categoryId) => ({
+      categories.map((category) => ({
         recurring_cash_flow_id: data.id,
-        finance_category_id: categoryId,
+        finance_category_id: category.finance_category.id,
       }))
     )
     .select();
@@ -39,17 +46,53 @@ export async function addRecurringCashFlow({
     throw new Error(categoriesError.message);
   }
 
-  const { data: categories, error: categoriesError2 } = await supabase
-    .from("finance_category")
-    .select("*")
-    .in("id", categoryIds);
+  const { pastAndCurrentFlows } = processRecurringCashFlows(
+    [
+      {
+        ...data,
+        categories,
+      },
+    ],
+    []
+  );
 
-  if (categoriesError2) {
-    throw new Error(categoriesError2.message);
+  const pastAndCurrentFlowsToInsert = pastAndCurrentFlows.map((flow) => {
+    const { categories: _, ...rest } = flow;
+    return rest;
+  });
+
+  const { data: newSingleCashFlowsData, error: newSingleCashFlowsError } =
+    await supabase
+      .from("single_cash_flow")
+      .insert(pastAndCurrentFlowsToInsert)
+      .select("*");
+
+  if (newSingleCashFlowsError) {
+    throw new Error(newSingleCashFlowsError.message);
+  }
+  const { error: newSingleCashFlowsCategoriesError } = await supabase
+    .from("single_cash_flow_category")
+    .insert(
+      newSingleCashFlowsData.flatMap((flow) =>
+        categories.map((category) => ({
+          single_cash_flow_id: flow.id,
+          finance_category_id: category.finance_category.id,
+        }))
+      )
+    );
+
+  if (newSingleCashFlowsCategoriesError) {
+    throw new Error(newSingleCashFlowsCategoriesError.message);
   }
 
   return {
-    ...data,
-    categories: categories.map((category) => ({ finance_category: category })),
+    recurringCashFlow: {
+      ...data,
+      categories,
+    },
+    singleCashFlows: newSingleCashFlowsData.map((flow) => ({
+      ...flow,
+      categories,
+    })),
   };
 }

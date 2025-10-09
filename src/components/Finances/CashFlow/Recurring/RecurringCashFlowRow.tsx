@@ -21,6 +21,7 @@ import { RecurringCashFlow } from "@/types/finance.types";
 import { FinanceInterval } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
 import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-categories";
+import { useUpdateRecurringCashflowMutation } from "@/utils/queries/finances/use_recurring-cashflow";
 
 interface RecurringCashFlowRowProps extends CardProps {
   cashflow: RecurringCashFlow;
@@ -40,9 +41,11 @@ export default function RecurringCashFlowRow({
   getIntervalLabel,
   ...props
 }: RecurringCashFlowRowProps) {
-  const [isLoading, setIsLoading] = useState(false);
   const { locale } = useSettingsStore();
-  const { updateRecurringCashFlow } = useFinanceStore();
+  const {
+    mutate: updateRecurringCashFlow,
+    isPending: isUpdatingRecurringCashFlow,
+  } = useUpdateRecurringCashflowMutation();
   const { data: financeCategories } = useFinanceCategoriesQuery();
   const { hovered, ref } = useHover();
   const [
@@ -66,16 +69,19 @@ export default function RecurringCashFlowRow({
   const handleCategoryClose = async (
     updatedCategories: Tables<"finance_category">[] | null
   ) => {
-    if (isLoading) return;
+    if (isUpdatingRecurringCashFlow) return;
     closeCategoryPopover();
     if (updatedCategories) {
-      setIsLoading(true);
-      const success = await updateRecurringCashFlow({
-        ...cashflow,
-        categoryIds: updatedCategories.map((c) => c.id),
+      updateRecurringCashFlow({
+        recurringCashFlow: {
+          ...cashflow,
+          categories: updatedCategories.map((c) => ({
+            finance_category: c,
+          })),
+        },
+        // TODO: Ask user if they want to update the single cash flows
+        shouldUpdateSingleCashFlows: true,
       });
-      console.log(success);
-      setIsLoading(false);
     }
   };
 
@@ -104,11 +110,7 @@ export default function RecurringCashFlowRow({
     >
       <Group justify="space-between" grow>
         <Group>
-          <Text
-            fw={700}
-            c={cashflow.amount <= 0 ? "red" : "green"}
-            w={70}
-          >
+          <Text fw={700} c={cashflow.amount <= 0 ? "red" : "green"} w={70}>
             {formatMoney(cashflow.amount, cashflow.currency, locale)}
           </Text>
           <Badge variant="light">{getIntervalLabel(cashflow.interval)}</Badge>

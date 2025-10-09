@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
@@ -33,19 +32,23 @@ import { CashFlowType } from "@/types/settings.types";
 import CancelButton from "../../UI/Buttons/CancelButton";
 import DeleteActionIcon from "../../UI/ActionIcons/DeleteActionIcon";
 import FinanceCategoryForm from "../Category/FinanceCategoryForm";
-import {
-  showActionErrorNotification,
-  showActionSuccessNotification,
-} from "@/utils/notificationFunctions";
 import { Radio } from "@mantine/core";
 import {
   DeleteRecurringCashFlowMode,
   RecurringCashFlow,
   SingleCashFlow,
+  UpdateRecurringCashFlow,
+  UpdateSingleCashFlow,
 } from "@/types/finance.types";
 import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-categories";
-import { useDeleteSingleCashflowMutation } from "@/utils/queries/finances/use-single-cashflow";
-import { useDeleteRecurringCashflowMutation } from "@/utils/queries/finances/use_recurring-cashflow";
+import {
+  useDeleteSingleCashflowMutation,
+  useUpdateSingleCashflowMutation,
+} from "@/utils/queries/finances/use-single-cashflow";
+import {
+  useDeleteRecurringCashflowMutation,
+  useUpdateRecurringCashflowMutation,
+} from "@/utils/queries/finances/use_recurring-cashflow";
 
 // Type guard to distinguish between single and recurring cash flows
 function isSingleCashFlow(
@@ -63,21 +66,23 @@ export default function EditCashFlowDrawer({
   opened: boolean;
   onClose: () => void;
 }) {
-  const { locale, getLocalizedText } = useSettingsStore();
-  const [isLoading, setIsLoading] = useState(false);
+  const { getLocalizedText } = useSettingsStore();
   const [deleteMode, setDeleteMode] = useState<DeleteRecurringCashFlowMode>(
     DeleteRecurringCashFlowMode.delete_all
   );
   const [type, setType] = useState<CashFlowType>("income");
-  const [categoryIds, setCategoryIds] = useState<string[]>(
-    cashFlow.categories.map((category) => category.finance_category.id)
+  const [categories, setCategories] = useState<Tables<"finance_category">[]>(
+    cashFlow.categories.map((category) => category.finance_category)
   );
-  const [pendingValues, setPendingValues] = useState<any>(null);
+  const [pendingValues, setPendingValues] = useState<
+    UpdateSingleCashFlow | UpdateRecurringCashFlow
+  >(cashFlow);
+  const { mutate: updateSingleCashFlow, isPending: isUpdatingSingleCashFlow } =
+    useUpdateSingleCashflowMutation(onClose);
   const {
-    updateSingleCashFlow,
-    updateRecurringCashFlow,
-    updateMultipleSingleCashFlows,
-  } = useFinanceStore();
+    mutate: updateRecurringCashFlow,
+    isPending: isUpdatingRecurringCashFlow,
+  } = useUpdateRecurringCashflowMutation(onClose);
   const drawerStack = useDrawersStack([
     "edit-cash-flow",
     "delete-cash-flow",
@@ -114,88 +119,58 @@ export default function EditCashFlowDrawer({
 
   useEffect(() => {
     if (
-      categoryIds !==
-      cashFlow.categories.map((category) => category.finance_category.id)
+      categories !==
+      cashFlow.categories.map((category) => category.finance_category)
     ) {
-      setCategoryIds(
-        cashFlow.categories.map((category) => category.finance_category.id)
+      setCategories(
+        cashFlow.categories.map((category) => category.finance_category)
       );
     }
   }, [cashFlow]);
 
   async function handleSubmit(values: any) {
-    setIsLoading(true);
-    let success = false;
-
     if (isSingleCashFlow(cashFlow)) {
-      success = await updateSingleCashFlow({
+      updateSingleCashFlow({
         id: cashFlow.id,
-        categoryIds,
+        categories: categories.map((category) => ({
+          finance_category: financeCategories.find((c) => c.id === category.id),
+        })),
         ...values,
       });
-      if (success) {
-        showActionSuccessNotification(
-          getLocalizedText(
-            "Einmal-Cashflow erfolgreich aktualisiert",
-            "Single cash flow updated successfully"
-          ),
-          locale
-        );
-        onClose();
-      } else {
-        showActionErrorNotification(
-          getLocalizedText(
-            "Einmal-Cashflow konnte nicht aktualisiert werden",
-            "Single cash flow could not be updated"
-          ),
-          locale
-        );
-      }
     } else {
       // For recurring cash flows, check if any fields that affect single cash flows have changed
       const hasChanges =
         values.title !== cashFlow.title ||
         values.amount !== cashFlow.amount ||
         values.currency !== cashFlow.currency ||
-        categoryIds !==
-          cashFlow.categories.map((category) => category.finance_category.id);
+        categories !==
+          cashFlow.categories.map((category) => category.finance_category);
 
       if (hasChanges) {
         // Store the values and show the update modal
         setPendingValues({
           id: cashFlow.id,
-          categoryIds,
+          categories: categories.map((category) => ({
+            finance_category: financeCategories.find(
+              (c) => c.id === category.id
+            ),
+          })),
           ...values,
         });
         drawerStack.open("update-cash-flow");
       } else {
         // No changes that affect single cash flows, just update the recurring cash flow
-        success = await updateRecurringCashFlow({
+        updateRecurringCashFlow({
           id: cashFlow.id,
-          categoryIds,
+          categories: categories.map((category) => ({
+            finance_category: financeCategories.find(
+              (c) => c.id === category.id
+            ),
+          })),
           ...values,
         });
-        if (success) {
-          showActionSuccessNotification(
-            getLocalizedText(
-              "Wiederkehrender Cashflow erfolgreich aktualisiert",
-              "Recurring cash flow updated successfully"
-            ),
-            locale
-          );
-          onClose();
-        } else {
-          showActionErrorNotification(
-            getLocalizedText(
-              "Wiederkehrender Cashflow konnte nicht aktualisiert werden",
-              "Recurring cash flow could not be updated"
-            ),
-            locale
-          );
-        }
       }
     }
-    setIsLoading(false);
   }
 
   async function handleSingleDelete() {
@@ -215,119 +190,47 @@ export default function EditCashFlowDrawer({
 
   async function handleDeactivateRecurring() {
     if (isSingleCashFlow(cashFlow)) return;
-    setIsLoading(true);
-    const success = await updateRecurringCashFlow({
-      ...cashFlow,
-      end_date: new Date().toISOString(),
-      categoryIds,
+    updateRecurringCashFlow({
+      recurringCashFlow: {
+        ...cashFlow,
+        end_date: new Date().toISOString(),
+        categories: categories.map((category) => ({
+          finance_category: category,
+        })),
+      },
     });
-    if (success) {
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Wiederkehrender Cashflow erfolgreich deaktiviert",
-          "Recurring cash flow deactivated successfully"
-        ),
-        locale
-      );
-      onClose();
-    } else {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Wiederkehrender Cashflow konnte nicht deaktiviert werden",
-          "Recurring cash flow could not be deactivated"
-        ),
-        locale
-      );
-    }
-    setIsLoading(false);
   }
 
   async function handleUpdateAll() {
     if (!pendingValues) return;
 
-    setIsLoading(true);
-
-    const categoryUpdates = {
-      deleteIds: cashFlow.categories
-        .map((category) => category.finance_category.id)
-        .filter((id: string) => !pendingValues.categoryIds.includes(id)),
-      addIds: pendingValues.categoryIds.filter(
-        (id: string) =>
-          !cashFlow.categories
-            .map((category) => category.finance_category.id)
-            .includes(id)
-      ),
-    };
-
     // First update the recurring cash flow
-    const recurringSuccess = await updateRecurringCashFlow(pendingValues);
-
-    if (recurringSuccess) {
-      // Then update all related single cash flows
-      const singleUpdates = {
-        title: pendingValues.title,
-        amount: pendingValues.amount,
-        currency: pendingValues.currency,
-        // categoryIds: pendingValues.categoryIds,
-      };
-
-      const singleSuccess = await updateMultipleSingleCashFlows(
-        cashFlow.id,
-        singleUpdates,
-        categoryUpdates
-      );
-
-      if (singleSuccess) {
-        showActionSuccessNotification(
-          getLocalizedText(
-            "Einmal-Cashflows erfolgreich aktualisiert",
-            "Single cash flows updated successfully"
-          ),
-          locale
-        );
-        onClose();
-      } else {
-        showActionErrorNotification(
-          getLocalizedText(
-            "Einmal-Cashflows konnten nicht aktualisiert werden",
-            "Single cash flows could not be updated"
-          ),
-          locale
-        );
-      }
-    }
-
-    setIsLoading(false);
+    updateRecurringCashFlow({
+      recurringCashFlow: {
+        ...cashFlow,
+        categories: categories.map((category) => ({
+          finance_category: category,
+        })),
+      },
+      shouldUpdateSingleCashFlows: true,
+    });
   }
 
   async function handleUpdateRecurringOnly() {
     if (!pendingValues) return;
 
-    setIsLoading(true);
-    const success = await updateRecurringCashFlow(pendingValues);
-    if (success) {
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Wiederkehrender Cashflow erfolgreich aktualisiert",
-          "Recurring cash flow updated successfully"
-        ),
-        locale
-      );
-      onClose();
-    } else {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Wiederkehrender Cashflow konnte nicht aktualisiert werden",
-          "Recurring cash flow could not be updated"
-        ),
-        locale
-      );
-    }
-    setIsLoading(false);
+    updateRecurringCashFlow({
+      recurringCashFlow: {
+        ...cashFlow,
+        categories: categories.map((category) => ({
+          finance_category: category,
+        })),
+      },
+    });
   }
 
   const handleAddCategory = (category: Tables<"finance_category">) => {
-    setCategoryIds((prev) => [...prev, category.id]);
+    setCategories((prev) => [...prev, category]);
   };
 
   return (
@@ -391,8 +294,12 @@ export default function EditCashFlowDrawer({
                 "Kategorie auswählen",
                 "Select a category"
               )}
-              value={categoryIds}
-              onChange={(value) => setCategoryIds(value)}
+              value={categories.map((category) => category.id)}
+              onChange={(value) =>
+                setCategories(
+                  value.map((id) => financeCategories.find((c) => c.id === id)!)
+                )
+              }
               searchable
               clearable
               nothingFoundMessage={getLocalizedText(
@@ -421,7 +328,7 @@ export default function EditCashFlowDrawer({
               type={type}
               financeCurrency={cashFlow.currency}
               handleSubmit={handleSubmit}
-              isLoading={isLoading}
+              isLoading={isUpdatingSingleCashFlow}
               cashFlow={cashFlow}
             />
           ) : (
@@ -429,7 +336,7 @@ export default function EditCashFlowDrawer({
               type={type}
               financeCurrency={cashFlow.currency}
               handleSubmit={handleSubmit}
-              isLoading={isLoading}
+              isLoading={isUpdatingRecurringCashFlow}
               cashFlow={cashFlow}
             />
           )}
@@ -528,7 +435,7 @@ export default function EditCashFlowDrawer({
               variant="light"
               color="gray"
               onClick={handleDeactivateRecurring}
-              loading={isLoading}
+              loading={isUpdatingRecurringCashFlow}
             >
               {getLocalizedText(
                 "Stattdessen deaktivieren",
@@ -582,11 +489,15 @@ export default function EditCashFlowDrawer({
             <Button
               variant="outline"
               onClick={handleUpdateRecurringOnly}
-              disabled={isLoading}
+              disabled={isUpdatingRecurringCashFlow}
             >
               {getLocalizedText("Nein, beibehalten", "No, keep existing")}
             </Button>
-            <Button color="blue" onClick={handleUpdateAll} loading={isLoading}>
+            <Button
+              color="blue"
+              onClick={handleUpdateAll}
+              loading={isUpdatingRecurringCashFlow}
+            >
               {getLocalizedText("Ja, aktualisieren", "Yes, update all")}
             </Button>
           </Group>

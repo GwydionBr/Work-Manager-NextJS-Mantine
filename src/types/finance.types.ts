@@ -1,4 +1,4 @@
-import { Tables } from "./db.types";
+import { Tables, TablesInsert, TablesUpdate } from "./db.types";
 
 export interface Payout extends Tables<"payout"> {
   cashflow: Tables<"single_cash_flow"> | null;
@@ -11,9 +11,28 @@ export type SingleCashFlow = Tables<"single_cash_flow"> & {
   categories: { finance_category: Tables<"finance_category"> }[];
 };
 
+export interface InsertSingleCashFlow extends TablesInsert<"single_cash_flow"> {
+  categories: { finance_category: Tables<"finance_category"> }[];
+}
+
+export interface UpdateSingleCashFlow extends TablesUpdate<"single_cash_flow"> {
+  categories: { finance_category: Tables<"finance_category"> }[];
+}
+
 export type RecurringCashFlow = Tables<"recurring_cash_flow"> & {
   categories: { finance_category: Tables<"finance_category"> }[];
 };
+
+export interface InsertRecurringCashFlow
+  extends TablesInsert<"recurring_cash_flow"> {
+  categories: { finance_category: Tables<"finance_category"> }[];
+}
+
+export interface UpdateRecurringCashFlow
+  extends TablesUpdate<"recurring_cash_flow"> {
+  categories: { finance_category: Tables<"finance_category"> }[];
+}
+
 
 export type FinanceProject = Tables<"finance_project"> & {
   adjustments: Tables<"finance_project_adjustment">[];

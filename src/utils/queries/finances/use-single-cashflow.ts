@@ -9,9 +9,14 @@ import {
   showActionSuccessNotification,
 } from "@/utils/notificationFunctions";
 import { addSingleCashFlow } from "@/actions/finance/singleCashflow/add-single-cashflow";
-import { TablesInsert } from "@/types/db.types";
-import { SingleCashFlow } from "@/types/finance.types";
+import {
+  InsertSingleCashFlow,
+  SingleCashFlow,
+  UpdateSingleCashFlow,
+} from "@/types/finance.types";
+import { updateSingleCashFlow } from "@/actions/finance/singleCashflow/update-single-cashflow";
 
+// Query to get all single cash flows
 export function useSingleCashflowQuery() {
   return useQuery({
     queryKey: ["singleCashFlows"],
@@ -19,6 +24,45 @@ export function useSingleCashflowQuery() {
   });
 }
 
+// Mutation to update a single cash flow
+export function useUpdateSingleCashflowMutation(
+  onSuccess?: () => void,
+  onError?: () => void
+) {
+  const { locale, getLocalizedText } = useSettingsStore();
+  return useMutation({
+    mutationKey: ["updateSingleCashFlow"],
+    mutationFn: ({ cashflow }: { cashflow: UpdateSingleCashFlow }) =>
+      updateSingleCashFlow({ updateSingleCashFlow: cashflow }),
+    onSuccess: (data, variables, onMutateResult, context) => {
+      context.client.setQueryData(
+        ["singleCashFlows"],
+        (old: SingleCashFlow[]) =>
+          old.map((cashflow) => (cashflow.id === data.id ? data : cashflow))
+      );
+      context.client.invalidateQueries({
+        queryKey: ["singleCashFlows"],
+      });
+      showActionSuccessNotification(
+        getLocalizedText("Cashflow aktualisiert", "Cashflow updated"),
+        locale
+      );
+      onSuccess?.();
+    },
+    onError: () => {
+      showActionErrorNotification(
+        getLocalizedText(
+          "Cashflow konnten nicht aktualisiert werden",
+          "Cashflow could not be updated"
+        ),
+        locale
+      );
+      onError?.();
+    },
+  });
+}
+
+// Mutation to add a single cash flow
 export function useAddSingleCashflowMutation(
   onSuccess?: () => void,
   onError?: () => void
@@ -27,30 +71,21 @@ export function useAddSingleCashflowMutation(
 
   return useMutation({
     mutationKey: ["addSingleCashFlow"],
-    mutationFn: async ({
-      cashflow,
-      categoryIds,
-    }: {
-      cashflow: TablesInsert<"single_cash_flow">;
-      categoryIds: string[];
-    }) => {
-      return await addSingleCashFlow({ cashflow, categoryIds });
-    },
+    mutationFn: ({ cashflow }: { cashflow: InsertSingleCashFlow }) =>
+      addSingleCashFlow({ cashflow }),
     onSuccess: (data, variables, onMutateResult, context) => {
       context.client.setQueryData(
         ["singleCashFlows"],
         (old: SingleCashFlow[]) => [data, ...old]
       );
+      context.client.invalidateQueries({
+        queryKey: ["singleCashFlows"],
+      });
       showActionSuccessNotification(
         getLocalizedText("Cashflow hinzugefügt", "Cashflow added"),
         locale
       );
       onSuccess?.();
-    },
-    onSettled: (data, error, variables, onMutateResult, context) => {
-      context.client.invalidateQueries({
-        queryKey: ["singleCashFlows"],
-      });
     },
     onError: () => {
       showActionErrorNotification(
@@ -65,6 +100,7 @@ export function useAddSingleCashflowMutation(
   });
 }
 
+// Mutation to delete a single cash flow
 export function useDeleteSingleCashflowMutation(
   onSuccess?: () => void,
   onError?: () => void
@@ -79,16 +115,14 @@ export function useDeleteSingleCashflowMutation(
         (old: SingleCashFlow[]) =>
           old.filter((cashflow) => !variables.includes(cashflow.id))
       );
+      context.client.invalidateQueries({
+        queryKey: ["singleCashFlows"],
+      });
       showActionSuccessNotification(
         getLocalizedText("Cashflow gelöscht", "Cashflow deleted"),
         locale
       );
       onSuccess?.();
-    },
-    onSettled: (data, error, variables, onMutateResult, context) => {
-      context.client.invalidateQueries({
-        queryKey: ["singleCashFlows"],
-      });
     },
     onError: () => {
       showActionErrorNotification(

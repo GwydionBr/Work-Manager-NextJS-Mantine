@@ -1,7 +1,8 @@
 import { Tables, TablesInsert } from "@/types/db.types";
 import {
-  StoreRecurringCashFlow,
-  StoreSingleCashFlow,
+  RecurringCashFlow,
+  SingleCashFlow,
+  InsertSingleCashFlow,
 } from "@/types/finance.types";
 import { FinanceInterval } from "@/types/settings.types";
 import {
@@ -83,20 +84,14 @@ export const getNextDate = (
 };
 
 interface ProcessedRecurringCashFlows {
-  pastAndCurrentFlows: (TablesInsert<"single_cash_flow"> & {
-    categoryIds: string[];
-  })[];
-  futureFlows: StoreSingleCashFlow[];
+  pastAndCurrentFlows: InsertSingleCashFlow[];
 }
 
 export const processRecurringCashFlows = (
-  recurringCashFlows: StoreRecurringCashFlow[],
-  existingSingleCashFlows: StoreSingleCashFlow[]
+  recurringCashFlows: RecurringCashFlow[],
+  existingSingleCashFlows: SingleCashFlow[]
 ): ProcessedRecurringCashFlows => {
-  const pastAndCurrentFlows: (TablesInsert<"single_cash_flow"> & {
-    categoryIds: string[];
-  })[] = [];
-  const futureFlows: StoreSingleCashFlow[] = [];
+  const pastAndCurrentFlows: InsertSingleCashFlow[] = [];
   const today = new Date();
   const sixMonthsFromNow = addMonths(today, 6);
 
@@ -120,7 +115,7 @@ export const processRecurringCashFlows = (
       );
 
       if (!existingFlow) {
-        const baseFlow = {
+        const baseFlow: TablesInsert<"single_cash_flow"> = {
           amount: flow.amount,
           currency: flow.currency,
           date: currentDate.toISOString(),
@@ -129,22 +124,13 @@ export const processRecurringCashFlows = (
           user_id: flow.user_id,
           recurring_cash_flow_id: flow.id,
           finance_client_id: flow.finance_client_id,
-          categoryIds: flow.categoryIds,
         };
 
         if (currentDate <= today) {
           // Past or current flow - only include fields needed for insertion
-          pastAndCurrentFlows.push(baseFlow);
-        } else {
-          // Future flow - include all fields
-          futureFlows.push({
+          pastAndCurrentFlows.push({
             ...baseFlow,
-            id: crypto.randomUUID(),
-            created_at: new Date().toISOString(),
-            changed_date: null,
-            finance_project_id: null,
-            finance_client_id: flow.finance_client_id,
-            category_id: null,
+            categories: flow.categories,
           });
         }
       }
@@ -179,6 +165,5 @@ export const processRecurringCashFlows = (
 
   return {
     pastAndCurrentFlows,
-    futureFlows,
   };
 };

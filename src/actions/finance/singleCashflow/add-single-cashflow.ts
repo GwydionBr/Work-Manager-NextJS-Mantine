@@ -1,23 +1,22 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { TablesInsert } from "@/types/db.types";
-import { SingleCashFlow } from "@/types/finance.types";
+import { InsertSingleCashFlow, SingleCashFlow } from "@/types/finance.types";
 
 interface AddSingleCashFlowProps {
-  cashflow: TablesInsert<"single_cash_flow">;
-  categoryIds: string[];
+  cashflow: InsertSingleCashFlow;
 }
 
 export async function addSingleCashFlow({
   cashflow,
-  categoryIds,
 }: AddSingleCashFlowProps): Promise<SingleCashFlow> {
   const supabase = await createClient();
 
+  const { categories, ...cashflowData } = cashflow;
+
   const { data, error } = await supabase
     .from("single_cash_flow")
-    .insert({ ...cashflow })
+    .insert({ ...cashflowData })
     .select()
     .single();
 
@@ -28,9 +27,9 @@ export async function addSingleCashFlow({
   const { error: categoriesError } = await supabase
     .from("single_cash_flow_category")
     .insert(
-      categoryIds.map((id) => ({
+      categories.map((category) => ({
         single_cash_flow_id: data.id,
-        finance_category_id: id,
+        finance_category_id: category.finance_category.id,
       }))
     )
     .select();
@@ -39,17 +38,8 @@ export async function addSingleCashFlow({
     throw new Error(categoriesError.message);
   }
 
-  const { data: categories, error: categoriesError2 } = await supabase
-    .from("finance_category")
-    .select("*")
-    .in("id", categoryIds);
-
-  if (categoriesError2) {
-    throw new Error(categoriesError2.message);
-  }
-
   return {
     ...data,
-    categories: categories.map((category) => ({ finance_category: category })),
+    categories,
   };
 }

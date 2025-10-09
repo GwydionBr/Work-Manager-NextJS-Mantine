@@ -30,6 +30,7 @@ import RecurringFinanceForm, {
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 
 import { CashFlowType } from "@/types/settings.types";
+import { Tables } from "@/types/db.types";
 
 import classes from "../../UI/Switch.module.css";
 import { useAddRecurringCashflowMutation } from "@/utils/queries/finances/use_recurring-cashflow";
@@ -38,23 +39,21 @@ interface FinanceFormProps {
   onClose: () => void;
   isSingle?: boolean;
   onOpenCategoryForm: () => void;
-  categoryIds: string[];
-  setCategoryIds: (categoryIds: string[]) => void;
+  categories: Tables<"finance_category">[];
+  setCategories: (categories: Tables<"finance_category">[]) => void;
 }
 
 export default function FinanceForm({
   onClose,
   isSingle = true,
   onOpenCategoryForm,
-  categoryIds,
-  setCategoryIds,
+  categories,
+  setCategories,
 }: FinanceFormProps) {
   const [type, setType] = useState<CashFlowType>("income");
   const [isRecurring, setIsRecurring] = useState<boolean>(!isSingle);
-  const {
-    getLocalizedText,
-    defaultFinanceCurrency: financeCurrency,
-  } = useSettingsStore();
+  const { getLocalizedText, defaultFinanceCurrency: financeCurrency } =
+    useSettingsStore();
   const { mutate: addRecurringCashFlow, isPending: isAddingRecurringCashFlow } =
     useAddRecurringCashflowMutation(() => onClose());
   const { data: financeCategories, isPending: isFinanceCategoriesPending } =
@@ -67,8 +66,10 @@ export default function FinanceForm({
       cashflow: {
         ...values,
         date: values.date.toISOString(),
+        categories: categories.map((category) => ({
+          finance_category: category,
+        })),
       },
-      categoryIds,
     });
   }
 
@@ -80,8 +81,10 @@ export default function FinanceForm({
         ...values,
         end_date: values.end_date?.toISOString(),
         start_date: values.start_date.toISOString(),
+        categories: categories.map((category) => ({
+          finance_category: category,
+        })),
       },
-      categoryIds,
     });
   }
 
@@ -138,8 +141,15 @@ export default function FinanceForm({
                 ? getLocalizedText("Lädt...", "Loading...")
                 : getLocalizedText("Kategorie auswählen", "Select a category")
             }
-            value={categoryIds}
-            onChange={(value) => setCategoryIds(value)}
+            value={categories.map((category) => category.id)}
+            onChange={(value) =>
+              setCategories(
+                value.map(
+                  (id) =>
+                    financeCategories?.find((category) => category.id === id)!
+                )
+              )
+            }
             searchable
             clearable
             nothingFoundMessage={getLocalizedText(

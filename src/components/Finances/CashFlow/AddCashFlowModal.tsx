@@ -7,6 +7,7 @@ import { Group, Modal, Text, useModalsStack } from "@mantine/core";
 import CashflowForm from "@/components/Finances/CashFlow/CashflowForm";
 import FinanceCategoryForm from "@/components/Finances/Category/FinanceCategoryForm";
 import { IconCashPlus, IconCategoryPlus } from "@tabler/icons-react";
+import { Tables } from "@/types/db.types";
 
 interface CashFlowModalProps {
   opened: boolean;
@@ -20,7 +21,9 @@ export default function CashFlowModal({
   isSingle = true,
 }: CashFlowModalProps) {
   const modalStack = useModalsStack(["cash-flow", "category-form"]);
-  const [categoryIds, setCategoryIds] = useState<string[]>([]);
+  const [categories, setCategories] = useState<Tables<"finance_category">[]>(
+    []
+  );
   const { locale } = useSettingsStore();
   useEffect(() => {
     if (opened) {
@@ -47,8 +50,8 @@ export default function CashFlowModal({
         <CashflowForm
           onClose={onClose}
           onOpenCategoryForm={() => modalStack.open("category-form")}
-          categoryIds={categoryIds}
-          setCategoryIds={setCategoryIds}
+          categories={categories}
+          setCategories={setCategories}
           isSingle={isSingle}
         />
       </Modal>
@@ -66,9 +69,7 @@ export default function CashFlowModal({
       >
         <FinanceCategoryForm
           onClose={() => modalStack.close("category-form")}
-          onSuccess={(category) =>
-            setCategoryIds((prev) => [...prev, category.id])
-          }
+          onSuccess={(category) => setCategories((prev) => [...prev, category])}
         />
       </Modal>
     </Modal.Stack>
