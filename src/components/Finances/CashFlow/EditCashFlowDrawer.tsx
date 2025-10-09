@@ -131,11 +131,13 @@ export default function EditCashFlowDrawer({
   async function handleSubmit(values: any) {
     if (isSingleCashFlow(cashFlow)) {
       updateSingleCashFlow({
-        id: cashFlow.id,
-        categories: categories.map((category) => ({
-          finance_category: financeCategories.find((c) => c.id === category.id),
-        })),
-        ...values,
+        singleCashFlow: {
+          id: cashFlow.id,
+          categories: categories.map((category) => ({
+            finance_category: category,
+          })),
+          ...values,
+        },
       });
     } else {
       // For recurring cash flows, check if any fields that affect single cash flows have changed
@@ -151,9 +153,7 @@ export default function EditCashFlowDrawer({
         setPendingValues({
           id: cashFlow.id,
           categories: categories.map((category) => ({
-            finance_category: financeCategories.find(
-              (c) => c.id === category.id
-            ),
+            finance_category: category,
           })),
           ...values,
         });
@@ -163,9 +163,7 @@ export default function EditCashFlowDrawer({
         updateRecurringCashFlow({
           id: cashFlow.id,
           categories: categories.map((category) => ({
-            finance_category: financeCategories.find(
-              (c) => c.id === category.id
-            ),
+            finance_category: category,
           })),
           ...values,
         });
@@ -297,7 +295,10 @@ export default function EditCashFlowDrawer({
               value={categories.map((category) => category.id)}
               onChange={(value) =>
                 setCategories(
-                  value.map((id) => financeCategories.find((c) => c.id === id)!)
+                  value.map(
+                    (category) =>
+                      financeCategories.find((c) => c.id === category)!
+                  )
                 )
               }
               searchable

@@ -32,8 +32,8 @@ export function useUpdateSingleCashflowMutation(
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateSingleCashFlow"],
-    mutationFn: ({ cashflow }: { cashflow: UpdateSingleCashFlow }) =>
-      updateSingleCashFlow({ updateSingleCashFlow: cashflow }),
+    mutationFn: ({ singleCashFlow }: { singleCashFlow: UpdateSingleCashFlow }) =>
+      updateSingleCashFlow({ updateSingleCashFlow: singleCashFlow }),
     onSuccess: (data, variables, onMutateResult, context) => {
       context.client.setQueryData(
         ["singleCashFlows"],
@@ -49,7 +49,8 @@ export function useUpdateSingleCashflowMutation(
       );
       onSuccess?.();
     },
-    onError: () => {
+    onError: (error, variables, onMutateResult, context) => {
+      console.log(error);
       showActionErrorNotification(
         getLocalizedText(
           "Cashflow konnten nicht aktualisiert werden",
