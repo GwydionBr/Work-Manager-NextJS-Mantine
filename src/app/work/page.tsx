@@ -40,12 +40,9 @@ import { IconClockPlus } from "@tabler/icons-react";
 
 import { formatDate } from "@/utils/formatFunctions";
 import { Tables } from "@/types/db.types";
-import {
-  showActionSuccessNotification,
-  showActionErrorNotification,
-} from "@/utils/notificationFunctions";
 import { TimerProject } from "@/types/work.types";
 import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
+import { usePayoutHourlyTimerProjectMutation } from "@/utils/queries/finances/use-payout";
 
 export default function WorkPage() {
   const [oldActiveProjectId, setOldActiveProjectId] = useState<string | null>(
@@ -61,9 +58,9 @@ export default function WorkPage() {
     projects,
     timerSessions,
     setActiveProjectId,
-    payoutWorkSessions,
   } = useWorkStore();
-  const { sessionPayout } = useFinanceStore();
+  const { mutate: payoutHourlyTimerProjectMutation, isPending: isProcessingPayout } =
+    usePayoutHourlyTimerProjectMutation();
   const { data: financeCategories = [] } = useFinanceCategoriesQuery();
   const { locale, getLocalizedText } = useSettingsStore();
 
@@ -89,9 +86,6 @@ export default function WorkPage() {
       sessions,
     };
   }, [projects, activeProjectId, financeCategories, timerSessions]);
-
-  // State for payout processing
-  const [isProcessingPayout, setIsProcessingPayout] = useState(false);
 
   // State for filter time span
   const [filterTimeSpan, setFilterTimeSpan] = useState<
@@ -270,89 +264,16 @@ export default function WorkPage() {
     toggleSelectedMode();
   };
 
-  // const handleSessionPayoutClick = (sessions: Tables<"timer_session">[]) => {
-  //   const selectedSessionIds = sessions.map((session) => session.id);
-  //   setPayoutSessionIds(selectedSessionIds);
-  //   const sessionPayoutAmount = sessions.reduce((acc, session) => {
-  //     return acc + session.salary * (session.active_seconds / 3600);
-  //   }, 0);
-  //   setPayoutStartValue(sessionPayoutAmount);
-  //   if (
-  //     showChangeCurrencyWindow === null ||
-  //     (showChangeCurrencyWindow === true &&
-  //       activeProject.project.currency !== defaultFinanceCurrency)
-  //   ) {
-  //     openPayoutModal();
-  //   } else {
-  //     handleSessionPayout({
-  //       selectedSessionIds,
-  //       startValue: sessionPayoutAmount,
-  //       endValue: null,
-  //       endCurrency: null,
-  //       project: activeProject,
-  //     });
-  //   }
-  // };
-
   async function handleSessionPayout(sessions: Tables<"timer_session">[]) {
     if (isProcessingPayout || !activeProject) return;
-    setIsProcessingPayout(true);
     const selectedSessionIds = sessions.map((session) => session.id);
-    const sessionPayoutAmount = sessions.reduce((acc, session) => {
-      return acc + session.salary * (session.active_seconds / 3600);
-    }, 0);
-    try {
-      // Create a timeout promise that rejects after 15 seconds
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => {
-          reject(
-            new Error(
-              locale === "de-DE"
-                ? "Die Auszahlung dauert zu lange. Bitte versuchen Sie es erneut."
-                : "Payout is taking too long. Please try again."
-            )
-          );
-        }, 15000); // 15 seconds timeout
-      });
 
-      // Race between the payout operation and the timeout
-      const title = `${getLocalizedText("Auszahlung", "Payout")} (${activeProject.project.title}) ${formatDate(new Date(), locale)}`;
-      const categoryIds = activeProject.categories.map((c) => c.id);
-      const payoutResult = await Promise.race([
-        sessionPayout(
-          selectedSessionIds,
-          {
-            title,
-            amount: sessionPayoutAmount,
-            currency: activeProject.project.currency,
-          },
-          categoryIds
-        ),
-        timeoutPromise,
-      ]);
-
-      if (payoutResult) {
-        payoutWorkSessions(selectedSessionIds, payoutResult.id);
-        showActionSuccessNotification(
-          locale === "de-DE" ? "Auszahlung erfolgreich" : "Payout successful",
-          locale
-        );
-      } else {
-        showActionErrorNotification(
-          locale === "de-DE" ? "Auszahlung fehlgeschlagen" : "Payout failed",
-          locale
-        );
-      }
-    } catch (error) {
-      showActionErrorNotification(
-        locale === "de-DE"
-          ? "Auszahlung hat zu lange gedauert. Bitte versuchen Sie es erneut."
-          : "Payout took too long. Please try again.",
-        locale
-      );
-    } finally {
-      setIsProcessingPayout(false);
-    }
+    const title = `${getLocalizedText("Auszahlung", "Payout")} (${activeProject.project.title}) ${formatDate(new Date(), locale)}`;
+    payoutHourlyTimerProjectMutation({
+      project: activeProject,
+      title,
+      sessionIds: selectedSessionIds,
+    });
   }
 
   const selectableSessions = timeFilteredSessions.filter(
@@ -562,19 +483,6 @@ export default function WorkPage() {
           />
         </Collapse>
       </Stack>
-      {/* <HourlyPayoutModal
-        opened={openedPayoutModal}
-        handleClose={closePayoutModal}
-        onSubmit={(values) =>
-          handleSessionPayout({
-            ...values,
-            project: activeProject,
-          })
-        }
-        isProcessing={isProcessingPayout}
-        startValue={payoutStartValue}
-        startCurrency={activeProject.project.currency}
-      /> */}
     </ScrollArea>
   );
 }

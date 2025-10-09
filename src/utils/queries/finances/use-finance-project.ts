@@ -17,7 +17,7 @@ import {
   InsertFinanceProject,
   UpdateFinanceProject,
 } from "@/types/finance.types";
-import { payoutFinanceProject } from "@/actions/finance/financeProject/payout-finance-project";
+import { payoutFinanceProject } from "@/actions/finance/payout/payout-finance-project";
 import { Tables } from "@/types/db.types";
 
 // Query to get all finance projects
@@ -132,62 +132,6 @@ export function useCreateFinanceProjectMutation(
         getLocalizedText(
           "Finanzprojekt konnten nicht erstellt werden",
           "Finance project could not be created"
-        ),
-        locale
-      );
-      onError?.();
-    },
-  });
-}
-
-// Mutation to payout a finance project
-export function usePayoutFinanceProjectMutation(
-  onSuccess?: () => void,
-  onError?: () => void
-) {
-  const { locale, getLocalizedText } = useSettingsStore();
-  return useMutation({
-    mutationKey: ["payoutFinanceProject"],
-    mutationFn: ({
-      financeProject,
-      payoutWholeProject = false,
-    }: {
-      financeProject: FinanceProject;
-      payoutWholeProject?: boolean;
-    }) =>
-      payoutFinanceProject(
-        financeProject,
-        getLocalizedText,
-        payoutWholeProject
-      ),
-    onSuccess: (data, variables, onMutateResult, context) => {
-      context.client.setQueryData(
-        ["financeProjects"],
-        (old: FinanceProject[]) =>
-          old.map((p) =>
-            p.id === data.financeProject.id ? data.financeProject : p
-          )
-      );
-      context.client.setQueryData(
-        ["singleCashFlows"],
-        (old: Tables<"single_cash_flow">[]) => [...data.cashflows, ...old]
-      );
-      context.client.invalidateQueries({ queryKey: ["financeProjects"] });
-      context.client.invalidateQueries({ queryKey: ["singleCashFlows"] });
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Finanzprojekt erfolgreich ausgezahlt",
-          "Finance project successfully paid out"
-        ),
-        locale
-      );
-      onSuccess?.();
-    },
-    onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Finanzprojekt konnten nicht ausgezahlt werden",
-          "Finance project could not be paid out"
         ),
         locale
       );

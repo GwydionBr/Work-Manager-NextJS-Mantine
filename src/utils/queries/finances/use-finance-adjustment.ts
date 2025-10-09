@@ -6,7 +6,7 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import { updateFinanceAdjustment } from "@/actions/finance/financeAdjustment/update-finance-adjustment";
 import { deleteFinanceAdjustments } from "@/actions/finance/financeAdjustment/delete-finance-adjustments";
 import { createFinanceAdjustment } from "@/actions/finance/financeAdjustment/create-finance-adjustment";
-import { payoutFinanceAdjustment } from "@/actions/finance/financeAdjustment/payout-finance-adjustment";
+import { payoutFinanceAdjustment } from "@/actions/finance/payout/payout-finance-adjustment";
 import {
   showActionErrorNotification,
   showActionSuccessNotification,
@@ -141,67 +141,6 @@ export function useDeleteFinanceAdjustmentMutation(
         getLocalizedText(
           "Finanzanpassung konnten nicht gelöscht werden",
           "Finance adjustment could not be deleted"
-        ),
-        locale
-      );
-      onError?.();
-    },
-  });
-}
-
-// Mutation to payout a finance adjustment
-export function usePayoutFinanceAdjustmentMutation(
-  onSuccess?: () => void,
-  onError?: () => void
-) {
-  const { locale, getLocalizedText } = useSettingsStore();
-  return useMutation({
-    mutationKey: ["payoutFinanceAdjustment"],
-    mutationFn: ({
-      adjustment,
-      financeProject,
-    }: {
-      adjustment: Tables<"finance_project_adjustment">;
-      financeProject: FinanceProject;
-    }) => {
-      const title = `${adjustment.description} (${getLocalizedText("für das Finanz Projekt:", "for the Finance Project:")} ${financeProject.title})`;
-      return payoutFinanceAdjustment(adjustment, financeProject, title);
-    },
-    onSuccess: (data, variables, onMutateResult, context) => {
-      context.client.setQueryData(
-        ["financeProjects"],
-        (old: FinanceProject[]) =>
-          old.map((p) =>
-            p.id === data.adjustment.finance_project_id
-              ? {
-                  ...p,
-                  adjustments: p.adjustments.map((a) =>
-                    a.id === data.adjustment.id ? data.adjustment : a
-                  ),
-                }
-              : p
-          )
-      );
-      context.client.setQueryData(
-        ["singleCashFlows"],
-        (old: Tables<"single_cash_flow">[]) => [data.cashflow, ...old]
-      );
-      context.client.invalidateQueries({ queryKey: ["financeProjects"] });
-      context.client.invalidateQueries({ queryKey: ["singleCashFlows"] });
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Finanzanpassung erfolgreich ausgezahlt",
-          "Finance adjustment successfully paid out"
-        ),
-        locale
-      );
-      onSuccess?.();
-    },
-    onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Finanzanpassung konnten nicht ausgezahlt werden",
-          "Finance adjustment could not be paid out"
         ),
         locale
       );

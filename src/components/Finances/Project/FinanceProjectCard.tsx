@@ -8,10 +8,11 @@ import {
   mergeRefs,
 } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useUpdateFinanceProjectMutation } from "@/utils/queries/finances/use-finance-project";
 import {
   usePayoutFinanceProjectMutation,
-  useUpdateFinanceProjectMutation,
-} from "@/utils/queries/finances/use-finance-project";
+  usePayoutFinanceAdjustmentMutation,
+} from "@/utils/queries/finances/use-payout";
 
 import {
   Card,
@@ -47,7 +48,6 @@ import FinanceClientBadge from "../FinanceClient/FinanceClientBadge";
 import FinanceCategoryBadges from "../Category/FinanceCategoryBadges";
 import { Tables } from "@/types/db.types";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
-import { usePayoutFinanceAdjustmentMutation } from "@/utils/queries/finances/use-finance-adjustment";
 
 interface FinanceProjectCardProps extends CardProps {
   project: FinanceProject;
