@@ -77,7 +77,8 @@ export default function SingleCashflowRow({
       }
       style={{
         cursor: "pointer",
-        border: hovered ? "1px solid var(--mantine-color-blue-6)" : "",
+        // border: hovered ? "1px solid var(--mantine-color-blue-6)" : "",
+        border: cashflow.recurring_cash_flow_id ? "1px solid var(--mantine-color-red-6)" : hovered ? "1px solid var(--mantine-color-blue-6)" : "",
       }}
       onClick={(e) => {
         if (!isCategoryPopoverOpen) {

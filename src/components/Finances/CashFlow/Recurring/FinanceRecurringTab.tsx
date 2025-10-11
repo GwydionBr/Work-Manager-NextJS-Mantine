@@ -35,10 +35,13 @@ import { SettingsTab } from "@/components/Settings/SettingsModal";
 import { RecurringCashFlow } from "@/types/finance.types";
 import { formatMoney } from "@/utils/formatFunctions";
 import { useRecurringCashflowQuery } from "@/utils/queries/finances/use-recurring-cashflow";
+import { useProcessRecurringCashflows } from "@/hooks/useProcessRecurringCashflows";
 
 export default function FinanceRecurringTab() {
   const { data: recurringCashFlows = [], isPending } =
     useRecurringCashflowQuery();
+  const { triggerProcessing } =
+    useProcessRecurringCashflows();
   const { locale, defaultFinanceCurrency, setIsModalOpen, setSelectedTab } =
     useSettingsStore();
 

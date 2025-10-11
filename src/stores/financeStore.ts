@@ -29,9 +29,6 @@ export const useFinanceStore = create<
     }),
     {
       name: "finance-store",
-      partialize: (state) => ({
-        activeTab: state.activeTab,
-      }),
     }
   )
 );

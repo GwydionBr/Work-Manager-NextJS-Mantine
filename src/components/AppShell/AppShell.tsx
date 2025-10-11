@@ -9,6 +9,7 @@ import { usePathname } from "next/navigation";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useGroupStore } from "@/stores/groupStore";
 import { useUserStore } from "@/stores/userStore";
+import { useFinanceStore } from "@/stores/financeStore";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useTaskStore } from "@/stores/taskStore";
 import { useCalendarStore } from "@/stores/calendarStore";

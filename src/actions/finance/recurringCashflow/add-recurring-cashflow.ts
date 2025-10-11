@@ -6,7 +6,7 @@ import {
   RecurringCashFlow,
   SingleCashFlow,
 } from "@/types/finance.types";
-import { processRecurringCashFlows } from "@/utils/financeHelperFunction";
+import { processRecurringCashFlows } from "@/utils/helper/processRecurringCashflows";
 
 interface AddRecurringCashFlowProps {
   cashflow: InsertRecurringCashFlow;
@@ -46,7 +46,7 @@ export async function addRecurringCashFlow({
     throw new Error(categoriesError.message);
   }
 
-  const { pastAndCurrentFlows } = processRecurringCashFlows(
+  const pastAndCurrentFlows = processRecurringCashFlows(
     [
       {
         ...data,
