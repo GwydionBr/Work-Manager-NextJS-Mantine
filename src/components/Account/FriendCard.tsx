@@ -1,15 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useUserStore } from "@/stores/userStore";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useOtherProfilesQuery } from "@/utils/queries/profile/use-profile";
+import {
+  useCreateFriendshipMutation,
+  useFriendsQuery,
+} from "@/utils/queries/profile/use-friends";
 
-import { Autocomplete, Button, Stack, Text } from "@mantine/core";
+import { Autocomplete, Button, Stack } from "@mantine/core";
 import { Card } from "@mantine/core";
 import FriendList from "./FriendList";
 import { IconSearch } from "@tabler/icons-react";
-import { useOtherProfilesQuery } from "@/utils/queries/profile/use-profile";
-import { useCreateFriendshipMutation, useFriendsQuery } from "@/utils/queries/profile/use-friends";
 
 export default function FriendCard() {
   const { getLocalizedText } = useSettingsStore();
@@ -19,15 +21,11 @@ export default function FriendCard() {
   const { mutate: createFriendship, isPending: isCreatingFriendship } =
     useCreateFriendshipMutation(() => setSearch(""));
   const [isAddable, setIsAddable] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (friends) {
-      const isFriend = friends.some(
-        (friend) => friend.profile.username === search
-      );
-      const isValidProfile = otherProfiles?.some(
+    if (friends && otherProfiles) {
+      const isFriend = friends.some((friend) => friend.username === search);
+      const isValidProfile = otherProfiles.some(
         (profile) => profile.username === search
       );
       if (!isFriend && isValidProfile) {
@@ -36,23 +34,15 @@ export default function FriendCard() {
         setIsAddable(false);
       }
     }
-  }, [friends, search]);
+  }, [friends, otherProfiles, search]);
 
   async function handleAddFriend() {
-    setIsLoading(true);
     const friendId = otherProfiles?.find(
       (profile) => profile.username === search
     )?.id;
     if (friendId) {
-      const response = await addFriend(friendId);
-      if (response) {
-        setSearch("");
-        setError(null);
-      } else {
-        setError("Failed to add friend");
-      }
+      createFriendship(friendId);
     }
-    setIsLoading(false);
   }
 
   return (
@@ -60,9 +50,10 @@ export default function FriendCard() {
       <Stack gap="md" mt="md">
         <Stack maw={500}>
           <Autocomplete
-            placeholder={
-              getLocalizedText("Suche nach einem Profil", "Search for a profile")
-            }
+            placeholder={getLocalizedText(
+              "Suche nach einem Profil",
+              "Search for a profile"
+            )}
             data={otherProfiles?.map((profile) => profile.username) || []}
             value={search}
             onChange={(e) => setSearch(e)}
@@ -72,8 +63,7 @@ export default function FriendCard() {
           />
           {isAddable && (
             <Button
-              loading={isLoading}
-              disabled={isLoading}
+              loading={isCreatingFriendship}
               onClick={handleAddFriend}
               mx="xl"
             >
@@ -81,7 +71,6 @@ export default function FriendCard() {
             </Button>
           )}
         </Stack>
-        {error && <Text c="red">{error}</Text>}
         <FriendList />
       </Stack>
     </Card>

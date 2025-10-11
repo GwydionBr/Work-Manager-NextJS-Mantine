@@ -4,7 +4,7 @@ import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Avatar, Box, Group, Table, Text } from "@mantine/core";
 
-import { Friend } from "@/stores/userStore";
+import { Friend } from "@/types/profile.types";
 import CheckActionIcon from "../UI/ActionIcons/CheckActionIcon";
 import XActionIcon from "../UI/ActionIcons/XActionIcon";
 
@@ -25,20 +25,21 @@ export default function FriendsTable({
   checkIconAction,
   xIconAction,
 }: FriendsTableProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useSettingsStore();
+
   const rows = friends.map((friend) => (
     <Table.Tr key={friend.friendshipId}>
       <Table.Td>
-        <Avatar src={friend.profile.avatar_url} size={32} color="teal" />
+        <Avatar src={friend.avatar_url} size={32} color="teal" />
       </Table.Td>
       <Table.Td>
         <Text size="sm" fw={500}>
-          {friend.profile.username}
+          {friend.username}
         </Text>
       </Table.Td>
       <Table.Td visibleFrom="sm">
         <Text size="sm" c="dimmed">
-          {friend.profile.email}
+          {friend.email}
         </Text>
       </Table.Td>
       {(checkIcon || xIcon) && (
@@ -64,8 +65,10 @@ export default function FriendsTable({
         <Table.Thead>
           <Table.Tr>
             <Table.Th></Table.Th>
-            <Table.Th>{locale === "de-DE" ? "Benutzername" : "Username"}</Table.Th>
-            <Table.Th visibleFrom="sm">{locale === "de-DE" ? "E-Mail" : "Email"}</Table.Th>
+            <Table.Th>{getLocalizedText("Benutzername", "Username")}</Table.Th>
+            <Table.Th visibleFrom="sm">
+              {getLocalizedText("E-Mail", "Email")}
+            </Table.Th>
             {(checkIcon || xIcon) && <Table.Th></Table.Th>}
           </Table.Tr>
         </Table.Thead>
@@ -74,9 +77,7 @@ export default function FriendsTable({
       {friends.length === 0 && (
         <Box p="md" ta="center">
           {emptyMessage ||
-            (locale === "de-DE"
-              ? "Keine Freunde gefunden"
-              : "No friends found")}
+            getLocalizedText("Keine Freunde gefunden", "No friends found")}
         </Box>
       )}
     </Box>
