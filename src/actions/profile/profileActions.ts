@@ -59,38 +59,6 @@ export async function getProfile(): Promise<ApiResponseSingle<Tables<"profiles">
   return { success: true, data, error: null };
 }
 
-export async function createProfile({
-  profile,
-}: {
-  profile: TablesInsert<"profiles">;
-}): Promise<ApiResponseSingle<Tables<"profiles">>> {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return {
-      data: null,
-      error: "User not found",
-      success: false,
-    };
-  }
-
-  const { data, error } = await supabase
-    .from("profiles")
-    .insert({ ...profile, user_id: user.id })
-    .select()
-    .single();
-
-  if (error) {
-    return { success: false, data: null, error: error.message };
-  }
-
-  return { success: true, data, error: null };
-}
-
 export async function updateProfile({
   profile,
 }: {
@@ -109,22 +77,4 @@ export async function updateProfile({
   }
 
   return { success: true, data, error: null };
-}
-
-export async function deleteProfile({
-  profileId,
-}: {
-  profileId: string;
-}): Promise<SimpleResponse> {
-  const supabase = await createClient();
-  const { error } = await supabase
-    .from("profiles")
-    .delete()
-    .eq("id", profileId);
-
-  if (error) {
-    return { success: false, data: null, error: error.message };
-  }
-
-  return { success: true, data: null, error: null };
 }

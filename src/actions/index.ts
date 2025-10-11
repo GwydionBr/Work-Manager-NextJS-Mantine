@@ -81,9 +81,7 @@ export {
 export {
   getOtherProfiles as getAllProfiles,
   getProfile,
-  createProfile,
   updateProfile,
-  deleteProfile,
 } from "./profile/profileActions";
 
 // Friendship Actions

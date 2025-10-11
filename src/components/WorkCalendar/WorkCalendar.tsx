@@ -17,7 +17,6 @@ import { addDays, differenceInCalendarDays } from "date-fns";
 import {
   CalendarSession,
   CalendarDay,
-  VisibleProject,
   CalendarAppointment,
 } from "@/types/workCalendar.types";
 import { StoreTimerProject } from "@/types/work.types";
@@ -255,12 +254,7 @@ export default function WorkCalendar() {
   }
 
   return (
-    <ScrollArea
-      viewportRef={viewport}
-      h="100vh"
-      type="never"
-      scrollbars="y"
-    >
+    <ScrollArea viewportRef={viewport} h="100vh" type="never" scrollbars="y">
       <Stack>
         <CalendarHeader
           referenceDate={referenceDate}

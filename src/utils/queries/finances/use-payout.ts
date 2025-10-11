@@ -11,7 +11,7 @@ import {
 } from "@/utils/notificationFunctions";
 import { payoutFinanceAdjustment } from "@/actions/finance/payout/payout-finance-adjustment";
 import { payoutHourlyTimerProject } from "@/actions/finance/payout/payout-hourly-timer-project";
-import { TimerProject } from "@/types/work.types";
+import { OldTimerProject } from "@/types/work.types";
 
 // Mutation to payout a finance project
 export function usePayoutFinanceProjectMutation(
@@ -143,14 +143,14 @@ export function usePayoutHourlyTimerProjectMutation(
       title,
       sessionIds,
     }: {
-      project: TimerProject;
+      project: OldTimerProject;
       title: string;
       sessionIds: string[];
     }) => payoutHourlyTimerProject({ project, title, sessionIds }),
     onSuccess: (data, variables, onMutateResult, context) => {
       context.client.setQueryData(
         ["singleCashFlows"],
-        (old: SingleCashFlow[]) => [data.singleCashFlow, ...old || []]
+        (old: SingleCashFlow[]) => [data.singleCashFlow, ...(old || [])]
       );
       context.client.invalidateQueries({ queryKey: ["singleCashFlows"] });
       // TODO: UPDATE TIMER PROJECT

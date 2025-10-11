@@ -39,7 +39,7 @@ import { IconClockPlus } from "@tabler/icons-react";
 
 import { formatDate } from "@/utils/formatFunctions";
 import { Tables } from "@/types/db.types";
-import { TimerProject } from "@/types/work.types";
+import { OldTimerProject } from "@/types/work.types";
 import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
 import { usePayoutHourlyTimerProjectMutation } from "@/utils/queries/finances/use-payout";
 
@@ -69,7 +69,7 @@ export default function WorkPage() {
   const { locale, getLocalizedText } = useSettingsStore();
 
   // Use memo to get the active project
-  const activeProject: TimerProject | undefined = useMemo(() => {
+  const activeProject: OldTimerProject | undefined = useMemo(() => {
     let project = projects.find((p) => p.id === activeProjectId);
     if (!project) {
       project = projects.find((p) => p.id === lastActiveProjectId);

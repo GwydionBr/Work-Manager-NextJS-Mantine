@@ -8,10 +8,10 @@ import Profile from "@/components/Account/Profile";
 import FriendCard from "@/components/Account/FriendCard";
 
 export default function AccountPage() {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useSettingsStore();
   return (
     <Box px="xl" w="100%" maw={1200} mx="auto">
-      <Header headerTitle={locale === "de-DE" ? "Konto" : "Account"} />
+      <Header headerTitle={getLocalizedText("Konto", "Account")} />
       <Stack w="100%">
         <Profile />
         <FriendCard />

@@ -1,11 +1,11 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { TimerProject } from "@/types/work.types";
+import { OldTimerProject } from "@/types/work.types";
 import { SingleCashFlow } from "@/types/finance.types";
 
 interface PayoutHourlyTimerProjectProps {
-  project: TimerProject;
+  project: OldTimerProject;
   title: string;
   sessionIds: string[];
 }
@@ -16,7 +16,7 @@ export async function payoutHourlyTimerProject({
   sessionIds,
 }: PayoutHourlyTimerProjectProps): Promise<{
   singleCashFlow: SingleCashFlow;
-  project: TimerProject;
+  project: OldTimerProject;
 }> {
   const supabase = await createClient();
 

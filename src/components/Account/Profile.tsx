@@ -23,7 +23,7 @@ import CancelButton from "../UI/Buttons/CancelButton";
 import DeleteUserButton from "../Auth/DeleteUserButton";
 
 export default function Profile() {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useSettingsStore();
   const {
     allProfiles,
     profile,
@@ -43,20 +43,23 @@ export default function Profile() {
         if (value.length < 3) return null;
 
         if (!/^[a-zA-Z0-9_]+$/.test(value)) {
-          return locale === "de-DE"
-            ? "Benutzername kann nur Buchstaben, Zahlen und Unterstriche enthalten"
-            : "Username can only contain letters, numbers, and underscores";
+          return getLocalizedText(
+            "Benutzername kann nur Buchstaben, Zahlen und Unterstriche enthalten",
+            "Username can only contain letters, numbers, and underscores"
+          );
         }
         if (value.length > 20)
-          return locale === "de-DE"
-            ? "Benutzername muss höchstens 20 Zeichen lang sein"
-            : "Username must be at most 20 characters long";
+          return getLocalizedText(
+            "Benutzername muss höchstens 20 Zeichen lang sein",
+            "Username must be at most 20 characters long"
+          );
         if (
           allProfiles?.some((p) => p.username === value && p.id !== profile?.id)
         ) {
-          return locale === "de-DE"
-            ? "Benutzername ist bereits vergeben"
-            : "Username is already taken";
+          return getLocalizedText(
+            "Benutzername ist bereits vergeben",
+            "Username is already taken"
+          );
         }
         return null;
       },
@@ -81,9 +84,7 @@ export default function Profile() {
 
   if (!profile) {
     return (
-      <div>
-        {locale === "de-DE" ? "Kein Profil gefunden" : "No Profile found"}
-      </div>
+      <div>{getLocalizedText("Kein Profil gefunden", "No Profile found")}</div>
     );
   }
 
@@ -122,7 +123,7 @@ export default function Profile() {
               <Group justify="space-between" gap="xl" align="center">
                 <Stack gap="xs">
                   <Text size="sm" c="dimmed">
-                    {locale === "de-DE" ? "Benutzername" : "Username"}
+                    {getLocalizedText("Benutzername", "Username")}
                   </Text>
                   <Text size="lg" fw={500}>
                     {profile.username}
@@ -137,16 +138,14 @@ export default function Profile() {
                     <form onSubmit={form.onSubmit(handleSubmit)}>
                       <Stack gap="md">
                         <TextInput
-                          label={
-                            locale === "de-DE"
-                              ? "Neuer Benutzername"
-                              : "New Username"
-                          }
-                          placeholder={
-                            locale === "de-DE"
-                              ? "Gib einen neuen Benutzernamen ein (min. 3 Zeichen)"
-                              : "Enter new username (min. 3 characters)"
-                          }
+                          label={getLocalizedText(
+                            "Neuer Benutzername",
+                            "New Username"
+                          )}
+                          placeholder={getLocalizedText(
+                            "Gib einen neuen Benutzernamen ein (min. 3 Zeichen)",
+                            "Enter new username (min. 3 characters)"
+                          )}
                           {...form.getInputProps("username")}
                           rightSection={
                             isUsernameValid && !isOldUsername ? (
@@ -168,9 +167,10 @@ export default function Profile() {
                             }
                             loading={isUpdating}
                           >
-                            {locale === "de-DE"
-                              ? "Änderungen speichern"
-                              : "Save Changes"}
+                            {getLocalizedText(
+                              "Änderungen speichern",
+                              "Save Changes"
+                            )}
                           </Button>
                         </Group>
                       </Stack>
@@ -181,7 +181,7 @@ export default function Profile() {
 
               <Stack gap="xs" align="flex-start">
                 <Text size="sm" c="dimmed">
-                  {locale === "de-DE" ? "E-Mail" : "Email"}
+                  {getLocalizedText("E-Mail", "Email")}
                 </Text>
                 <Text size="lg">{profile.email}</Text>
               </Stack>

@@ -9,10 +9,10 @@ import { IconCashBanknotePlus } from "@tabler/icons-react";
 import QuickPayoutButton from "@/components/Finances/Payout/HourlyPayout/QuickPayoutButton";
 
 import { Tables } from "@/types/db.types";
-import { TimerProject } from "@/types/work.types";
+import { OldTimerProject } from "@/types/work.types";
 
 interface HourlyPayoutCardProps {
-  project: TimerProject;
+  project: OldTimerProject;
   isProcessing: boolean;
   handlePayoutClick: (sessions: Tables<"timer_session">[]) => void;
 }
