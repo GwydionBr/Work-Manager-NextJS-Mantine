@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useUserStore } from "@/stores/userStore";
 import { useForm } from "@mantine/form";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -21,17 +20,20 @@ import LogoutButton from "../Auth/LogoutButton";
 import PencilActionIcon from "../UI/ActionIcons/PencilActionIcon";
 import CancelButton from "../UI/Buttons/CancelButton";
 import DeleteUserButton from "../Auth/DeleteUserButton";
+import {
+  useOtherProfilesQuery,
+  useProfileQuery,
+  useUpdateProfileMutation,
+} from "@/utils/queries/profile/use-profile";
 
 export default function Profile() {
   const { getLocalizedText } = useSettingsStore();
-  const {
-    allProfiles,
-    profile,
-    isFetching: isLoading,
-    updateProfile,
-  } = useUserStore();
+  const { data: profile, isPending: isProfilePending } = useProfileQuery();
+  const { data: otherProfiles, isPending: isOtherProfilesPending } =
+    useOtherProfilesQuery();
+  const { mutate: updateProfile, isPending: isUpdating } =
+    useUpdateProfileMutation(() => setIsOpen(false));
   const [isOpen, setIsOpen] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
 
   const form = useForm({
     initialValues: {
@@ -54,7 +56,9 @@ export default function Profile() {
             "Username must be at most 20 characters long"
           );
         if (
-          allProfiles?.some((p) => p.username === value && p.id !== profile?.id)
+          otherProfiles?.some(
+            (p) => p.username === value && p.id !== profile?.id
+          )
         ) {
           return getLocalizedText(
             "Benutzername ist bereits vergeben",
@@ -74,7 +78,7 @@ export default function Profile() {
     }
   }, [profile]);
 
-  if (isLoading) {
+  if (isProfilePending || isOtherProfilesPending) {
     return (
       <Center w="100%" h={250}>
         <Loader />
@@ -94,15 +98,10 @@ export default function Profile() {
   };
 
   const handleSubmit = async (values: { username: string }) => {
-    setIsUpdating(true);
-    const response = await updateProfile({
+    updateProfile({
       id: profile.id,
       username: values.username,
     });
-    if (response) {
-      setIsOpen(false);
-    }
-    setIsUpdating(false);
   };
 
   const isUsernameValid =
