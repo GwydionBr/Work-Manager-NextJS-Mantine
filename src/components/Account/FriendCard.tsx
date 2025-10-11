@@ -9,12 +9,15 @@ import { Card } from "@mantine/core";
 import FriendList from "./FriendList";
 import { IconSearch } from "@tabler/icons-react";
 import { useOtherProfilesQuery } from "@/utils/queries/profile/use-profile";
+import { useCreateFriendshipMutation, useFriendsQuery } from "@/utils/queries/profile/use-friends";
 
 export default function FriendCard() {
   const { getLocalizedText } = useSettingsStore();
   const { data: otherProfiles } = useOtherProfilesQuery();
-  const { friends, addFriend } = useUserStore();
   const [search, setSearch] = useState("");
+  const { data: friends } = useFriendsQuery();
+  const { mutate: createFriendship, isPending: isCreatingFriendship } =
+    useCreateFriendshipMutation(() => setSearch(""));
   const [isAddable, setIsAddable] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

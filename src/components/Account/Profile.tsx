@@ -7,10 +7,9 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import {
   Button,
   Card,
-  Center,
   Collapse,
   Group,
-  Loader,
+  Skeleton,
   Stack,
   Text,
   TextInput,
@@ -78,26 +77,14 @@ export default function Profile() {
     }
   }, [profile]);
 
-  if (isProfilePending || isOtherProfilesPending) {
-    return (
-      <Center w="100%" h={250}>
-        <Loader />
-      </Center>
-    );
-  }
-
-  if (!profile) {
-    return (
-      <div>{getLocalizedText("Kein Profil gefunden", "No Profile found")}</div>
-    );
-  }
-
   const closeForm = () => {
     setIsOpen(false);
+    if (!profile) return;
     form.setFieldValue("username", profile.username);
   };
 
   const handleSubmit = async (values: { username: string }) => {
+    if (!profile) return;
     updateProfile({
       id: profile.id,
       username: values.username,
@@ -106,14 +93,14 @@ export default function Profile() {
 
   const isUsernameValid =
     !form.errors.username && form.values.username.length >= 3;
-  const isOldUsername = profile.username === form.values.username;
+  const isOldUsername = profile?.username === form.values.username;
 
   return (
     <Card withBorder radius="md" shadow="md" p="xl">
       <Stack gap="lg">
         <Group justify="space-between">
-          <DeleteUserButton />
-          <LogoutButton size="md" />
+          <DeleteUserButton disabled={isProfilePending} />
+          <LogoutButton size="md" disabled={isProfilePending} />
         </Group>
 
         <Stack align="center">
@@ -124,11 +111,18 @@ export default function Profile() {
                   <Text size="sm" c="dimmed">
                     {getLocalizedText("Benutzername", "Username")}
                   </Text>
-                  <Text size="lg" fw={500}>
-                    {profile.username}
-                  </Text>
+                  {isProfilePending ? (
+                    <Skeleton height={25} w={150} />
+                  ) : (
+                    <Text size="lg" fw={500}>
+                      {profile?.username ||
+                        getLocalizedText("Kein Benutzername", "No username")}
+                    </Text>
+                  )}
                 </Stack>
-                <PencilActionIcon onClick={() => setIsOpen(!isOpen)} />
+                {profile && (
+                  <PencilActionIcon onClick={() => setIsOpen(!isOpen)} />
+                )}
               </Group>
 
               <Collapse in={isOpen}>
@@ -182,7 +176,14 @@ export default function Profile() {
                 <Text size="sm" c="dimmed">
                   {getLocalizedText("E-Mail", "Email")}
                 </Text>
-                <Text size="lg">{profile.email}</Text>
+                {isProfilePending ? (
+                  <Skeleton height={25} w={150} />
+                ) : (
+                  <Text size="lg">
+                    {profile?.email ||
+                      getLocalizedText("Kein E-Mail", "No email")}
+                  </Text>
+                )}
               </Stack>
             </Stack>
           </Card>
