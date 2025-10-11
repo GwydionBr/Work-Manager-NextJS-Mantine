@@ -8,10 +8,12 @@ import { Autocomplete, Button, Stack, Text } from "@mantine/core";
 import { Card } from "@mantine/core";
 import FriendList from "./FriendList";
 import { IconSearch } from "@tabler/icons-react";
+import { useOtherProfilesQuery } from "@/utils/queries/profile/use-profile";
 
 export default function FriendCard() {
-  const { locale } = useSettingsStore();
-  const { allProfiles, friends, addFriend } = useUserStore();
+  const { getLocalizedText } = useSettingsStore();
+  const { data: otherProfiles } = useOtherProfilesQuery();
+  const { friends, addFriend } = useUserStore();
   const [search, setSearch] = useState("");
   const [isAddable, setIsAddable] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +24,7 @@ export default function FriendCard() {
       const isFriend = friends.some(
         (friend) => friend.profile.username === search
       );
-      const isValidProfile = allProfiles?.some(
+      const isValidProfile = otherProfiles?.some(
         (profile) => profile.username === search
       );
       if (!isFriend && isValidProfile) {
@@ -35,7 +37,7 @@ export default function FriendCard() {
 
   async function handleAddFriend() {
     setIsLoading(true);
-    const friendId = allProfiles?.find(
+    const friendId = otherProfiles?.find(
       (profile) => profile.username === search
     )?.id;
     if (friendId) {
@@ -56,11 +58,9 @@ export default function FriendCard() {
         <Stack maw={500}>
           <Autocomplete
             placeholder={
-              locale === "de-DE"
-                ? "Suche nach einem Profil"
-                : "Search for a profile"
+              getLocalizedText("Suche nach einem Profil", "Search for a profile")
             }
-            data={allProfiles?.map((profile) => profile.username) || []}
+            data={otherProfiles?.map((profile) => profile.username) || []}
             value={search}
             onChange={(e) => setSearch(e)}
             leftSection={<IconSearch size={18} />}
@@ -74,7 +74,7 @@ export default function FriendCard() {
               onClick={handleAddFriend}
               mx="xl"
             >
-              {locale === "de-DE" ? "Freund hinzufügen" : "Add Friend"}
+              {getLocalizedText("Freund hinzufügen", "Add Friend")}
             </Button>
           )}
         </Stack>
