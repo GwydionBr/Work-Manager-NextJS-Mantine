@@ -553,17 +553,22 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
         endValue,
         endCurrency
       ) {
-        const payoutResult = await actions.createPayout({
-          projectId,
-          date: new Date(),
-          startValue,
-          startCurrency,
-          categoryId,
-          endValue,
-          endCurrency,
-        });
+        // const payoutResult = await actions.createPayout({
+        //   projectId,
+        //   date: new Date(),
+        //   startValue,
+        //   startCurrency,
+        //   categoryId,
+        //   endValue,
+        //   endCurrency,
+        // });
 
-        return payoutResult;
+        // return payoutResult;
+        return {
+          success: false,
+          data: null,
+          error: "Payout is not implemented yet",
+        };
       },
 
       async addProjectFolder(folder) {

@@ -8,7 +8,7 @@ import {
   showActionErrorNotification,
   showActionSuccessNotification,
 } from "@/utils/notificationFunctions";
-import { addSingleCashFlow } from "@/actions/finance/singleCashflow/add-single-cashflow";
+import { addSingleCashFlow } from "@/actions/finance/singleCashflow/create-single-cashflow";
 import {
   InsertSingleCashFlow,
   SingleCashFlow,

@@ -28,11 +28,6 @@ export { createAppointment } from "./appointments/createAppointment";
 export { updateAppointment } from "./appointments/updateAppointment";
 export { deleteAppointment } from "./appointments/deleteAppointment";
 
-// Payout Actions
-
-export { payoutSessions } from "./finance/payout/payoutSessions";
-export { createPayout } from "./finance/payout/createPayout";
-export { getAllPayouts } from "./finance/payout/getAllPayouts";
 
 // Session Actions
 
@@ -53,12 +48,6 @@ export { deleteUser } from "./auth/deleteUser";
 // Settings Actions
 
 export { getSettings, updateSettings } from "./settings/settingsActions";
-
-// Finance Actions
-
-export { createSingleCashFlow } from "./finance/singleCashflow/createSingleCashFlow";
-export { createMultipleSingleCashFlows } from "./finance/singleCashflow/createMultipleSingleCashFlows";
-export { updateMultipleSingleCashFlows } from "./finance/singleCashflow/updateMultipleSingleCashFlows";
 
 // Group Actions
 

@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getAllRecurringCashFlows } from "@/actions/finance/recurringCashflow/get-all-recurring-cashflows";
-import { addRecurringCashFlow } from "@/actions/finance/recurringCashflow/add-recurring-cashflow";
+import { addRecurringCashFlow } from "@/actions/finance/recurringCashflow/create-recurring-cashflow";
 import { updateRecurringCashFlow } from "@/actions/finance/recurringCashflow/update-recurring-cashflow";
 import {
   DeleteRecurringCashFlowMode,

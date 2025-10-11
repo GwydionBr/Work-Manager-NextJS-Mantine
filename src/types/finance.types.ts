@@ -60,25 +60,6 @@ export interface FinanceRule extends Tables<"finance_rule"> {
   timerProjectIds: string[];
 }
 
-export interface StoreFinanceProject extends Tables<"finance_project"> {
-  adjustments: Tables<"finance_project_adjustment">[];
-  categoryIds: string[];
-}
-
-export interface StoreSingleCashFlow extends Tables<"single_cash_flow"> {
-  categoryIds: string[];
-}
-
-export interface StoreRecurringCashFlow extends Tables<"recurring_cash_flow"> {
-  categoryIds: string[];
-}
-
-export interface OldFinanceProject extends Tables<"finance_project"> {
-  adjustments: Tables<"finance_project_adjustment">[];
-  finance_client: Tables<"finance_client"> | null;
-  categories: Tables<"finance_category">[];
-}
-
 export type FinanceNavbarItem = {
   totalAmount: number;
   projectCount: number;
