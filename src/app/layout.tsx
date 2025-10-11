@@ -13,9 +13,9 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 // import Script from "next/script";
 import { ContextMenuProvider } from "mantine-contextmenu";
 import { Notifications } from "@mantine/notifications";
-import Layout from "@/components/AppShell/AppShell";
 import { mantineTheme } from "@/theme";
 import { ModalsProvider } from "@mantine/modals";
+import App from "@/components/AppShell/App";
 
 export const metadata = {
   title: "Work Manager",
@@ -55,12 +55,12 @@ export default function RootLayout({ children }: { children: any }) {
         <MantineProvider defaultColorScheme="auto" theme={mantineTheme}>
           <ContextMenuProvider>
             <ModalsProvider>
-              <Layout>
+              <App>
                 <Analytics />
                 <SpeedInsights />
                 <Notifications />
                 {children}
-              </Layout>
+              </App>
             </ModalsProvider>
           </ContextMenuProvider>
         </MantineProvider>

@@ -36,7 +36,6 @@ export const useUpdateProfileMutation = (
       updateProfile({ profile }),
     onSuccess: (data, variables, onMutateResult, context) => {
       context.client.setQueryData(["profile"], data);
-      context.client.invalidateQueries({ queryKey: ["profile"] });
       showActionSuccessNotification(
         getLocalizedText(
           "Profil erfolgreich aktualisiert",

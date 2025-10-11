@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useUserStore } from "@/stores/userStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
@@ -22,20 +21,18 @@ import { locales } from "@/constants/settings";
 import { getOtherProfiles } from "@/actions/profile/profileActions";
 import { Tables } from "@/types/db.types";
 import {
-  showActionErrorNotification,
-  showActionSuccessNotification,
-} from "@/utils/notificationFunctions";
+  useProfileQuery,
+  useUpdateProfileMutation,
+} from "@/utils/queries/profile/use-profile";
 
 export default function InitializeProfile() {
-  const { profile, updateProfile } = useUserStore();
+  const { data: profile, isPending: isProfilePending } = useProfileQuery();
+  const { mutate: updateProfile, isPending: isUpdating } =
+    useUpdateProfileMutation();
+
   const { locale, setLocale, format24h, setFormat24h, getLocalizedText } =
     useSettingsStore();
-  const [isUpdating, setIsUpdating] = useState(false);
   const [allProfiles, setAllProfiles] = useState<Tables<"profiles">[]>([]);
-
-  if (!profile) {
-    return null;
-  }
 
   useEffect(() => {
     const fetchAllProfiles = async () => {
@@ -61,20 +58,23 @@ export default function InitializeProfile() {
         if (value.length < 3) return null;
 
         if (!/^[a-zA-Z0-9_]+$/.test(value)) {
-          return locale === "de-DE"
-            ? "Benutzername kann nur Buchstaben, Zahlen und Unterstriche enthalten"
-            : "Username can only contain letters, numbers, and underscores";
+          return getLocalizedText(
+            "Benutzername kann nur Buchstaben, Zahlen und Unterstriche enthalten",
+            "Username can only contain letters, numbers, and underscores"
+          );
         }
         if (value.length > 20)
-          return locale === "de-DE"
-            ? "Benutzername muss höchstens 20 Zeichen lang sein"
-            : "Username must be at most 20 characters long";
+          return getLocalizedText(
+            "Benutzername muss höchstens 20 Zeichen lang sein",
+            "Username must be at most 20 characters long"
+          );
         if (
           allProfiles?.some((p) => p.username === value && p.id !== profile?.id)
         ) {
-          return locale === "de-DE"
-            ? "Benutzername ist bereits vergeben"
-            : "Username is already taken";
+          return getLocalizedText(
+            "Benutzername ist bereits vergeben",
+            "Username is already taken"
+          );
         }
         return null;
       },
@@ -84,32 +84,17 @@ export default function InitializeProfile() {
   });
 
   async function handleSubmit(values: typeof form.values) {
-    setIsUpdating(true);
     if (!profile) return;
-    const response = await updateProfile({
+    updateProfile({
       id: profile.id,
       full_name: `${values.name} ${values.surname}`,
       username: values.username,
       initialized: true,
     });
-    if (response) {
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Dein Profil wurde erfolgreich initialisiert",
-          "Your profile has been successfully initialized"
-        ),
-        locale
-      );
-    } else {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Dein Profil konnte nicht initialisiert werden",
-          "Your profile could not be initialized"
-        ),
-        locale
-      );
-    }
-    setIsUpdating(false);
+  }
+
+  if (!profile) {
+    return null;
   }
 
   const isUsernameValid =
@@ -118,6 +103,7 @@ export default function InitializeProfile() {
 
   return (
     <Modal
+      withCloseButton={false}
       centered
       opened={true}
       onClose={() => {}}
@@ -126,9 +112,7 @@ export default function InitializeProfile() {
         <Group>
           <IconUser size={16} />
           <Text fw={600}>
-            {locale === "de-DE"
-              ? "Profil initialisieren"
-              : "Initialize Profile"}
+            {getLocalizedText("Profil initialisieren", "Initialize Profile")}
           </Text>
         </Group>
       }
@@ -139,17 +123,19 @@ export default function InitializeProfile() {
       >
         <Stack>
           <Text>
-            {locale === "de-DE"
-              ? "Fülle die folgenden Informationen aus, um zu starten."
-              : "Fill in the following information to get started."}
+            {getLocalizedText(
+              "Fülle die folgenden Informationen aus, um zu starten.",
+              "Fill in the following information to get started."
+            )}
           </Text>
           <Group grow>
             <Select
               data={locales}
-              label={locale === "de-DE" ? "Sprache" : "Language"}
-              placeholder={
-                locale === "de-DE" ? "Sprache auswählen" : "Select Language"
-              }
+              label={getLocalizedText("Sprache", "Language")}
+              placeholder={getLocalizedText(
+                "Sprache auswählen",
+                "Select Language"
+              )}
               value={locale}
               allowDeselect={false}
               onChange={(value) => setLocale(value as Locale)}
@@ -185,12 +171,11 @@ export default function InitializeProfile() {
                 { value: "24h", label: "24h" },
                 { value: "12h", label: "12h" },
               ]}
-              label={locale === "de-DE" ? "Zeitformat" : "Time Format"}
-              placeholder={
-                locale === "de-DE"
-                  ? "Zeitformat auswählen"
-                  : "Select Time Format"
-              }
+              label={getLocalizedText("Zeitformat", "Time Format")}
+              placeholder={getLocalizedText(
+                "Zeitformat auswählen",
+                "Select Time Format"
+              )}
               value={format24h ? "24h" : "12h"}
               onChange={(value) => setFormat24h(value === "24h")}
             />
@@ -198,24 +183,21 @@ export default function InitializeProfile() {
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack>
               <TextInput
-                label={locale === "de-DE" ? "Name" : "Name"}
+                label={getLocalizedText("Name", "Name")}
                 {...form.getInputProps("name")}
               />
               <TextInput
-                label={locale === "de-DE" ? "Nachname" : "Surname"}
+                label={getLocalizedText("Nachname", "Surname")}
                 {...form.getInputProps("surname")}
               />
               <Stack gap="md">
                 <TextInput
                   withAsterisk
-                  label={
-                    locale === "de-DE" ? "Neuer Benutzername" : "New Username"
-                  }
-                  placeholder={
-                    locale === "de-DE"
-                      ? "Gib einen neuen Benutzernamen ein (min. 3 Zeichen)"
-                      : "Enter new username (min. 3 characters)"
-                  }
+                  label={getLocalizedText("Neuer Benutzername", "New Username")}
+                  placeholder={getLocalizedText(
+                    "Gib einen neuen Benutzernamen ein (min. 3 Zeichen)",
+                    "Enter new username (min. 3 characters)"
+                  )}
                   {...form.getInputProps("username")}
                   rightSection={
                     isUsernameValid && !isOldUsername ? (
@@ -232,11 +214,15 @@ export default function InitializeProfile() {
                   rightSection={<IconArrowRight size={16} />}
                   type="submit"
                   disabled={
-                    !isUsernameValid || isUpdating || isOldUsername || !profile
+                    !isUsernameValid ||
+                    isUpdating ||
+                    isOldUsername ||
+                    !profile ||
+                    isProfilePending
                   }
                   loading={isUpdating}
                 >
-                  {locale === "de-DE" ? "Starten" : "Get Started"}
+                  {getLocalizedText("Starten", "Get Started")}
                 </Button>
               </Stack>
             </Stack>

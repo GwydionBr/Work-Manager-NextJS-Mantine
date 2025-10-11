@@ -9,7 +9,6 @@ import { usePathname } from "next/navigation";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useGroupStore } from "@/stores/groupStore";
 import { useUserStore } from "@/stores/userStore";
-import { useFinanceStore } from "@/stores/financeStore";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useTaskStore } from "@/stores/taskStore";
 import { useCalendarStore } from "@/stores/calendarStore";
@@ -18,12 +17,11 @@ import { notifications } from "@mantine/notifications";
 
 import { AppShell, Burger, Button, Group, Stack, Text } from "@mantine/core";
 import { IconInfoCircle, IconRefresh } from "@tabler/icons-react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { DatesProvider } from "@mantine/dates";
 import Navbar from "@/components/Navbar/Navbar";
 import Aside from "./Aside";
 import InitializeProfile from "@/components/Account/InitializeProfile";
+import { useProfileQuery } from "@/utils/queries/profile/use-profile";
 
 enum FetchPriority {
   Settings = "settings",
@@ -34,22 +32,12 @@ enum FetchPriority {
   Calendar = "calendar",
 }
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 2 * 60 * 1000,
-    },
-  },
-});
-
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { fetchIfStale: fetchGroupIfStale, abortFetch: abortGroupFetch } =
     useGroupStore();
-  const {
-    fetchIfStale: fetchUserIfStale,
-    profile,
-    abortFetch: abortUserFetch,
-  } = useUserStore();
+  const { data: profile } = useProfileQuery();
+  const { fetchIfStale: fetchUserIfStale, abortFetch: abortUserFetch } =
+    useUserStore();
   const { fetchIfStale: fetchCalendarIfStale, abortFetch: abortCalendarFetch } =
     useCalendarStore();
   const {
@@ -183,10 +171,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     setIsAsideOpen(!isAsideOpen);
   }
 
-  if (profile && !profile.initialized) {
-    return <InitializeProfile />;
-  }
-
   return (
     <DatesProvider
       settings={{
@@ -195,7 +179,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         weekendDays: locale === "de-DE" ? [0, 6] : [0],
       }}
     >
-      <QueryClientProvider client={queryClient}>
+      {profile && !profile.initialized ? (
+        <InitializeProfile />
+      ) : (
         <AppShell
           bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))"
           disabled={isHome || isAuth}
@@ -237,8 +223,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Aside toggleAside={toggleAside} isAsideOpen={isAsideOpen} />
           </AppShell.Aside>
         </AppShell>
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
+      )}
     </DatesProvider>
   );
 }

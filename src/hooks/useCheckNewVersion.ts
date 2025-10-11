@@ -4,7 +4,7 @@ import { Tables } from "@/types/db.types";
 
 export function useCheckNewVersion(
   interval = 60000,
-  profile: Tables<"profiles"> | null
+  profile: Tables<"profiles"> | undefined
 ) {
   const [newVersion, setNewVersion] = useState<string | null>(null);
 
