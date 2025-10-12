@@ -1,6 +1,10 @@
 "use client";
 
-import { useUserStore } from "@/stores/userStore";
+import { useFriendsQuery } from "@/utils/queries/profile/use-friends";
+import {
+  useAcceptFriendshipMutation,
+  useDeclineFriendshipMutation,
+} from "@/utils/queries/profile/use-friends";
 import { useGroupStore } from "@/stores/groupStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -10,11 +14,24 @@ import { IconUserPlus, IconUsersPlus } from "@tabler/icons-react";
 import classes from "./Notification.module.css";
 import CheckActionIcon from "../UI/ActionIcons/CheckActionIcon";
 import XActionIcon from "../UI/ActionIcons/XActionIcon";
+import { useMemo } from "react";
 
 export default function NotificationPopover() {
-  const { requestedFriends, acceptFriend, declineFriend } = useUserStore();
+  const { data: friends } = useFriendsQuery();
+  const { mutate: acceptFriend, isPending: isAcceptingFriend } =
+    useAcceptFriendshipMutation();
+  const { mutate: declineFriend, isPending: isDecliningFriend } =
+    useDeclineFriendshipMutation();
   const { groupRequests, answerGroupRequest } = useGroupStore();
   const { defaultGroupColor } = useSettingsStore();
+
+  const requestedFriends = useMemo(
+    () =>
+      friends?.filter(
+        (friend) => friend.friendshipStatus === "pending" && !friend.isRequester
+      ) || [],
+    [friends]
+  );
 
   return (
     <Stack gap="xs">
@@ -33,7 +50,7 @@ export default function NotificationPopover() {
                 className={classes.popoverRow}
                 justify="space-between"
               >
-                {request.profile.username}
+                {request.username}
                 <Group gap="xs">
                   <CheckActionIcon
                     size="sm"

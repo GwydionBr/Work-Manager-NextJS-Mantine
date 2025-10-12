@@ -17,7 +17,6 @@ import {
   IconUserPlus,
 } from "@tabler/icons-react";
 import FriendsTable from "./FriendsTable";
-import styles from "./FriendList.module.css";
 import { showDeleteConfirmationModal } from "@/utils/notificationFunctions";
 
 export default function FriendList() {
@@ -62,13 +61,13 @@ export default function FriendList() {
 
   const acceptedFriends =
     friends?.filter((friend) => friend.friendshipStatus === "accepted") || [];
-  const requestedFriends =
-    friends?.filter(
-      (friend) => friend.friendshipStatus === "pending" && friend.isRequester
-    ) || [];
   const pendingFriends =
     friends?.filter(
       (friend) => friend.friendshipStatus === "pending" && !friend.isRequester
+    ) || [];
+  const requestedFriends =
+    friends?.filter(
+      (friend) => friend.friendshipStatus === "pending" && friend.isRequester
     ) || [];
   const declinedFriends =
     friends?.filter((friend) => friend.friendshipStatus === "declined") || [];
@@ -77,15 +76,15 @@ export default function FriendList() {
     <Box w="100%">
       <Grid w="100%" gutter="md">
         <Grid.Col span={{ base: 12, sm: 12, md: 6, lg: 7 }}>
-          <Stack className={styles.friendsSection}>
-            <Group className={styles.sectionHeader}>
+          <Stack mb="md">
+            <Group mb="sm">
               <IconUserCheck color="light-dark(var(--mantine-color-teal-9), var(--mantine-color-teal-4))" />
               <Text>{getLocalizedText("Freunde", "Friends")}:</Text>
             </Group>
             <FriendsTable
               friends={acceptedFriends}
               emptyMessage={
-                <Text className={styles.emptyMessage}>
+                <Text c="dimmed" ta="center">
                   {getLocalizedText(
                     "Fügen Sie einige Freunde hinzu, um sie hier zu sehen",
                     "Add some friends to see them here"
@@ -98,8 +97,8 @@ export default function FriendList() {
           </Stack>
         </Grid.Col>
         <Grid.Col span={{ base: 12, sm: 12, md: 6, lg: 5 }}>
-          <Stack className={styles.friendRequestsSection}>
-            <Group className={styles.sectionHeader}>
+          <Stack mb="md">
+            <Group mb="sm">
               <IconUserPlus color="light-dark(var(--mantine-color-blue-9), var(--mantine-color-blue-4))" />
               <Text>
                 {locale === "de-DE"
@@ -111,7 +110,7 @@ export default function FriendList() {
             <FriendsTable
               friends={pendingFriends}
               emptyMessage={
-                <Text className={styles.emptyMessage}>
+                <Text c="dimmed" ta="center">
                   {getLocalizedText(
                     "Noch keine Freundschaftsanfragen",
                     "No friend requests yet"
@@ -126,7 +125,7 @@ export default function FriendList() {
             {requestedFriends.length > 0 && (
               <Stack>
                 <Divider my="md" />
-                <Group className={styles.sectionHeader}>
+                <Group mb="sm">
                   <IconHourglass color="light-dark(var(--mantine-color-orange-7), var(--mantine-color-orange-4))" />
                   <Text>
                     {locale === "de-DE"
@@ -140,7 +139,7 @@ export default function FriendList() {
             {declinedFriends.length > 0 && (
               <Stack>
                 <Divider my="md" />
-                <Group className={styles.sectionHeader}>
+                <Group mb="sm">
                   <IconUserX color="red" />
                   <Text>
                     {locale === "de-DE"

@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useUserStore } from "@/stores/userStore";
+import {
+  useFriendsQuery,
+  useAcceptFriendshipMutation,
+  useDeclineFriendshipMutation,
+} from "@/utils/queries/profile/use-friends";
 import { useGroupStore } from "@/stores/groupStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 
@@ -20,8 +24,19 @@ import classes from "./Notification.module.css";
 import CheckActionIcon from "../UI/ActionIcons/CheckActionIcon";
 import XActionIcon from "../UI/ActionIcons/XActionIcon";
 
-export default function NotificationAsideCard() {
-  const { requestedFriends, acceptFriend, declineFriend } = useUserStore();
+import { Friend } from "@/types/profile.types";
+
+interface NotificationAsideCardProps {
+  pendingFriends: Friend[];
+}
+
+export default function NotificationAsideCard({
+  pendingFriends,
+}: NotificationAsideCardProps) {
+  const { mutate: acceptFriend, isPending: isAcceptingFriend } =
+    useAcceptFriendshipMutation(() => {});
+  const { mutate: declineFriend, isPending: isDecliningFriend } =
+    useDeclineFriendshipMutation(() => {});
   const { groupRequests, answerGroupRequest } = useGroupStore();
   const { defaultGroupColor } = useSettingsStore();
   const [friendRequestsOpened, setFriendRequestsOpened] = useState(false);
@@ -30,7 +45,7 @@ export default function NotificationAsideCard() {
   return (
     <Paper mah={300} w={220} p="md" withBorder>
       <Stack gap="xs">
-        {requestedFriends.length > 0 && (
+        {pendingFriends.length > 0 && (
           <Popover
             opened={friendRequestsOpened}
             onChange={setFriendRequestsOpened}
@@ -40,7 +55,7 @@ export default function NotificationAsideCard() {
                 className={classes.notificationRow}
                 onClick={() => setFriendRequestsOpened(true)}
               >
-                <Indicator size={16} label={requestedFriends.length}>
+                <Indicator size={16} label={pendingFriends.length}>
                   <IconUserPlus color="light-dark(var(--mantine-color-blue-9), var(--mantine-color-blue-4))" />
                 </Indicator>
                 <Text className={classes.notificationTitle}>
@@ -50,13 +65,13 @@ export default function NotificationAsideCard() {
             </Popover.Target>
             <Popover.Dropdown>
               <Stack>
-                {requestedFriends.map((request) => (
+                {pendingFriends.map((request) => (
                   <Group
                     key={request.friendshipId}
                     className={classes.notificationDropdownRow}
                     justify="space-between"
                   >
-                    {request.profile.username}
+                    {request.username}
                     <Group gap="xs">
                       <CheckActionIcon
                         size="sm"
@@ -75,7 +90,7 @@ export default function NotificationAsideCard() {
             </Popover.Dropdown>
           </Popover>
         )}
-        {requestedFriends.length > 0 && groupRequests.length > 0 && (
+        {pendingFriends.length > 0 && groupRequests.length > 0 && (
           <Divider orientation="vertical" />
         )}
         {groupRequests.length > 0 && (

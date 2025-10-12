@@ -127,7 +127,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         await fetchWorkIfStale(interval);
         await fetchCalendarIfStale(interval);
       } else if (pathname === "/work") {
-        console.log("fetching work");
         priorityFetch = FetchPriority.Work;
         await fetchWorkIfStale(interval);
       } else if (pathname.startsWith("/group")) {
@@ -179,7 +178,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         weekendDays: locale === "de-DE" ? [0, 6] : [0],
       }}
     >
-      {profile && !profile.initialized ? (
+      {profile && profile.initialized === false && !isAuth && !isHome ? (
         <InitializeProfile />
       ) : (
         <AppShell

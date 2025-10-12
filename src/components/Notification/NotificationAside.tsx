@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useUserStore } from "@/stores/userStore";
+import { useState, useEffect, useMemo } from "react";
+import { useFriendsQuery } from "@/utils/queries/profile/use-friends";
 import { useGroupStore } from "@/stores/groupStore";
 
 import {
@@ -27,21 +27,29 @@ export default function NotificationAside({
   asideOpened: boolean;
   setIsNotificationOpen: (value: boolean) => void;
 }) {
-  const { requestedFriends } = useUserStore();
+  const { data: friends } = useFriendsQuery();
   const { groupRequests } = useGroupStore();
   const [opened, setOpened] = useState(false);
   const [showCard, setShowCard] = useState(false);
 
+  const pendingFriends = useMemo(
+    () =>
+      friends?.filter(
+        (friend) => friend.friendshipStatus === "pending" && !friend.isRequester
+      ) || [],
+    [friends]
+  );
+
   useEffect(() => {
     if (
       asideOpened &&
-      (requestedFriends.length > 0 || groupRequests.length > 0)
+      (pendingFriends.length > 0 || groupRequests.length > 0)
     ) {
       setShowCard(true);
     } else {
       setShowCard(false);
     }
-  }, [asideOpened, requestedFriends, groupRequests]);
+  }, [asideOpened, pendingFriends, groupRequests]);
 
   function toggleOpened() {
     if (asideOpened) {
@@ -68,8 +76,8 @@ export default function NotificationAside({
         <Popover.Target>
           <Indicator
             size={16}
-            disabled={requestedFriends.length + groupRequests.length === 0}
-            label={requestedFriends.length + groupRequests.length}
+            disabled={pendingFriends.length + groupRequests.length === 0}
+            label={pendingFriends.length + groupRequests.length}
             color="red"
           >
             <ActionIcon variant="transparent" onClick={toggleOpened}>
@@ -77,7 +85,7 @@ export default function NotificationAside({
             </ActionIcon>
           </Indicator>
         </Popover.Target>
-        {(requestedFriends.length > 0 || groupRequests.length > 0) && (
+        {(pendingFriends.length > 0 || groupRequests.length > 0) && (
           <Popover.Dropdown>
             <NotificationPopover />
           </Popover.Dropdown>
@@ -92,7 +100,7 @@ export default function NotificationAside({
         >
           {(styles) => (
             <div style={styles}>
-              <NotificationAsideCard />
+              <NotificationAsideCard pendingFriends={pendingFriends} />
             </div>
           )}
         </Transition>
