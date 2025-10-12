@@ -4,7 +4,6 @@ import { useForm } from "@mantine/form";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
-import { useFinanceStore } from "@/stores/financeStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 import {
   Group,

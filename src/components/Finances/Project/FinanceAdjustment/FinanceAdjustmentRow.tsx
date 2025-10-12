@@ -26,7 +26,13 @@ interface FinanceAdjustmentRowProps {
   financeProject?: FinanceProject;
   adjustment?: Tables<"finance_project_adjustment">;
   currency: Currency;
-  handlePayout: (id?: string, isStartValue?: boolean) => void;
+  handlePayout: ({
+    adjustmentId,
+    isStartValue,
+  }: {
+    adjustmentId?: string;
+    isStartValue?: boolean;
+  }) => void;
 }
 
 export default function FinanceAdjustmentRow({
@@ -151,7 +157,7 @@ export default function FinanceAdjustmentRow({
               <PayoutActionIcon
                 ml={10}
                 size="sm"
-                onClick={() => handlePayout(id, isStartValue)}
+                onClick={() => handlePayout({ adjustmentId: id, isStartValue })}
                 tooltipLabel={locale === "de-DE" ? "Auszahlung" : "Payout"}
                 style={styles}
               />

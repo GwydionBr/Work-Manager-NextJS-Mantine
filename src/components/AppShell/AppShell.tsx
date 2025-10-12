@@ -3,14 +3,12 @@
 import "dayjs/locale/de";
 import "dayjs/locale/en";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useDisclosure, useHotkeys } from "@mantine/hooks";
 import { usePathname } from "next/navigation";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useGroupStore } from "@/stores/groupStore";
 import { useUserStore } from "@/stores/userStore";
 import { useWorkStore } from "@/stores/workManagerStore";
-import { useTaskStore } from "@/stores/taskStore";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { useCheckNewVersion } from "@/hooks/useCheckNewVersion";
 import { notifications } from "@mantine/notifications";
@@ -25,16 +23,12 @@ import { useProfileQuery } from "@/utils/queries/profile/use-profile";
 
 enum FetchPriority {
   Settings = "settings",
-  Tasks = "tasks",
   Work = "work",
-  Group = "group",
   User = "user",
   Calendar = "calendar",
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { fetchIfStale: fetchGroupIfStale, abortFetch: abortGroupFetch } =
-    useGroupStore();
   const { data: profile } = useProfileQuery();
   const { fetchIfStale: fetchUserIfStale, abortFetch: abortUserFetch } =
     useUserStore();
@@ -45,8 +39,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     setActiveProjectId,
     abortFetch: abortWorkFetch,
   } = useWorkStore();
-  const { fetchIfStale: fetchTaskIfStale, abortFetch: abortTaskFetch } =
-    useTaskStore();
   const {
     locale,
     isAsideOpen,
@@ -105,8 +97,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   useHotkeys([["mod + B", () => toggleAside()]]);
 
   const pathname = usePathname();
-  const isHome = pathname === "/";
-  const isAuth = pathname === "/auth";
+  const isHome = useMemo(() => pathname === "/", [pathname]);
+  const isAuth = useMemo(() => pathname === "/auth", [pathname]);
+
+  const showInitializeProfile = useMemo(
+    () =>
+      profile && profile.initialized === false && !isAuth && !isHome,
+    [profile, isAuth, isHome]
+  );
 
   // Define fetch intervals in milliseconds (5 minutes)
   const FETCH_INTERVAL = 5 * 60 * 1000;
@@ -119,19 +117,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       fetchUserIfStale(interval);
       fetchSettingsIfStale(interval);
 
-      if (pathname.startsWith("/tasks")) {
-        priorityFetch = FetchPriority.Tasks;
-        await fetchTaskIfStale(interval);
-      } else if (pathname.startsWith("/workCalendar")) {
+      if (pathname.startsWith("/workCalendar")) {
         priorityFetch = FetchPriority.Calendar;
         await fetchWorkIfStale(interval);
         await fetchCalendarIfStale(interval);
       } else if (pathname === "/work") {
         priorityFetch = FetchPriority.Work;
         await fetchWorkIfStale(interval);
-      } else if (pathname.startsWith("/group")) {
-        priorityFetch = FetchPriority.Group;
-        await fetchGroupIfStale(interval);
       }
 
       // Background fetching for other data (best-effort)
@@ -142,8 +134,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         fetchWorkIfStale(interval);
       if (priorityFetch !== FetchPriority.Calendar)
         fetchCalendarIfStale(interval);
-      if (priorityFetch !== FetchPriority.Group) fetchGroupIfStale(interval);
-      if (priorityFetch !== FetchPriority.Tasks) fetchTaskIfStale(interval);
     };
 
     prioritized();
@@ -154,9 +144,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
     // Abort any ongoing fetches when route changes
     abortWorkFetch();
-    abortTaskFetch();
     abortUserFetch();
-    abortGroupFetch();
     abortCalendarFetch();
     abortSettingsFetch();
 
@@ -178,7 +166,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         weekendDays: locale === "de-DE" ? [0, 6] : [0],
       }}
     >
-      {profile && profile.initialized === false && !isAuth && !isHome ? (
+      {showInitializeProfile ? (
         <InitializeProfile />
       ) : (
         <AppShell

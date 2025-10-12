@@ -159,7 +159,13 @@ export default function FinanceProjectCard({
     0
   );
 
-  const handlePayoutClick = (adjustmentId?: string, isStartValue?: boolean) => {
+  const handlePayoutClick = ({
+    adjustmentId,
+    isStartValue,
+  }: {
+    adjustmentId?: string;
+    isStartValue?: boolean;
+  }) => {
     if (adjustmentId) {
       const adjustment = project.adjustments.find(
         (adj) => adj.id === adjustmentId
@@ -300,7 +306,7 @@ export default function FinanceProjectCard({
                       variant="subtle"
                       onClick={(e) => {
                         e?.stopPropagation();
-                        handlePayoutClick();
+                        handlePayoutClick({ isStartValue: true });
                       }}
                       tooltipLabel={getLocalizedText(
                         "Finanz Projekt auszahlen",
@@ -347,7 +353,7 @@ export default function FinanceProjectCard({
                           }
                         />
                       }
-                      onClick={() => handlePayoutClick()}
+                      onClick={() => handlePayoutClick({})}
                       disabled={isPaidTotally}
                     >
                       <Text>

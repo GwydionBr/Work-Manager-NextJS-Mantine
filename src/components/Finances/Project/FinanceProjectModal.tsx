@@ -23,20 +23,25 @@ export default function FinanceProjectFormModal({
   opened,
   onClose,
 }: FinanceProjectFormModalProps) {
-  const [financeClient, setFinanceClient] = useState<Tables<"finance_client"> | null>(null);
-  const [categories, setCategories] = useState<Tables<"finance_category">[]>([]);
+  const { getLocalizedText } = useSettingsStore();
+  const [financeClient, setFinanceClient] =
+    useState<Tables<"finance_client"> | null>(null);
+  const [categories, setCategories] = useState<Tables<"finance_category">[]>(
+    []
+  );
   const stack = useModalsStack([
     "project-form",
     "client-form",
     "category-form",
   ]);
-  const { locale } = useSettingsStore();
 
   useEffect(() => {
     if (opened) {
       stack.open("project-form");
     } else {
       stack.closeAll();
+      setFinanceClient(null);
+      setCategories([]);
     }
   }, [opened]);
 
@@ -49,9 +54,7 @@ export default function FinanceProjectFormModal({
           <Group>
             <IconMoneybagPlus />
             <Text>
-              {locale === "de-DE"
-                ? "Neues Finanz Projekt"
-                : "New Finance Project"}
+              {getLocalizedText("Neues Finanz Projekt", "New Finance Project")}
             </Text>
           </Group>
         }
@@ -74,7 +77,7 @@ export default function FinanceProjectFormModal({
         title={
           <Group>
             <IconUserPlus />
-            <Text>{locale === "de-DE" ? "Neuer Kunde" : "New Client"}</Text>
+            <Text>{getLocalizedText("Neuer Kunde", "New Client")}</Text>
           </Group>
         }
         size="lg"
@@ -92,9 +95,7 @@ export default function FinanceProjectFormModal({
           <Group>
             <IconCategoryPlus />
             <Text>
-              {locale === "de-DE"
-                ? "Neue Finanzkategorie"
-                : "New Finance Category"}
+              {getLocalizedText("Neue Finanzkategorie", "New Finance Category")}
             </Text>
           </Group>
         }
@@ -103,9 +104,7 @@ export default function FinanceProjectFormModal({
       >
         <FinanceCategoryForm
           onClose={() => stack.close("category-form")}
-          onSuccess={(category) =>
-            setCategories((prev) => [...prev, category])
-          }
+          onSuccess={(category) => setCategories((prev) => [...prev, category])}
         />
       </Modal>
     </Modal.Stack>
