@@ -3,27 +3,27 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { getAllTimerProjects } from "@/actions/work/timerProject/get-all-timer-projects";
-import { updateTimerProject } from "@/actions/work/timerProject/update-timer-project";
-import { deleteTimerProjects } from "@/actions/work/timerProject/delete-timer-projects";
-import { createTimerProject } from "@/actions/work/timerProject/create-timer-project";
+import { getAllWorkProjects } from "@/actions/work/timerProject/get-all-work-projects";
+import { updateWorkProject } from "@/actions/work/timerProject/update-work-project";
+import { deleteWorkProjects } from "@/actions/work/timerProject/delete-work-projects";
+import { createWorkProject } from "@/actions/work/timerProject/create-work-project";
 import {
   showActionErrorNotification,
   showActionSuccessNotification,
 } from "@/utils/notificationFunctions";
 
-import { TimerProject } from "@/types/work.types";
+import { WorkProject } from "@/types/work.types";
 import { Tables } from "@/types/db.types";
 import { MutationOptions } from "@/types/query.types";
 
-export const useTimerProjectQuery = () => {
+export const useWorkProjectQuery = () => {
   return useQuery({
-    queryKey: ["timerProject"],
-    queryFn: getAllTimerProjects,
+    queryKey: ["workProjects"],
+    queryFn: getAllWorkProjects,
   });
 };
 
-export const useUpdateTimerProjectMutation = ({
+export const useUpdateWorkProjectMutation = ({
   onSuccess,
   onError,
 }: {
@@ -32,13 +32,13 @@ export const useUpdateTimerProjectMutation = ({
 }) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
-    mutationKey: ["updateTimerProject"],
-    mutationFn: updateTimerProject,
+    mutationKey: ["updateWorkProject"],
+    mutationFn: updateWorkProject,
     onSuccess: (data, variables, onMutateResult, context) => {
-      context.client.setQueryData(["timerProject"], (old: TimerProject[]) =>
+      context.client.setQueryData(["workProjects"], (old: WorkProject[]) =>
         old.map((p) => (p.id === data.id ? data : p))
       );
-      context.client.invalidateQueries({ queryKey: ["timerProject"] });
+      context.client.invalidateQueries({ queryKey: ["workProjects"] });
       showActionSuccessNotification(
         getLocalizedText(
           "Projekt erfolgreich aktualisiert",
@@ -46,7 +46,7 @@ export const useUpdateTimerProjectMutation = ({
         ),
         locale
       );
-      const { categories, sessions, ...project } = data;
+      const { categories, ...project } = data;
       onSuccess?.(project);
     },
     onError: (error, variables, onMutateResult, context) => {
@@ -62,19 +62,19 @@ export const useUpdateTimerProjectMutation = ({
   });
 };
 
-export const useDeleteTimerProjectMutation = ({
+export const useDeleteWorkProjectMutation = ({
   onSuccess,
   onError,
 }: MutationOptions) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
-    mutationKey: ["deleteTimerProject"],
-    mutationFn: deleteTimerProjects,
+    mutationKey: ["deleteWorkProject"],
+    mutationFn: deleteWorkProjects,
     onSuccess: (data, variables, onMutateResult, context) => {
-      context.client.setQueryData(["timerProject"], (old: TimerProject[]) =>
+      context.client.setQueryData(["workProjects"], (old: WorkProject[]) =>
         old.filter((p) => !variables.projectIds.includes(p.id))
       );
-      context.client.invalidateQueries({ queryKey: ["timerProject"] });
+      context.client.invalidateQueries({ queryKey: ["workProjects"] });
       showActionSuccessNotification(
         getLocalizedText(
           "Projekt erfolgreich gelöscht",
@@ -97,7 +97,7 @@ export const useDeleteTimerProjectMutation = ({
   });
 };
 
-export const useCreateTimerProjectMutation = ({
+export const useCreateWorkProjectMutation = ({
   onSuccess,
   onError,
 }: {
@@ -106,14 +106,14 @@ export const useCreateTimerProjectMutation = ({
 }) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
-    mutationKey: ["createTimerProject"],
-    mutationFn: createTimerProject,
+    mutationKey: ["createWorkProject"],
+    mutationFn: createWorkProject,
     onSuccess: (data, variables, onMutateResult, context) => {
-      context.client.setQueryData(["timerProject"], (old: TimerProject[]) => [
+      context.client.setQueryData(["workProjects"], (old: WorkProject[]) => [
         data,
         ...old,
       ]);
-      context.client.invalidateQueries({ queryKey: ["timerProject"] });
+      context.client.invalidateQueries({ queryKey: ["workProjects"] });
       showActionSuccessNotification(
         getLocalizedText(
           "Projekt erfolgreich erstellt",
@@ -121,7 +121,7 @@ export const useCreateTimerProjectMutation = ({
         ),
         locale
       );
-      const { categories, sessions, ...project } = data;
+      const { categories, ...project } = data;
       onSuccess?.(project);
     },
     onError: (error, variables, onMutateResult, context) => {

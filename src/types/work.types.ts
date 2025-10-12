@@ -1,17 +1,23 @@
 import { Tables, TablesInsert, TablesUpdate } from "./db.types";
 
-export interface TimerProject extends Tables<"timer_project"> {
-  sessions: Tables<"timer_session">[];
+// Timer Project Types
+export interface WorkProject extends Tables<"timer_project"> {
   categories: Tables<"finance_category">[];
+}
+export interface InsertWorkProject extends TablesInsert<"timer_project"> {
+  categories: Tables<"finance_category">[];
+}
+export interface UpdateWorkProject extends TablesUpdate<"timer_project"> {
+  categories: Tables<"finance_category">[];
+}
+export interface CompleteWorkProject extends WorkProject {
+  timeEntries: WorkTimeEntry[];
 }
 
-export interface InsertTimerProject extends TablesInsert<"timer_project"> {
-  categories: Tables<"finance_category">[];
-}
-
-export interface UpdateTimerProject extends TablesUpdate<"timer_project"> {
-  categories: Tables<"finance_category">[];
-}
+// Timer Session Types
+export type WorkTimeEntry = Tables<"timer_session">;
+export type InsertWorkTimeEntry = TablesInsert<"timer_session">;
+export type UpdateWorkTimeEntry = TablesUpdate<"timer_session">;
 
 export interface StoreTimerProject extends Tables<"timer_project"> {
   categoryIds: string[];

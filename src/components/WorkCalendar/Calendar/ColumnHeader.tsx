@@ -20,13 +20,13 @@ import { formatDate, formatMoney, formatTime } from "@/utils/formatFunctions";
 import { calculateSessionTimeForDay } from "../calendarUtils";
 import { isToday } from "date-fns";
 import { TimerState } from "@/types/timeTracker.types";
-import { StoreTimerProject } from "@/types/work.types";
+import { WorkProject } from "@/types/work.types";
 
 interface ColumnHeaderProps {
   day?: CalendarDay;
   setReferenceDate?: (date: Date) => void;
   icon?: React.ReactNode;
-  visibleProjects: StoreTimerProject[];
+  visibleProjects: WorkProject[];
 }
 
 export default function ColumnHeader({

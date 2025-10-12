@@ -2,7 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 
-export async function deleteTimerSessions({
+export async function deleteWorkTimeEntries({
   sessionIds,
 }: {
   sessionIds: string[];

@@ -9,10 +9,10 @@ import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import CalendarLegendButton from "./CalendarLegendButton";
 
 import { ViewMode } from "@/types/workCalendar.types";
-import { StoreTimerProject } from "@/types/work.types";
+import { WorkProject } from "@/types/work.types";
 
 interface CalendarLegendProps {
-  visibleProjects: StoreTimerProject[];
+  visibleProjects: WorkProject[];
   handleScrollToNow: () => void;
 }
 

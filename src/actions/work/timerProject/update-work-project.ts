@@ -1,18 +1,15 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import {
-  TimerProject,
-  UpdateTimerProject,
-} from "@/types/work.types";
+import { WorkProject, UpdateWorkProject } from "@/types/work.types";
 
-interface UpdateTimerProjectProps {
-  project: UpdateTimerProject;
+interface UpdateWorkProjectProps {
+  project: UpdateWorkProject;
 }
 
-export async function updateTimerProject({
+export async function updateWorkProject({
   project,
-}: UpdateTimerProjectProps): Promise<TimerProject> {
+}: UpdateWorkProjectProps): Promise<WorkProject> {
   if (!project.id) {
     throw new Error("Project id is required");
   }
@@ -55,5 +52,5 @@ export async function updateTimerProject({
     throw new Error(categoryErrorAdd.message);
   }
 
-  return { ...data, categories, sessions: [] };
+  return { ...data, categories };
 }

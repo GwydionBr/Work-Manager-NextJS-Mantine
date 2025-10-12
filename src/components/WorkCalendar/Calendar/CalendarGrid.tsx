@@ -14,11 +14,11 @@ import { clamp } from "@/components/WorkCalendar/calendarUtils";
 
 import { getStartOfDay } from "@/components/WorkCalendar/calendarUtils";
 
-import { CalendarDay, VisibleProject } from "@/types/workCalendar.types";
+import { CalendarDay } from "@/types/workCalendar.types";
 import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
 import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
 import { formatDateTime } from "@/utils/formatFunctions";
-import { StoreTimerProject } from "@/types/work.types";
+import { WorkProject } from "@/types/work.types";
 
 interface CalendarGridProps {
   days: CalendarDay[];
@@ -28,7 +28,7 @@ interface CalendarGridProps {
   setReferenceDate: (date: Date) => void;
   handleSessionClick: (sessionId: string) => void;
   handleNextAndPrev: (direction: number) => void;
-  visibleProjects: StoreTimerProject[];
+  visibleProjects: WorkProject[];
 }
 export default function CalendarGrid({
   days,

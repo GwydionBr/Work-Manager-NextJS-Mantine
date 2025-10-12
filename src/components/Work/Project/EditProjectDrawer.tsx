@@ -3,9 +3,9 @@
 import { useEffect, useState, useMemo } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
 import {
-  useDeleteTimerProjectMutation,
-  useTimerProjectQuery,
-} from "@/utils/queries/work/use_timer_project";
+  useDeleteWorkProjectMutation,
+  useWorkProjectQuery,
+} from "@/utils/queries/work/use_work_project";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
@@ -35,16 +35,14 @@ export default function EditProjectDrawer({
   const { locale } = useSettingsStore();
   const { activeProjectId } = useWorkStore();
   const { mutate: deleteProjectMutation, isPending: isDeleting } =
-    useDeleteTimerProjectMutation({});
-  const { data: projects = [] } = useTimerProjectQuery();
+    useDeleteWorkProjectMutation({});
+  const { data: projects = [] } = useWorkProjectQuery();
   const activeProject = useMemo(
     () => projects.find((p) => p.id === activeProjectId),
     [projects, activeProjectId]
   );
 
-  const [categoryIds, setCategoryIds] = useState<string[]>(
-    []
-  );
+  const [categoryIds, setCategoryIds] = useState<string[]>([]);
   const drawersStack = useDrawersStack([
     "edit-project",
     "delete-project",

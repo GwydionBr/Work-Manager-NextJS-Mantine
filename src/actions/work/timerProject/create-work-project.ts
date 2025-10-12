@@ -1,15 +1,15 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { InsertTimerProject, TimerProject } from "@/types/work.types";
+import { InsertWorkProject, WorkProject } from "@/types/work.types";
 
-interface CreateTimerProjectProps {
-  project: InsertTimerProject;
+interface CreateWorkProjectProps {
+  project: InsertWorkProject;
 }
 
-export async function createTimerProject({
+export async function createWorkProject({
   project,
-}: CreateTimerProjectProps): Promise<TimerProject> {
+}: CreateWorkProjectProps): Promise<WorkProject> {
   const supabase = await createClient();
 
   const { categories, ...projectData } = project;
@@ -43,6 +43,5 @@ export async function createTimerProject({
   return {
     ...data,
     categories: categoriesData.map((category) => category.finance_category),
-    sessions: [],
   };
 }

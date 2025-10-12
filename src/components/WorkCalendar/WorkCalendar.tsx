@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDisclosure, useHotkeys } from "@mantine/hooks";
-import { useWorkStore } from "@/stores/workManagerStore";
+import { useWorkProjectQuery } from "@/utils/queries/work/use_work_project";
+import { useWorkTimeEntryQuery } from "@/utils/queries/work/use_work_time_entry";
 import { useCalendarStore } from "@/stores/calendarStore";
 
 import { ScrollArea, Stack } from "@mantine/core";
@@ -19,7 +20,7 @@ import {
   CalendarDay,
   CalendarAppointment,
 } from "@/types/workCalendar.types";
-import { StoreTimerProject } from "@/types/work.types";
+import { WorkProject } from "@/types/work.types";
 
 const zoomLevel = [1, 2, 4, 6, 12]; // multiplier for hour height
 
@@ -43,8 +44,10 @@ export default function WorkCalendar() {
     setCurrentDateRange,
     zoomIndex,
   } = useCalendarStore();
-  const { projects: timerProjects, timerSessions, isFetching } = useWorkStore();
-  const projects = timerProjects.map((project) => project);
+  const { data: projects = [], isPending: isFetchingProjects } =
+    useWorkProjectQuery();
+  const { data: timeEntries = [], isPending: isFetchingTimeEntries } =
+    useWorkTimeEntryQuery();
 
   const [viewportTop, setViewportTop] = useState({
     old: 0,
@@ -89,7 +92,7 @@ export default function WorkCalendar() {
     days.forEach((d) => {
       map.set(d.toISOString().slice(0, 10), []);
     });
-    timerSessions.forEach((s) => {
+    timeEntries.forEach((s) => {
       const start = new Date(s.start_time);
       const end = new Date(s.end_time);
       // include session if any overlap with current range days
@@ -109,7 +112,7 @@ export default function WorkCalendar() {
       });
     });
     return map;
-  }, [timerSessions, days, projects]);
+  }, [timeEntries, days, projects]);
 
   const appointmentsByDay = useMemo(() => {
     const map = new Map<string, CalendarAppointment[]>();
@@ -146,7 +149,7 @@ export default function WorkCalendar() {
   }, [days, sessionsByDay, appointmentsByDay]);
 
   // Projects visible in the current view (based on sessions overlapping the visible days)
-  const visibleProjects: StoreTimerProject[] = useMemo(() => {
+  const visibleProjects: WorkProject[] = useMemo(() => {
     const ids = new Set<string>();
     sessionsByDay.forEach((items) => {
       items.forEach((s) => ids.add(String(s.project_id)));
@@ -196,7 +199,7 @@ export default function WorkCalendar() {
   }
 
   function handleSessionClick(sessionId: string) {
-    const session = timerSessions.find((s) => s.id === sessionId);
+    const session = timeEntries.find((s) => s.id === sessionId);
     const project = projects.find((p) => p.id === session?.project_id);
     if (session && project) {
       setSelectedSession(session);
@@ -206,10 +209,10 @@ export default function WorkCalendar() {
   }
 
   useEffect(() => {
-    if (!isFetching) {
+    if (!isFetchingProjects || !isFetchingTimeEntries) {
       handleScrollToNow();
     }
-  }, [isFetching]);
+  }, [isFetchingProjects, isFetchingTimeEntries]);
 
   useEffect(() => {
     if (viewport.current && viewportTop.new !== viewportTop.old) {
@@ -263,7 +266,7 @@ export default function WorkCalendar() {
         <CalendarGrid
           visibleProjects={visibleProjects}
           handleNextAndPrev={handleNextAndPrev}
-          isFetching={isFetching}
+          isFetching={isFetchingProjects || isFetchingTimeEntries}
           days={calendarDays}
           setReferenceDate={handleReferenceDateChange}
           handleSessionClick={handleSessionClick}

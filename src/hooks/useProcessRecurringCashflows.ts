@@ -15,6 +15,7 @@ import { SingleCashFlow } from "@/types/finance.types";
 
 const LAST_PROCESSED_KEY = "lastRecurringCashflowProcessed";
 
+
 export function useProcessRecurringCashflows() {
   const queryClient = useQueryClient();
   const { locale, getLocalizedText } = useSettingsStore();

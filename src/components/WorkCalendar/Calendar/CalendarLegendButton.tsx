@@ -2,24 +2,24 @@
 
 import { useState } from "react";
 import { useDisclosure, useClickOutside } from "@mantine/hooks";
-import { useWorkStore } from "@/stores/workManagerStore";
+import { useUpdateWorkProjectMutation } from "@/utils/queries/work/use_work_project";
 
 import { Popover, Button, Box } from "@mantine/core";
 import ProjectColorPicker from "@/components/UI/ProjectColorPicker";
 
-import { StoreTimerProject } from "@/types/work.types";
+import { WorkProject } from "@/types/work.types";
 
 interface CalendarLegendButtonProps {
-  p: StoreTimerProject;
+  p: WorkProject;
 }
 
 export default function CalendarLegendButton({ p }: CalendarLegendButtonProps) {
-  const { updateProject } = useWorkStore();
   const [selectedColor, setSelectedColor] = useState<string>(
     p.color ?? "var(--mantine-color-teal-6)"
   );
   const [isOpen, { open, close }] = useDisclosure(false);
 
+  const { mutate: updateProjectMutation } = useUpdateWorkProjectMutation({});
   const ref = useClickOutside(() => {
     close();
   });
@@ -32,9 +32,11 @@ export default function CalendarLegendButton({ p }: CalendarLegendButtonProps) {
       }}
       onClose={() => {
         close();
-        updateProject({
-          ...p,
-          color: selectedColor,
+        updateProjectMutation({
+          project: {
+            ...p,
+            color: selectedColor,
+          },
         });
       }}
     >
@@ -66,9 +68,11 @@ export default function CalendarLegendButton({ p }: CalendarLegendButtonProps) {
           value={selectedColor}
           onChange={setSelectedColor}
           onClose={() => {
-            updateProject({
-              ...p,
-              color: selectedColor,
+            updateProjectMutation({
+              project: {
+                ...p,
+                color: selectedColor,
+              },
             });
             close();
           }}

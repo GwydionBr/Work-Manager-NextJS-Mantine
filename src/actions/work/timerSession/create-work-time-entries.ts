@@ -1,13 +1,13 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { TablesInsert, Tables } from "@/types/db.types";
+import { InsertWorkTimeEntry, WorkTimeEntry } from "@/types/work.types";
 
-export async function createSessions({
+export async function createWorkTimeEntries({
   sessions,
 }: {
-  sessions: TablesInsert<"timer_session">[];
-}): Promise<Tables<"timer_session">[]> {
+  sessions: InsertWorkTimeEntry[];
+}): Promise<WorkTimeEntry[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("timer_session")

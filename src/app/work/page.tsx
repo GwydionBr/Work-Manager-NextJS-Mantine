@@ -5,6 +5,9 @@ import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useProjectFiltering } from "@/hooks/useProjectFiltering";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { usePayoutHourlyTimerProjectMutation } from "@/utils/queries/finances/use-payout";
+import { useWorkProjectQuery } from "@/utils/queries/work/use_work_project";
+import { useWorkTimeEntryQuery } from "@/utils/queries/work/use_work_time_entry";
 
 import {
   Box,
@@ -39,9 +42,7 @@ import { IconClockPlus } from "@tabler/icons-react";
 
 import { formatDate } from "@/utils/formatFunctions";
 import { Tables } from "@/types/db.types";
-import { TimerProject } from "@/types/work.types";
-import { usePayoutHourlyTimerProjectMutation } from "@/utils/queries/finances/use-payout";
-import { useTimerProjectQuery } from "@/utils/queries/work/use_timer_project";
+import { CompleteWorkProject } from "@/types/work.types";
 
 export default function WorkPage() {
   const [oldActiveProjectId, setOldActiveProjectId] = useState<string | null>(
@@ -50,37 +51,46 @@ export default function WorkPage() {
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
     null
   );
-  const { data: projects = [] } = useTimerProjectQuery();
+  const { data: projects = [] } = useWorkProjectQuery();
   const {
     activeProjectId,
     lastActiveProjectId,
     isFetching,
     setActiveProjectId,
   } = useWorkStore();
+  const { data: timeEntries = [] } = useWorkTimeEntryQuery();
   const {
     mutate: payoutHourlyTimerProjectMutation,
     isPending: isProcessingPayout,
   } = usePayoutHourlyTimerProjectMutation(() => {
-    setSelectedSessions([]);
+    setSelectedTimeEntryIds([]);
     deactivateSelectedMode();
   });
 
   const { locale, getLocalizedText } = useSettingsStore();
 
   // Use memo to get the active project
-  const activeProject: TimerProject | undefined = useMemo(() => {
+  const activeProject: CompleteWorkProject | undefined = useMemo(() => {
     let project = projects.find((p) => p.id === activeProjectId);
     if (!project) {
       project = projects.find((p) => p.id === lastActiveProjectId);
     }
-    return project;
-  }, [projects, activeProjectId]);
+    if (!project) {
+      return undefined;
+    }
+    const filteredTimeEntries = timeEntries.filter(
+      (t) => t.project_id === project?.id
+    );
+    return { ...project, timeEntries: filteredTimeEntries };
+  }, [projects, activeProjectId, timeEntries]);
 
   // State for filter time span
   const [filterTimeSpan, setFilterTimeSpan] = useState<
     [Date | null, Date | null]
   >([null, null]);
-  const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
+  const [selectedTimeEntryIds, setSelectedTimeEntryIds] = useState<string[]>(
+    []
+  );
   const [analysisOpened, { open: openAnalysis, close: closeAnalysis }] =
     useDisclosure(false);
   const [
@@ -106,75 +116,77 @@ export default function WorkPage() {
   ] = useDisclosure(false);
 
   // Use the custom hook for filtering logic
-  const { timeFilteredSessions } = useProjectFiltering(
-    activeProject?.sessions ?? [],
+  const { timeFilteredTimeEntries } = useProjectFiltering(
+    timeEntries ?? [],
     filterTimeSpan
   );
 
-  const toggleAllSessions = useCallback(() => {
-    if (selectedSessions.length > 0) {
-      setSelectedSessions([]);
+  const toggleAllTimeEntries = useCallback(() => {
+    if (selectedTimeEntryIds.length > 0) {
+      setSelectedTimeEntryIds([]);
     } else {
-      setSelectedSessions(
-        timeFilteredSessions
-          .filter((session) => !session.single_cash_flow_id)
-          .map((session) => session.id)
+      setSelectedTimeEntryIds(
+        timeFilteredTimeEntries
+          .filter((timeEntry) => !timeEntry.single_cash_flow_id)
+          .map((timeEntry) => timeEntry.id)
       );
     }
-  }, [selectedSessions.length, timeFilteredSessions]);
+  }, [selectedTimeEntryIds.length, timeFilteredTimeEntries]);
 
-  const selectAllSessions = useCallback(() => {
+  const selectAllTimeEntries = useCallback(() => {
     activateSelectedMode();
-    setSelectedSessions(
-      timeFilteredSessions
-        .filter((session) => !session.single_cash_flow_id)
-        .map((session) => session.id)
+    setSelectedTimeEntryIds(
+      timeFilteredTimeEntries
+        .filter((timeEntry) => !timeEntry.single_cash_flow_id)
+        .map((timeEntry) => timeEntry.id)
     );
-  }, [timeFilteredSessions]);
+  }, [timeFilteredTimeEntries]);
 
   const toggleGroupSelection = useCallback(
-    (sessionIds: string[]) => {
-      const groupIds = sessionIds.filter((id) =>
-        timeFilteredSessions.some((s) => s.id === id && !s.single_cash_flow_id)
+    (timeEntryIds: string[]) => {
+      const groupIds = timeEntryIds.filter((id) =>
+        timeFilteredTimeEntries.some(
+          (timeEntry) => timeEntry.id === id && !timeEntry.single_cash_flow_id
+        )
       );
       const isAnySelected = groupIds.some((id) =>
-        selectedSessions.includes(id)
+        selectedTimeEntryIds.includes(id)
       );
       if (isAnySelected) {
-        setSelectedSessions((prev) =>
+        setSelectedTimeEntryIds((prev) =>
           prev.filter((id) => !groupIds.includes(id))
         );
       } else {
-        setSelectedSessions((prev) =>
+        setSelectedTimeEntryIds((prev) =>
           Array.from(new Set([...prev, ...groupIds]))
         );
       }
     },
-    [timeFilteredSessions, selectedSessions]
+    [timeFilteredTimeEntries, selectedTimeEntryIds]
   );
 
-  const toggleSessionSelection = useCallback(
-    (sessionId: string, index: number, range: boolean) => {
+  const toggleTimeEntrySelection = useCallback(
+    (timeEntryId: string, index: number, range: boolean) => {
       if (range && lastSelectedIndex !== null) {
         const start = Math.min(lastSelectedIndex, index);
         const end = Math.max(lastSelectedIndex, index);
-        const rangeIds = timeFilteredSessions
+        const rangeIds = timeFilteredTimeEntries
           .slice(start, end + 1)
-          .filter((session) => !session.single_cash_flow_id)
-          .map((session) => session.id);
-        setSelectedSessions((prev) =>
+          .filter((timeEntry) => !timeEntry.single_cash_flow_id)
+          .map((timeEntry) => timeEntry.id);
+        setSelectedTimeEntryIds((prev) =>
           Array.from(new Set([...prev, ...rangeIds]))
         );
       } else {
-        setSelectedSessions((prev) =>
-          prev.includes(sessionId)
-            ? prev.filter((id) => id !== sessionId)
-            : [...prev, sessionId]
+        setSelectedTimeEntryIds((prev) =>
+          prev.includes(timeEntryId)
+            ? prev.filter((id) => id !== timeEntryId)
+            : [...prev, timeEntryId]
         );
         setLastSelectedIndex(index);
       }
     },
-    [timeFilteredSessions, lastSelectedIndex]
+    [timeFilteredTimeEntries, lastSelectedIndex]
   );
 
   useEffect(() => {
@@ -184,7 +196,7 @@ export default function WorkPage() {
       closePayout();
       closeAnalysis();
       deactivateSelectedMode();
-      setSelectedSessions([]);
+      setSelectedTimeEntryIds([]);
       setOldActiveProjectId(activeProjectId);
     }
   }, [activeProjectId, oldActiveProjectId]);
@@ -213,8 +225,8 @@ export default function WorkPage() {
   );
 
   // Calculate total active seconds from all sessions
-  const totalActiveSeconds = activeProject.sessions.reduce(
-    (total, session) => total + session.active_seconds,
+  const totalActiveSeconds = activeProject.timeEntries.reduce(
+    (total, timeEntry) => total + timeEntry.active_seconds,
     0
   );
 
@@ -248,7 +260,7 @@ export default function WorkPage() {
 
   const handleSelectionToggle = () => {
     if (selectedModeActive) {
-      setSelectedSessions([]);
+      setSelectedTimeEntryIds([]);
     }
     toggleSelectedMode();
   };
@@ -259,20 +271,20 @@ export default function WorkPage() {
 
     const title = `${getLocalizedText("Auszahlung", "Payout")} (${activeProject.title}) ${formatDate(new Date(), locale)}`;
     payoutHourlyTimerProjectMutation({
-      project: activeProject, 
+      project: activeProject,
       title,
-      sessionIds: selectedSessionIds,
+      timeEntryIds: selectedSessionIds,
     });
   }
 
-  const selectableSessions = timeFilteredSessions.filter(
-    (session) => !session.single_cash_flow_id
+  const selectableSessions = timeFilteredTimeEntries.filter(
+    (timeEntry) => !timeEntry.single_cash_flow_id
   );
 
   const isPayoutAvailable = activeProject.hourly_payment
-    ? timeFilteredSessions.reduce(
-        (acc, session) =>
-          acc + session.salary * (session.active_seconds / 3600),
+    ? timeFilteredTimeEntries.reduce(
+        (acc, timeEntry) =>
+          acc + timeEntry.salary * (timeEntry.active_seconds / 3600),
         0
       ) > 0
     : activeProject.salary > activeProject.total_payout;
@@ -290,23 +302,22 @@ export default function WorkPage() {
                   ? "Hobby"
                   : salary
             }
-            rightSalary={
-              activeProject.salary === 0 ? undefined : hourlySalary
-            }
+            rightSalary={activeProject.salary === 0 ? undefined : hourlySalary}
             description={activeProject.description ?? undefined}
             rightButton={
               <Group>
-                {activeProject.sessions.length > 0 && (
+                {activeProject.timeEntries.length > 0 && (
                   <AnalysisActionIcon
                     onClick={openAnalysis}
-                    tooltipLabel={locale === "de-DE" ? "Analyse" : "Analysis"}
+                    tooltipLabel={getLocalizedText("Analyse", "Analysis")}
                   />
                 )}
                 <EditActionIcon
                   onClick={openEditProject}
-                  tooltipLabel={
-                    locale === "de-DE" ? "Projekt bearbeiten" : "Edit Project"
-                  }
+                  tooltipLabel={getLocalizedText(
+                    "Projekt bearbeiten",
+                    "Edit Project"
+                  )}
                 />
               </Group>
             }
@@ -327,9 +338,9 @@ export default function WorkPage() {
             <Group justify="space-between" p="xs" pb={5}>
               <Group>
                 <FilterActionIcon
-                  disabled={timeFilteredSessions.length === 0}
+                  disabled={timeFilteredTimeEntries.length === 0}
                   onClick={handleFilterToggle}
-                  tooltipLabel={locale === "de-DE" ? "Filter" : "Filter"}
+                  tooltipLabel={getLocalizedText("Filter", "Filter")}
                   activeFilter={
                     filterTimeSpan[0] && filterTimeSpan[1] ? true : false
                   }
@@ -337,15 +348,13 @@ export default function WorkPage() {
                 />
                 <PayoutActionIcon
                   onClick={handlePayoutToggle}
-                  tooltipLabel={locale === "de-DE" ? "Auszahlung" : "Payout"}
+                  tooltipLabel={getLocalizedText("Auszahlung", "Payout")}
                   disabled={!isPayoutAvailable}
                   opened={payoutOpened}
                 />
               </Group>
               <DelayedTooltip
-                label={
-                  locale === "de-DE" ? "Sitzung hinzufügen" : "Add Session"
-                }
+                label={getLocalizedText("Sitzung hinzufügen", "Add Session")}
               >
                 <ActionIcon
                   onClick={openSessionForm}
@@ -365,12 +374,14 @@ export default function WorkPage() {
                 onClick={handleSelectionToggle}
                 tooltipLabel={
                   selectedModeActive
-                    ? locale === "de-DE"
-                      ? "Auswahlmodus deaktivieren"
-                      : "Deactivate selection mode"
-                    : locale === "de-DE"
-                      ? "Auswahlmodus aktivieren"
-                      : "Activate selection mode"
+                    ? getLocalizedText(
+                        "Auswahlmodus deaktivieren",
+                        "Deactivate selection mode"
+                      )
+                    : getLocalizedText(
+                        "Auswahlmodus aktivieren",
+                        "Activate selection mode"
+                      )
                 }
                 size="md"
                 selected={selectedModeActive}
@@ -383,10 +394,10 @@ export default function WorkPage() {
                   <ProjectFilter
                     timeSpan={filterTimeSpan}
                     onTimeSpanChange={setFilterTimeSpan}
-                    sessions={timeFilteredSessions}
+                    sessions={timeFilteredTimeEntries}
                     project={activeProject}
                     isProcessingPayout={isProcessingPayout}
-                    onSelectAll={selectAllSessions}
+                    onSelectAll={selectAllTimeEntries}
                     handleSessionPayoutClick={handleSessionPayout}
                   />
                 </Collapse>
@@ -407,37 +418,37 @@ export default function WorkPage() {
               <Grid.Col span={6}>
                 <Collapse in={selectedModeActive}>
                   <SessionSelector
-                    selectedSessions={selectedSessions}
-                    timeFilteredSessions={timeFilteredSessions}
-                    toggleAllSessions={toggleAllSessions}
+                    selectedSessions={selectedTimeEntryIds}
+                    timeFilteredSessions={timeFilteredTimeEntries}
+                    toggleAllSessions={toggleAllTimeEntries}
                     handleSessionPayoutClick={handleSessionPayout}
                   />
                 </Collapse>
               </Grid.Col>
             </Grid>
           </Stack>
-          {activeProject?.sessions.length > 0 ? (
+          {activeProject?.timeEntries.length > 0 ? (
             <Box w="100%">
               {/* Session Hierarchy */}
-              {timeFilteredSessions.length > 0 ? (
+              {timeFilteredTimeEntries.length > 0 ? (
                 <SessionHierarchy
                   selectedModeActive={selectedModeActive}
                   groupedSessions={groupSessions(
-                    timeFilteredSessions.sort(
+                    timeFilteredTimeEntries.sort(
                       (a, b) =>
                         new Date(b.start_time).getTime() -
                         new Date(a.start_time).getTime()
                     ),
                     locale
                   )}
-                  selectedSessions={selectedSessions}
-                  onSessionToggle={toggleSessionSelection}
+                  selectedSessions={selectedTimeEntryIds}
+                  onSessionToggle={toggleTimeEntrySelection}
                   onGroupToggle={toggleGroupSelection}
                   selectableIdSet={
                     new Set(
-                      timeFilteredSessions
-                        .filter((s) => !s.single_cash_flow_id)
-                        .map((s) => s.id)
+                      timeFilteredTimeEntries
+                        .filter((timeEntry) => !timeEntry.single_cash_flow_id)
+                        .map((timeEntry) => timeEntry.id)
                     )
                   }
                   project={activeProject}
@@ -445,17 +456,19 @@ export default function WorkPage() {
                 />
               ) : (
                 <Text size="lg" c="gray" ta="center">
-                  {locale === "de-DE"
-                    ? "Keine Sitzungen im ausgewählten Zeitraum"
-                    : "No Sessions in the time period"}
+                  {getLocalizedText(
+                    "Keine Sitzungen im ausgewählten Zeitraum",
+                    "No time entries in the time period"
+                  )}
                 </Text>
               )}
             </Box>
           ) : (
             <Text size="lg" c="gray" ta="center" mt="xl">
-              {locale === "de-DE"
-                ? "Füge eine Sitzung hinzu, um sie hier zu sehen"
-                : "Add a session to see it here"}
+              {getLocalizedText(
+                "Füge eine Sitzung hinzu, um sie hier zu sehen",
+                "Add a time entry to see it here"
+              )}
             </Text>
           )}
           <EditProjectDrawer
@@ -465,7 +478,7 @@ export default function WorkPage() {
         </Collapse>
         <Collapse in={analysisOpened} w="100%">
           <WorkAnalysis
-            sessions={activeProject.sessions}
+            sessions={activeProject.timeEntries}
             isOverview={false}
             project={activeProject}
             onClose={() => closeAnalysis()}

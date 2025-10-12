@@ -1,29 +1,30 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { TimerProject } from "@/types/work.types";
+import { CompleteWorkProject } from "@/types/work.types";
 import { SingleCashFlow } from "@/types/finance.types";
 
 interface PayoutHourlyTimerProjectProps {
-  project: TimerProject;
+  project: CompleteWorkProject;
   title: string;
-  sessionIds: string[];
+  timeEntryIds: string[];
 }
 
 export async function payoutHourlyTimerProject({
   project,
   title,
-  sessionIds,
+  timeEntryIds,
 }: PayoutHourlyTimerProjectProps): Promise<{
   singleCashFlow: SingleCashFlow;
-  project: TimerProject;
+  project: CompleteWorkProject;
 }> {
   const supabase = await createClient();
 
-  const totalAmount = project.sessions
-    .filter((session) => sessionIds.includes(session.id))
+  const totalAmount = project.timeEntries
+    .filter((timeEntry) => timeEntryIds.includes(timeEntry.id))
     .reduce(
-      (acc, session) => acc + session.salary * (session.active_seconds / 3600),
+      (acc, timeEntry) =>
+        acc + timeEntry.salary * (timeEntry.active_seconds / 3600),
       0
     )
     .toFixed(2);
@@ -56,15 +57,16 @@ export async function payoutHourlyTimerProject({
     throw new Error(categoriesError.message);
   }
 
-  for (const sessionId of sessionIds) {
-    const { error: sessionError } = await supabase
+  for (const timeEntryId of timeEntryIds) {
+    const { error: timeEntryError } = await supabase
       .from("timer_session")
       .update({
         single_cash_flow_id: cashflowData.id,
       })
-      .eq("id", sessionId);
-    if (sessionError) {
-      throw new Error(sessionError.message);
+      .eq("id", timeEntryId);
+      
+    if (timeEntryError) {
+      throw new Error(timeEntryError.message);
     }
   }
 

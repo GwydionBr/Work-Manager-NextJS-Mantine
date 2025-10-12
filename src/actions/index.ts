@@ -8,7 +8,6 @@ export { deleteTimerProjects } from "./work/timerProject/deleteTimerProjects";
 
 export {
   getAllProjectFolders,
-  getProjectFolderById,
   createProjectFolder,
   updateProjectFolder,
   deleteProjectFolder,

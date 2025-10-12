@@ -11,7 +11,7 @@ import {
 } from "@/utils/notificationFunctions";
 import { payoutFinanceAdjustment } from "@/actions/finance/payout/payout-finance-adjustment";
 import { payoutHourlyTimerProject } from "@/actions/finance/payout/payout-hourly-timer-project";
-import { TimerProject } from "@/types/work.types";
+import { CompleteWorkProject, WorkProject } from "@/types/work.types";
 
 // Mutation to payout a finance project
 export function usePayoutFinanceProjectMutation(
@@ -141,12 +141,12 @@ export function usePayoutHourlyTimerProjectMutation(
     mutationFn: ({
       project,
       title,
-      sessionIds,
+      timeEntryIds,
     }: {
-      project: TimerProject;
+      project: CompleteWorkProject;
       title: string;
-      sessionIds: string[];
-    }) => payoutHourlyTimerProject({ project, title, sessionIds }),
+      timeEntryIds: string[];
+    }) => payoutHourlyTimerProject({ project, title, timeEntryIds }),
     onSuccess: (data, variables, onMutateResult, context) => {
       context.client.setQueryData(
         ["singleCashFlows"],

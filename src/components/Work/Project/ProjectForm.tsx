@@ -6,9 +6,9 @@ import { useEffect, useState, useMemo } from "react";
 import { useDisclosure, useClickOutside } from "@mantine/hooks";
 import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
 import {
-  useUpdateTimerProjectMutation,
-  useCreateTimerProjectMutation,
-} from "@/utils/queries/work/use_timer_project";
+  useUpdateWorkProjectMutation,
+  useCreateWorkProjectMutation,
+} from "@/utils/queries/work/use_work_project";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
@@ -52,13 +52,13 @@ import {
 } from "@/utils/notificationFunctions";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 import {
-  TimerProject,
-  UpdateTimerProject,
-  InsertTimerProject,
+  WorkProject,
+  UpdateWorkProject,
+  InsertWorkProject,
 } from "@/types/work.types";
 
 interface ProjectFormProps {
-  project?: TimerProject;
+  project?: WorkProject;
   onClose?: () => void;
   onSuccess?: (project: Tables<"timer_project">) => void;
   onCancel?: () => void;
@@ -104,11 +104,11 @@ export default function ProjectForm({
     isPending: isFetchingFinanceCategories,
   } = useFinanceCategoriesQuery();
   const { mutate: updateProjectMutation, isPending: isUpdatingProject } =
-    useUpdateTimerProjectMutation({
+    useUpdateWorkProjectMutation({
       onSuccess,
     });
   const { mutate: createProjectMutation, isPending: isCreatingProject } =
-    useCreateTimerProjectMutation({
+    useCreateWorkProjectMutation({
       onSuccess,
     });
   const {
@@ -212,9 +212,8 @@ export default function ProjectForm({
   const handleSubmit = (values: z.infer<typeof schema>) => {
     const { cash_flow_category_ids, ...cleanValues } = values;
     if (project) {
-      const { sessions, ...projectData } = project;
-      const updatedProject: UpdateTimerProject = {
-        ...projectData,
+      const updatedProject: UpdateWorkProject = {
+        ...project,
         ...cleanValues,
         currency: values.currency as Currency,
         rounding_direction: values.rounding_direction as RoundingDirection,
@@ -230,7 +229,7 @@ export default function ProjectForm({
       }
       updateProjectMutation({ project: updatedProject });
     } else {
-      const newProject: InsertTimerProject = {
+      const newProject: InsertWorkProject = {
         ...cleanValues,
         currency: values.currency as Currency,
         rounding_direction: values.rounding_direction as RoundingDirection,

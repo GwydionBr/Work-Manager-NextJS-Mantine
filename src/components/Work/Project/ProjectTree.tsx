@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useViewportSize } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useRouter } from "next/navigation";
-import { useTimerProjectQuery } from "@/utils/queries/work/use_timer_project";
+import { useWorkProjectQuery } from "@/utils/queries/work/use_work_project";
 import { useWorkFolderQuery } from "@/utils/queries/work/use-work-folder";
 
 import { NodeRendererProps, Tree } from "react-arborist";
@@ -29,13 +29,13 @@ export default function ProjectTree() {
     activeProjectId,
     lastActiveProjectId,
   } = useWorkStore();
-  const { data: projects } = useTimerProjectQuery();
+  const { data: projects } = useWorkProjectQuery();
   const { data: folders } = useWorkFolderQuery();
 
   const cleanedProjects = useMemo(() => {
     return (
       projects?.map((project) => {
-        const { categories, sessions, ...rest } = project;
+        const { categories, ...rest } = project;
         return rest;
       }) ?? []
     );

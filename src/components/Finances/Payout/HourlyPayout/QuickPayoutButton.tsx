@@ -10,19 +10,20 @@ import { formatDate, formatMoney } from "@/utils/formatFunctions";
 
 import { Tables } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
+import { WorkTimeEntry } from "@/types/work.types";
 
 interface QuickPayoutButtonProps extends UnstyledButtonProps {
   label: string;
-  sessions: Tables<"timer_session">[];
+  timeEntries: WorkTimeEntry[];
   salary: number;
   currency: Currency;
   timeSpan: [Date | null, Date | null];
-  handleClick: (unpaidSessions: Tables<"timer_session">[]) => void;
+  handleClick: (unpaidTimeEntries: WorkTimeEntry[]) => void;
 }
 
 export default function QuickPayoutButton({
   label,
-  sessions,
+  timeEntries,
   salary,
   currency,
   timeSpan,
@@ -32,16 +33,16 @@ export default function QuickPayoutButton({
   const { locale } = useSettingsStore();
   const { hovered, ref } = useHover();
 
-  const unpaidSessions = sessions.filter((session) => !session.single_cash_flow_id);
-  const unpaidTotal = unpaidSessions.reduce(
-    (acc, session) => acc + salary * (session.active_seconds / 3600),
+  const unpaidTimeEntries = timeEntries.filter((timeEntry) => !timeEntry.single_cash_flow_id);
+  const unpaidTotal = unpaidTimeEntries.reduce(
+    (acc, timeEntry) => acc + salary * (timeEntry.active_seconds / 3600),
     0
   );
 
   return (
     <UnstyledButton
       ref={ref}
-      onClick={() => handleClick(unpaidSessions)}
+      onClick={() => handleClick(unpaidTimeEntries)}
       bg={hovered ? alpha("var(--mantine-color-violet-5)", 0.1) : "transparent"}
       style={{
         border: "1px solid var(--mantine-color-violet-5)",
@@ -59,7 +60,7 @@ export default function QuickPayoutButton({
           <Group justify="space-between">
             <Text>{label}</Text>
             <Text size="xs" c="dimmed">
-              {unpaidSessions.length}{" "}
+              {unpaidTimeEntries.length}{" "}
               {locale === "de-DE" ? "Sitzungen" : "Sessions"}
             </Text>
           </Group>

@@ -1,9 +1,9 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { TimerProject } from "@/types/work.types";
+import { WorkProject } from "@/types/work.types";
 
-export async function getAllTimerProjects(): Promise<TimerProject[]> {
+export async function getAllWorkProjects(): Promise<WorkProject[]> {
   const supabase = await createClient();
 
   const {
@@ -21,8 +21,7 @@ export async function getAllTimerProjects(): Promise<TimerProject[]> {
       *,
       categories:timer_project_category(
         finance_category:finance_category_id(*)
-      ),
-      sessions:timer_session(*)
+      )
     `
     )
     .eq("user_id", user.id)
@@ -35,6 +34,5 @@ export async function getAllTimerProjects(): Promise<TimerProject[]> {
   return data.map((project) => ({
     ...project,
     categories: project.categories.map((category) => category.finance_category),
-    sessions: project.sessions,
   }));
 }
