@@ -1,8 +1,11 @@
 "use client";
 
+import { useMemo } from "react";
 import { useViewportSize } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useRouter } from "next/navigation";
+import { useTimerProjectQuery } from "@/utils/queries/work/use_timer_project";
+import { useWorkFolderQuery } from "@/utils/queries/work/use-work-folder";
 
 import { NodeRendererProps, Tree } from "react-arborist";
 import {
@@ -15,18 +18,33 @@ import {
 import { Box, Group, Text } from "@mantine/core";
 
 import { ProjectTreeItem } from "@/types/work.types";
-import { findNodeById } from "@/utils/treeHelperFunctions";
+import { createTree, findNodeById } from "@/utils/treeHelperFunctions";
 
 export default function ProjectTree() {
   const { height } = useViewportSize();
   const {
-    projectTree,
     setActiveProjectId,
     moveProject,
     moveFolder,
     activeProjectId,
     lastActiveProjectId,
   } = useWorkStore();
+  const { data: projects } = useTimerProjectQuery();
+  const { data: folders } = useWorkFolderQuery();
+
+  const cleanedProjects = useMemo(() => {
+    return (
+      projects?.map((project) => {
+        const { categories, sessions, ...rest } = project;
+        return rest;
+      }) ?? []
+    );
+  }, [projects]);
+
+  const projectTree = useMemo(() => {
+    const { tree } = createTree(cleanedProjects, folders ?? []);
+    return tree;
+  }, [projects, folders]);
 
   const router = useRouter();
 
