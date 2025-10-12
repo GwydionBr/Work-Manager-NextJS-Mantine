@@ -1,11 +1,5 @@
 import { Tables, TablesInsert, TablesUpdate } from "./db.types";
 
-export interface OldTimerProject {
-  project: Tables<"timer_project">;
-  sessions: Tables<"timer_session">[];
-  categories: Tables<"finance_category">[];
-}
-
 export interface TimerProject extends Tables<"timer_project"> {
   sessions: Tables<"timer_session">[];
   categories: Tables<"finance_category">[];

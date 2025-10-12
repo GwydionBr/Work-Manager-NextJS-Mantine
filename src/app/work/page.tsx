@@ -39,9 +39,9 @@ import { IconClockPlus } from "@tabler/icons-react";
 
 import { formatDate } from "@/utils/formatFunctions";
 import { Tables } from "@/types/db.types";
-import { OldTimerProject } from "@/types/work.types";
-import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
+import { TimerProject } from "@/types/work.types";
 import { usePayoutHourlyTimerProjectMutation } from "@/utils/queries/finances/use-payout";
+import { useTimerProjectQuery } from "@/utils/queries/work/use_timer_project";
 
 export default function WorkPage() {
   const [oldActiveProjectId, setOldActiveProjectId] = useState<string | null>(
@@ -50,12 +50,11 @@ export default function WorkPage() {
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
     null
   );
+  const { data: projects = [] } = useTimerProjectQuery();
   const {
     activeProjectId,
     lastActiveProjectId,
     isFetching,
-    projects,
-    timerSessions,
     setActiveProjectId,
   } = useWorkStore();
   const {
@@ -65,31 +64,17 @@ export default function WorkPage() {
     setSelectedSessions([]);
     deactivateSelectedMode();
   });
-  const { data: financeCategories = [] } = useFinanceCategoriesQuery();
+
   const { locale, getLocalizedText } = useSettingsStore();
 
   // Use memo to get the active project
-  const activeProject: OldTimerProject | undefined = useMemo(() => {
+  const activeProject: TimerProject | undefined = useMemo(() => {
     let project = projects.find((p) => p.id === activeProjectId);
     if (!project) {
       project = projects.find((p) => p.id === lastActiveProjectId);
     }
-    if (!project) {
-      return undefined;
-    }
-    const categories = financeCategories.filter((c) =>
-      project.categoryIds.includes(c.id)
-    );
-    const sessions = timerSessions.filter((s) => s.project_id === project.id);
-
-    const { categoryIds, ...rest } = project;
-
-    return {
-      project: rest,
-      categories,
-      sessions,
-    };
-  }, [projects, activeProjectId, financeCategories, timerSessions]);
+    return project;
+  }, [projects, activeProjectId]);
 
   // State for filter time span
   const [filterTimeSpan, setFilterTimeSpan] = useState<
@@ -222,8 +207,8 @@ export default function WorkPage() {
   }
 
   const salary = formatMoney(
-    activeProject.project.salary,
-    activeProject.project.currency,
+    activeProject.salary,
+    activeProject.currency,
     locale
   );
 
@@ -234,12 +219,12 @@ export default function WorkPage() {
   );
 
   const hourlySalary = formatMoney(
-    activeProject.project.hourly_payment
-      ? activeProject.project.salary
+    activeProject.hourly_payment
+      ? activeProject.salary
       : totalActiveSeconds > 0
-        ? (activeProject.project.salary / totalActiveSeconds) * 3600
+        ? (activeProject.salary / totalActiveSeconds) * 3600
         : 0,
-    activeProject.project.currency,
+    activeProject.currency,
     locale
   );
 
@@ -272,9 +257,9 @@ export default function WorkPage() {
     if (isProcessingPayout || !activeProject) return;
     const selectedSessionIds = sessions.map((session) => session.id);
 
-    const title = `${getLocalizedText("Auszahlung", "Payout")} (${activeProject.project.title}) ${formatDate(new Date(), locale)}`;
+    const title = `${getLocalizedText("Auszahlung", "Payout")} (${activeProject.title}) ${formatDate(new Date(), locale)}`;
     payoutHourlyTimerProjectMutation({
-      project: activeProject,
+      project: activeProject, 
       title,
       sessionIds: selectedSessionIds,
     });
@@ -284,31 +269,31 @@ export default function WorkPage() {
     (session) => !session.single_cash_flow_id
   );
 
-  const isPayoutAvailable = activeProject.project.hourly_payment
+  const isPayoutAvailable = activeProject.hourly_payment
     ? timeFilteredSessions.reduce(
         (acc, session) =>
           acc + session.salary * (session.active_seconds / 3600),
         0
       ) > 0
-    : activeProject.project.salary > activeProject.project.total_payout;
+    : activeProject.salary > activeProject.total_payout;
 
   return (
     <ScrollArea h="100vh" type="scroll">
       <Stack align="center" w="100%" px="xl">
         <Collapse in={!analysisOpened} transitionDuration={300} w="100%">
           <Header
-            headerTitle={activeProject.project.title}
+            headerTitle={activeProject.title}
             leftSalary={
-              activeProject.project.hourly_payment
+              activeProject.hourly_payment
                 ? undefined
-                : activeProject.project.salary === 0
+                : activeProject.salary === 0
                   ? "Hobby"
                   : salary
             }
             rightSalary={
-              activeProject.project.salary === 0 ? undefined : hourlySalary
+              activeProject.salary === 0 ? undefined : hourlySalary
             }
-            description={activeProject.project.description ?? undefined}
+            description={activeProject.description ?? undefined}
             rightButton={
               <Group>
                 {activeProject.sessions.length > 0 && (
@@ -373,7 +358,7 @@ export default function WorkPage() {
               <NewSessionModal
                 opened={sessionFormOpened}
                 onClose={closeSessionForm}
-                project={activeProject.project}
+                project={activeProject}
               />
               <SelectActionIcon
                 disabled={selectableSessions.length === 0}
@@ -399,7 +384,7 @@ export default function WorkPage() {
                     timeSpan={filterTimeSpan}
                     onTimeSpanChange={setFilterTimeSpan}
                     sessions={timeFilteredSessions}
-                    project={activeProject.project}
+                    project={activeProject}
                     isProcessingPayout={isProcessingPayout}
                     onSelectAll={selectAllSessions}
                     handleSessionPayoutClick={handleSessionPayout}
@@ -407,14 +392,14 @@ export default function WorkPage() {
                 </Collapse>
                 <Collapse in={payoutOpened}>
                   <Group>
-                    {activeProject.project.hourly_payment ? (
+                    {activeProject.hourly_payment ? (
                       <HourlyPayoutCard
                         project={activeProject}
                         handlePayoutClick={handleSessionPayout}
                         isProcessing={isProcessingPayout}
                       />
                     ) : (
-                      <ProjectPayoutCard project={activeProject.project} />
+                      <ProjectPayoutCard project={activeProject} />
                     )}
                   </Group>
                 </Collapse>
@@ -455,7 +440,7 @@ export default function WorkPage() {
                         .map((s) => s.id)
                     )
                   }
-                  project={activeProject.project}
+                  project={activeProject}
                   isOverview={false}
                 />
               ) : (
@@ -482,7 +467,7 @@ export default function WorkPage() {
           <WorkAnalysis
             sessions={activeProject.sessions}
             isOverview={false}
-            project={activeProject.project}
+            project={activeProject}
             onClose={() => closeAnalysis()}
           />
         </Collapse>

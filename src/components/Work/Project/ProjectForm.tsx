@@ -5,7 +5,10 @@ import { useForm } from "@mantine/form";
 import { useEffect, useState, useMemo } from "react";
 import { useDisclosure, useClickOutside } from "@mantine/hooks";
 import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
-import { useWorkStore } from "@/stores/workManagerStore";
+import {
+  useUpdateTimerProjectMutation,
+  useCreateTimerProjectMutation,
+} from "@/utils/queries/work/use_timer_project";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
@@ -41,19 +44,23 @@ import {
   IconPalette,
   IconPlus,
 } from "@tabler/icons-react";
-import { TablesInsert } from "@/types/db.types";
+import { Tables } from "@/types/db.types";
 import { Currency, RoundingDirection } from "@/types/settings.types";
 import {
   showActionErrorNotification,
   showActionSuccessNotification,
 } from "@/utils/notificationFunctions";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
-import { StoreTimerProject } from "@/types/work.types";
+import {
+  TimerProject,
+  UpdateTimerProject,
+  InsertTimerProject,
+} from "@/types/work.types";
 
 interface ProjectFormProps {
-  project?: StoreTimerProject;
+  project?: TimerProject;
   onClose?: () => void;
-  onSuccess?: (project: StoreTimerProject) => void;
+  onSuccess?: (project: Tables<"timer_project">) => void;
   onCancel?: () => void;
   categoryIds: string[];
   setCategoryIds: (categoryIds: string[]) => void;
@@ -82,7 +89,6 @@ export default function ProjectForm({
   categoryIds,
   setCategoryIds,
   onOpenCategoryForm,
-  setActiveProjectId = false,
   onCancel,
 }: ProjectFormProps) {
   const {
@@ -97,8 +103,14 @@ export default function ProjectForm({
     data: financeCategories = [],
     isPending: isFetchingFinanceCategories,
   } = useFinanceCategoriesQuery();
-
-  const { addProject, updateProject } = useWorkStore();
+  const { mutate: updateProjectMutation, isPending: isUpdatingProject } =
+    useUpdateTimerProjectMutation({
+      onSuccess,
+    });
+  const { mutate: createProjectMutation, isPending: isCreatingProject } =
+    useCreateTimerProjectMutation({
+      onSuccess,
+    });
   const {
     roundingInterval,
     roundingDirection,
@@ -106,7 +118,6 @@ export default function ProjectForm({
     timeFragmentInterval,
   } = timerRoundingSettings;
   const [isColorPickerOpen, { open, close }] = useDisclosure(false);
-  const [submitting, setSubmitting] = useState(false);
   const [
     isDefaultRounding,
     { open: openDefaultRounding, close: closeDefaultRounding },
@@ -198,16 +209,18 @@ export default function ProjectForm({
     }
   };
 
-  const handleSubmit = async (values: z.infer<typeof schema>) => {
-    setSubmitting(true);
+  const handleSubmit = (values: z.infer<typeof schema>) => {
     const { cash_flow_category_ids, ...cleanValues } = values;
     if (project) {
-      const updatedProject: StoreTimerProject = {
-        ...project,
+      const { sessions, ...projectData } = project;
+      const updatedProject: UpdateTimerProject = {
+        ...projectData,
         ...cleanValues,
         currency: values.currency as Currency,
         rounding_direction: values.rounding_direction as RoundingDirection,
-        categoryIds: categoryIds,
+        categories: financeCategories.filter((c) =>
+          cash_flow_category_ids.includes(c.id)
+        ),
       };
       if (isDefaultRounding) {
         updatedProject.rounding_interval = null;
@@ -215,31 +228,15 @@ export default function ProjectForm({
         updatedProject.round_in_time_fragments = null;
         updatedProject.time_fragment_interval = null;
       }
-      const success = await updateProject(updatedProject);
-      if (success) {
-        showActionSuccessNotification(
-          getLocalizedText(
-            "Projekt erfolgreich bearbeitet",
-            "Project successfully updated"
-          ),
-          locale
-        );
-        onClose?.();
-        onSuccess?.(success);
-      } else {
-        showActionErrorNotification(
-          getLocalizedText(
-            "Projekt konnte nicht bearbeitet werden",
-            "Project could not be updated"
-          ),
-          locale
-        );
-      }
+      updateProjectMutation({ project: updatedProject });
     } else {
-      const newProject: TablesInsert<"timer_project"> = {
+      const newProject: InsertTimerProject = {
         ...cleanValues,
         currency: values.currency as Currency,
         rounding_direction: values.rounding_direction as RoundingDirection,
+        categories: financeCategories.filter((c) =>
+          cash_flow_category_ids.includes(c.id)
+        ),
       };
       if (isDefaultRounding) {
         newProject.rounding_interval = null;
@@ -247,32 +244,8 @@ export default function ProjectForm({
         newProject.round_in_time_fragments = null;
         newProject.time_fragment_interval = null;
       }
-      const success = await addProject(
-        newProject,
-        setActiveProjectId,
-        categoryIds
-      );
-      if (success) {
-        showActionSuccessNotification(
-          getLocalizedText(
-            "Projekt erfolgreich erstellt",
-            "Project successfully created"
-          ),
-          locale
-        );
-        onClose?.();
-        onSuccess?.(success);
-      } else {
-        showActionErrorNotification(
-          getLocalizedText(
-            "Projekt konnte nicht erstellt werden",
-            "Project could not be created"
-          ),
-          locale
-        );
-      }
+      createProjectMutation({ project: newProject });
     }
-    setSubmitting(false);
   };
 
   const categoryOptions = useMemo(() => {
@@ -569,14 +542,14 @@ export default function ProjectForm({
           <CreateButton
             onClick={form.onSubmit(handleSubmit)}
             type="submit"
-            loading={submitting}
+            loading={isCreatingProject}
             mt="md"
           />
         ) : (
           <UpdateButton
             onClick={form.onSubmit(handleSubmit)}
             type="submit"
-            loading={submitting}
+            loading={isUpdatingProject}
             mt="md"
           />
         )}

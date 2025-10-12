@@ -11,7 +11,7 @@ import {
 } from "@/utils/notificationFunctions";
 import { payoutFinanceAdjustment } from "@/actions/finance/payout/payout-finance-adjustment";
 import { payoutHourlyTimerProject } from "@/actions/finance/payout/payout-hourly-timer-project";
-import { OldTimerProject } from "@/types/work.types";
+import { TimerProject } from "@/types/work.types";
 
 // Mutation to payout a finance project
 export function usePayoutFinanceProjectMutation(
@@ -143,7 +143,7 @@ export function usePayoutHourlyTimerProjectMutation(
       title,
       sessionIds,
     }: {
-      project: OldTimerProject;
+      project: TimerProject;
       title: string;
       sessionIds: string[];
     }) => payoutHourlyTimerProject({ project, title, sessionIds }),

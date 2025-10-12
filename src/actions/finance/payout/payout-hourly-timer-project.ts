@@ -1,11 +1,11 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { OldTimerProject } from "@/types/work.types";
+import { TimerProject } from "@/types/work.types";
 import { SingleCashFlow } from "@/types/finance.types";
 
 interface PayoutHourlyTimerProjectProps {
-  project: OldTimerProject;
+  project: TimerProject;
   title: string;
   sessionIds: string[];
 }
@@ -16,7 +16,7 @@ export async function payoutHourlyTimerProject({
   sessionIds,
 }: PayoutHourlyTimerProjectProps): Promise<{
   singleCashFlow: SingleCashFlow;
-  project: OldTimerProject;
+  project: TimerProject;
 }> {
   const supabase = await createClient();
 
@@ -33,7 +33,7 @@ export async function payoutHourlyTimerProject({
     .insert({
       title,
       amount: Number(totalAmount),
-      currency: project.project.currency,
+      currency: project.currency,
     })
     .select()
     .single();

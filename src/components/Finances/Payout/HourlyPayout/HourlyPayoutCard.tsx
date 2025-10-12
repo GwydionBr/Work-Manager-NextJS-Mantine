@@ -9,10 +9,10 @@ import { IconCashBanknotePlus } from "@tabler/icons-react";
 import QuickPayoutButton from "@/components/Finances/Payout/HourlyPayout/QuickPayoutButton";
 
 import { Tables } from "@/types/db.types";
-import { OldTimerProject } from "@/types/work.types";
+import { TimerProject } from "@/types/work.types";
 
 interface HourlyPayoutCardProps {
-  project: OldTimerProject;
+  project: TimerProject;
   isProcessing: boolean;
   handlePayoutClick: (sessions: Tables<"timer_session">[]) => void;
 }
@@ -52,24 +52,24 @@ export default function HourlyPayoutCard({
           <QuickPayoutButton
             label={getLocalizedText("Gesamter Zeitraum", "All time")}
             sessions={allTimeSessions}
-            salary={project.project.salary}
-            currency={project.project.currency}
+            salary={project.salary}
+            currency={project.currency}
             timeSpan={[null, null]}
             handleClick={handlePayoutClick}
           />
           <QuickPayoutButton
             label={getLocalizedText("Dieser Monat", "This month")}
             sessions={thisMonthSessions}
-            salary={project.project.salary}
-            currency={project.project.currency}
+            salary={project.salary}
+            currency={project.currency}
             timeSpan={[today.startOf("month").toDate(), today.toDate()]}
             handleClick={handlePayoutClick}
           />
           <QuickPayoutButton
             label={getLocalizedText("Letzter Monat", "Last month")}
             sessions={lastMonthSessions}
-            salary={project.project.salary}
-            currency={project.project.currency}
+            salary={project.salary}
+            currency={project.currency}
             timeSpan={[
               today.subtract(1, "month").startOf("month").toDate(),
               today.subtract(1, "month").endOf("month").toDate(),

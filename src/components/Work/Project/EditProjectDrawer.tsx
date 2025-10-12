@@ -1,7 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useWorkStore } from "@/stores/workManagerStore";
+import {
+  useDeleteTimerProjectMutation,
+  useTimerProjectQuery,
+} from "@/utils/queries/work/use_timer_project";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
@@ -18,10 +22,6 @@ import CancelButton from "@/components/UI/Buttons/CancelButton";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 import { IconAlertTriangleFilled, IconCategoryPlus } from "@tabler/icons-react";
 import FinanceCategoryForm from "@/components/Finances/Category/FinanceCategoryForm";
-import {
-  showActionErrorNotification,
-  showActionSuccessNotification,
-} from "@/utils/notificationFunctions";
 
 interface EditProjectDrawerProps {
   opened: boolean;
@@ -33,12 +33,18 @@ export default function EditProjectDrawer({
   onClose,
 }: EditProjectDrawerProps) {
   const { locale } = useSettingsStore();
-  const { activeProjectId, deleteProject } = useWorkStore();
-  const activeProject = useWorkStore((state) =>
-    state.projects.find((p) => p.id === activeProjectId)
+  const { activeProjectId } = useWorkStore();
+  const { mutate: deleteProjectMutation, isPending: isDeleting } =
+    useDeleteTimerProjectMutation({});
+  const { data: projects = [] } = useTimerProjectQuery();
+  const activeProject = useMemo(
+    () => projects.find((p) => p.id === activeProjectId),
+    [projects, activeProjectId]
   );
-  const [isLoading, setIsLoading] = useState(false);
-  const [categoryIds, setCategoryIds] = useState<string[]>([]);
+
+  const [categoryIds, setCategoryIds] = useState<string[]>(
+    []
+  );
   const drawersStack = useDrawersStack([
     "edit-project",
     "delete-project",
@@ -47,7 +53,7 @@ export default function EditProjectDrawer({
 
   useEffect(() => {
     if (activeProject) {
-      setCategoryIds(activeProject.categoryIds);
+      setCategoryIds(activeProject.categories.map((c) => c.id));
     }
   }, [activeProject]);
 
@@ -65,27 +71,9 @@ export default function EditProjectDrawer({
   }
 
   async function handleDelete() {
-    setIsLoading(true);
     if (activeProject) {
-      const success = await deleteProject(activeProject.id);
-      if (success) {
-        handleClose();
-        showActionSuccessNotification(
-          locale === "de-DE"
-            ? "Projekt erfolgreich gelöscht"
-            : "Project deleted successfully",
-          locale
-        );
-      } else {
-        showActionErrorNotification(
-          locale === "de-DE"
-            ? "Projekt konnte nicht gelöscht werden"
-            : "Project could not be deleted",
-          locale
-        );
-      }
+      deleteProjectMutation({ projectIds: [activeProject.id] });
     }
-    setIsLoading(false);
   }
 
   if (!activeProject) {
@@ -155,7 +143,7 @@ export default function EditProjectDrawer({
               tooltipLabel={
                 locale === "de-DE" ? "Projekt löschen" : "Delete Project"
               }
-              loading={isLoading}
+              loading={isDeleting}
             />
           </Group>
         </Drawer>
