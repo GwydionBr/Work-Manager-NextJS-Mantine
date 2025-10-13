@@ -1,6 +1,6 @@
 "use client";
 
-import { useWorkStore } from "@/stores/workManagerStore";
+import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Box } from "@mantine/core";
@@ -12,10 +12,10 @@ export default function WorkLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { projects, isFetching, initialized } = useWorkStore();
+  const { data: projects, isPending } = useWorkProjectQuery();
 
   const { isWorkNavbarOpen } = useSettingsStore();
-  if (projects.length === 0 && !isFetching && initialized) {
+  if (projects && projects.length === 0 && !isPending) {
     return <WorkInitializer />;
   }
 

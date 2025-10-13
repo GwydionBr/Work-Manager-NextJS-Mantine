@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useViewportSize } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname, useParams } from "next/navigation";
 import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
 import { useWorkFolderQuery } from "@/utils/queries/work/use-work-folder";
 
@@ -22,13 +22,9 @@ import { createTree, findNodeById } from "@/utils/treeHelperFunctions";
 
 export default function ProjectTree() {
   const { height } = useViewportSize();
-  const {
-    setActiveProjectId,
-    moveProject,
-    moveFolder,
-    activeProjectId,
-    lastActiveProjectId,
-  } = useWorkStore();
+  const { moveProject, moveFolder } = useWorkStore();
+  const { projectId } = useParams() as { projectId: string | undefined };
+
   const { data: projects } = useWorkProjectQuery();
   const { data: folders } = useWorkFolderQuery();
 
@@ -74,7 +70,7 @@ export default function ProjectTree() {
         indent={24}
         rowHeight={30}
         paddingTop={10}
-        selection={activeProjectId ?? lastActiveProjectId ?? undefined}
+        selection={projectId ?? undefined}
         onDelete={(nodes) => {
           console.log(nodes.nodes.map((node) => node.data.name));
         }}
@@ -82,8 +78,7 @@ export default function ProjectTree() {
           if (nodes.length > 0) {
             const node = nodes[0];
             if (node.data.type === "project") {
-              setActiveProjectId(node.id);
-              router.push("/work");
+              router.push(`/work/${node.id}`);
             }
           }
         }}
@@ -98,8 +93,9 @@ export default function ProjectTree() {
 }
 
 function Node({ node, style, dragHandle }: NodeRendererProps<ProjectTreeItem>) {
-  const { activeProjectId } = useWorkStore();
-  const isSelected = activeProjectId === node.id;
+  const pathname = usePathname();
+
+  const isSelected = pathname.includes(node.id);
   const willReceiveDrop = node.willReceiveDrop;
 
   const handleClick = (e: React.MouseEvent) => {

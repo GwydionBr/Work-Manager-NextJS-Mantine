@@ -3,12 +3,12 @@
 import { useWorkProjectByIdQuery } from "@/utils/queries/work/use-work-project";
 import { useParams } from "next/navigation";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import { useWorkStore } from "@/stores/workManagerStore";
 import { useProjectFiltering } from "@/hooks/useProjectFiltering";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { usePayoutHourlyTimerProjectMutation } from "@/utils/queries/finances/use-payout";
+import { useWorkStore } from "@/stores/workManagerStore";
 
 import {
   Box,
@@ -46,18 +46,21 @@ import { Tables } from "@/types/db.types";
 
 export default function WorkProjectDetailsPage() {
   const { projectId } = useParams();
+  const { setActiveProjectId } = useWorkStore();
+
   const { data: activeProject } = useWorkProjectByIdQuery({
     projectId: projectId as string,
   });
 
-  const [oldActiveProjectId, setOldActiveProjectId] = useState<string | null>(
-    null
-  );
+  useEffect(() => {
+    if (activeProject?.id) {
+      setActiveProjectId(activeProject.id);
+    }
+  }, [activeProject?.id]);
+
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
     null
   );
-  const { activeProjectId, lastActiveProjectId, setActiveProjectId } =
-    useWorkStore();
   const {
     mutate: payoutHourlyTimerProjectMutation,
     isPending: isProcessingPayout,
@@ -172,24 +175,6 @@ export default function WorkProjectDetailsPage() {
     },
     [timeFilteredTimeEntries, lastSelectedIndex]
   );
-
-  useEffect(() => {
-    if (oldActiveProjectId !== activeProjectId) {
-      setFilterTimeSpan([null, null]);
-      closeFilter();
-      closePayout();
-      closeAnalysis();
-      deactivateSelectedMode();
-      setSelectedTimeEntryIds([]);
-      setOldActiveProjectId(activeProjectId);
-    }
-  }, [activeProjectId, oldActiveProjectId]);
-
-  useEffect(() => {
-    if (!activeProjectId && lastActiveProjectId) {
-      setActiveProjectId(lastActiveProjectId);
-    }
-  }, [activeProjectId, lastActiveProjectId, setActiveProjectId]);
 
   if (!activeProject) {
     return (

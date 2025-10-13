@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useWorkStore } from "@/stores/workManagerStore";
 
 import { Button, Flex, Stack, Tooltip, UnstyledButton } from "@mantine/core";
 import {
@@ -28,6 +29,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { locale, setSelectedTab, setIsModalOpen } = useSettingsStore();
+  const { lastActiveProjectId } = useWorkStore();
 
   const profileLinksData = [
     {
@@ -41,7 +43,9 @@ export default function Navbar() {
     {
       icon: IconBriefcase,
       label: locale === "de-DE" ? "Arbeitsmanager" : "Work Manager",
-      to: paths.work.workPage(),
+      to: lastActiveProjectId
+        ? paths.work.workDetailsPage(lastActiveProjectId)
+        : paths.work.workPage(),
     },
     {
       icon: IconCalendar,
