@@ -24,7 +24,7 @@ export default function WorkPage() {
     }
   }, [router, targetPath]);
 
-  if (isPending || targetPath) {
+  if (!lastActiveProjectId && (isPending || targetPath)) {
     return (
       <Center h="100vh">
         <Loader />

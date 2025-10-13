@@ -10,8 +10,6 @@ import {
   UpdateWorkProject,
   UpdateWorkFolder,
 } from "@/types/work.types";
-import { updateWorkFolder } from "@/actions/work/folder/update-work-folder";
-import { updateWorkProject } from "@/actions/work/workProject/update-work-project";
 
 export const useWorkTree = () => {
   const { data: projects = [], isPending: isProjectsPending } =

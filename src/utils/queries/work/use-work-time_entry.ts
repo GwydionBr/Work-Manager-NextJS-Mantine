@@ -95,10 +95,6 @@ export const useCreateWorkTimeEntryMutation = ({
           };
         }
       );
-      context.client.invalidateQueries({ queryKey: ["workTimeEntries"] });
-      context.client.invalidateQueries({
-        queryKey: ["workProjectById", variables.newTimeEntry.project_id],
-      });
       onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
@@ -219,10 +215,6 @@ export const useUpdateWorkTimeEntryMutation = ({
           }
         );
       }
-      context.client.invalidateQueries({ queryKey: ["workTimeEntries"] });
-      context.client.invalidateQueries({
-        queryKey: ["workProjectById", variables.updateTimeEntry.project_id],
-      });
       onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
@@ -270,10 +262,6 @@ export const useDeleteWorkTimeEntryMutation = ({
           };
         }
       );
-      context.client.invalidateQueries({ queryKey: ["workTimeEntries"] });
-      context.client.invalidateQueries({
-        queryKey: ["workProjectById", data.project_id],
-      });
       showActionSuccessNotification(
         getLocalizedText(
           "Arbeitszeit erfolgreich gelöscht",

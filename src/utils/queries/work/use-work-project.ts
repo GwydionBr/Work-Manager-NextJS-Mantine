@@ -51,7 +51,6 @@ export const useUpdateWorkProjectMutation = ({
       context.client.setQueryData(["workProjects"], (old: WorkProject[]) =>
         old.map((p) => (p.id === data.id ? data : p))
       );
-      context.client.invalidateQueries({ queryKey: ["workProjects"] });
       showActionSuccessNotification(
         getLocalizedText(
           "Projekt erfolgreich aktualisiert",
@@ -87,7 +86,6 @@ export const useDeleteWorkProjectMutation = ({
       context.client.setQueryData(["workProjects"], (old: WorkProject[]) =>
         old.filter((p) => !variables.projectIds.includes(p.id))
       );
-      context.client.invalidateQueries({ queryKey: ["workProjects"] });
       showActionSuccessNotification(
         getLocalizedText(
           "Projekt erfolgreich gelöscht",
@@ -126,7 +124,6 @@ export const useCreateWorkProjectMutation = ({
         data,
         ...old,
       ]);
-      context.client.invalidateQueries({ queryKey: ["workProjects"] });
       showActionSuccessNotification(
         getLocalizedText(
           "Projekt erfolgreich erstellt",
