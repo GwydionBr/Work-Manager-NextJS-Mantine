@@ -1,8 +1,9 @@
 "use client";
 
+import { useMemo } from "react";
 import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useWorkStore } from "@/stores/workManagerStore";
+import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
 
 import { alpha, Stack, Text } from "@mantine/core";
 import { endOfDay, isToday, isYesterday, startOfDay } from "date-fns";
@@ -19,11 +20,14 @@ export default function TimeTrackerEvent({
   day,
 }: TimeTrackerEventProps) {
   const { isTimerRunning, getRunningTimer } = useTimeTrackerManager();
-  const { projects } = useWorkStore();
+
   const timer = getRunningTimer();
   const { locale, format24h } = useSettingsStore();
-
-  const project = projects.find((p) => p.id === timer?.projectId);
+  const { data: projects = [] } = useWorkProjectQuery();
+  const project = useMemo(
+    () => projects.find((p) => p.id === timer?.projectId),
+    [projects, timer?.projectId]
+  );
 
   const color = project?.color ?? "var(--mantine-color-red-6)";
   const backgroundColor = alpha(color, 0.1);

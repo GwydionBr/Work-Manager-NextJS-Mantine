@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useWorkProjectByIdQuery } from "@/utils/queries/work/use-work-project";
+import { useParams } from "next/navigation";
+
+import { useEffect, useState, useCallback } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useProjectFiltering } from "@/hooks/useProjectFiltering";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { usePayoutHourlyTimerProjectMutation } from "@/utils/queries/finances/use-payout";
-import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
-import { useWorkTimeEntryQuery } from "@/utils/queries/work/use-work-time_entry";
 
 import {
   Box,
@@ -42,22 +43,21 @@ import { IconClockPlus } from "@tabler/icons-react";
 
 import { formatDate } from "@/utils/formatFunctions";
 import { Tables } from "@/types/db.types";
-import { CompleteWorkProject } from "@/types/work.types";
 
-export default function WorkPage() {
+export default function WorkProjectDetailsPage() {
+  const { projectId } = useParams();
+  const { data: activeProject } = useWorkProjectByIdQuery({
+    projectId: projectId as string,
+  });
+
   const [oldActiveProjectId, setOldActiveProjectId] = useState<string | null>(
     null
   );
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
     null
   );
-  const { data: projects = [] } = useWorkProjectQuery();
-  const { data: timeEntries = [] } = useWorkTimeEntryQuery();
-  const {
-    activeProjectId,
-    lastActiveProjectId,
-    setActiveProjectId,
-  } = useWorkStore();
+  const { activeProjectId, lastActiveProjectId, setActiveProjectId } =
+    useWorkStore();
   const {
     mutate: payoutHourlyTimerProjectMutation,
     isPending: isProcessingPayout,
@@ -67,21 +67,6 @@ export default function WorkPage() {
   });
 
   const { locale, getLocalizedText } = useSettingsStore();
-
-  // Use memo to get the active project
-  const activeProject: CompleteWorkProject | undefined = useMemo(() => {
-    let project = projects.find((p) => p.id === activeProjectId);
-    if (!project) {
-      project = projects.find((p) => p.id === lastActiveProjectId);
-    }
-    if (!project) {
-      return undefined;
-    }
-    const projectTimeEntries = timeEntries.filter(
-      (t) => t.project_id === project.id
-    );
-    return { ...project, timeEntries: projectTimeEntries };
-  }, [projects, activeProjectId, timeEntries]);
 
   // State for filter time span
   const [filterTimeSpan, setFilterTimeSpan] = useState<

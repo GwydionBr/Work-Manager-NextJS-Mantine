@@ -2,11 +2,13 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useWorkStore } from "@/stores/workManagerStore";
 
 import { getAllWorkProjects } from "@/actions/work/workProject/get-all-work-projects";
 import { updateWorkProject } from "@/actions/work/workProject/update-work-project";
 import { deleteWorkProjects } from "@/actions/work/workProject/delete-work-projects";
 import { createWorkProject } from "@/actions/work/workProject/create-work-project";
+import { getWorkProjectById } from "@/actions/work/workProject/get-work-project-by-id";
 import {
   showActionErrorNotification,
   showActionSuccessNotification,
@@ -23,6 +25,17 @@ export const useWorkProjectQuery = () => {
   });
 };
 
+export const useWorkProjectByIdQuery = ({
+  projectId,
+}: {
+  projectId: string;
+}) => {
+  return useQuery({
+    queryKey: ["workProjectById", projectId],
+    queryFn: () => getWorkProjectById({ projectId }),
+  });
+};
+
 export const useUpdateWorkProjectMutation = ({
   onSuccess,
   onError,
@@ -31,6 +44,8 @@ export const useUpdateWorkProjectMutation = ({
   onError?: () => void;
 }) => {
   const { locale, getLocalizedText } = useSettingsStore();
+  const { setActiveProjectId, activeProjectId, lastActiveProjectId } =
+    useWorkStore();
   return useMutation({
     mutationKey: ["updateWorkProject"],
     mutationFn: updateWorkProject,

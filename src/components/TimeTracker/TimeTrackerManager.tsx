@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   TimerData,
   useTimeTrackerManager,
@@ -15,6 +15,7 @@ import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import TimeTrackerActionIcon from "./TimeTrackerActionIcons/TimeTrackerActionIcon";
 import { getStatusColor } from "@/utils/workHelperFunctions";
 import { Tables } from "@/types/db.types";
+import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
 
 interface TimerManagerProps {
   isBig: boolean;
@@ -37,8 +38,10 @@ export default function TimerManager({
   } = useTimeTrackerManager();
   const { activeProjectId } = useWorkStore();
   const { timerRoundingSettings, locale } = useSettingsStore();
-  const activeProject = useWorkStore((state) =>
-    state.projects.find((p) => p.id === activeProjectId)
+  const { data: projects = [] } = useWorkProjectQuery();
+  const activeProject = useMemo(
+    () => projects.find((p) => p.id === activeProjectId),
+    [projects, activeProjectId]
   );
   const [timers, setTimers] = useState<TimerData[]>([]);
 

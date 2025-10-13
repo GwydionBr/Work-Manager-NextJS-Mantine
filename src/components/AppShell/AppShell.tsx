@@ -7,8 +7,8 @@ import { useEffect, useMemo } from "react";
 import { useDisclosure, useHotkeys } from "@mantine/hooks";
 import { usePathname } from "next/navigation";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useUserStore } from "@/stores/userStore";
 import { useWorkStore } from "@/stores/workManagerStore";
+import { useUserStore } from "@/stores/userStore";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { useCheckNewVersion } from "@/hooks/useCheckNewVersion";
 import { notifications } from "@mantine/notifications";
@@ -34,11 +34,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     useUserStore();
   const { fetchIfStale: fetchCalendarIfStale, abortFetch: abortCalendarFetch } =
     useCalendarStore();
-  const {
-    fetchIfStale: fetchWorkIfStale,
-    setActiveProjectId,
-    abortFetch: abortWorkFetch,
-  } = useWorkStore();
+  const { setActiveProjectId } = useWorkStore();
   const {
     locale,
     isAsideOpen,
@@ -101,8 +97,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isAuth = useMemo(() => pathname === "/auth", [pathname]);
 
   const showInitializeProfile = useMemo(
-    () =>
-      profile && profile.initialized === false && !isAuth && !isHome,
+    () => profile && profile.initialized === false && !isAuth && !isHome,
     [profile, isAuth, isHome]
   );
 
@@ -119,19 +114,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       if (pathname.startsWith("/workCalendar")) {
         priorityFetch = FetchPriority.Calendar;
-        await fetchWorkIfStale(interval);
         await fetchCalendarIfStale(interval);
-      } else if (pathname === "/work") {
-        priorityFetch = FetchPriority.Work;
-        await fetchWorkIfStale(interval);
       }
 
       // Background fetching for other data (best-effort)
-      if (
-        priorityFetch !== FetchPriority.Work &&
-        priorityFetch !== FetchPriority.Calendar
-      )
-        fetchWorkIfStale(interval);
       if (priorityFetch !== FetchPriority.Calendar)
         fetchCalendarIfStale(interval);
     };
@@ -143,7 +129,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     if (isHome || isAuth) return;
 
     // Abort any ongoing fetches when route changes
-    abortWorkFetch();
     abortUserFetch();
     abortCalendarFetch();
     abortSettingsFetch();
