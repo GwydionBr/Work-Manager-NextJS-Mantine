@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useViewportSize } from "@mantine/hooks";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useRouter } from "next/navigation";
-import { useWorkProjectQuery } from "@/utils/queries/work/use_work_project";
+import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
 import { useWorkFolderQuery } from "@/utils/queries/work/use-work-folder";
 
 import { NodeRendererProps, Tree } from "react-arborist";

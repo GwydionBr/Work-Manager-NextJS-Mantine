@@ -5,8 +5,6 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import {
   Accordion,
   AccordionControlProps,
-  ActionIcon,
-  Center,
   Box,
   Group,
   Text,

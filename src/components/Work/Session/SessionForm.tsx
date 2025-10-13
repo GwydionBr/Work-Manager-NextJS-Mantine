@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useForm } from "@mantine/form";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useWorkProjectQuery } from "@/utils/queries/work/use_work_project";
+import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
 
 import {
   NumberInput,

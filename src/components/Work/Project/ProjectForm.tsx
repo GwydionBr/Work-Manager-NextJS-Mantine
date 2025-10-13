@@ -8,7 +8,7 @@ import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-
 import {
   useUpdateWorkProjectMutation,
   useCreateWorkProjectMutation,
-} from "@/utils/queries/work/use_work_project";
+} from "@/utils/queries/work/use-work-project";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {

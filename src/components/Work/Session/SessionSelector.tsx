@@ -1,7 +1,7 @@
 "use client";
 
 import { useDisclosure } from "@mantine/hooks";
-import { useWorkStore } from "@/stores/workManagerStore";
+import { useDeleteWorkTimeEntryMutation } from "@/utils/queries/work/use-work-time_entry";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Group, Text, Divider, Stack, Button, Collapse } from "@mantine/core";
@@ -9,11 +9,7 @@ import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import { Tables } from "@/types/db.types";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 import { IconCashBanknotePlus, IconPencil } from "@tabler/icons-react";
-import {
-  showActionErrorNotification,
-  showActionSuccessNotification,
-  showDeleteConfirmationModal,
-} from "@/utils/notificationFunctions";
+import { showDeleteConfirmationModal } from "@/utils/notificationFunctions";
 
 interface SessionSelectorProps {
   selectedSessions: string[];
@@ -29,7 +25,10 @@ export default function SessionSelector({
   handleSessionPayoutClick,
 }: SessionSelectorProps) {
   const { locale } = useSettingsStore();
-  const { deleteTimerSessions } = useWorkStore();
+  const {
+    mutate: deleteWorkTimeEntryMutation,
+    isPending: isDeletingWorkTimeEntry,
+  } = useDeleteWorkTimeEntryMutation({ onSuccess: () => {} });
   const [editModalOpened, { open: openEditModal, close: closeEditModal }] =
     useDisclosure(false);
 
@@ -40,22 +39,9 @@ export default function SessionSelector({
         ? "Sind Sie sicher, dass Sie diese Auswahl löschen möchten?"
         : "Are you sure you want to delete this selection?",
       async () => {
-        const success = await deleteTimerSessions(selectedSessions);
-        if (success) {
-          showActionSuccessNotification(
-            locale === "de-DE"
-              ? "Auswahl erfolgreich gelöscht"
-              : "Selection deleted successfully",
-            locale
-          );
-        } else {
-          showActionErrorNotification(
-            locale === "de-DE"
-              ? "Auswahl konnte nicht gelöscht werden"
-              : "Selection could not be deleted",
-            locale
-          );
-        }
+        deleteWorkTimeEntryMutation({
+          ids: selectedSessions,
+        });
       },
       locale
     );
@@ -81,12 +67,16 @@ export default function SessionSelector({
             onClick={() => {}}
             selected={
               selectedSessions.length ===
-              timeFilteredSessions.filter((session) => !session.single_cash_flow_id).length
+              timeFilteredSessions.filter(
+                (session) => !session.single_cash_flow_id
+              ).length
             }
             partiallySelected={
               selectedSessions.length > 0 &&
               selectedSessions.length <
-                timeFilteredSessions.filter((session) => !session.single_cash_flow_id).length
+                timeFilteredSessions.filter(
+                  (session) => !session.single_cash_flow_id
+                ).length
             }
           />
 
@@ -97,7 +87,11 @@ export default function SessionSelector({
         <Divider orientation="vertical" />
         <Text size="xs" c="dimmed">
           {selectedSessions.length} /{" "}
-          {timeFilteredSessions.filter((session) => !session.single_cash_flow_id).length}{" "}
+          {
+            timeFilteredSessions.filter(
+              (session) => !session.single_cash_flow_id
+            ).length
+          }{" "}
           {locale === "de-DE" ? "Sitzungen" : "Sessions"}
         </Text>
       </Group>
@@ -131,6 +125,7 @@ export default function SessionSelector({
           <DeleteButton
             onClick={handleDelete}
             label={locale === "de-DE" ? "Auswahl löschen" : "Delete Selection"}
+            loading={isDeletingWorkTimeEntry}
           />
         </Stack>
       </Collapse>

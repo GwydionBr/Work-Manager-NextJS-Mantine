@@ -6,8 +6,8 @@ import { useWorkStore } from "@/stores/workManagerStore";
 import { useProjectFiltering } from "@/hooks/useProjectFiltering";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { usePayoutHourlyTimerProjectMutation } from "@/utils/queries/finances/use-payout";
-import { useWorkProjectQuery } from "@/utils/queries/work/use_work_project";
-import { useWorkTimeEntryQuery } from "@/utils/queries/work/use_work_time_entry";
+import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
+import { useWorkTimeEntryQuery } from "@/utils/queries/work/use-work-time_entry";
 
 import {
   Box,
@@ -52,13 +52,13 @@ export default function WorkPage() {
     null
   );
   const { data: projects = [] } = useWorkProjectQuery();
+  const { data: timeEntries = [] } = useWorkTimeEntryQuery();
   const {
     activeProjectId,
     lastActiveProjectId,
     isFetching,
     setActiveProjectId,
   } = useWorkStore();
-  const { data: timeEntries = [] } = useWorkTimeEntryQuery();
   const {
     mutate: payoutHourlyTimerProjectMutation,
     isPending: isProcessingPayout,
@@ -78,10 +78,10 @@ export default function WorkPage() {
     if (!project) {
       return undefined;
     }
-    const filteredTimeEntries = timeEntries.filter(
-      (t) => t.project_id === project?.id
+    const projectTimeEntries = timeEntries.filter(
+      (t) => t.project_id === project.id
     );
-    return { ...project, timeEntries: filteredTimeEntries };
+    return { ...project, timeEntries: projectTimeEntries };
   }, [projects, activeProjectId, timeEntries]);
 
   // State for filter time span
@@ -117,7 +117,7 @@ export default function WorkPage() {
 
   // Use the custom hook for filtering logic
   const { timeFilteredTimeEntries } = useProjectFiltering(
-    timeEntries ?? [],
+    activeProject?.timeEntries ?? [],
     filterTimeSpan
   );
 

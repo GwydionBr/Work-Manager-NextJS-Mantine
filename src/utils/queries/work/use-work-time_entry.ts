@@ -184,7 +184,7 @@ export const useDeleteWorkTimeEntryMutation = ({
     mutationFn: deleteWorkTimeEntries,
     onSuccess: (data, variables, onMutateResult, context) => {
       context.client.setQueryData(["workTimeEntries"], (old: WorkTimeEntry[]) =>
-        old.filter((entry) => !variables.sessionIds.includes(entry.id))
+        old.filter((entry) => !variables.ids.includes(entry.id))
       );
       context.client.invalidateQueries({ queryKey: ["workTimeEntries"] });
       showActionSuccessNotification(

@@ -5,7 +5,7 @@ import { useWorkStore } from "@/stores/workManagerStore";
 import {
   useDeleteWorkProjectMutation,
   useWorkProjectQuery,
-} from "@/utils/queries/work/use_work_project";
+} from "@/utils/queries/work/use-work-project";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {

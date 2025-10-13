@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDisclosure, useHotkeys } from "@mantine/hooks";
-import { useWorkProjectQuery } from "@/utils/queries/work/use_work_project";
-import { useWorkTimeEntryQuery } from "@/utils/queries/work/use_work_time_entry";
+import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
+import { useWorkTimeEntryQuery } from "@/utils/queries/work/use-work-time_entry";
 import { useCalendarStore } from "@/stores/calendarStore";
 
 import { ScrollArea, Stack } from "@mantine/core";

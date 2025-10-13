@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import {
   useUpdateWorkTimeEntryMutation,
   useDeleteWorkTimeEntryMutation,
-} from "@/utils/queries/work/use_work_time_entry";
+} from "@/utils/queries/work/use-work-time_entry";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Drawer, Flex, Group, Text, useDrawersStack, Box } from "@mantine/core";
@@ -109,7 +109,7 @@ export default function EditSessionDrawer({
   }
   function handleDelete() {
     deleteWorkTimeEntryMutation({
-      sessionIds: [timerSession.id],
+      ids: [timerSession.id],
     });
   }
 

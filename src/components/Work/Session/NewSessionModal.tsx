@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useCreateWorkTimeEntryMutation } from "@/utils/queries/work/use_work_time_entry";
+import { useCreateWorkTimeEntryMutation } from "@/utils/queries/work/use-work-time_entry";
 
 import { Group, Modal, Text, useModalsStack } from "@mantine/core";
 import SessionForm from "./SessionForm";

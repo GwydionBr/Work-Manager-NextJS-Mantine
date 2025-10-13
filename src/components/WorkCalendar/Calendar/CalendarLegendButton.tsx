@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useDisclosure, useClickOutside } from "@mantine/hooks";
-import { useUpdateWorkProjectMutation } from "@/utils/queries/work/use_work_project";
+import { useUpdateWorkProjectMutation } from "@/utils/queries/work/use-work-project";
 
 import { Popover, Button, Box } from "@mantine/core";
 import ProjectColorPicker from "@/components/UI/ProjectColorPicker";

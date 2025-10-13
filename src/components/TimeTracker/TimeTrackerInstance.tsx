@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTimeTracker } from "@/hooks/useTimeTracker";
-import { useCreateWorkTimeEntryMutation } from "@/utils/queries/work/use_work_time_entry";
-import { useWorkProjectQuery } from "@/utils/queries/work/use_work_project";
+import { useCreateWorkTimeEntryMutation } from "@/utils/queries/work/use-work-time_entry";
+import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
 import { useSettingsStore } from "@/stores/settingsStore";
 import {
   useTimeTrackerManager,
