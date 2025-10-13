@@ -6,13 +6,26 @@ export async function deleteWorkTimeEntries({
   ids,
 }: {
   ids: string[];
-}): Promise<boolean> {
+}): Promise<{ project_id: string }> {
   const supabase = await createClient();
-  const { error } = await supabase.from("timer_session").delete().in("id", ids);
 
-  if (error) {
-    throw new Error(error.message);
+  const { data, error: projectIdError } = await supabase
+    .from("timer_session")
+    .select("project_id")
+    .in("id", ids);
+
+  if (projectIdError || data.length === 0) {
+    throw new Error(projectIdError?.message || "Project ID not found");
   }
 
-  return true;
+  const { error: deleteError } = await supabase
+    .from("timer_session")
+    .delete()
+    .in("id", ids);
+
+  if (deleteError) {
+    throw new Error(deleteError.message);
+  }
+
+  return data[0];
 }

@@ -103,7 +103,7 @@ export default function EditSessionDrawer({
     };
 
     updateWorkTimeEntryMutation({
-      newTimeEntry: newSession,
+      updateTimeEntry: newSession,
       roundingSettings,
     });
   }

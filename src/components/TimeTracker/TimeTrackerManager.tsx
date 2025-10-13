@@ -36,13 +36,15 @@ export default function TimerManager({
     timers: timerData,
     updateTimer,
   } = useTimeTrackerManager();
-  const { activeProjectId } = useWorkStore();
+  const { lastActiveProjectId } = useWorkStore();
   const { timerRoundingSettings, locale } = useSettingsStore();
   const { data: projects = [] } = useWorkProjectQuery();
+
   const activeProject = useMemo(
-    () => projects.find((p) => p.id === activeProjectId),
-    [projects, activeProjectId]
+    () => projects.find((p) => p.id === lastActiveProjectId),
+    [projects, lastActiveProjectId]
   );
+  
   const [timers, setTimers] = useState<TimerData[]>([]);
 
   useEffect(() => {

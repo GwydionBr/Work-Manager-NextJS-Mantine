@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import { useWorkStore } from "@/stores/workManagerStore";
+import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
+import { useWorkFolderQuery } from "@/utils/queries/work/use-work-folder";
+import { useWorkTimeEntryQuery } from "@/utils/queries/work/use-work-time_entry";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useSessionFiltering } from "@/hooks/useSessionFiltering";
+import { useTimeEntryFiltering } from "@/hooks/useSessionFiltering";
 
 import { Box, Collapse, Group, Stack, Text } from "@mantine/core";
 import Header from "@/components/Header/Header";
@@ -18,7 +20,6 @@ import NewSessionModal from "@/components/Work/Session/NewSessionModal";
 import PayoutActionIcon from "@/components/UI/ActionIcons/PayoutActionIcon";
 
 export default function WorkOverviewPage() {
-  const { projects: timerProjects, folders, timerSessions } = useWorkStore();
   const [selectedSessions, setSelectedSessions] = useState<string[]>([]);
   const [analysisOpened, setAnalysisOpened] = useState(false);
   const [
@@ -34,7 +35,9 @@ export default function WorkOverviewPage() {
     { open: openPayout, close: closePayout, toggle: togglePayout },
   ] = useDisclosure(false);
   const { locale } = useSettingsStore();
-  const projects = timerProjects.map((project) => project);
+  const { data: projects = [] } = useWorkProjectQuery();
+  const { data: folders = [] } = useWorkFolderQuery();
+  const { data: timerSessions = [] } = useWorkTimeEntryQuery();
 
   // Use the custom hook for filtering logic with all new filter functionality
   const {
@@ -46,7 +49,13 @@ export default function WorkOverviewPage() {
     handleCategoryFilterChange,
     handleFilterLogicChange,
     clearAllFilters,
-  } = useSessionFiltering(timerSessions, [null, null], projects, folders, true);
+  } = useTimeEntryFiltering(
+    timerSessions,
+    [null, null],
+    projects,
+    folders,
+    true
+  );
 
   const handleSessionToggle = (sessionId: string) => {
     setSelectedSessions(

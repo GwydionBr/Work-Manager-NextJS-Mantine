@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { Tables } from "@/types/db.types";
 import { startOfDay, endOfDay } from "date-fns";
-import { StoreTimerProject } from "@/types/work.types";
+import { WorkProject, WorkTimeEntry } from "@/types/work.types";
 
 // Filter logic determines how multiple filters are combined
 export type FilterLogic = "AND" | "OR";
@@ -21,17 +21,17 @@ export interface FilterState {
 }
 
 /**
- * Hook for filtering timer sessions by time period, projects, folders, and categories
- * @param sessions - Array of timer sessions to filter
+ * Hook for filtering time entries by time period, projects, folders, and categories
+ * @param timeEntry - Array of time entries to filter
  * @param timeSpan - Time span for the filter
  * @param projects - Optional array of projects for project-based filtering
  * @param folders - Optional array of folders for folder-based filtering
- * @param isOverview - Whether we're in overview mode (affects unpaid session filtering)
+ * @param isOverview - Whether we're in overview mode (affects unpaid    filtering)
  */
-export function useSessionFiltering(
-  sessions: Tables<"timer_session">[],
+export function useTimeEntryFiltering(
+  timeEntry: WorkTimeEntry[],
   timeSpan: [Date | null, Date | null],
-  projects?: StoreTimerProject[],
+  projects?: WorkProject[],
   folders?: Tables<"timer_project_folder">[],
   isOverview = false
 ) {
@@ -50,13 +50,13 @@ export function useSessionFiltering(
    */
   const getTimeFilteredSessions = () => {
     if (!timeSpan[0] || !timeSpan[1]) {
-      return sessions;
+      return timeEntry;
     }
 
     let startDate = startOfDay(new Date(timeSpan[0]));
     let endDate = endOfDay(new Date(timeSpan[1]));
 
-    return sessions.filter((session) => {
+    return timeEntry.filter((session) => {
       const sessionDate = new Date(session.start_time);
       return sessionDate >= startDate && sessionDate <= endDate;
     });
@@ -79,7 +79,7 @@ export function useSessionFiltering(
 
     // If no time filter is active, just filter by project criteria
     if (!timeSpan[0] || !timeSpan[1]) {
-      return sessions.filter((session) => {
+      return timeEntry.filter((session) => {
         const sessionProject = projects?.find(
           (p) => p.id === session.project_id
         );
@@ -108,7 +108,9 @@ export function useSessionFiltering(
         if (filterState.selectedCategories.length > 0) {
           conditions.push(
             filterState.selectedCategories.some((categoryId) =>
-              sessionProject.categoryIds.includes(categoryId)
+              sessionProject.categories.some(
+                (category) => category.id === categoryId
+              )
             )
           );
         }
@@ -128,7 +130,7 @@ export function useSessionFiltering(
     // Both time and project filters are active - combine them based on logic
     const timeFilteredSessions = getTimeFilteredSessions();
 
-    return sessions.filter((session) => {
+    return timeEntry.filter((session) => {
       const sessionProject = projects?.find((p) => p.id === session.project_id);
       if (!sessionProject) return false;
 
@@ -159,7 +161,9 @@ export function useSessionFiltering(
       if (filterState.selectedCategories.length > 0) {
         projectConditions.push(
           filterState.selectedCategories.some((categoryId) =>
-            sessionProject.categoryIds.includes(categoryId)
+            sessionProject.categories.some(
+              (category) => category.id === categoryId
+            )
           )
         );
       }

@@ -44,8 +44,6 @@ export const useUpdateWorkProjectMutation = ({
   onError?: () => void;
 }) => {
   const { locale, getLocalizedText } = useSettingsStore();
-  const { setActiveProjectId, activeProjectId, lastActiveProjectId } =
-    useWorkStore();
   return useMutation({
     mutationKey: ["updateWorkProject"],
     mutationFn: updateWorkProject,

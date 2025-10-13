@@ -33,13 +33,14 @@ export default function EditProjectDrawer({
   onClose,
 }: EditProjectDrawerProps) {
   const { locale } = useSettingsStore();
-  const { activeProjectId } = useWorkStore();
+  const { lastActiveProjectId } = useWorkStore();
   const { mutate: deleteProjectMutation, isPending: isDeleting } =
     useDeleteWorkProjectMutation({});
   const { data: projects = [] } = useWorkProjectQuery();
+  
   const activeProject = useMemo(
-    () => projects.find((p) => p.id === activeProjectId),
-    [projects, activeProjectId]
+    () => projects.find((p) => p.id === lastActiveProjectId),
+    [projects, lastActiveProjectId]
   );
 
   const [categoryIds, setCategoryIds] = useState<string[]>([]);

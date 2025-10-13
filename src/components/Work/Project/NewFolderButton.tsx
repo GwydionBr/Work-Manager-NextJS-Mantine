@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import { useWorkStore } from "@/stores/workManagerStore";
 
 import { Modal, TextInput, Group, Stack, ActionIcon } from "@mantine/core";
 import { useForm } from "@mantine/form";
@@ -12,6 +10,7 @@ import { IconFolderPlus } from "@tabler/icons-react";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
+import { useCreateWorkFolderMutation } from "@/utils/queries/work/use-work-folder";
 
 const folderSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -20,8 +19,13 @@ const folderSchema = z.object({
 
 export default function NewFolderButton() {
   const [opened, { open, close }] = useDisclosure(false);
-  const [submitting, setSubmitting] = useState(false);
-  const { addProjectFolder } = useWorkStore();
+  const { mutate: createFolderMutation, isPending: isCreatingFolder } =
+    useCreateWorkFolderMutation({
+      onSuccess: () => {
+        handleClose();
+        form.reset();
+      },
+    });
 
   const form = useForm({
     initialValues: {
@@ -32,13 +36,7 @@ export default function NewFolderButton() {
   });
 
   async function handleSubmit(values: { title: string; description: string }) {
-    setSubmitting(true);
-    const success = await addProjectFolder({ ...values });
-    if (success) {
-      handleClose();
-      form.reset();
-    }
-    setSubmitting(false);
+    createFolderMutation({ folder: { ...values } });
   }
 
   function handleClose() {
@@ -73,7 +71,7 @@ export default function NewFolderButton() {
               <CreateButton
                 type="submit"
                 onClick={form.onSubmit(handleSubmit)}
-                loading={submitting}
+                loading={isCreatingFolder}
                 variant="filled"
                 title="Create Folder"
               />

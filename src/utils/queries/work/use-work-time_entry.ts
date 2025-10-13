@@ -7,7 +7,11 @@ import { createWorkTimeEntry } from "@/actions/work/workTimeEntry/create-work-ti
 import { updateWorkTimeEntries } from "@/actions/work/workTimeEntry/update-work-time-entries";
 import { deleteWorkTimeEntries } from "@/actions/work/workTimeEntry/delete-work-time-entries";
 import { MutationOptions } from "@/types/query.types";
-import { InsertWorkTimeEntry, WorkTimeEntry } from "@/types/work.types";
+import {
+  CompleteWorkProject,
+  InsertWorkTimeEntry,
+  WorkTimeEntry,
+} from "@/types/work.types";
 import { TimerRoundingSettings } from "@/types/timeTracker.types";
 import {
   showActionErrorNotification,
@@ -72,9 +76,29 @@ export const useCreateWorkTimeEntryMutation = ({
       }
       context.client.setQueryData(
         ["workTimeEntries"],
-        (old: WorkTimeEntry[]) => [...old, ...createdTimeEntries]
+        (old: WorkTimeEntry[]) => {
+          if (!old) {
+            return undefined;
+          }
+          return [...old, ...createdTimeEntries];
+        }
+      );
+      context.client.setQueryData(
+        ["workProjectById", createdTimeEntries[0].project_id],
+        (old: CompleteWorkProject) => {
+          if (!old) {
+            return undefined;
+          }
+          return {
+            ...old,
+            timeEntries: [...old.timeEntries, ...createdTimeEntries],
+          };
+        }
       );
       context.client.invalidateQueries({ queryKey: ["workTimeEntries"] });
+      context.client.invalidateQueries({
+        queryKey: ["workProjectById", variables.newTimeEntry.project_id],
+      });
       onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
@@ -98,17 +122,17 @@ export const useUpdateWorkTimeEntryMutation = ({
   return useMutation({
     mutationKey: ["updateWorkTimeEntry"],
     mutationFn: ({
-      newTimeEntry,
+      updateTimeEntry,
       roundingSettings,
     }: {
-      newTimeEntry: WorkTimeEntry;
+      updateTimeEntry: WorkTimeEntry;
       roundingSettings: TimerRoundingSettings;
     }) => {
-      let updatedTimeEntry: WorkTimeEntry = { ...newTimeEntry };
+      let updatedTimeEntry: WorkTimeEntry = { ...updateTimeEntry };
       if (roundingSettings.roundInTimeFragments) {
         updatedTimeEntry = getTimeFragmentSession(
           roundingSettings.timeFragmentInterval,
-          newTimeEntry
+          updateTimeEntry
         );
       }
       return updateWorkTimeEntries({ update: updatedTimeEntry });
@@ -122,7 +146,7 @@ export const useUpdateWorkTimeEntryMutation = ({
       } else if (overlappingTimeEntries) {
         showOverlapNotification(
           locale,
-          variables.newTimeEntry,
+          variables.updateTimeEntry,
           overlappingTimeEntries,
           createdTimeEntries,
           format24h
@@ -139,26 +163,66 @@ export const useUpdateWorkTimeEntryMutation = ({
       if (createdTimeEntries.length === 0) {
         context.client.setQueryData(
           ["workTimeEntries"],
-          (old: WorkTimeEntry[]) =>
-            old.map((entry) =>
-              entry.id === variables.newTimeEntry.id
-                ? variables.newTimeEntry
+          (old: WorkTimeEntry[]) => {
+            if (!old) {
+              return undefined;
+            }
+            return old.map((entry) =>
+              entry.id === variables.updateTimeEntry.id
+                ? variables.updateTimeEntry
                 : entry
-            )
+            );
+          }
         );
-        context.client.invalidateQueries({ queryKey: ["workTimeEntries"] });
+        context.client.setQueryData(
+          ["workProjectById", variables.updateTimeEntry.project_id],
+          (old: CompleteWorkProject) => {
+            if (!old) {
+              return undefined;
+            }
+            return {
+              ...old,
+              timeEntries: old.timeEntries.map((entry) =>
+                entry.id === variables.updateTimeEntry.id
+                  ? variables.updateTimeEntry
+                  : entry
+              ),
+            };
+          }
+        );
       } else {
         context.client.setQueryData(
           ["workTimeEntries"],
           (old: WorkTimeEntry[]) => {
-            const filteredOld = old.filter(
-              (entry) => entry.id !== variables.newTimeEntry.id
+            if (!old) {
+              return undefined;
+            }
+            const filteredOldTimeEntries = old.filter(
+              (entry) => entry.id !== variables.updateTimeEntry.id
             );
-            return [...filteredOld, ...createdTimeEntries];
+            return [...filteredOldTimeEntries, ...createdTimeEntries];
           }
         );
-        context.client.invalidateQueries({ queryKey: ["workTimeEntries"] });
+        context.client.setQueryData(
+          ["workProjectById", variables.updateTimeEntry.project_id],
+          (old: CompleteWorkProject) => {
+            if (!old) {
+              return undefined;
+            }
+            const filteredOldTimeEntries = old.timeEntries.filter(
+              (entry) => entry.id !== variables.updateTimeEntry.id
+            );
+            return {
+              ...old,
+              timeEntries: [...filteredOldTimeEntries, ...createdTimeEntries],
+            };
+          }
+        );
       }
+      context.client.invalidateQueries({ queryKey: ["workTimeEntries"] });
+      context.client.invalidateQueries({
+        queryKey: ["workProjectById", variables.updateTimeEntry.project_id],
+      });
       onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
@@ -183,10 +247,33 @@ export const useDeleteWorkTimeEntryMutation = ({
     mutationKey: ["deleteWorkTimeEntry"],
     mutationFn: deleteWorkTimeEntries,
     onSuccess: (data, variables, onMutateResult, context) => {
-      context.client.setQueryData(["workTimeEntries"], (old: WorkTimeEntry[]) =>
-        old.filter((entry) => !variables.ids.includes(entry.id))
+      context.client.setQueryData(
+        ["workTimeEntries"],
+        (old: WorkTimeEntry[]) => {
+          if (!old) {
+            return undefined;
+          }
+          return old.filter((entry) => !variables.ids.includes(entry.id));
+        }
+      );
+      context.client.setQueryData(
+        ["workProjectById", data.project_id],
+        (old: CompleteWorkProject) => {
+          if (!old) {
+            return undefined;
+          }
+          return {
+            ...old,
+            timeEntries: old.timeEntries.filter(
+              (entry) => !variables.ids.includes(entry.id)
+            ),
+          };
+        }
       );
       context.client.invalidateQueries({ queryKey: ["workTimeEntries"] });
+      context.client.invalidateQueries({
+        queryKey: ["workProjectById", data.project_id],
+      });
       showActionSuccessNotification(
         getLocalizedText(
           "Arbeitszeit erfolgreich gelöscht",
@@ -197,6 +284,7 @@ export const useDeleteWorkTimeEntryMutation = ({
       onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
+      console.log(error);
       showActionErrorNotification(
         getLocalizedText(
           "Arbeitszeit konnten nicht gelöscht werden",

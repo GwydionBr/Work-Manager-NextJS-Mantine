@@ -19,6 +19,8 @@ import {
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSingleCashflowQuery } from "@/utils/queries/finances/use-single-cashflow";
 import { Payout } from "@/types/finance.types";
+import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
+import { useWorkTimeEntryQuery } from "@/utils/queries/work/use-work-time_entry";
 
 export default function PayoutTab() {
   const { setIsModalOpen, setSelectedTab, getLocalizedText } =
@@ -28,11 +30,10 @@ export default function PayoutTab() {
   const payouts: Payout[] = [];
   const { data: singleCashFlows = [], isPending: isSingleCashFlowsPending } =
     useSingleCashflowQuery();
-  const {
-    projects,
-    timerSessions,
-    isFetching: isWorkFetching,
-  } = useWorkStore();
+  const { data: projects = [], isPending: isProjectPending } =
+    useWorkProjectQuery();
+  const { data: timerSessions = [], isPending: isTimeEntryPending } =
+    useWorkTimeEntryQuery();
   const [typeFilter, setTypeFilter] = useState<
     "all" | "project" | "session" | "financeProject"
   >("all");
@@ -150,7 +151,7 @@ export default function PayoutTab() {
         navbarItems={navbarItems}
       />
       <Stack w="100%" mb="xl" ml={230}>
-        {isSingleCashFlowsPending || isWorkFetching
+        {isSingleCashFlowsPending || isProjectPending || isTimeEntryPending
           ? Array.from({ length: 3 }, (_, i) => (
               <Skeleton height={200} w="100%" key={i} radius="md" />
             ))

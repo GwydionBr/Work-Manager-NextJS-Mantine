@@ -786,13 +786,14 @@ export type Database = {
           category_id: string | null;
           created_at: string;
           currency: Database["public"]["Enums"]["currency"];
-          description: string | null;
+          description: string;
           end_date: string | null;
           finance_client_id: string | null;
           id: string;
           interval: Database["public"]["Enums"]["finance_interval"];
           start_date: string;
           title: string;
+          type: Database["public"]["Enums"]["cash_flow_type"];
           user_id: string;
         };
         Insert: {
@@ -800,13 +801,14 @@ export type Database = {
           category_id?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
-          description?: string | null;
+          description: string;
           end_date?: string | null;
           finance_client_id?: string | null;
           id?: string;
           interval?: Database["public"]["Enums"]["finance_interval"];
           start_date: string;
           title: string;
+          type?: Database["public"]["Enums"]["cash_flow_type"];
           user_id?: string;
         };
         Update: {
@@ -814,13 +816,14 @@ export type Database = {
           category_id?: string | null;
           created_at?: string;
           currency?: Database["public"]["Enums"]["currency"];
-          description?: string | null;
+          description?: string;
           end_date?: string | null;
           finance_client_id?: string | null;
           id?: string;
           interval?: Database["public"]["Enums"]["finance_interval"];
           start_date?: string;
           title?: string;
+          type?: Database["public"]["Enums"]["cash_flow_type"];
           user_id?: string;
         };
         Relationships: [
@@ -1006,6 +1009,7 @@ export type Database = {
           is_active: boolean;
           recurring_cash_flow_id: string | null;
           title: string;
+          type: Database["public"]["Enums"]["cash_flow_type"];
           user_id: string;
         };
         Insert: {
@@ -1021,6 +1025,7 @@ export type Database = {
           is_active?: boolean;
           recurring_cash_flow_id?: string | null;
           title?: string;
+          type?: Database["public"]["Enums"]["cash_flow_type"];
           user_id?: string;
         };
         Update: {
@@ -1036,6 +1041,7 @@ export type Database = {
           is_active?: boolean;
           recurring_cash_flow_id?: string | null;
           title?: string;
+          type?: Database["public"]["Enums"]["cash_flow_type"];
           user_id?: string;
         };
         Relationships: [
@@ -1326,6 +1332,7 @@ export type Database = {
           hourly_payment: boolean;
           id: string;
           memo: string | null;
+          paid: boolean;
           paused_seconds: number;
           payout_id: string | null;
           project_id: string;
@@ -1345,6 +1352,7 @@ export type Database = {
           hourly_payment?: boolean;
           id?: string;
           memo?: string | null;
+          paid?: boolean;
           paused_seconds?: number;
           payout_id?: string | null;
           project_id?: string;
@@ -1364,6 +1372,7 @@ export type Database = {
           hourly_payment?: boolean;
           id?: string;
           memo?: string | null;
+          paid?: boolean;
           paused_seconds?: number;
           payout_id?: string | null;
           project_id?: string;

@@ -27,9 +27,11 @@ import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import classes from "./Navbar.module.css";
 import Shortcut from "../UI/Shortcut";
 import PlusActionIcon from "../UI/ActionIcons/PlusActionIcon";
+import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
 
 export default function ProjectNavbar() {
-  const { isFetching, setActiveProjectId } = useWorkStore();
+  const { setActiveProjectId } = useWorkStore();
+  const { isPending: isProjectsPending } = useWorkProjectQuery();
 
   const {
     locale,
@@ -92,7 +94,7 @@ export default function ProjectNavbar() {
             </Text>
           )}
         </Transition>
-        {!isFetching && (
+        {!isProjectsPending && (
           <>
             <Transition
               mounted={isWorkNavbarOpen}
@@ -172,7 +174,7 @@ export default function ProjectNavbar() {
             data-active={isOverview ? true : undefined}
             style={styles}
             onClick={() => {
-              if (!isFetching) {
+              if (!isProjectsPending) {
                 router.push("/work/overview");
                 setActiveProjectId(null);
               }
@@ -197,7 +199,7 @@ export default function ProjectNavbar() {
             px={10}
             style={styles}
           >
-            {!isFetching && (
+            {!isProjectsPending && (
               <DelayedTooltip
                 label={locale === "de-DE" ? "Neues Projekt" : "New Project"}
               >
@@ -206,7 +208,7 @@ export default function ProjectNavbar() {
                 </ActionIcon>
               </DelayedTooltip>
             )}
-            {!isFetching && <NewFolderButton />}
+            {!isProjectsPending && <NewFolderButton />}
           </Group>
         )}
       </Transition>
@@ -219,7 +221,7 @@ export default function ProjectNavbar() {
       >
         {(styles) => (
           <ScrollArea h="100%" w="100%" style={styles}>
-            {isFetching ? (
+            {isProjectsPending ? (
               <Stack pt="md">
                 <Skeleton height={25} w={160} mx="md" />
                 <Skeleton height={25} w={160} mx="md" />

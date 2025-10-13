@@ -1,5 +1,6 @@
 import { Tables, TablesInsert, TablesUpdate } from "./db.types";
 
+// Payout Types
 export interface Payout extends Tables<"payout"> {
   cashflow: Tables<"single_cash_flow"> | null;
   timer_project: Tables<"timer_project"> | null;
@@ -7,49 +8,47 @@ export interface Payout extends Tables<"payout"> {
   timer_session_project: Tables<"timer_project"> | null;
 }
 
+// Single Cash Flow Types
 export interface SingleCashFlow extends Tables<"single_cash_flow"> {
   categories: { finance_category: Tables<"finance_category"> }[];
 }
-
 export interface InsertSingleCashFlow extends TablesInsert<"single_cash_flow"> {
   categories: { finance_category: Tables<"finance_category"> }[];
 }
-
 export interface UpdateSingleCashFlow extends TablesUpdate<"single_cash_flow"> {
   categories: { finance_category: Tables<"finance_category"> }[];
 }
 
+// Recurring Cash Flow Types
 export interface RecurringCashFlow extends Tables<"recurring_cash_flow"> {
   categories: { finance_category: Tables<"finance_category"> }[];
 }
-
 export interface InsertRecurringCashFlow
   extends TablesInsert<"recurring_cash_flow"> {
   categories: { finance_category: Tables<"finance_category"> }[];
 }
-
 export interface UpdateRecurringCashFlow
   extends TablesUpdate<"recurring_cash_flow"> {
   categories: { finance_category: Tables<"finance_category"> }[];
 }
 
+// Finance Project Types
 export interface FinanceProject extends Tables<"finance_project"> {
   adjustments: Tables<"finance_project_adjustment">[];
   finance_client: Tables<"finance_client"> | null;
   categories: { finance_category: Tables<"finance_category"> }[];
 }
-
 export interface UpdateFinanceProject extends TablesUpdate<"finance_project"> {
   categories: { finance_category: Tables<"finance_category"> }[];
   finance_client: Tables<"finance_client"> | null;
   adjustments: Tables<"finance_project_adjustment">[];
 }
-
 export interface InsertFinanceProject extends TablesInsert<"finance_project"> {
   categories: { finance_category: Tables<"finance_category"> }[];
   client: Tables<"finance_client"> | null;
 }
 
+// Delete Recurring Cash Flow Mode
 export enum DeleteRecurringCashFlowMode {
   delete_all = "delete_all",
   keep_unlinked = "keep_unlinked",

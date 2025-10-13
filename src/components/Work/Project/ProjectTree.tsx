@@ -1,11 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
 import { useViewportSize } from "@mantine/hooks";
-import { useWorkStore } from "@/stores/workManagerStore";
 import { useRouter, usePathname, useParams } from "next/navigation";
-import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
-import { useWorkFolderQuery } from "@/utils/queries/work/use-work-folder";
 
 import { NodeRendererProps, Tree } from "react-arborist";
 import {
@@ -15,36 +11,21 @@ import {
   IconFolderOpen,
   IconFolder,
 } from "@tabler/icons-react";
-import { Box, Group, Text } from "@mantine/core";
+import { Box, Group, Skeleton, Stack, Text } from "@mantine/core";
 
 import { ProjectTreeItem } from "@/types/work.types";
-import { createTree, findNodeById } from "@/utils/treeHelperFunctions";
+import { findNodeById } from "@/utils/treeHelperFunctions";
+import { useWorkTree } from "@/hooks/useWorkTree";
 
 export default function ProjectTree() {
   const { height } = useViewportSize();
-  const { moveProject, moveFolder } = useWorkStore();
   const { projectId } = useParams() as { projectId: string | undefined };
 
-  const { data: projects } = useWorkProjectQuery();
-  const { data: folders } = useWorkFolderQuery();
-
-  const cleanedProjects = useMemo(() => {
-    return (
-      projects?.map((project) => {
-        const { categories, ...rest } = project;
-        return rest;
-      }) ?? []
-    );
-  }, [projects]);
-
-  const projectTree = useMemo(() => {
-    const { tree } = createTree(cleanedProjects, folders ?? []);
-    return tree;
-  }, [projects, folders]);
+  const { projectTree, isPending, moveProject, moveFolder } = useWorkTree();
 
   const router = useRouter();
 
-  const handleMove = async (
+  const handleMove = (
     dragIds: string[],
     parentId: string | null,
     index: number
@@ -53,12 +34,21 @@ export default function ProjectTree() {
       // Prüfe, ob es ein Projekt oder Ordner ist
       const node = findNodeById(projectTree, id);
       if (node?.type === "project") {
-        await moveProject(id, parentId, index);
+        moveProject(id, parentId, index);
       } else if (node?.type === "folder") {
-        await moveFolder(id, parentId, index);
+        moveFolder(id, parentId, index);
       }
     }
   };
+
+  if (isPending) {
+    return (
+      <Stack>
+        <Skeleton height={25} w={160} mx="md" />
+        <Skeleton height={25} w={160} mx="md" />
+      </Stack>
+    );
+  }
 
   return (
     <Box w="100%" h="100%">

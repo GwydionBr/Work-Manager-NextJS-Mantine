@@ -19,9 +19,11 @@ export type WorkTimeEntry = Tables<"timer_session">;
 export type InsertWorkTimeEntry = TablesInsert<"timer_session">;
 export type UpdateWorkTimeEntry = TablesUpdate<"timer_session">;
 
-export interface StoreTimerProject extends Tables<"timer_project"> {
-  categoryIds: string[];
-}
+// Timer Folder Types
+export type WorkFolder = Tables<"timer_project_folder">;
+export type InsertWorkFolder = TablesInsert<"timer_project_folder">;
+export type UpdateWorkFolder = TablesUpdate<"timer_project_folder">;
+
 
 export interface ProjectTreeItem {
   id: string;

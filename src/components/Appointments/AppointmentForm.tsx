@@ -2,8 +2,8 @@
 
 import { useMemo } from "react";
 import { useForm } from "@mantine/form";
-import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
 
 import { Select, Stack, Textarea, TextInput } from "@mantine/core";
 import { z } from "zod";
@@ -33,7 +33,7 @@ export default function AppointmentForm({
   submitting,
 }: AppointmentFormProps) {
   const { locale } = useSettingsStore();
-  const { projects: timerProjects } = useWorkStore();
+  const { data: timerProjects = [] } = useWorkProjectQuery();
   // Create conditional schema based on hourly_payment
   const schema = z.object({
     timer_project_id: z.string().nullable().optional(),

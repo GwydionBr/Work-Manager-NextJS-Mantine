@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useForm, zodResolver } from "@mantine/form";
+import { useForm } from "@mantine/form";
 import { z } from "zod";
+import { zodResolver } from "mantine-form-zod-resolver";
 
 import { Currency } from "@/types/settings.types";
 import {
@@ -52,7 +52,7 @@ export default function ProjectModalForm({
     validate: zodResolver(schema),
   });
 
-  const { payoutProjectSalary, updateProject } = useWorkStore();
+  // const { payoutProjectSalary, updateProject } = useWorkStore();
   // const { addExistingSingleCashFlow } = useFinanceStore();
   const { locale } = useSettingsStore();
 
@@ -125,7 +125,11 @@ export default function ProjectModalForm({
         >
           {locale === "de-DE" ? "Auszahlen" : "Payout"}
         </Button>
-        <Alert title={locale === "de-DE" ? "Fehler" : "Error"} color="red" hidden={!error}>
+        <Alert
+          title={locale === "de-DE" ? "Fehler" : "Error"}
+          color="red"
+          hidden={!error}
+        >
           {error}
         </Alert>
       </Stack>

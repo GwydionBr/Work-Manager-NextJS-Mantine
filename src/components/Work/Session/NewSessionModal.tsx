@@ -41,7 +41,7 @@ export default function NewSessionModal({
   const {
     mutate: createWorkTimeEntryMutation,
     isPending: isCreatingWorkTimeEntry,
-  } = useCreateWorkTimeEntryMutation({ onSuccess: onClose });
+  } = useCreateWorkTimeEntryMutation({ onSuccess: () => handleClose() });
   const [currentProject, setCurrentProject] = useState<
     Tables<"timer_project"> | undefined
   >(project);
@@ -59,6 +59,12 @@ export default function NewSessionModal({
     }
   }, [opened]);
 
+  const handleClose = () => {
+    onClose();
+    setCurrentProject(undefined);
+    setCategoryIds([]);
+  };
+
   async function handleSessionSubmit(values: {
     start_time: string;
     end_time: string;
@@ -67,7 +73,7 @@ export default function NewSessionModal({
     salary: number;
     memo?: string;
   }) {
-    if (!currentProject) {
+    if (!currentProject || isCreatingWorkTimeEntry) {
       return;
     }
 
@@ -107,7 +113,7 @@ export default function NewSessionModal({
       <Modal
         size="lg"
         {...stack.register("session-form")}
-        onClose={onClose}
+        onClose={handleClose}
         title={
           <Group>
             <IconClockPlus />
@@ -134,7 +140,7 @@ export default function NewSessionModal({
           onSubmit={handleSessionSubmit}
           onProjectChange={setCurrentProject}
           onOpenProjectForm={() => stack.open("project-form")}
-          onCancel={onClose}
+          onCancel={handleClose}
           submitting={isCreatingWorkTimeEntry}
           project={currentProject}
         />

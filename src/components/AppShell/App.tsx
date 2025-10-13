@@ -9,6 +9,7 @@ export default function App({ children }: { children: React.ReactNode }) {
     defaultOptions: {
       queries: {
         staleTime: 2 * 60 * 1000,
+        gcTime: Infinity,
       },
     },
   });

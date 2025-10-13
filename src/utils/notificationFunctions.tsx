@@ -94,8 +94,8 @@ export const showOverlapNotification = (
 ) => {
   const isSingleOverlap =
     overlappingSessions && overlappingSessions.length === 1;
-    const isSingleCreatedSession =
-      createdSessions && createdSessions.length === 1;
+  const isSingleCreatedSession =
+    createdSessions && createdSessions.length === 1;
   notifications.show({
     style: {
       maxHeight: "600px",
@@ -150,14 +150,13 @@ export const showOverlapNotification = (
         </Group>
         <Group>
           <Text>
-            Erstellte{" "}
             {isSingleCreatedSession
               ? locale === "de-DE"
-                ? "Sitzung: "
-                : "Session: "
+                ? "Erstellte Sitzung: "
+                : "Created session: "
               : locale === "de-DE"
-                ? "Sitzungen: "
-                : "Sessions: "}
+                ? "Erstellte Sitzungen: "
+                : "Created sessions: "}
           </Text>
           <List>
             {createdSessions.map((session) => (

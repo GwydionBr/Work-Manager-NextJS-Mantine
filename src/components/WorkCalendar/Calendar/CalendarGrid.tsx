@@ -122,26 +122,6 @@ export default function CalendarGrid({
     return Math.round(timeToY(snapped));
   }
 
-  // async function handleSubmitAppointment(values: TablesInsert<"appointment">) {
-  //   setSubmitting(true);
-
-  //   console.log("values", values);
-  //   const newAppointment: TablesInsert<"appointment"> = {
-  //     ...values,
-  //     description: values.description || null,
-  //     timer_project_id: values.timer_project_id || null,
-  //   };
-
-  //   const success = await createAppointment(newAppointment);
-  //   console.log("success", success);
-  //   if (success) {
-  //     closeSessionFormModal();
-  //     setStartNewSession(null);
-  //     setNewSessionDay(null);
-  //   }
-  //   setSubmitting(false);
-  // }
-
   return (
     <Box w="100%">
       <Stack w="100%">
