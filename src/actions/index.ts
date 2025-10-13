@@ -1,10 +1,9 @@
 //  Project Actions
 
-
-export { getAllTimerProjects } from "./work/timerProject/getAllTimerProjects";
-export { createTimerProject } from "./work/timerProject/createTimerProject";
-export { updateTimerProject } from "./work/timerProject/updateTimerProject";
-export { deleteTimerProjects } from "./work/timerProject/deleteTimerProjects";
+export { getAllTimerProjects } from "./work/workProject/getAllTimerProjects";
+export { createTimerProject } from "./work/workProject/createTimerProject";
+export { updateTimerProject } from "./work/workProject/updateTimerProject";
+export { deleteTimerProjects } from "./work/workProject/deleteTimerProjects";
 
 export {
   getAllProjectFolders,
@@ -26,7 +25,6 @@ export { getAllAppointments } from "./appointments/getAllAppointments";
 export { createAppointment } from "./appointments/createAppointment";
 export { updateAppointment } from "./appointments/updateAppointment";
 export { deleteAppointment } from "./appointments/deleteAppointment";
-
 
 // Session Actions
 

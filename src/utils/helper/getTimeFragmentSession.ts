@@ -1,4 +1,4 @@
-import { TablesInsert } from "@/types/db.types";
+import { InsertWorkTimeEntry, WorkTimeEntry } from "@/types/work.types";
 
 /**
  * Rounds a session to align with the specified time interval boundaries.
@@ -18,7 +18,15 @@ import { TablesInsert } from "@/types/db.types";
  */
 export function getTimeFragmentSession(
   timeFragmentInterval: number,
-  originalSession: TablesInsert<"timer_session">
+  originalSession: WorkTimeEntry
+): WorkTimeEntry;
+export function getTimeFragmentSession(
+  timeFragmentInterval: number,
+  originalSession: InsertWorkTimeEntry
+): InsertWorkTimeEntry;
+export function getTimeFragmentSession(
+  timeFragmentInterval: number,
+  originalSession: InsertWorkTimeEntry | WorkTimeEntry
 ) {
   // Calculate the start of the first time block
   const blockStart = new Date(originalSession.start_time);
@@ -42,7 +50,7 @@ export function getTimeFragmentSession(
     blockEnd.setMinutes(blockEnd.getMinutes() + timeFragmentInterval);
   }
 
-  const newSession: TablesInsert<"timer_session"> = {
+  const newSession: typeof originalSession = {
     ...originalSession,
     start_time: blockStart.toISOString(),
     end_time: blockEnd.toISOString(),

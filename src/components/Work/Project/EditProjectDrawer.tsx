@@ -104,7 +104,6 @@ export default function EditProjectDrawer({
             <ProjectForm
               project={activeProject}
               onCancel={handleClose}
-              onClose={handleClose}
               categoryIds={categoryIds}
               setCategoryIds={setCategoryIds}
               onOpenCategoryForm={() => drawersStack.open("category-form")}

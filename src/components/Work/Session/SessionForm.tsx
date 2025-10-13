@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useForm } from "@mantine/form";
-import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useWorkProjectQuery } from "@/utils/queries/work/use_work_project";
 
 import {
   NumberInput,
@@ -50,7 +50,7 @@ export default function SessionForm({
   onProjectChange,
 }: SessionFormProps) {
   const { locale } = useSettingsStore();
-  const { projects: timerProjects } = useWorkStore();
+  const { data: workProjects = [] } = useWorkProjectQuery();
   const [userChangedStartTime, setUserChangedStartTime] = useState(false);
   const [userChangedEndTime, setUserChangedEndTime] = useState(false);
   const [formInitialized, setFormInitialized] = useState(false);
@@ -119,12 +119,12 @@ export default function SessionForm({
 
   const projects = useMemo(() => {
     return (
-      timerProjects.map((timerProject) => ({
-        value: timerProject.id,
-        label: timerProject.title,
+      workProjects.map((workProject) => ({
+        value: workProject.id,
+        label: workProject.title,
       })) || []
     );
-  }, [timerProjects]);
+  }, [workProjects]);
 
   // Calculate end_time when active_seconds changes
   const handleActiveSecondsChange = (value: number) => {
@@ -211,7 +211,7 @@ export default function SessionForm({
 
   function handleProjectChange(value: string | null) {
     if (!value) return;
-    const project = timerProjects.find((p) => p.id === value);
+    const project = workProjects.find((p) => p.id === value);
     if (project) {
       if (onProjectChange) {
         onProjectChange(project);

@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useWorkStore } from "@/stores/workManagerStore";
+import { useCreateWorkTimeEntryMutation } from "@/utils/queries/work/use_work_time_entry";
 
 import { Group, Modal, Text, useModalsStack } from "@mantine/core";
 import SessionForm from "./SessionForm";
 import { Tables, TablesInsert } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
-import SessionNotification from "./SessionNotification";
 import ProjectForm from "../Project/ProjectForm";
 import { IconClockPlus } from "@tabler/icons-react";
 import { NewSession } from "@/types/timerSession.types";
@@ -36,16 +35,17 @@ export default function NewSessionModal({
   const {
     locale,
     timerRoundingSettings,
-    format24h,
     defaultSalaryAmount,
     defaultSalaryCurrency,
   } = useSettingsStore();
+  const {
+    mutate: createWorkTimeEntryMutation,
+    isPending: isCreatingWorkTimeEntry,
+  } = useCreateWorkTimeEntryMutation({ onSuccess: onClose });
   const [currentProject, setCurrentProject] = useState<
     Tables<"timer_project"> | undefined
   >(project);
-  const { addTimerSession } = useWorkStore();
   const [categoryIds, setCategoryIds] = useState<string[]>([]);
-  const [submittingSession, setSubmittingSession] = useState(false);
 
   useEffect(() => {
     setCurrentProject(project);
@@ -70,7 +70,6 @@ export default function NewSessionModal({
     if (!currentProject) {
       return;
     }
-    setSubmittingSession(true);
 
     let newSession: TablesInsert<"timer_session"> = {
       ...values,
@@ -97,22 +96,10 @@ export default function NewSessionModal({
         timerRoundingSettings.roundingDirection,
     };
 
-    const { createdSessions, overlappingSessions, completeOverlap } =
-      await addTimerSession(newSession, roundingSettings);
-
-    SessionNotification({
-      originalSession: newSession,
-      completeOverlap,
-      createdSessions,
-      overlappingSessions,
-      locale,
-      format24h,
-      onCreatedSessions: () => {
-        onClose();
-      },
+    createWorkTimeEntryMutation({
+      newTimeEntry: newSession,
+      roundingSettings,
     });
-
-    setSubmittingSession(false);
   }
 
   return (
@@ -148,7 +135,7 @@ export default function NewSessionModal({
           onProjectChange={setCurrentProject}
           onOpenProjectForm={() => stack.open("project-form")}
           onCancel={onClose}
-          submitting={submittingSession}
+          submitting={isCreatingWorkTimeEntry}
           project={currentProject}
         />
       </Modal>
@@ -161,11 +148,13 @@ export default function NewSessionModal({
       >
         <ProjectForm
           onCancel={() => stack.close("project-form")}
-          onClose={() => stack.close("project-form")}
           categoryIds={categoryIds}
           setCategoryIds={setCategoryIds}
           onOpenCategoryForm={() => stack.open("category-form")}
-          onSuccess={(project) => setCurrentProject(project)}
+          onSuccess={(project) => {
+            setCurrentProject(project);
+            stack.close("project-form");
+          }}
         />
       </Modal>
       <Modal

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTimeTracker } from "@/hooks/useTimeTracker";
-import { useWorkStore } from "@/stores/workManagerStore";
+import { useCreateWorkTimeEntryMutation } from "@/utils/queries/work/use_work_time_entry";
+import { useWorkProjectQuery } from "@/utils/queries/work/use_work_project";
 import { useSettingsStore } from "@/stores/settingsStore";
 import {
   useTimeTrackerManager,
@@ -14,8 +15,7 @@ import TimeTrackerComponentBig from "./Big/TimeTrackerComponentBig";
 import TimeTrackerComponentSmall from "./Small/TimeTrackerComponentSmall";
 
 import { TimerState } from "@/types/timeTracker.types";
-import { TablesInsert } from "@/types/db.types";
-import SessionNotification from "../Work/Session/SessionNotification";
+import { InsertWorkTimeEntry } from "@/types/work.types";
 
 interface TimeTrackerInstanceProps {
   timer: TimerData;
@@ -36,18 +36,25 @@ export default function TimeTrackerInstance({
   const [memo, setMemo] = useState<string>(timer.memo ?? "");
   const { updateTimer, removeTimer, setForceEndTimer, getAllTimers } =
     useTimeTrackerManager();
-  const { addTimerSession } = useWorkStore();
-  const project = useWorkStore((state) =>
-    state.projects.find((p) => p.id === timer.projectId)
+  const { data: projects = [] } = useWorkProjectQuery();
+  const project = useMemo(
+    () => projects.find((p) => p.id === timer.projectId),
+    [projects, timer.projectId]
   );
+  const {
+    mutate: createWorkTimeEntryMutation,
+    isPending: isCreatingWorkTimeEntry,
+  } = useCreateWorkTimeEntryMutation({
+    onSuccess: () => {
+      stopTimer();
+      setMemo("");
+    },
+  });
   const {
     timerRoundingSettings: settingsTimerRoundingSettings,
     automaticlyStopOtherTimer,
-    locale,
-    format24h,
   } = useSettingsStore();
   const [showSmall, setShowSmall] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Funktion zum Beenden aller anderen laufenden Timer
   const stopOtherRunningTimers = useCallback(() => {
@@ -192,36 +199,16 @@ export default function TimeTrackerInstance({
   if (!isClient) return null;
 
   async function submitTimer() {
-    if (isSubmitting) return;
-    setIsSubmitting(true);
-    let newSession: TablesInsert<"timer_session"> = {
+    if (isCreatingWorkTimeEntry) return;
+    let newSession: InsertWorkTimeEntry = {
       ...getCurrentSession(),
       memo: memo === "" ? null : memo,
     };
 
-    const { createdSessions, overlappingSessions, completeOverlap } =
-      await addTimerSession(
-        newSession,
-        tempTimerRoundingSettings ?? timerRoundingSettings
-      );
-
-    SessionNotification({
-      originalSession: newSession,
-      completeOverlap,
-      createdSessions,
-      overlappingSessions,
-      locale,
-      format24h,
-      onCompleteOverlap: () => {
-        stopTimer();
-      },
-      onCreatedSessions: () => {
-        setMemo("");
-        stopTimer();
-      },
+    createWorkTimeEntryMutation({
+      newTimeEntry: newSession,
+      roundingSettings: tempTimerRoundingSettings ?? timerRoundingSettings,
     });
-
-    setIsSubmitting(false);
   }
 
   return (
@@ -264,7 +251,7 @@ export default function TimeTrackerInstance({
               cancelTimer={cancelTimer}
               isTimeTrackerMinimized={isTimeTrackerMinimized}
               setIsTimeTrackerMinimized={setIsTimeTrackerMinimized}
-              isSubmitting={isSubmitting}
+              isSubmitting={isCreatingWorkTimeEntry}
               setMemo={setMemo}
               submitTimer={submitTimer}
               modifyActiveSeconds={modifyActiveSeconds}
@@ -308,7 +295,7 @@ export default function TimeTrackerInstance({
               setTempTimerRounding={setTempTimerRounding}
               showSmall={showSmall}
               setShowSmall={setShowSmall}
-              isSubmitting={isSubmitting}
+              isSubmitting={isCreatingWorkTimeEntry}
               submitTimer={submitTimer}
               startTimer={startTimerWithStopOthers}
               pauseTimer={pauseTimer}

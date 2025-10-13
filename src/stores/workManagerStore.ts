@@ -11,7 +11,10 @@ import {
   moveNode,
   addNode,
 } from "@/utils/treeHelperFunctions";
-import { getTimeFragmentSession, resolveSessionOverlaps } from "@/utils/helper";
+import {
+  getTimeFragmentSession,
+  resolveTimeEntryOverlaps,
+} from "@/utils/helper";
 
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import { ProjectTreeItem, StoreTimerProject } from "@/types/work.types";
@@ -386,13 +389,14 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
           );
         }
 
-        // Filter out existing sessions that overlap with the new session
         const existingSessions = timerSessions.filter(
           (s) => s.project_id === session.project_id
         );
 
-        const { adjustedTimeSpans, overlappingSessions } =
-          resolveSessionOverlaps(existingSessions, newSession);
+        const {
+          adjustedTimeSpans,
+          overlappingTimeEntries: overlappingSessions,
+        } = resolveTimeEntryOverlaps(existingSessions, newSession);
 
         if (!adjustedTimeSpans) {
           return {
@@ -471,11 +475,13 @@ export const useWorkStore = create<WorkStoreState & WorkStoreActions>()(
             (s) => s.project_id === newSession.project_id
           );
 
-          const { adjustedTimeSpans, overlappingSessions } =
-            resolveSessionOverlaps(
-              existingSessions.filter((s) => s.id !== newSession.id),
-              updatedSession
-            );
+          const {
+            adjustedTimeSpans,
+            overlappingTimeEntries: overlappingSessions,
+          } = resolveTimeEntryOverlaps(
+            existingSessions.filter((s) => s.id !== newSession.id),
+            updatedSession
+          );
           if (!adjustedTimeSpans || overlappingSessions.length > 0) {
             return {
               success: false,

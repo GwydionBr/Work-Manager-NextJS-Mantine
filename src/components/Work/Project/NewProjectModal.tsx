@@ -37,7 +37,6 @@ export default function NewProjectModal({
         title={getLocalizedText("Neues Projekt", "New Project")}
       >
         <ProjectForm
-          onClose={onClose}
           onCancel={onClose}
           categoryIds={categoryIds}
           setCategoryIds={setCategoryIds}

@@ -3,10 +3,10 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { getAllWorkProjects } from "@/actions/work/timerProject/get-all-work-projects";
-import { updateWorkProject } from "@/actions/work/timerProject/update-work-project";
-import { deleteWorkProjects } from "@/actions/work/timerProject/delete-work-projects";
-import { createWorkProject } from "@/actions/work/timerProject/create-work-project";
+import { getAllWorkProjects } from "@/actions/work/workProject/get-all-work-projects";
+import { updateWorkProject } from "@/actions/work/workProject/update-work-project";
+import { deleteWorkProjects } from "@/actions/work/workProject/delete-work-projects";
+import { createWorkProject } from "@/actions/work/workProject/create-work-project";
 import {
   showActionErrorNotification,
   showActionSuccessNotification,

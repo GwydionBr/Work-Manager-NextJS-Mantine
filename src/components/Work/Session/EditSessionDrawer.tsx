@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useWorkStore } from "@/stores/workManagerStore";
+import {
+  useUpdateWorkTimeEntryMutation,
+  useDeleteWorkTimeEntryMutation,
+} from "@/utils/queries/work/use_work_time_entry";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Drawer, Flex, Group, Text, useDrawersStack, Box } from "@mantine/core";
-import { IconAlertCircle, IconExclamationMark } from "@tabler/icons-react";
+import { IconExclamationMark } from "@tabler/icons-react";
 import SessionForm from "@/components/Work/Session/SessionForm";
 
 import { Currency } from "@/types/settings.types";
@@ -15,7 +18,6 @@ import CancelButton from "@/components/UI/Buttons/CancelButton";
 import DeleteButton from "@/components/UI/Buttons/DeleteButton";
 import ProjectForm from "../Project/ProjectForm";
 import { TimerRoundingSettings } from "@/types/timeTracker.types";
-import { notifications } from "@mantine/notifications";
 import FinanceCategoryForm from "@/components/Finances/Category/FinanceCategoryForm";
 
 interface TimerSessionModalProps {
@@ -32,9 +34,14 @@ export default function EditSessionDrawer({
   project,
 }: TimerSessionModalProps) {
   const { locale, timerRoundingSettings } = useSettingsStore();
-  const { updateTimerSession, deleteTimerSessions, addProject } =
-    useWorkStore();
-  const [submitting, setSubmitting] = useState(false);
+  const {
+    mutate: updateWorkTimeEntryMutation,
+    isPending: isUpdatingWorkTimeEntry,
+  } = useUpdateWorkTimeEntryMutation({ onSuccess: onClose });
+  const {
+    mutate: deleteWorkTimeEntryMutation,
+    isPending: isDeletingWorkTimeEntry,
+  } = useDeleteWorkTimeEntryMutation({ onSuccess: onClose });
   const [categoryIds, setCategoryIds] = useState<string[]>([]);
   const [currentProject, setCurrentProject] =
     useState<Tables<"timer_project">>(project);
@@ -69,8 +76,6 @@ export default function EditSessionDrawer({
     salary: number;
     memo?: string;
   }) {
-    setSubmitting(true);
-
     const newSession: Tables<"timer_session"> = {
       ...timerSession,
       ...values,
@@ -97,35 +102,15 @@ export default function EditSessionDrawer({
         timerRoundingSettings.roundingDirection,
     };
 
-    const { success, overlapDetected } = await updateTimerSession(
-      timerSession,
-      newSession,
-      roundingSettings
-    );
-    if (success) {
-      handleClose();
-    }
-    if (overlapDetected) {
-      notifications.show({
-        title:
-          locale === "de-DE" ? "Überschneidung erkannt" : "Overlap detected",
-        message:
-          locale === "de-DE"
-            ? "Die Sitzung hat Überschneidungen und wurde nicht gespeichert."
-            : "The session has overlaps and was not saved.",
-        color: "red",
-        autoClose: false,
-        withBorder: true,
-        icon: <IconAlertCircle />,
-      });
-    }
-    setSubmitting(false);
+    updateWorkTimeEntryMutation({
+      newTimeEntry: newSession,
+      roundingSettings,
+    });
   }
-  async function handleDelete() {
-    const success = await deleteTimerSessions([timerSession.id]);
-    if (success) {
-      handleClose();
-    }
+  function handleDelete() {
+    deleteWorkTimeEntryMutation({
+      sessionIds: [timerSession.id],
+    });
   }
 
   return (
@@ -172,7 +157,7 @@ export default function EditSessionDrawer({
               onProjectChange={setCurrentProject}
               newSession={false}
               project={currentProject}
-              submitting={submitting}
+              submitting={isUpdatingWorkTimeEntry}
             />
           </Flex>
         </Drawer>
@@ -229,6 +214,7 @@ export default function EditSessionDrawer({
           <Group mt="md" justify="flex-end" gap="sm">
             <CancelButton onClick={handleClose} color="teal" />
             <DeleteButton
+              loading={isDeletingWorkTimeEntry}
               onClick={handleDelete}
               tooltipLabel={
                 locale === "de-DE" ? "Sitzung löschen" : "Delete Session"

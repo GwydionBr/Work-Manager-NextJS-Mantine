@@ -46,10 +46,6 @@ import {
 } from "@tabler/icons-react";
 import { Tables } from "@/types/db.types";
 import { Currency, RoundingDirection } from "@/types/settings.types";
-import {
-  showActionErrorNotification,
-  showActionSuccessNotification,
-} from "@/utils/notificationFunctions";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 import {
   WorkProject,
@@ -59,7 +55,6 @@ import {
 
 interface ProjectFormProps {
   project?: WorkProject;
-  onClose?: () => void;
   onSuccess?: (project: Tables<"timer_project">) => void;
   onCancel?: () => void;
   categoryIds: string[];
@@ -84,7 +79,6 @@ const schema = z.object({
 
 export default function ProjectForm({
   project,
-  onClose,
   onSuccess,
   categoryIds,
   setCategoryIds,
