@@ -1,21 +1,20 @@
-'use client';
+"use client";
 
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams } from "next/navigation";
 
-import classes from './Auth.module.css';
-
-import { Suspense } from 'react';
-import { Box, Center } from '@mantine/core';
-import AuthenticationForm from '@/components/Auth/AuthForm';
+import { Suspense } from "react";
+import { Center, Stack } from "@mantine/core";
+import AuthenticationForm from "@/components/Auth/AuthForm";
 
 function AuthPageContent() {
   const searchParams = useSearchParams();
-  const defaultType = (searchParams.get('defaultType') as 'login' | 'register') || 'login';
+  const defaultType =
+    (searchParams.get("defaultType") as "login" | "register") || "login";
 
   return (
-    <Box className={classes.authPageContainer}>
+    <Stack align="center" justify="center" h="100vh">
       <AuthenticationForm defaultType={defaultType} withBorder />
-    </Box>
+    </Stack>
   );
 }
 

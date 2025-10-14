@@ -36,9 +36,9 @@ export const useLogoutMutation = () => {
   return useMutation({
     mutationFn: logout,
     onSuccess: (data, variables, onMutateResult, context) => {
-      resetAllStores();
-      context.client.clear();
       router.push("/");
+      context.client.clear();
+      resetAllStores();
     },
     onError: (error) => {
       showActionErrorNotification(
@@ -55,9 +55,9 @@ export const useDeleteUserMutation = () => {
   return useMutation({
     mutationFn: deleteUser,
     onSuccess: (data, variables, onMutateResult, context) => {
+      router.push("/");
       resetAllStores();
       context.client.clear();
-      router.push("/");
       showActionSuccessNotification(
         getLocalizedText(
           "Konto erfolgreich gelöscht",
