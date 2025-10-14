@@ -125,6 +125,9 @@ export const useCalendarStore = create<
     }),
     {
       name: "calendar-store",
+      partialize: (state) => ({
+        zoomIndex: state.zoomIndex,
+      }),
     }
   )
 );
