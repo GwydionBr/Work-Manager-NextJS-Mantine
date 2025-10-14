@@ -1,9 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useDisclosure, useHover } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useFinanceStore } from "@/stores/financeStore";
 
 import { formatDate, formatMoney } from "@/utils/formatFunctions";
 import { Badge, Card, CardProps, Group, Text, ThemeIcon } from "@mantine/core";

@@ -47,6 +47,10 @@ export default function FinanceCategoryBadges({
     initialCategories.map((c) => c.id)
   );
 
+  useEffect(() => {
+    setSelectedCategories(initialCategories.map((c) => c.id));
+  }, [initialCategories]);
+
   const [
     isCategoryFormOpen,
     { open: openCategoryForm, close: closeCategoryForm },
@@ -77,7 +81,6 @@ export default function FinanceCategoryBadges({
     );
     closeCategoryForm();
     closeCategoryPopover();
-    
   };
 
   return (
