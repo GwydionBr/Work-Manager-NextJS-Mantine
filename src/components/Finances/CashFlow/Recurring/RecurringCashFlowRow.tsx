@@ -44,7 +44,7 @@ export default function RecurringCashFlowRow({
   const {
     mutate: updateRecurringCashFlow,
     isPending: isUpdatingRecurringCashFlow,
-  } = useUpdateRecurringCashflowMutation();
+  } = useUpdateRecurringCashflowMutation({ showNotification: false });
   const { data: financeCategories } = useFinanceCategoriesQuery();
   const { hovered, ref } = useHover();
   const [

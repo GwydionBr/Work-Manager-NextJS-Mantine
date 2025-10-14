@@ -34,7 +34,7 @@ export const usePayoutFinanceProjectMutation = ({
     }) =>
       payoutFinanceProject(
         financeProject,
-        getLocalizedText,
+        locale,
         payoutWholeProject
       ),
     onSuccess: (data, variables, onMutateResult, context) => {
@@ -61,6 +61,7 @@ export const usePayoutFinanceProjectMutation = ({
       props.onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
+      console.log("error", error);
       if (props.showNotification !== false) {
         showActionErrorNotification(
           getLocalizedText(
@@ -93,6 +94,7 @@ export const usePayoutFinanceAdjustmentMutation = ({
       return payoutFinanceAdjustment(adjustment, financeProject, title);
     },
     onSuccess: (data, variables, onMutateResult, context) => {
+      console.log("data", data);
       context.client.setQueryData(
         ["financeProjects"],
         (old: FinanceProject[]) =>

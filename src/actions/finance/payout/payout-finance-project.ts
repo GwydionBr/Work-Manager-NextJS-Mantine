@@ -1,12 +1,11 @@
 "use server";
 
-import { Tables } from "@/types/db.types";
 import { FinanceProject, SingleCashFlow } from "@/types/finance.types";
 import { createClient } from "@/utils/supabase/server";
 
 export async function payoutFinanceProject(
   financeProject: FinanceProject,
-  getLocalizedText: (de: string, en: string) => string,
+  locale: string,
   payoutWholeProject: boolean
 ): Promise<{
   financeProject: FinanceProject;
@@ -23,7 +22,7 @@ export async function payoutFinanceProject(
     const { data: cashflow, error: cashflowError } = await supabase
       .from("single_cash_flow")
       .insert({
-        title: `${financeProject.title} (${getLocalizedText("Auszahlung", "Payout")})`,
+        title: `${financeProject.title} (${locale === "de" ? "Auszahlung" : "Payout"})`,
         amount: financeProject.start_amount,
         currency: financeProject.currency,
         finance_project_id: financeProject.id,

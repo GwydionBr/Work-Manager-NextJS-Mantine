@@ -15,7 +15,6 @@ import {
   Box,
   Stack,
   ThemeIcon,
-  Badge,
 } from "@mantine/core";
 import FinanceCategoryBadges from "@/components/Finances/Category/FinanceCategoryBadges";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
@@ -45,7 +44,7 @@ export default function SingleCashflowRow({
   const {
     mutate: updateSingleCashFlowMutation,
     isPending: isUpdatingSingleCashFlow,
-  } = useUpdateSingleCashflowMutation();
+  } = useUpdateSingleCashflowMutation({ showNotification: false });
   const { hovered, ref } = useHover();
   const [
     isCategoryPopoverOpen,

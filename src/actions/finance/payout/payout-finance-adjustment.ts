@@ -42,16 +42,21 @@ export async function payoutFinanceAdjustment(
     throw new Error(categoriesError.message);
   }
 
-  const { error: adjustmentError } = await supabase
+  const { data: adjustmentData, error: adjustmentError } = await supabase
     .from("finance_project_adjustment")
     .update({
       single_cash_flow_id: cashflow.id,
     })
-    .eq("id", adjustment.id);
+    .eq("id", adjustment.id)
+    .select()
+    .single();
 
   if (adjustmentError) {
     throw new Error(adjustmentError.message);
   }
 
-  return { adjustment, cashflow: { ...cashflow, categories: financeProject.categories } };
+  return {
+    adjustment: adjustmentData,
+    cashflow: { ...cashflow, categories: financeProject.categories },
+  };
 }

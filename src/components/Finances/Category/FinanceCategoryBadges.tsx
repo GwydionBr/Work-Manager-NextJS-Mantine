@@ -15,7 +15,6 @@ import {
   Stack,
   Transition,
   Skeleton,
-  Text,
 } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 
