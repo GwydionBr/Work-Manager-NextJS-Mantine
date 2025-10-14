@@ -12,6 +12,7 @@ import {
 import { acceptFriendship } from "@/actions/profile/friendship/accept-friendship";
 import { declineFriendship } from "@/actions/profile/friendship/decline-friendship";
 import { deleteFriendship } from "@/actions/profile/friendship/delete-friendship";
+import { CustomMutationProps } from "@/types/query.types";
 
 export const useFriendsQuery = () => {
   return useQuery({
@@ -20,10 +21,9 @@ export const useFriendsQuery = () => {
   });
 };
 
-export const useCreateFriendshipMutation = (
-  onSuccess?: () => void,
-  onError?: () => void
-) => {
+export const useCreateFriendshipMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { getLocalizedText, locale } = useSettingsStore();
   return useMutation({
     mutationKey: ["createFriendship"],
@@ -33,32 +33,35 @@ export const useCreateFriendshipMutation = (
         data,
         ...old,
       ]);
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Freund erfolgreich angefragt",
-          "Friendship successfully requested"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Freund erfolgreich angefragt",
+            "Friendship successfully requested"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: () => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Freund konnte nicht hinzugefügt werden",
-          "Error in Friendship request"
-        ),
-        locale
-      ),
-        onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Freund konnte nicht hinzugefügt werden",
+            "Error in Friendship request"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
 };
 
-export const useAcceptFriendshipMutation = (
-  onSuccess?: () => void,
-  onError?: () => void
-) => {
+export const useAcceptFriendshipMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { getLocalizedText, locale } = useSettingsStore();
   return useMutation({
     mutationKey: ["acceptFriendship"],
@@ -71,32 +74,35 @@ export const useAcceptFriendshipMutation = (
             : friend
         )
       );
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Freund erfolgreich akzeptiert",
-          "Friend successfully accepted"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Freund erfolgreich akzeptiert",
+            "Friend successfully accepted"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: () => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Freund konnte nicht akzeptiert werden",
-          "Friend could not be accepted"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Freund konnte nicht akzeptiert werden",
+            "Friend could not be accepted"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
 };
 
-export const useDeclineFriendshipMutation = (
-  onSuccess?: () => void,
-  onError?: () => void
-) => {
+export const useDeclineFriendshipMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { getLocalizedText, locale } = useSettingsStore();
   return useMutation({
     mutationKey: ["declineFriendship"],
@@ -109,32 +115,35 @@ export const useDeclineFriendshipMutation = (
             : friend
         )
       );
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Freund erfolgreich abgelehnt",
-          "Friend successfully declined"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Freund erfolgreich abgelehnt",
+            "Friend successfully declined"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: () => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Freund konnte nicht abgelehnt werden",
-          "Friend could not be declined"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Freund konnte nicht abgelehnt werden",
+            "Friend could not be declined"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
 };
 
-export const useRemoveFriendMutation = (
-  onSuccess?: () => void,
-  onError?: () => void
-) => {
+export const useRemoveFriendMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { getLocalizedText, locale } = useSettingsStore();
   return useMutation({
     mutationKey: ["removeFriend"],
@@ -143,24 +152,28 @@ export const useRemoveFriendMutation = (
       context.client.setQueryData(["friends"], (old: Friend[]) =>
         old.filter((friend) => friend.friendshipId !== variables)
       );
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Freund erfolgreich entfernt",
-          "Friend successfully removed"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Freund erfolgreich entfernt",
+            "Friend successfully removed"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: () => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Freund konnte nicht entfernt werden",
-          "Friend could not be removed"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Freund konnte nicht entfernt werden",
+            "Friend could not be removed"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
 };

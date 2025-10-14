@@ -65,9 +65,11 @@ export default function WorkProjectDetailsPage() {
   const {
     mutate: payoutHourlyTimerProjectMutation,
     isPending: isProcessingPayout,
-  } = usePayoutHourlyTimerProjectMutation(() => {
-    setSelectedTimeEntryIds([]);
-    deactivateSelectedMode();
+  } = usePayoutHourlyTimerProjectMutation({
+    onSuccess: () => {
+      setSelectedTimeEntryIds([]);
+      deactivateSelectedMode();
+    },
   });
 
   const { locale, getLocalizedText } = useSettingsStore();

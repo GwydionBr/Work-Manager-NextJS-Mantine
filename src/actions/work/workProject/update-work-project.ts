@@ -18,39 +18,46 @@ export async function updateWorkProject({
 
   const { categories, ...projectData } = project;
 
+  if (categories) {
+    const { error: categoryErrorDelete } = await supabase
+      .from("timer_project_category")
+      .delete()
+      .eq("timer_project_id", projectId);
+
+    if (categoryErrorDelete) {
+      throw new Error(categoryErrorDelete.message);
+    }
+
+    const { error: categoryErrorAdd } = await supabase
+      .from("timer_project_category")
+      .insert(
+        categories.map((category) => ({
+          timer_project_id: projectId,
+          finance_category_id: category.id,
+        }))
+      );
+
+    if (categoryErrorAdd) {
+      throw new Error(categoryErrorAdd.message);
+    }
+  }
+
   // Update the project
   const { data, error } = await supabase
     .from("timer_project")
     .update(projectData)
     .eq("id", projectId)
-    .select()
+    .select(
+      `*, categories:timer_project_category(finance_category:finance_category_id(*))`
+    )
     .single();
 
   if (error) {
     throw new Error(error.message);
   }
 
-  const { error: categoryErrorDelete } = await supabase
-    .from("timer_project_category")
-    .delete()
-    .eq("timer_project_id", projectId);
-
-  if (categoryErrorDelete) {
-    throw new Error(categoryErrorDelete.message);
-  }
-
-  const { error: categoryErrorAdd } = await supabase
-    .from("timer_project_category")
-    .insert(
-      categories.map((category) => ({
-        timer_project_id: projectId,
-        finance_category_id: category.id,
-      }))
-    );
-
-  if (categoryErrorAdd) {
-    throw new Error(categoryErrorAdd.message);
-  }
-
-  return { ...data, categories };
+  return {
+    ...data,
+    categories: data.categories.map((category) => category.finance_category),
+  };
 }

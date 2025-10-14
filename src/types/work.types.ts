@@ -8,7 +8,7 @@ export interface InsertWorkProject extends TablesInsert<"timer_project"> {
   categories: Tables<"finance_category">[];
 }
 export interface UpdateWorkProject extends TablesUpdate<"timer_project"> {
-  categories: Tables<"finance_category">[];
+  categories: Tables<"finance_category">[] | null;
 }
 export interface CompleteWorkProject extends WorkProject {
   timeEntries: WorkTimeEntry[];

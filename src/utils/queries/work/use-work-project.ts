@@ -17,7 +17,7 @@ import paths from "@/utils/paths";
 
 import { CompleteWorkProject, WorkProject } from "@/types/work.types";
 import { Tables } from "@/types/db.types";
-import { MutationOptions } from "@/types/query.types";
+import { CustomMutationProps } from "@/types/query.types";
 
 export const useWorkProjectQuery = () => {
   return useQuery({
@@ -38,12 +38,8 @@ export const useWorkProjectByIdQuery = ({
 };
 
 export const useUpdateWorkProjectMutation = ({
-  onSuccess,
-  onError,
-}: {
-  onSuccess?: (project: Tables<"timer_project">) => void;
-  onError?: () => void;
-}) => {
+  ...props
+}: CustomMutationProps<Tables<"timer_project">>) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateWorkProject"],
@@ -59,37 +55,36 @@ export const useUpdateWorkProjectMutation = ({
           ...data,
         })
       );
-      context.client.invalidateQueries({ queryKey: ["workProjects"] });
-      context.client.invalidateQueries({
-        queryKey: ["workProjectById", variables.project.id],
-      });
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Projekt erfolgreich aktualisiert",
-          "Project successfully updated"
-        ),
-        locale
-      );
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Projekt erfolgreich aktualisiert",
+            "Project successfully updated"
+          ),
+          locale
+        );
+      }
       const { categories, ...project } = data;
-      onSuccess?.(project);
+      props.onSuccess?.(project);
     },
     onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Projekt konnten nicht aktualisiert werden",
-          "Project could not be updated"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Projekt konnten nicht aktualisiert werden",
+            "Project could not be updated"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
 };
 
 export const useDeleteWorkProjectMutation = ({
-  onSuccess,
-  onError,
-}: MutationOptions) => {
+  ...props
+}: CustomMutationProps) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["deleteWorkProject"],
@@ -98,35 +93,35 @@ export const useDeleteWorkProjectMutation = ({
       context.client.setQueryData(["workProjects"], (old: WorkProject[]) =>
         old.filter((p) => !variables.projectIds.includes(p.id))
       );
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Projekt erfolgreich gelöscht",
-          "Project successfully deleted"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Projekt erfolgreich gelöscht",
+            "Project successfully deleted"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Projekt konnten nicht gelöscht werden",
-          "Project could not be deleted"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Projekt konnten nicht gelöscht werden",
+            "Project could not be deleted"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
 };
 
 export const useCreateWorkProjectMutation = ({
-  onSuccess,
-  onError,
-}: {
-  onSuccess?: (project: Tables<"timer_project">) => void;
-  onError?: () => void;
-}) => {
+  ...props
+}: CustomMutationProps<Tables<"timer_project">>) => {
   const { locale, getLocalizedText } = useSettingsStore();
   const router = useRouter();
   return useMutation({
@@ -141,30 +136,30 @@ export const useCreateWorkProjectMutation = ({
         ...data,
         timeEntries: [],
       }));
-      context.client.invalidateQueries({ queryKey: ["workProjects"] });
-      context.client.invalidateQueries({
-        queryKey: ["workProjectById", data.id],
-      });
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Projekt erfolgreich erstellt",
-          "Project successfully created"
-        ),
-        locale
-      );
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Projekt erfolgreich erstellt",
+            "Project successfully created"
+          ),
+          locale
+        );
+      }
       const { categories, ...project } = data;
-      onSuccess?.(project);
+      props.onSuccess?.(project);
       router.push(paths.work.workDetailsPage(data.id));
     },
     onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Projekt konnten nicht erstellt werden",
-          "Project could not be created"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Projekt konnten nicht erstellt werden",
+            "Project could not be created"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
 };

@@ -6,22 +6,19 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import { updateFinanceAdjustment } from "@/actions/finance/financeAdjustment/update-finance-adjustment";
 import { deleteFinanceAdjustments } from "@/actions/finance/financeAdjustment/delete-finance-adjustments";
 import { createFinanceAdjustment } from "@/actions/finance/financeAdjustment/create-finance-adjustment";
-import { payoutFinanceAdjustment } from "@/actions/finance/payout/payout-finance-adjustment";
 import {
   showActionErrorNotification,
   showActionSuccessNotification,
 } from "@/utils/notificationFunctions";
 
-import { Database, Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
+import { TablesInsert, TablesUpdate } from "@/types/db.types";
 import { FinanceProject } from "@/types/finance.types";
-import { title } from "process";
-import { formatDate } from "@/utils/formatFunctions";
+import { CustomMutationProps } from "@/types/query.types";
 
 // Mutation to create a finance adjustment
-export function useCreateFinanceAdjustmentMutation(
-  onSuccess?: () => void,
-  onError?: () => void
-) {
+export const useCreateFinanceAdjustmentMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["createFinanceAdjustment"],
@@ -37,34 +34,36 @@ export function useCreateFinanceAdjustmentMutation(
               : p
           )
       );
-      context.client.invalidateQueries({ queryKey: ["financeProjects"] });
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Finanzanpassung erfolgreich erstellt",
-          "Finance adjustment successfully created"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Finanzanpassung erfolgreich erstellt",
+            "Finance adjustment successfully created"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Finanzanpassung konnten nicht erstellt werden",
-          "Finance adjustment could not be created"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Finanzanpassung konnten nicht erstellt werden",
+            "Finance adjustment could not be created"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
-}
+};
 
 // Mutation to update a finance adjustment
-export function useUpdateFinanceAdjustmentMutation(
-  onSuccess?: () => void,
-  onError?: () => void
-) {
+export const useUpdateFinanceAdjustmentMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateFinanceAdjustment"],
@@ -85,34 +84,36 @@ export function useUpdateFinanceAdjustmentMutation(
               : p
           )
       );
-      context.client.invalidateQueries({ queryKey: ["financeProjects"] });
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Finanzanpassung erfolgreich aktualisiert",
-          "Finance adjustment successfully updated"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Finanzanpassung erfolgreich aktualisiert",
+            "Finance adjustment successfully updated"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Finanzanpassung konnten nicht aktualisiert werden",
-          "Finance adjustment could not be updated"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Finanzanpassung konnten nicht aktualisiert werden",
+            "Finance adjustment could not be updated"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
-}
+};
 
 // Mutation to delete a finance adjustment
-export function useDeleteFinanceAdjustmentMutation(
-  onSuccess?: () => void,
-  onError?: () => void
-) {
+export const useDeleteFinanceAdjustmentMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["deleteFinanceAdjustment"],
@@ -126,25 +127,28 @@ export function useDeleteFinanceAdjustmentMutation(
             adjustments: p.adjustments.filter((a) => !variables.includes(a.id)),
           }))
       );
-      context.client.invalidateQueries({ queryKey: ["financeProjects"] });
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Finanzanpassung erfolgreich gelöscht",
-          "Finance adjustment successfully deleted"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Finanzanpassung erfolgreich gelöscht",
+            "Finance adjustment successfully deleted"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Finanzanpassung konnten nicht gelöscht werden",
-          "Finance adjustment could not be deleted"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Finanzanpassung konnten nicht gelöscht werden",
+            "Finance adjustment could not be deleted"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
-}
+};

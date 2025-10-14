@@ -16,12 +16,12 @@ import {
   WorkProject,
   WorkTimeEntry,
 } from "@/types/work.types";
+import { CustomMutationProps } from "@/types/query.types";
 
 // Mutation to payout a finance project
-export function usePayoutFinanceProjectMutation(
-  onSuccess?: () => void,
-  onError?: () => void
-) {
+export const usePayoutFinanceProjectMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["payoutFinanceProject"],
@@ -49,35 +49,36 @@ export function usePayoutFinanceProjectMutation(
         ["singleCashFlows"],
         (old: SingleCashFlow[]) => [...data.cashflows, ...old]
       );
-      context.client.invalidateQueries({ queryKey: ["financeProjects"] });
-      context.client.invalidateQueries({ queryKey: ["singleCashFlows"] });
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Finanzprojekt erfolgreich ausgezahlt",
-          "Finance project successfully paid out"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Finanzprojekt erfolgreich ausgezahlt",
+            "Finance project successfully paid out"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Finanzprojekt konnten nicht ausgezahlt werden",
-          "Finance project could not be paid out"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Finanzprojekt konnten nicht ausgezahlt werden",
+            "Finance project could not be paid out"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
-}
+};
 
 // Mutation to payout a finance adjustment
-export function usePayoutFinanceAdjustmentMutation(
-  onSuccess?: () => void,
-  onError?: () => void
-) {
+export const usePayoutFinanceAdjustmentMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["payoutFinanceAdjustment"],
@@ -110,35 +111,36 @@ export function usePayoutFinanceAdjustmentMutation(
         ["singleCashFlows"],
         (old: SingleCashFlow[]) => [data.cashflow, ...old]
       );
-      context.client.invalidateQueries({ queryKey: ["financeProjects"] });
-      context.client.invalidateQueries({ queryKey: ["singleCashFlows"] });
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Finanzanpassung erfolgreich ausgezahlt",
-          "Finance adjustment successfully paid out"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Finanzanpassung erfolgreich ausgezahlt",
+            "Finance adjustment successfully paid out"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Finanzanpassung konnten nicht ausgezahlt werden",
-          "Finance adjustment could not be paid out"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Finanzanpassung konnten nicht ausgezahlt werden",
+            "Finance adjustment could not be paid out"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
-}
+};
 
 // Mutation to payout a hourly timer project
-export function usePayoutHourlyTimerProjectMutation(
-  onSuccess?: () => void,
-  onError?: () => void
-) {
+export const usePayoutHourlyTimerProjectMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["payoutHourlyTimerProject"],
@@ -173,30 +175,28 @@ export function usePayoutHourlyTimerProjectMutation(
           ),
         })
       );
-      context.client.invalidateQueries({ queryKey: ["singleCashFlows"] });
-      context.client.invalidateQueries({
-        queryKey: ["workProjectById", variables.project.id],
-      });
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Projekt erfolgreich ausgezahlt",
-          "Project successfully paid out"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Projekt erfolgreich ausgezahlt",
+            "Project successfully paid out"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
-      console.log(error);
-      console.log(variables);
-      showActionErrorNotification(
-        getLocalizedText(
-          "Projekt konnten nicht ausgezahlt werden",
-          "Project could not be paid out"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Projekt konnten nicht ausgezahlt werden",
+            "Project could not be paid out"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
-}
+};

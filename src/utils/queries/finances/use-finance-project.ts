@@ -17,8 +17,7 @@ import {
   InsertFinanceProject,
   UpdateFinanceProject,
 } from "@/types/finance.types";
-import { payoutFinanceProject } from "@/actions/finance/payout/payout-finance-project";
-import { Tables } from "@/types/db.types";
+import { CustomMutationProps } from "@/types/query.types";
 
 // Query to get all finance projects
 export function useFinanceProjectQuery() {
@@ -28,10 +27,9 @@ export function useFinanceProjectQuery() {
   });
 }
 // Mutation to update a finance project
-export function useUpdateFinanceProjectMutation(
-  onSuccess?: () => void,
-  onError?: () => void
-) {
+export const useUpdateFinanceProjectMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateFinanceProject"],
@@ -42,34 +40,36 @@ export function useUpdateFinanceProjectMutation(
         ["financeProjects"],
         (old: FinanceProject[]) => old.map((p) => (p.id === data.id ? data : p))
       );
-      context.client.invalidateQueries({ queryKey: ["financeProjects"] });
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Finanzprojekt erfolgreich aktualisiert",
-          "Finance project successfully updated"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Finanzprojekt erfolgreich aktualisiert",
+            "Finance project successfully updated"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Finanzprojekt konnten nicht aktualisiert werden",
-          "Finance project could not be updated"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Finanzprojekt konnten nicht aktualisiert werden",
+            "Finance project could not be updated"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
-}
+};
 
 // Mutation to delete a finance project
-export function useDeleteFinanceProjectMutation(
-  onSuccess?: () => void,
-  onError?: () => void
-) {
+export const useDeleteFinanceProjectMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["deleteFinanceProject"],
@@ -79,34 +79,36 @@ export function useDeleteFinanceProjectMutation(
         ["financeProjects"],
         (old: FinanceProject[]) => old.filter((p) => !variables.includes(p.id))
       );
-      context.client.invalidateQueries({ queryKey: ["financeProjects"] });
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Finanzprojekt erfolgreich gelöscht",
-          "Finance project successfully deleted"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Finanzprojekt erfolgreich gelöscht",
+            "Finance project successfully deleted"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Finanzprojekt konnten nicht gelöscht werden",
-          "Finance project could not be deleted"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Finanzprojekt konnten nicht gelöscht werden",
+            "Finance project could not be deleted"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
-}
+};
 
 // Mutation to create a finance project
-export function useCreateFinanceProjectMutation(
-  onSuccess?: () => void,
-  onError?: () => void
-) {
+export const useCreateFinanceProjectMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["createFinanceProject"],
@@ -117,25 +119,28 @@ export function useCreateFinanceProjectMutation(
         ["financeProjects"],
         (old: FinanceProject[]) => [data, ...old]
       );
-      context.client.invalidateQueries({ queryKey: ["financeProjects"] });
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Finanzprojekt erfolgreich erstellt",
-          "Finance project successfully created"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Finanzprojekt erfolgreich erstellt",
+            "Finance project successfully created"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Finanzprojekt konnten nicht erstellt werden",
-          "Finance project could not be created"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Finanzprojekt konnten nicht erstellt werden",
+            "Finance project could not be created"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
-}
+};

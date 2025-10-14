@@ -10,6 +10,7 @@ import {
   showActionSuccessNotification,
 } from "@/utils/notificationFunctions";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { CustomMutationProps } from "@/types/query.types";
 
 export const useProfileQuery = () => {
   return useQuery({
@@ -25,10 +26,9 @@ export const useOtherProfilesQuery = () => {
   });
 };
 
-export const useUpdateProfileMutation = (
-  onSuccess?: () => void,
-  onError?: () => void
-) => {
+export const useUpdateProfileMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateProfile"],
@@ -36,24 +36,28 @@ export const useUpdateProfileMutation = (
       updateProfile({ profile }),
     onSuccess: (data, variables, onMutateResult, context) => {
       context.client.setQueryData(["profile"], data);
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Profil erfolgreich aktualisiert",
-          "Profile successfully updated"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Profil erfolgreich aktualisiert",
+            "Profile successfully updated"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Profil konnten nicht aktualisiert werden",
-          "Profile could not be updated"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Profil konnten nicht aktualisiert werden",
+            "Profile could not be updated"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
 };

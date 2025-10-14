@@ -2,8 +2,14 @@
 
 import { useMemo } from "react";
 
-import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
-import { useWorkFolderQuery } from "@/utils/queries/work/use-work-folder";
+import {
+  useWorkProjectQuery,
+  useUpdateWorkProjectMutation,
+} from "@/utils/queries/work/use-work-project";
+import {
+  useWorkFolderQuery,
+  useUpdateWorkFolderMutation,
+} from "@/utils/queries/work/use-work-folder";
 import { createTree, moveNode } from "@/utils/treeHelperFunctions";
 import {
   ProjectTreeItem,
@@ -17,6 +23,9 @@ export const useWorkTree = () => {
   const { data: folders = [], isPending: isFoldersPending } =
     useWorkFolderQuery();
 
+  const { mutate: updateWorkProject } = useUpdateWorkProjectMutation({});
+  const { mutate: updateWorkFolder } = useUpdateWorkFolderMutation({});
+
   const cleanedProjects = useMemo(() => {
     return projects?.map((project) => {
       const { categories, ...rest } = project;
@@ -29,27 +38,29 @@ export const useWorkTree = () => {
     return tree;
   }, [projects, folders]);
 
-  const handleChangedNodes = (changedNodes: ProjectTreeItem[]) => {
+  const handleChangedNodes = (
+    changedNodes: ProjectTreeItem[],
+    folder_id?: string,
+    project_id?: string
+  ) => {
     const updatedFolders: UpdateWorkFolder[] = changedNodes
-      .filter((node) => node.type === "folder")
+      .filter((node) => node.type === "folder" && node.id !== folder_id)
       .map((node) => ({
         id: node.id,
         order_index: node.index,
       }));
     const updatedProjects: UpdateWorkProject[] = changedNodes
-      .filter((node) => node.type === "project")
+      .filter((node) => node.type === "project" && node.id !== project_id)
       .map((node) => ({
         id: node.id,
         order_index: node.index,
-        categories: [],
+        categories: null,
       }));
     for (const folder of updatedFolders) {
-      console.log("updatedFolder", folder);
-      // updateWorkFolder({ folder });
+      updateWorkFolder({ folder });
     }
     for (const project of updatedProjects) {
-      console.log("updatedProject", project);
-      // updateWorkProject({ project });
+      updateWorkProject({ project });
     }
   };
 
@@ -66,13 +77,13 @@ export const useWorkTree = () => {
     );
     handleChangedNodes(changedNodes);
 
-    // TODO: updateFolderMutation
-    // updateWorkFolder({
-    //   folder: {
-    //     id: folderId,
-    //     parent_folder: newParentFolderId,
-    //   },
-    // });
+    updateWorkFolder({
+      folder: {
+        id: folderId,
+        parent_folder: newParentFolderId,
+        order_index: index,
+      },
+    });
   };
 
   const moveProject = (
@@ -91,13 +102,14 @@ export const useWorkTree = () => {
     );
     handleChangedNodes(changedNodes);
 
-    // TODO: updateProjectMutation
-    // updateWorkProject({
-    //   project: {
-    //     ...project,
-    //     folder_id: newFolderId,
-    //   },
-    // });
+    updateWorkProject({
+      project: {
+        ...project,
+        folder_id: newFolderId,
+        order_index: index,
+        categories: null,
+      },
+    });
   };
 
   return {

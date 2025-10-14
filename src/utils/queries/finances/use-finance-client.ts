@@ -10,20 +10,20 @@ import { showActionErrorNotification } from "@/utils/notificationFunctions";
 import { showActionSuccessNotification } from "@/utils/notificationFunctions";
 import { updateFinanceClient } from "@/actions/finance/financeClient/update-finance-client";
 import { deleteFinanceClients } from "@/actions/finance/financeClient/delete-finance-clients";
+import { CustomMutationProps } from "@/types/query.types";
 
 // Query to get all finance clients
-export function useFinanceClientQuery() {
+export const useFinanceClientQuery = () => {
   return useQuery({
     queryKey: ["financeClients"],
     queryFn: () => getAllFinanceClients(),
   });
-}
+};
 
 // Mutation to add a finance client
-export function useAddFinanceClientMutation(
-  onSuccess?: (client: Tables<"finance_client">) => void,
-  onError?: () => void
-) {
+export const useAddFinanceClientMutation = ({
+  ...props
+}: CustomMutationProps<Tables<"finance_client">>) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["addFinanceClient"],
@@ -34,34 +34,36 @@ export function useAddFinanceClientMutation(
         ["financeClients"],
         (old: Tables<"finance_client">[]) => [data, ...old]
       );
-      context.client.invalidateQueries({ queryKey: ["financeClients"] });
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Finanzkunde erfolgreich hinzugefügt",
-          "Finance client successfully added"
-        ),
-        locale
-      );
-      onSuccess?.(data);
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Finanzkunde erfolgreich hinzugefügt",
+            "Finance client successfully added"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.(data);
     },
     onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Finanzkunde konnten nicht hinzugefügt werden",
-          "Finance client could not be added"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Finanzkunde konnten nicht hinzugefügt werden",
+            "Finance client could not be added"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
-}
+};
 
 // Mutation to update a finance client
-export function useUpdateFinanceClientMutation(
-  onSuccess?: () => void,
-  onError?: () => void
-) {
+export const useUpdateFinanceClientMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateFinanceClient"],
@@ -73,34 +75,36 @@ export function useUpdateFinanceClientMutation(
         (old: Tables<"finance_client">[]) =>
           old.map((c) => (c.id === data.id ? data : c))
       );
-      context.client.invalidateQueries({ queryKey: ["financeClients"] });
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Finanzkunde erfolgreich aktualisiert",
-          "Finance client successfully updated"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Finanzkunde erfolgreich aktualisiert",
+            "Finance client successfully updated"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Finanzkunde konnten nicht aktualisiert werden",
-          "Finance client could not be updated"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Finanzkunde konnten nicht aktualisiert werden",
+            "Finance client could not be updated"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
-}
+};
 
 // Mutation to delete a finance client
-export function useDeleteFinanceClientMutation(
-  onSuccess?: () => void,
-  onError?: () => void
-) {
+export const useDeleteFinanceClientMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["deleteFinanceClient"],
@@ -111,25 +115,28 @@ export function useDeleteFinanceClientMutation(
         (old: Tables<"finance_client">[]) =>
           old.filter((c) => !variables.includes(c.id))
       );
-      context.client.invalidateQueries({ queryKey: ["financeClients"] });
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Finanzkunde erfolgreich gelöscht",
-          "Finance client successfully deleted"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Finanzkunde erfolgreich gelöscht",
+            "Finance client successfully deleted"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Finanzkunde konnten nicht gelöscht werden",
-          "Finance client could not be deleted"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Finanzkunde konnten nicht gelöscht werden",
+            "Finance client could not be deleted"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
-}
+};

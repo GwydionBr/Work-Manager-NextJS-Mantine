@@ -17,20 +17,20 @@ import {
   showActionSuccessNotification,
 } from "@/utils/notificationFunctions";
 import { deleteRecurringCashflow } from "@/actions/finance/recurringCashflow/delete-recurring-cashflow";
+import { CustomMutationProps } from "@/types/query.types";
 
 // Query to get all recurring cash flows
-export function useRecurringCashflowQuery() {
+export const useRecurringCashflowQuery = () => {
   return useQuery({
     queryKey: ["recurringCashFlows"],
     queryFn: () => getAllRecurringCashFlows(),
   });
-}
+};
 
 // Mutation to update a recurring cash flow
-export function useUpdateRecurringCashflowMutation(
-  onSuccess?: () => void,
-  onError?: () => void
-) {
+export const useUpdateRecurringCashflowMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateRecurringCashFlow"],
@@ -54,9 +54,6 @@ export function useUpdateRecurringCashflowMutation(
             c.id === data.recurringCashFlow.id ? data.recurringCashFlow : c
           )
       );
-      context.client.invalidateQueries({
-        queryKey: ["recurringCashFlows"],
-      });
       // Update the single cash flows if they exist
       if (data.singleCashFlows.length > 0) {
         context.client.setQueryData(
@@ -68,42 +65,41 @@ export function useUpdateRecurringCashflowMutation(
                 : c
             )
         );
-        context.client.invalidateQueries({
-          queryKey: ["singleCashFlows"],
-        });
       }
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Wiederkehrender Cashflow erfolgreich aktualisiert",
-          "Recurring cash flow updated successfully"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Wiederkehrender Cashflow erfolgreich aktualisiert",
+            "Recurring cash flow updated successfully"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Fehler beim Aktualisieren der wiederkehrenden Zahlung",
-          "Failed to update recurring cash flow"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Fehler beim Aktualisieren der wiederkehrenden Zahlung",
+            "Failed to update recurring cash flow"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
-}
+};
 
 // Mutation to add a recurring cash flow
-export function useAddRecurringCashflowMutation(
-  onSuccess?: () => void,
-  onError?: () => void
-) {
+export const useAddRecurringCashflowMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["addRecurringCashFlow"],
-    mutationFn: ({ cashflow }: { cashflow: InsertRecurringCashFlow }) =>
-      addRecurringCashFlow({ cashflow }),
+    mutationFn: addRecurringCashFlow,
     onSuccess: (data, variables, onMutateResult, context) => {
       context.client.setQueryData(
         ["recurringCashFlows"],
@@ -115,56 +111,40 @@ export function useAddRecurringCashflowMutation(
           (old: SingleCashFlow[]) => [...data.singleCashFlows, ...old]
         );
       }
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Wiederkehrender Cashflow erfolgreich hinzugefügt",
-          "Recurring cash flow added successfully"
-        ),
-        locale
-      );
-      onSuccess?.();
-    },
-    onSettled: (data, error, variables, onMutateResult, context) => {
-      context.client.invalidateQueries({
-        queryKey: ["recurringCashFlows"],
-      });
-      if (
-        data?.singleCashFlows.length !== undefined &&
-        data?.singleCashFlows.length > 0
-      ) {
-        context.client.invalidateQueries({
-          queryKey: ["singleCashFlows"],
-        });
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Wiederkehrender Cashflow erfolgreich hinzugefügt",
+            "Recurring cash flow added successfully"
+          ),
+          locale
+        );
       }
+      props.onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Fehler beim Hinzufügen der wiederkehrenden Zahlung",
-          "Failed to add recurring cash flow"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Fehler beim Hinzufügen der wiederkehrenden Zahlung",
+            "Failed to add recurring cash flow"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
-}
+};
 
 // Mutation to delete a recurring cash flow
-export function useDeleteRecurringCashflowMutation(
-  onSuccess?: () => void,
-  onError?: () => void
-) {
+export const useDeleteRecurringCashflowMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["deleteRecurringCashFlow"],
-    mutationFn: ({
-      recurringCashFlowId,
-      mode,
-    }: {
-      recurringCashFlowId: string;
-      mode: DeleteRecurringCashFlowMode;
-    }) => deleteRecurringCashflow({ recurringCashFlowId, mode }),
+    mutationFn: deleteRecurringCashflow,
     onSuccess: (data, variables, onMutateResult, context) => {
       context.client.setQueryData(
         ["recurringCashFlows"],
@@ -189,32 +169,28 @@ export function useDeleteRecurringCashflowMutation(
             }))
         );
       }
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Wiederkehrender Cashflow erfolgreich gelöscht",
-          "Recurring cash flow deleted successfully"
-        ),
-        locale
-      );
-      onSuccess?.();
-    },
-    onSettled: (data, error, variables, onMutateResult, context) => {
-      context.client.invalidateQueries({
-        queryKey: ["recurringCashFlows"],
-      });
-      context.client.invalidateQueries({
-        queryKey: ["singleCashFlows"],
-      });
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Wiederkehrender Cashflow erfolgreich gelöscht",
+            "Recurring cash flow deleted successfully"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Fehler beim Löschen der wiederkehrenden Zahlung",
-          "Failed to delete recurring cash flow"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Fehler beim Löschen der wiederkehrenden Zahlung",
+            "Failed to delete recurring cash flow"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
-}
+};

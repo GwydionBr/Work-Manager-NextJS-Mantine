@@ -9,7 +9,8 @@ import {
   showActionErrorNotification,
   showActionSuccessNotification,
 } from "@/utils/notificationFunctions";
-import { MutationOptions } from "@/types/query.types";
+import { CustomMutationProps } from "@/types/query.types";
+import { updateWorkFolder } from "@/actions/work/folder/update-work-folder";
 
 export const useWorkFolderQuery = () => {
   return useQuery({
@@ -19,9 +20,8 @@ export const useWorkFolderQuery = () => {
 };
 
 export const useCreateWorkFolderMutation = ({
-  onSuccess,
-  onError,
-}: MutationOptions) => {
+  ...props
+}: CustomMutationProps) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["createWorkFolder"],
@@ -31,24 +31,65 @@ export const useCreateWorkFolderMutation = ({
         data,
         ...old,
       ]);
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Ordner erfolgreich erstellt",
-          "Folder successfully created"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Ordner erfolgreich erstellt",
+            "Folder successfully created"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Ordner konnten nicht erstellt werden",
-          "Folder could not be created"
-        ),
-        locale
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Ordner konnten nicht erstellt werden",
+            "Folder could not be created"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
+    },
+  });
+};
+
+export const useUpdateWorkFolderMutation = ({
+  ...props
+}: CustomMutationProps) => {
+  const { locale, getLocalizedText } = useSettingsStore();
+  return useMutation({
+    mutationKey: ["updateWorkFolder"],
+    mutationFn: updateWorkFolder,
+    onSuccess: (data, variables, onMutateResult, context) => {
+      context.client.setQueryData(["workFolders"], (old: WorkFolder[]) =>
+        old.map((f) => (f.id === data.id ? data : f))
       );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Ordner erfolgreich aktualisiert",
+            "Folder successfully updated"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
+    },
+    onError: (error, variables, onMutateResult, context) => {
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Ordner konnten nicht aktualisiert werden",
+            "Folder could not be updated"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
 };

@@ -11,20 +11,20 @@ import {
 } from "@/utils/notificationFunctions";
 import { updateFinanceCategory } from "@/actions/finance/financeCategory/update-finance-category";
 import { deleteFinanceCategories } from "@/actions/finance/financeCategory/delete-finance-categories";
+import { CustomMutationProps } from "@/types/query.types";
 
 // Query to get all finance categories
-export function useFinanceCategoriesQuery() {
+export const useFinanceCategoriesQuery = () => {
   return useQuery({
     queryKey: ["financeCategories"],
     queryFn: () => getAllFinanceCategories(),
   });
-}
+};
 
 // Mutation to add a finance category
-export function useAddFinanceCategoryMutation(
-  onSuccess?: (category: Tables<"finance_category">) => void,
-  onError?: () => void
-) {
+export const useAddFinanceCategoryMutation = ({
+  ...props
+}: CustomMutationProps<Tables<"finance_category">>) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["addFinanceCategory"],
@@ -35,34 +35,36 @@ export function useAddFinanceCategoryMutation(
         ["financeCategories"],
         (old: Tables<"finance_category">[]) => [data, ...old]
       );
-      context.client.invalidateQueries({ queryKey: ["financeCategories"] });
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Kategorie erfolgreich hinzugefügt",
-          "Category successfully added"
-        ),
-        locale
-      );
-      onSuccess?.(data);
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Kategorie erfolgreich hinzugefügt",
+            "Category successfully added"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.(data);
     },
     onError: () => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Kategorie konnten nicht hinzugefügt werden",
-          "Category could not be added"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Kategorie konnten nicht hinzugefügt werden",
+            "Category could not be added"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
-}
+};
 
 // Mutation to update a finance category
-export function useUpdateFinanceCategoryMutation(
-  onSuccess?: () => void,
-  onError?: () => void
-) {
+export const useUpdateFinanceCategoryMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateFinanceCategory"],
@@ -74,34 +76,36 @@ export function useUpdateFinanceCategoryMutation(
         (old: Tables<"finance_category">[]) =>
           old.map((c) => (c.id === data.id ? data : c))
       );
-      context.client.invalidateQueries({ queryKey: ["financeCategories"] });
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Kategorie erfolgreich aktualisiert",
-          "Category successfully updated"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Kategorie erfolgreich aktualisiert",
+            "Category successfully updated"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: () => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Kategorie konnten nicht aktualisiert werden",
-          "Category could not be updated"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Kategorie konnten nicht aktualisiert werden",
+            "Category could not be updated"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
-}
+};
 
 // Mutation to delete a finance category
-export function useDeleteFinanceCategoryMutation(
-  onSuccess?: () => void,
-  onError?: () => void
-) {
+export const useDeleteFinanceCategoryMutation = ({
+  ...props
+}: CustomMutationProps) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["deleteFinanceCategory"],
@@ -112,25 +116,28 @@ export function useDeleteFinanceCategoryMutation(
         (old: Tables<"finance_category">[]) =>
           old.filter((c) => !variables.includes(c.id))
       );
-      context.client.invalidateQueries({ queryKey: ["financeCategories"] });
-      showActionSuccessNotification(
-        getLocalizedText(
-          "Kategorie erfolgreich gelöscht",
-          "Category successfully deleted"
-        ),
-        locale
-      );
-      onSuccess?.();
+      if (props.showNotification !== false) {
+        showActionSuccessNotification(
+          getLocalizedText(
+            "Kategorie erfolgreich gelöscht",
+            "Category successfully deleted"
+          ),
+          locale
+        );
+      }
+      props.onSuccess?.();
     },
     onError: () => {
-      showActionErrorNotification(
-        getLocalizedText(
-          "Kategorie konnten nicht gelöscht werden",
-          "Category could not be deleted"
-        ),
-        locale
-      );
-      onError?.();
+      if (props.showNotification !== false) {
+        showActionErrorNotification(
+          getLocalizedText(
+            "Kategorie konnten nicht gelöscht werden",
+            "Category could not be deleted"
+          ),
+          locale
+        );
+      }
+      props.onError?.();
     },
   });
-}
+};
