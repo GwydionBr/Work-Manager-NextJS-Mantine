@@ -1,9 +1,9 @@
 "use client";
 
 import { useForm } from "@mantine/form";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useGroupStore, Group } from "@/stores/groupStore";
-import { useUserStore } from "@/stores/userStore";
+import { useFriendsQuery } from "@/utils/queries/profile/use-friends";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import { TextInput, Stack, Alert, MultiSelect } from "@mantine/core";
@@ -12,6 +12,7 @@ import { zodResolver } from "mantine-form-zod-resolver";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
 import UpdateButton from "@/components/UI/Buttons/UpdateButton";
+import { FriendshipStatusEnum } from "@/types/profile.types";
 
 const schema = z.object({
   title: z.string().min(2, "Name must be at least 2 characters"),
@@ -30,10 +31,18 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
     updateGroup,
     addGroupMembers: updateGroupMembers,
   } = useGroupStore();
-  const { friends } = useUserStore();
+  const { data: allFriends = [] } = useFriendsQuery();
   const { defaultGroupColor } = useSettingsStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const friends = useMemo(
+    () =>
+      allFriends.filter(
+        (friend) => friend.friendshipStatus === FriendshipStatusEnum.ACCEPTED
+      ),
+    [allFriends]
+  );
 
   const form = useForm({
     initialValues: {
@@ -102,16 +111,14 @@ export default function GroupForm({ onClose, group }: GroupFormProps) {
           data={friends
             .filter(
               (friend) =>
-                !group?.members.some(
-                  (member) => member.id === friend.profile.id
-                ) &&
+                !group?.members.some((member) => member.id === friend.id) &&
                 !group?.invitedMembers.some(
-                  (invitedMember) => invitedMember.id === friend.profile.id
+                  (invitedMember) => invitedMember.id === friend.id
                 )
             )
             .map((friend) => ({
-              value: friend.profile.id,
-              label: friend.profile.username,
+              value: friend.id,
+              label: friend.username,
             }))}
           {...form.getInputProps("memberIds")}
         />

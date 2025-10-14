@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useUserStore } from "@/stores/userStore";
 import { useGroupStore } from "@/stores/groupStore";
 
 import { Text, Group, Avatar, Box, Indicator, Popover } from "@mantine/core";
@@ -10,6 +9,7 @@ import { GroupMember } from "@/stores/groupStore";
 
 import classes from "./GroupManager.module.css";
 import DefaultColorPicker from "../UI/DefaultColorPicker";
+import { useProfileQuery } from "@/utils/queries/profile/use-profile";
 
 interface MemberRowProps {
   groupId: string;
@@ -22,7 +22,7 @@ export default function MemberRow({
   member,
   onClick,
 }: MemberRowProps) {
-  const { profile: userProfile } = useUserStore();
+  const { data: profile } = useProfileQuery();
   const { updateGroupMember } = useGroupStore();
   const [color, setColor] = useState(member.color);
 
@@ -36,7 +36,7 @@ export default function MemberRow({
       justify="space-between"
       className={classes.memberRow}
       style={{
-        border: member.id === userProfile?.id ? "2px solid teal" : "none",
+        border: member.id === profile?.id ? "2px solid teal" : "none",
       }}
     >
       <Group gap="sm">
@@ -58,7 +58,7 @@ export default function MemberRow({
           <Avatar
             src={member.avatar_url}
             size={32}
-            color={member.id === userProfile?.id ? "yellow" : "cyan"}
+            color={member.id === profile?.id ? "yellow" : "cyan"}
             variant="light"
           />
         </Indicator>
@@ -67,7 +67,7 @@ export default function MemberRow({
         </Text>
       </Group>
       {member.color !== "" &&
-        (member.id === userProfile?.id ? (
+        (member.id === profile?.id ? (
           <Popover onClose={handleColorChange}>
             <Popover.Target>
               <Box className={classes.colorPoint} bg={color} />

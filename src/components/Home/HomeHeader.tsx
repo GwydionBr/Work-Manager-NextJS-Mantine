@@ -1,21 +1,23 @@
-"use server";
+"use client";
 
-import { getCurrentUserProfile } from "@/actions/profile/getCurrentUserProfile";
+import { useProfileQuery } from "@/utils/queries/profile/use-profile";
 import { Box, Card, Stack, Text } from "@mantine/core";
 
-import classes from "./Home.module.css";
 import LogoutButton from "../Auth/LogoutButton";
 
-export default async function HomeHeader() {
-  const profileResponse = await getCurrentUserProfile();
+export default function HomeHeader() {
+  const { data: profile, isPending: isProfilePending } = useProfileQuery();
 
-  if (!profileResponse.success) {
+  if (isProfilePending || !profile) {
     return null;
   }
-  const profile = profileResponse.data;
 
   return (
-    <Card className={classes.homeHeader} withBorder shadow="sm">
+    <Card
+      style={{ position: "absolute", top: 10, right: 10 }}
+      withBorder
+      shadow="sm"
+    >
       <Stack>
         <Text>Currently logged in as</Text>
         <Box>

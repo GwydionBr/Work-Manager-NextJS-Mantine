@@ -44,24 +44,6 @@ export {
   deleteGroceryItem,
 } from "./group/grocery/groceryItemActions";
 
-// Profile Actions
-
-export {
-  getOtherProfiles as getAllProfiles,
-  getProfile,
-  updateProfile,
-} from "./profile/profileActions";
-
-// Friendship Actions
-
-export { getAllFriends } from "./profile/getAllFriends";
-export {
-  createFriendship,
-  acceptFriendship,
-  declineFriendship,
-  deleteFriendship,
-} from "./profile/friendshipActions";
-
 // Notification Actions
 
 export { getGroupRequests } from "./group/getGroupRequests";

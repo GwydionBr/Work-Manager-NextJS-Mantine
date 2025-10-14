@@ -3,7 +3,7 @@
 import { useForm } from "@mantine/form";
 import { useFocusTrap } from "@mantine/hooks";
 import { useGroupStore } from "@/stores/groupStore";
-import { useUserStore } from "@/stores/userStore";
+import { useProfileQuery } from "@/utils/queries/profile/use-profile";
 
 import { TextInput, Select, Stack } from "@mantine/core";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
@@ -46,7 +46,7 @@ export default function SingleTaskForm({
   const activeGroup = useGroupStore((state) =>
     state.groups.find((g) => g.id === activeGroupId)
   );
-  const { profile } = useUserStore();
+  const { data: profile } = useProfileQuery();
 
   const focusTrapRef = useFocusTrap();
 

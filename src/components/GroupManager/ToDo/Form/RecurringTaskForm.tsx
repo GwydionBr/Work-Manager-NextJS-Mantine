@@ -2,7 +2,7 @@
 
 import { useForm } from "@mantine/form";
 import { useGroupStore } from "@/stores/groupStore";
-import { useUserStore } from "@/stores/userStore";
+import { useProfileQuery } from "@/utils/queries/profile/use-profile";
 
 import { TextInput, Select, Group, Stack, Button } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
@@ -48,7 +48,7 @@ export default function RecurringTaskForm({
   const activeGroup = useGroupStore((state) =>
     state.groups.find((g) => g.id === activeGroupId)
   );
-  const { profile } = useUserStore();
+  const { data: profile } = useProfileQuery();
 
   const form = useForm({
     initialValues: {

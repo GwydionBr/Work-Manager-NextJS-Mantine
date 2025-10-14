@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useCalendarStore } from "@/stores/calendarStore";
+import { useWorkTimeEntryQuery } from "@/utils/queries/work/use-work-time_entry";
 
 import {
   Grid,
@@ -36,8 +37,8 @@ export default function CalendarHeader({
   handleZoomChange,
 }: CalendarHeaderProps) {
   const { locale } = useSettingsStore();
+  const { isPending: isFetching } = useWorkTimeEntryQuery();
   const {
-    isFetching,
     viewMode,
     dateRange,
     currentDateRange,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useOtherProfilesQuery } from "@/utils/queries/profile/use-profile";
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import {
@@ -18,8 +18,7 @@ import { useForm } from "@mantine/form";
 import { Locale } from "@/types/settings.types";
 import ReactCountryFlag from "react-country-flag";
 import { locales } from "@/constants/settings";
-import { getOtherProfiles } from "@/actions/profile/profileActions";
-import { Tables } from "@/types/db.types";
+
 import {
   useProfileQuery,
   useUpdateProfileMutation,
@@ -29,20 +28,10 @@ export default function InitializeProfile() {
   const { data: profile, isPending: isProfilePending } = useProfileQuery();
   const { mutate: updateProfile, isPending: isUpdating } =
     useUpdateProfileMutation();
+  const { data: otherProfiles = [] } = useOtherProfilesQuery();
 
   const { locale, setLocale, format24h, setFormat24h, getLocalizedText } =
     useSettingsStore();
-  const [allProfiles, setAllProfiles] = useState<Tables<"profiles">[]>([]);
-
-  useEffect(() => {
-    const fetchAllProfiles = async () => {
-      const response = await getOtherProfiles();
-      if (response.success) {
-        setAllProfiles(response.data);
-      }
-    };
-    fetchAllProfiles();
-  }, []);
 
   const currentLocale = locales.find((l) => l.value === locale);
 
@@ -69,7 +58,9 @@ export default function InitializeProfile() {
             "Username must be at most 20 characters long"
           );
         if (
-          allProfiles?.some((p) => p.username === value && p.id !== profile?.id)
+          otherProfiles?.some(
+            (p) => p.username === value && p.id !== profile?.id
+          )
         ) {
           return getLocalizedText(
             "Benutzername ist bereits vergeben",
