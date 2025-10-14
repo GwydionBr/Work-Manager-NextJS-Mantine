@@ -148,9 +148,14 @@ export default function FinanceProjectCard({
   };
 
   const hasAdjustments = project.adjustments.length > 0;
-  const isPaidTotally =
-    !!project.single_cash_flow_id &&
-    project.adjustments.filter((a) => !a.finance_category_id).length !== 0;
+
+  const isPaidTotally = useMemo(() => {
+    return (
+      !!project.single_cash_flow_id &&
+      project.adjustments.filter((a) => !a.single_cash_flow_id).length === 0
+    );
+  }, [project.single_cash_flow_id, project.adjustments]);
+
   const isPositive = totalAmountOpen > 0;
   const adjustmentTotal = project.adjustments.reduce(
     (acc, adj) => acc + adj.amount,
