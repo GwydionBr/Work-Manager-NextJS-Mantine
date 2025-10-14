@@ -1,19 +1,16 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { ApiResponseList } from "@/types/action.types";
 import { Tables } from "@/types/db.types";
 
-export async function getAllAppointments(): Promise<
-  ApiResponseList<Tables<"appointment">>
-> {
+export async function getAllAppointments(): Promise<Tables<"appointment">[]> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return { success: false, data: null, error: "User not found" };
+    throw new Error("User not found");
   }
 
   const { data, error } = await supabase
@@ -23,8 +20,8 @@ export async function getAllAppointments(): Promise<
     .order("start_date", { ascending: false });
 
   if (error) {
-    return { success: false, data: null, error: error.message };
+    throw new Error(error.message);
   }
 
-  return { success: true, data, error: null };
+  return data;
 }

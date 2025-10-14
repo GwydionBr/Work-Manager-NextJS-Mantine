@@ -4,14 +4,12 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 import { TimerData } from "@/stores/timeTrackerManagerStore";
-import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
-import * as actions from "@/actions";
+import { Tables } from "@/types/db.types";
 import { ViewMode } from "@/types/workCalendar.types";
 import { startOfWeek, endOfWeek } from "date-fns";
 
 interface CalendarStoreState {
   activeTimer: TimerData | null;
-  appointments: Tables<"appointment">[];
   selectedProject: Tables<"timer_project"> | null;
   selectedSession: Tables<"timer_session"> | null;
   dateRange: [Date | null, Date | null];
@@ -26,24 +24,10 @@ interface CalendarStoreState {
   eventIsHovered: boolean;
   eventIsSelected: boolean;
   addingMode: boolean;
-  isFetching: boolean;
-  lastFetch: Date | null;
-  initialized: boolean | null;
-  abortController: AbortController | null;
 }
 
 interface CalendarStoreActions {
   resetStore: () => void;
-  fetchCalendarData: () => Promise<void>;
-  fetchIfStale: (intervalMs?: number) => Promise<void>;
-  abortFetch: () => void;
-  createAppointment: (
-    appointment: TablesInsert<"appointment">
-  ) => Promise<boolean>;
-  updateAppointment: (
-    appointment: TablesUpdate<"appointment">
-  ) => Promise<boolean>;
-  deleteAppointment: (id: string) => Promise<boolean>;
   setViewMode: (viewMode: ViewMode) => void;
   changeZoomIndex: (delta: number) => void;
   setSelectedProject: (selectedProject: Tables<"timer_project"> | null) => void;
@@ -66,7 +50,6 @@ export const useCalendarStore = create<
   persist(
     (set, get) => ({
       activeTimer: null,
-      appointments: [],
       viewMode: "week",
       zoomIndex: 1,
       rasterHeight: 60,
@@ -87,14 +70,9 @@ export const useCalendarStore = create<
       newEventStartY: null,
       newEventEndY: null,
       newEventDay: null,
-      isFetching: false,
-      lastFetch: null,
-      initialized: null,
-      abortController: null,
       resetStore: () =>
         set({
           activeTimer: null,
-          appointments: [],
           viewMode: "week",
           zoomIndex: 1,
           rasterHeight: 60,
@@ -115,104 +93,8 @@ export const useCalendarStore = create<
           newEventStartY: null,
           newEventEndY: null,
           newEventDay: null,
-          isFetching: false,
-          lastFetch: null,
-          initialized: null,
-          abortController: null,
         }),
-      fetchIfStale: async (intervalMs = 5 * 60 * 1000) => {
-        const { lastFetch, isFetching, abortController } = get();
-        const now = Date.now();
-        const last = lastFetch ? new Date(lastFetch).getTime() : 0;
-        const stale = !lastFetch || now - last > intervalMs;
-        if (!stale || isFetching) return;
 
-        // Abort any existing fetch
-        if (abortController) {
-          abortController.abort();
-        }
-
-        await get().fetchCalendarData();
-      },
-      fetchCalendarData: async () => {
-        // Create new AbortController for this fetch
-        const abortController = new AbortController();
-        set({ isFetching: true, abortController });
-
-        try {
-          const appointments = await actions.getAllAppointments();
-
-          // Check if fetch was aborted
-          if (abortController.signal.aborted) {
-            return;
-          }
-
-          if (appointments.success) {
-            set({
-              appointments: appointments.data,
-              initialized: true,
-              abortController: null,
-            });
-          } else {
-            set({ initialized: false, abortController: null });
-          }
-          set({
-            isFetching: false,
-            lastFetch: new Date(),
-            initialized: true,
-            abortController: null,
-          });
-        } catch (error) {
-          // If fetch was aborted, don't update state
-          if (abortController.signal.aborted) {
-            return;
-          }
-
-          // For other errors, reset fetching state
-          set({ isFetching: false, initialized: false, abortController: null });
-        }
-      },
-
-      abortFetch() {
-        const { abortController } = get();
-        if (abortController) {
-          abortController.abort();
-          set({ isFetching: false, abortController: null });
-        }
-      },
-
-      createAppointment: async (appointment) => {
-        const { appointments } = get();
-        const response = await actions.createAppointment(appointment);
-        if (response.success) {
-          const newAppointments = [...appointments, response.data];
-          set({ appointments: newAppointments });
-          return true;
-        }
-        return false;
-      },
-      updateAppointment: async (appointment) => {
-        const { appointments } = get();
-        const response = await actions.updateAppointment(appointment);
-        if (response.success) {
-          const newAppointments = appointments.map((a) =>
-            a.id === appointment.id ? response.data : a
-          );
-          set({ appointments: newAppointments });
-          return true;
-        }
-        return false;
-      },
-      deleteAppointment: async (id) => {
-        const { appointments } = get();
-        const response = await actions.deleteAppointment(id);
-        if (response.success) {
-          const newAppointments = appointments.filter((a) => a.id !== id);
-          set({ appointments: newAppointments });
-          return true;
-        }
-        return false;
-      },
       setActiveTimer: (timer: TimerData | null) => set({ activeTimer: timer }),
       setEventIsHovered: (isHovered: boolean) =>
         set({ eventIsHovered: isHovered }),
@@ -243,9 +125,6 @@ export const useCalendarStore = create<
     }),
     {
       name: "calendar-store",
-      partialize: (state) => ({
-        zoomIndex: state.zoomIndex,
-      }),
     }
   )
 );

@@ -1,23 +1,9 @@
-//  Project Actions
-
-
 // Task Actions
 
 export { getAllTasks } from "./tasks/getAllTasks";
 export { createTask } from "./tasks/createTask";
 export { updateTask } from "./tasks/updateTask";
 export { deleteTask } from "./tasks/deleteTask";
-
-// Calendar Actions
-
-export { getAllAppointments } from "./appointments/getAllAppointments";
-export { createAppointment } from "./appointments/createAppointment";
-export { updateAppointment } from "./appointments/updateAppointment";
-export { deleteAppointment } from "./appointments/deleteAppointment";
-
-// Session Actions
-
-
 
 // Auth Actions
 

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useDisclosure, useHotkeys } from "@mantine/hooks";
 import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
 import { useWorkTimeEntryQuery } from "@/utils/queries/work/use-work-time_entry";
+import { useAppointmentsQuery } from "@/utils/queries/work/use-appointments";
 import { useCalendarStore } from "@/stores/calendarStore";
 
 import { ScrollArea, Stack } from "@mantine/core";
@@ -26,7 +27,6 @@ const zoomLevel = [1, 2, 4, 6, 12]; // multiplier for hour height
 
 export default function WorkCalendar() {
   const {
-    appointments,
     viewMode,
     setViewMode,
     rasterHeight,
@@ -48,7 +48,8 @@ export default function WorkCalendar() {
     useWorkProjectQuery();
   const { data: timeEntries = [], isPending: isFetchingTimeEntries } =
     useWorkTimeEntryQuery();
-
+  const { data: appointments = [], isPending: isFetchingAppointments } =
+    useAppointmentsQuery();
   const [viewportTop, setViewportTop] = useState({
     old: 0,
     new: 0,
@@ -266,7 +267,11 @@ export default function WorkCalendar() {
         <CalendarGrid
           visibleProjects={visibleProjects}
           handleNextAndPrev={handleNextAndPrev}
-          isFetching={isFetchingProjects || isFetchingTimeEntries}
+          isFetching={
+            isFetchingProjects ||
+            isFetchingTimeEntries ||
+            isFetchingAppointments
+          }
           days={calendarDays}
           setReferenceDate={handleReferenceDateChange}
           handleSessionClick={handleSessionClick}

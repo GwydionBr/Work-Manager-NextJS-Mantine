@@ -8,8 +8,6 @@ import { useDisclosure, useHotkeys } from "@mantine/hooks";
 import { usePathname } from "next/navigation";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useWorkStore } from "@/stores/workManagerStore";
-import { useUserStore } from "@/stores/userStore";
-import { useCalendarStore } from "@/stores/calendarStore";
 import { useCheckNewVersion } from "@/hooks/useCheckNewVersion";
 import { notifications } from "@mantine/notifications";
 
@@ -30,10 +28,6 @@ enum FetchPriority {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { data: profile } = useProfileQuery();
-  const { fetchIfStale: fetchUserIfStale, abortFetch: abortUserFetch } =
-    useUserStore();
-  const { fetchIfStale: fetchCalendarIfStale, abortFetch: abortCalendarFetch } =
-    useCalendarStore();
   const { setActiveProjectId } = useWorkStore();
   const {
     locale,
@@ -107,19 +101,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const fetchAllData = async () => {
     const interval = FETCH_INTERVAL;
     const prioritized = async () => {
-      let priorityFetch = FetchPriority.Settings;
       // Always gently refresh user and settings if stale (non-blocking)
-      fetchUserIfStale(interval);
       fetchSettingsIfStale(interval);
-
-      if (pathname.startsWith("/workCalendar")) {
-        priorityFetch = FetchPriority.Calendar;
-        await fetchCalendarIfStale(interval);
-      }
-
-      // Background fetching for other data (best-effort)
-      if (priorityFetch !== FetchPriority.Calendar)
-        fetchCalendarIfStale(interval);
     };
 
     prioritized();
@@ -129,8 +112,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     if (isHome || isAuth) return;
 
     // Abort any ongoing fetches when route changes
-    abortUserFetch();
-    abortCalendarFetch();
     abortSettingsFetch();
 
     fetchAllData();
