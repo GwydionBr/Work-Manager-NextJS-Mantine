@@ -27,6 +27,7 @@ import LocaleDateTimePicker from "@/components/UI/Locale/LocaleDateTimePicker";
 
 import { Tables } from "@/types/db.types";
 import { NewSession } from "@/types/timerSession.types";
+import CustomNumberInput from "@/components/UI/CustomNumberInput";
 
 interface SessionFormProps {
   initialValues: NewSession;
@@ -285,7 +286,7 @@ export default function SessionForm({
         </Fieldset>
         <Fieldset legend={locale === "de-DE" ? "Finanzen" : "Finances"}>
           <Collapse in={project?.hourly_payment !== false}>
-            <NumberInput
+            <CustomNumberInput
               label={locale === "de-DE" ? "Gehalt" : "Salary"}
               min={0}
               step={0.01}

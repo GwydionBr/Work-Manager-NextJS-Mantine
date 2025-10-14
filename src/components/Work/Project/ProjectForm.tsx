@@ -481,7 +481,7 @@ export default function ProjectForm({
                       "Rundungsintervall",
                       "Rounding interval"
                     )}
-                    suffix={getLocalizedText("Minuten", "minutes")}
+                    suffix={getLocalizedText( " Minuten", " minutes")}
                     allowNegative={false}
                     allowDecimal={false}
                     allowLeadingZeros={false}
