@@ -24,7 +24,7 @@ export const useFinanceCategoriesQuery = () => {
 // Mutation to add a finance category
 export const useAddFinanceCategoryMutation = ({
   ...props
-}: CustomMutationProps<Tables<"finance_category">>) => {
+}: CustomMutationProps<Tables<"finance_category">> = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["addFinanceCategory"],
@@ -64,7 +64,7 @@ export const useAddFinanceCategoryMutation = ({
 // Mutation to update a finance category
 export const useUpdateFinanceCategoryMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateFinanceCategory"],
@@ -105,7 +105,7 @@ export const useUpdateFinanceCategoryMutation = ({
 // Mutation to delete a finance category
 export const useDeleteFinanceCategoryMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["deleteFinanceCategory"],

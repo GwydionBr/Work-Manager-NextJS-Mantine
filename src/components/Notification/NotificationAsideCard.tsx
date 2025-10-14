@@ -34,9 +34,9 @@ export default function NotificationAsideCard({
   pendingFriends,
 }: NotificationAsideCardProps) {
   const { mutate: acceptFriend, isPending: isAcceptingFriend } =
-    useAcceptFriendshipMutation(() => {});
+    useAcceptFriendshipMutation();
   const { mutate: declineFriend, isPending: isDecliningFriend } =
-    useDeclineFriendshipMutation(() => {});
+    useDeclineFriendshipMutation();
   const { groupRequests, answerGroupRequest } = useGroupStore();
   const { defaultGroupColor } = useSettingsStore();
   const [friendRequestsOpened, setFriendRequestsOpened] = useState(false);

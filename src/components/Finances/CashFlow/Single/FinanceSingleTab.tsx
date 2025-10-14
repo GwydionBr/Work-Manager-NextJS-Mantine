@@ -42,13 +42,16 @@ import {
 } from "@/utils/queries/finances/use-single-cashflow";
 
 export default function FinanceSingleTab() {
-  const { mutate: deleteSingleCashFlows, isPending: isDeletingSingleCashFlows } = useDeleteSingleCashflowMutation(
-    () => {
+  const {
+    mutate: deleteSingleCashFlows,
+    isPending: isDeletingSingleCashFlows,
+  } = useDeleteSingleCashflowMutation({
+    onSuccess: () => {
       setSelectedCashFlows([]);
       closeBulkSelection();
       setLastSelectedIndex(null);
-    }
-  );
+    },
+  });
   const { data: singleCashFlows = [], isPending: isSingleCashFlowsPending } =
     useSingleCashflowQuery();
   const { locale, setIsModalOpen, setSelectedTab, getLocalizedText } =

@@ -21,7 +21,7 @@ import { CustomMutationProps } from "@/types/query.types";
 // Mutation to payout a finance project
 export const usePayoutFinanceProjectMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["payoutFinanceProject"],
@@ -78,7 +78,7 @@ export const usePayoutFinanceProjectMutation = ({
 // Mutation to payout a finance adjustment
 export const usePayoutFinanceAdjustmentMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["payoutFinanceAdjustment"],
@@ -140,7 +140,7 @@ export const usePayoutFinanceAdjustmentMutation = ({
 // Mutation to payout a hourly timer project
 export const usePayoutHourlyTimerProjectMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["payoutHourlyTimerProject"],

@@ -23,11 +23,11 @@ export default function FriendList() {
   const { getLocalizedText, locale } = useSettingsStore();
   const { data: friends } = useFriendsQuery();
   const { mutate: removeFriend, isPending: isRemovingFriend } =
-    useRemoveFriendMutation(() => {});
+    useRemoveFriendMutation();
   const { mutate: declineFriend, isPending: isDecliningFriend } =
-    useDeclineFriendshipMutation(() => {});
+    useDeclineFriendshipMutation();
   const { mutate: acceptFriend, isPending: isAcceptingFriend } =
-    useAcceptFriendshipMutation(() => {});
+    useAcceptFriendshipMutation();
 
   function handleRemoveFriend(id: string) {
     showDeleteConfirmationModal(

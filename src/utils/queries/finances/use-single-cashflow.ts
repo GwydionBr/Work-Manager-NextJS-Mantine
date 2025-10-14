@@ -28,7 +28,7 @@ export const useSingleCashflowQuery = () => {
 // Mutation to update a single cash flow
 export const useUpdateSingleCashflowMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateSingleCashFlow"],
@@ -69,7 +69,7 @@ export const useUpdateSingleCashflowMutation = ({
 // Mutation to add a single cash flow
 export const useAddSingleCashflowMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
 
   return useMutation({
@@ -107,7 +107,7 @@ export const useAddSingleCashflowMutation = ({
 // Mutation to delete a single cash flow
 export const useDeleteSingleCashflowMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["deleteSingleCashFlows"],

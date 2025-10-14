@@ -39,7 +39,7 @@ export const useWorkProjectByIdQuery = ({
 
 export const useUpdateWorkProjectMutation = ({
   ...props
-}: CustomMutationProps<Tables<"timer_project">>) => {
+}: CustomMutationProps<Tables<"timer_project">> = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateWorkProject"],
@@ -84,7 +84,7 @@ export const useUpdateWorkProjectMutation = ({
 
 export const useDeleteWorkProjectMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["deleteWorkProject"],
@@ -121,7 +121,7 @@ export const useDeleteWorkProjectMutation = ({
 
 export const useCreateWorkProjectMutation = ({
   ...props
-}: CustomMutationProps<Tables<"timer_project">>) => {
+}: CustomMutationProps<Tables<"timer_project">> = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   const router = useRouter();
   return useMutation({

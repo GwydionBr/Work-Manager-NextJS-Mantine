@@ -29,7 +29,7 @@ export function useFinanceProjectQuery() {
 // Mutation to update a finance project
 export const useUpdateFinanceProjectMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateFinanceProject"],
@@ -69,7 +69,7 @@ export const useUpdateFinanceProjectMutation = ({
 // Mutation to delete a finance project
 export const useDeleteFinanceProjectMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["deleteFinanceProject"],
@@ -108,7 +108,7 @@ export const useDeleteFinanceProjectMutation = ({
 // Mutation to create a finance project
 export const useCreateFinanceProjectMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["createFinanceProject"],

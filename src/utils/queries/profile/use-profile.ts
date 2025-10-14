@@ -28,7 +28,7 @@ export const useOtherProfilesQuery = () => {
 
 export const useUpdateProfileMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateProfile"],

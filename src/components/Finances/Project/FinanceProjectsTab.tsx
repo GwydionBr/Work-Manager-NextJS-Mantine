@@ -50,9 +50,11 @@ import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIc
 
 export default function FinanceProjectTab() {
   const { mutate: deleteFinanceProjectMutation, isPending: isDeleting } =
-    useDeleteFinanceProjectMutation(() => {
-      setSelectedFinanceProjects([]);
-      closeSelectedMode();
+    useDeleteFinanceProjectMutation({
+      onSuccess: () => {
+        setSelectedFinanceProjects([]);
+        closeSelectedMode();
+      },
     });
 
   const { data: financeClients = [] } = useFinanceClientQuery();

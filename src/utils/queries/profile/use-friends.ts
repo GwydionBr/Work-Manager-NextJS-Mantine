@@ -23,7 +23,7 @@ export const useFriendsQuery = () => {
 
 export const useCreateFriendshipMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { getLocalizedText, locale } = useSettingsStore();
   return useMutation({
     mutationKey: ["createFriendship"],
@@ -61,7 +61,7 @@ export const useCreateFriendshipMutation = ({
 
 export const useAcceptFriendshipMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { getLocalizedText, locale } = useSettingsStore();
   return useMutation({
     mutationKey: ["acceptFriendship"],
@@ -102,7 +102,7 @@ export const useAcceptFriendshipMutation = ({
 
 export const useDeclineFriendshipMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { getLocalizedText, locale } = useSettingsStore();
   return useMutation({
     mutationKey: ["declineFriendship"],
@@ -143,7 +143,7 @@ export const useDeclineFriendshipMutation = ({
 
 export const useRemoveFriendMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { getLocalizedText, locale } = useSettingsStore();
   return useMutation({
     mutationKey: ["removeFriend"],

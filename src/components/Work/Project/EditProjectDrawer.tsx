@@ -35,7 +35,7 @@ export default function EditProjectDrawer({
   const { locale } = useSettingsStore();
   const { lastActiveProjectId } = useWorkStore();
   const { mutate: deleteProjectMutation, isPending: isDeleting } =
-    useDeleteWorkProjectMutation({});
+    useDeleteWorkProjectMutation();
   const { data: projects = [] } = useWorkProjectQuery();
 
   const activeProject = useMemo(

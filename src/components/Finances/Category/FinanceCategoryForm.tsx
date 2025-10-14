@@ -35,14 +35,16 @@ export default function FinanceCategoryForm({
   const {
     mutate: addFinanceCategoryMutation,
     isPending: isAddingFinanceCategory,
-  } = useAddFinanceCategoryMutation((category) => {
-    onSuccess?.(category);
-    handleClose();
+  } = useAddFinanceCategoryMutation({
+    onSuccess: (category) => {
+      onSuccess?.(category);
+      handleClose();
+    },
   });
   const {
     mutate: updateFinanceCategoryMutation,
     isPending: isUpdatingFinanceCategory,
-  } = useUpdateFinanceCategoryMutation(() => handleClose());
+  } = useUpdateFinanceCategoryMutation({ onSuccess: () => handleClose() });
 
   const form = useForm({
     initialValues: {

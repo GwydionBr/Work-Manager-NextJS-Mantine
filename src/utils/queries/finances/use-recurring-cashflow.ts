@@ -6,7 +6,6 @@ import { addRecurringCashFlow } from "@/actions/finance/recurringCashflow/create
 import { updateRecurringCashFlow } from "@/actions/finance/recurringCashflow/update-recurring-cashflow";
 import {
   DeleteRecurringCashFlowMode,
-  InsertRecurringCashFlow,
   RecurringCashFlow,
   SingleCashFlow,
   UpdateRecurringCashFlow,
@@ -30,7 +29,7 @@ export const useRecurringCashflowQuery = () => {
 // Mutation to update a recurring cash flow
 export const useUpdateRecurringCashflowMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateRecurringCashFlow"],
@@ -95,7 +94,7 @@ export const useUpdateRecurringCashflowMutation = ({
 // Mutation to add a recurring cash flow
 export const useAddRecurringCashflowMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["addRecurringCashFlow"],
@@ -140,7 +139,7 @@ export const useAddRecurringCashflowMutation = ({
 // Mutation to delete a recurring cash flow
 export const useDeleteRecurringCashflowMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["deleteRecurringCashFlow"],

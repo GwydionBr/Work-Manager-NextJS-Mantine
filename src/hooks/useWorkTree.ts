@@ -23,8 +23,8 @@ export const useWorkTree = () => {
   const { data: folders = [], isPending: isFoldersPending } =
     useWorkFolderQuery();
 
-  const { mutate: updateWorkProject } = useUpdateWorkProjectMutation({});
-  const { mutate: updateWorkFolder } = useUpdateWorkFolderMutation({});
+  const { mutate: updateWorkProject } = useUpdateWorkProjectMutation();
+  const { mutate: updateWorkFolder } = useUpdateWorkFolderMutation();
 
   const cleanedProjects = useMemo(() => {
     return projects?.map((project) => {

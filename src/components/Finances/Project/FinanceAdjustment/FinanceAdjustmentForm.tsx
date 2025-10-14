@@ -35,7 +35,7 @@ export default function FinanceAdjustmentForm({
 }: FinanceAdjustmentFormProps) {
   const { getLocalizedText } = useSettingsStore();
   const { mutate: addFinanceAdjustment, isPending: isAdding } =
-    useCreateFinanceAdjustmentMutation(() => handleClose());
+    useCreateFinanceAdjustmentMutation({ onSuccess: () => handleClose() });
   const { data: financeClients = [] } = useFinanceClientQuery();
   const { data: financeCategories = [] } = useFinanceCategoriesQuery();
   const form = useForm({

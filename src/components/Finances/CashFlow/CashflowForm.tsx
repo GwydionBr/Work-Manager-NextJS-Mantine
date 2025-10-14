@@ -55,11 +55,11 @@ export default function FinanceForm({
   const { getLocalizedText, defaultFinanceCurrency: financeCurrency } =
     useSettingsStore();
   const { mutate: addRecurringCashFlow, isPending: isAddingRecurringCashFlow } =
-    useAddRecurringCashflowMutation(() => onClose());
+    useAddRecurringCashflowMutation({ onSuccess: () => onClose() });
   const { data: financeCategories, isPending: isFinanceCategoriesPending } =
     useFinanceCategoriesQuery();
   const { mutate: addSingleCashFlow, isPending: isAddingSingleCashFlow } =
-    useAddSingleCashflowMutation(() => onClose());
+    useAddSingleCashflowMutation({ onSuccess: () => onClose() });
 
   async function handleSingleFinanceSubmit(values: SingleFinanceFormValues) {
     addSingleCashFlow({

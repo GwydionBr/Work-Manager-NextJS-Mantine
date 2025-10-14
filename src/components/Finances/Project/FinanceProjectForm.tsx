@@ -67,11 +67,11 @@ export default function FinanceProjectForm({
   const {
     mutate: addFinanceProjectMutation,
     isPending: isAddingFinanceProject,
-  } = useCreateFinanceProjectMutation(() => handleClose());
+  } = useCreateFinanceProjectMutation({ onSuccess: () => handleClose() });
   const {
     mutate: updateFinanceProjectMutation,
     isPending: isUpdatingFinanceProject,
-  } = useUpdateFinanceProjectMutation(() => handleClose());
+  } = useUpdateFinanceProjectMutation({ onSuccess: () => handleClose() });
   const { data: financeCategories = [] } = useFinanceCategoriesQuery();
   const { data: financeClients = [] } = useFinanceClientQuery();
   const form = useForm<z.infer<typeof projectSchema>>({

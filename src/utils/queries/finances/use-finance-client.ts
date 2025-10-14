@@ -23,7 +23,7 @@ export const useFinanceClientQuery = () => {
 // Mutation to add a finance client
 export const useAddFinanceClientMutation = ({
   ...props
-}: CustomMutationProps<Tables<"finance_client">>) => {
+}: CustomMutationProps<Tables<"finance_client">> = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["addFinanceClient"],
@@ -63,7 +63,7 @@ export const useAddFinanceClientMutation = ({
 // Mutation to update a finance client
 export const useUpdateFinanceClientMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateFinanceClient"],
@@ -104,7 +104,7 @@ export const useUpdateFinanceClientMutation = ({
 // Mutation to delete a finance client
 export const useDeleteFinanceClientMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["deleteFinanceClient"],

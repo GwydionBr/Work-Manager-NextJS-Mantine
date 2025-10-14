@@ -22,7 +22,7 @@ export const useAppointmentsQuery = () => {
 
 export const useCreateAppointmentMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["createAppointment"],
@@ -60,7 +60,7 @@ export const useCreateAppointmentMutation = ({
 
 export const useUpdateAppointmentMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateAppointment"],
@@ -99,7 +99,7 @@ export const useUpdateAppointmentMutation = ({
 
 export const useDeleteAppointmentsMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["deleteAppointments"],

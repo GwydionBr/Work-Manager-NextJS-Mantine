@@ -42,14 +42,16 @@ export default function FinanceClientForm({
   const { locale } = useSettingsStore();
 
   const { mutate: addFinanceClientMutation, isPending: isAddingFinanceClient } =
-    useAddFinanceClientMutation((client: Tables<"finance_client">) => {
-      onSuccess?.(client);
-      handleClose();
+    useAddFinanceClientMutation({
+      onSuccess: (client: Tables<"finance_client">) => {
+        onSuccess?.(client);
+        handleClose();
+      },
     });
   const {
     mutate: updateFinanceClientMutation,
     isPending: isUpdatingFinanceClient,
-  } = useUpdateFinanceClientMutation(() => handleClose());
+  } = useUpdateFinanceClientMutation({ onSuccess: () => handleClose() });
   const form = useForm({
     initialValues: {
       name: client?.name || "",

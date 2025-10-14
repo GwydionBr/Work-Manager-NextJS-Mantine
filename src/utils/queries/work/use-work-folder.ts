@@ -21,7 +21,7 @@ export const useWorkFolderQuery = () => {
 
 export const useCreateWorkFolderMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["createWorkFolder"],
@@ -59,7 +59,7 @@ export const useCreateWorkFolderMutation = ({
 
 export const useUpdateWorkFolderMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateWorkFolder"],

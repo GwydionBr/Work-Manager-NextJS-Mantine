@@ -30,7 +30,7 @@ export const useWorkTimeEntryQuery = () => {
 
 export const useCreateWorkTimeEntryMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText, format24h } = useSettingsStore();
   return useMutation({
     mutationKey: ["createWorkTimeEntry"],
@@ -119,7 +119,7 @@ export const useCreateWorkTimeEntryMutation = ({
 
 export const useUpdateWorkTimeEntryMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText, format24h } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateWorkTimeEntry"],
@@ -246,7 +246,7 @@ export const useUpdateWorkTimeEntryMutation = ({
 
 export const useDeleteWorkTimeEntryMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["deleteWorkTimeEntry"],

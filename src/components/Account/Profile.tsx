@@ -28,10 +28,9 @@ import {
 export default function Profile() {
   const { getLocalizedText } = useSettingsStore();
   const { data: profile, isPending: isProfilePending } = useProfileQuery();
-  const { data: otherProfiles, isPending: isOtherProfilesPending } =
-    useOtherProfilesQuery();
+  const { data: otherProfiles } = useOtherProfilesQuery();
   const { mutate: updateProfile, isPending: isUpdating } =
-    useUpdateProfileMutation(() => setIsOpen(false));
+    useUpdateProfileMutation({ onSuccess: () => setIsOpen(false) });
   const [isOpen, setIsOpen] = useState(false);
 
   const form = useForm({

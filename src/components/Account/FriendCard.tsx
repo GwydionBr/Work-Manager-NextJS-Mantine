@@ -19,7 +19,7 @@ export default function FriendCard() {
   const [search, setSearch] = useState("");
   const { data: friends } = useFriendsQuery();
   const { mutate: createFriendship, isPending: isCreatingFriendship } =
-    useCreateFriendshipMutation(() => setSearch(""));
+    useCreateFriendshipMutation({ onSuccess: () => setSearch("") });
   const [isAddable, setIsAddable] = useState(false);
 
   useEffect(() => {

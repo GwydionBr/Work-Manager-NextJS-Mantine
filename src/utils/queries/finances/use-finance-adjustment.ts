@@ -18,7 +18,7 @@ import { CustomMutationProps } from "@/types/query.types";
 // Mutation to create a finance adjustment
 export const useCreateFinanceAdjustmentMutation = ({
   ...props
-}: CustomMutationProps) => {
+  }: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["createFinanceAdjustment"],
@@ -63,7 +63,7 @@ export const useCreateFinanceAdjustmentMutation = ({
 // Mutation to update a finance adjustment
 export const useUpdateFinanceAdjustmentMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateFinanceAdjustment"],
@@ -113,7 +113,7 @@ export const useUpdateFinanceAdjustmentMutation = ({
 // Mutation to delete a finance adjustment
 export const useDeleteFinanceAdjustmentMutation = ({
   ...props
-}: CustomMutationProps) => {
+}: CustomMutationProps = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["deleteFinanceAdjustment"],

@@ -78,11 +78,11 @@ export default function EditCashFlowDrawer({
     UpdateSingleCashFlow | UpdateRecurringCashFlow
   >(cashFlow);
   const { mutate: updateSingleCashFlow, isPending: isUpdatingSingleCashFlow } =
-    useUpdateSingleCashflowMutation(onClose);
+    useUpdateSingleCashflowMutation({ onSuccess: onClose });
   const {
     mutate: updateRecurringCashFlow,
     isPending: isUpdatingRecurringCashFlow,
-  } = useUpdateRecurringCashflowMutation(onClose);
+  } = useUpdateRecurringCashflowMutation({ onSuccess: onClose });
   const drawerStack = useDrawersStack([
     "edit-cash-flow",
     "delete-cash-flow",
@@ -90,18 +90,15 @@ export default function EditCashFlowDrawer({
     "update-cash-flow",
     "add-category",
   ]);
-  const {
-    data: financeCategories = [],
-    isPending: isFinanceCategoriesPending,
-  } = useFinanceCategoriesQuery();
+  const { data: financeCategories = [] } = useFinanceCategoriesQuery();
   const {
     mutate: deleteSingleCashFlows,
     isPending: isDeletingSingleCashFlows,
-  } = useDeleteSingleCashflowMutation(() => onClose());
+  } = useDeleteSingleCashflowMutation({ onSuccess: onClose });
   const {
     mutate: deleteRecurringCashFlow,
     isPending: isDeletingRecurringCashFlow,
-  } = useDeleteRecurringCashflowMutation(() => onClose());
+  } = useDeleteRecurringCashflowMutation({ onSuccess: onClose });
 
   useEffect(() => {
     if (cashFlow) {
