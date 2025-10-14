@@ -11,7 +11,11 @@ import {
 } from "@/utils/notificationFunctions";
 import { payoutFinanceAdjustment } from "@/actions/finance/payout/payout-finance-adjustment";
 import { payoutHourlyTimerProject } from "@/actions/finance/payout/payout-hourly-timer-project";
-import { CompleteWorkProject, WorkProject } from "@/types/work.types";
+import {
+  CompleteWorkProject,
+  WorkProject,
+  WorkTimeEntry,
+} from "@/types/work.types";
 
 // Mutation to payout a finance project
 export function usePayoutFinanceProjectMutation(
@@ -141,19 +145,38 @@ export function usePayoutHourlyTimerProjectMutation(
     mutationFn: ({
       project,
       title,
-      timeEntryIds,
+      timeEntries,
     }: {
-      project: CompleteWorkProject;
+      project: WorkProject;
       title: string;
-      timeEntryIds: string[];
-    }) => payoutHourlyTimerProject({ project, title, timeEntryIds }),
+      timeEntries: WorkTimeEntry[];
+    }) => payoutHourlyTimerProject({ project, title, timeEntries }),
     onSuccess: (data, variables, onMutateResult, context) => {
       context.client.setQueryData(
         ["singleCashFlows"],
         (old: SingleCashFlow[]) => [data.singleCashFlow, ...(old || [])]
       );
+      const timeEntryIds = variables.timeEntries.map(
+        (timeEntry) => timeEntry.id
+      );
+      context.client.setQueryData(
+        ["workProjectById", variables.project.id],
+        (old: CompleteWorkProject) => ({
+          ...old,
+          timeEntries: old.timeEntries.map((timeEntry) =>
+            timeEntryIds.includes(timeEntry.id)
+              ? {
+                  ...timeEntry,
+                  single_cash_flow_id: data.singleCashFlow.id,
+                }
+              : timeEntry
+          ),
+        })
+      );
       context.client.invalidateQueries({ queryKey: ["singleCashFlows"] });
-      // TODO: UPDATE TIMER PROJECT
+      context.client.invalidateQueries({
+        queryKey: ["workProjectById", variables.project.id],
+      });
       showActionSuccessNotification(
         getLocalizedText(
           "Projekt erfolgreich ausgezahlt",

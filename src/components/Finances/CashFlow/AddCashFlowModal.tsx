@@ -33,11 +33,16 @@ export default function CashFlowModal({
     }
   }, [opened]);
 
+  const handleClose = () => {
+    onClose();
+    setCategories([]);
+  };
+
   return (
     <Modal.Stack>
       <Modal
         {...modalStack.register("cash-flow")}
-        onClose={onClose}
+        onClose={handleClose}
         title={
           <Group>
             <IconCashPlus />
@@ -48,7 +53,7 @@ export default function CashFlowModal({
         }
       >
         <CashflowForm
-          onClose={onClose}
+          onClose={handleClose}
           onOpenCategoryForm={() => modalStack.open("category-form")}
           categories={categories}
           setCategories={setCategories}

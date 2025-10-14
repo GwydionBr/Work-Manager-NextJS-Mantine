@@ -10,6 +10,7 @@ import {
   IconPresentationAnalytics,
   IconCashBanknotePlus,
   IconCashBanknote,
+  IconRepeat,
 } from "@tabler/icons-react";
 import FinanceOverviewTab from "@/components/Finances/Overview/FinanceOverviewTab";
 import FinanceRecurringTab from "@/components/Finances/CashFlow/Recurring/FinanceRecurringTab";
@@ -48,7 +49,7 @@ export default function FinanceTabs() {
           {locale === "de-DE" ? "Einzel" : "Single"}
         </Tabs.Tab>
         <Tabs.Tab
-          leftSection={<IconReload color="light-dark(blue, cyan) " />}
+          leftSection={<IconRepeat color="light-dark(blue, cyan) " />}
           value="Recurring"
         >
           {locale === "de-DE" ? "Wiederkehrend" : "Recurring"}

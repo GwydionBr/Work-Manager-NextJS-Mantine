@@ -2,6 +2,7 @@
 
 import { useHover, useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useUpdateSingleCashflowMutation } from "@/utils/queries/finances/use-single-cashflow";
 
 import {
   Card,
@@ -11,14 +12,17 @@ import {
   Group,
   Transition,
   Box,
+  Stack,
+  ThemeIcon,
+  Badge,
 } from "@mantine/core";
+import FinanceCategoryBadges from "@/components/Finances/Category/FinanceCategoryBadges";
+import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 
 import { formatMoney } from "@/utils/formatFunctions";
-import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
-import FinanceCategoryBadges from "../../Category/FinanceCategoryBadges";
 import { SingleCashFlow } from "@/types/finance.types";
 import { Tables } from "@/types/db.types";
-import { useUpdateSingleCashflowMutation } from "@/utils/queries/finances/use-single-cashflow";
+import { IconRepeat } from "@tabler/icons-react";
 
 interface SingleCashflowRowProps extends CardProps {
   cashflow: SingleCashFlow;
@@ -77,8 +81,7 @@ export default function SingleCashflowRow({
       }
       style={{
         cursor: "pointer",
-        // border: hovered ? "1px solid var(--mantine-color-blue-6)" : "",
-        border: cashflow.recurring_cash_flow_id ? "1px solid var(--mantine-color-red-6)" : hovered ? "1px solid var(--mantine-color-blue-6)" : "",
+        border: hovered ? "1px solid var(--mantine-color-blue-6)" : "",
       }}
       onClick={(e) => {
         if (!isCategoryPopoverOpen) {
@@ -121,17 +124,29 @@ export default function SingleCashflowRow({
           </Group>
         </Grid.Col>
         <Grid.Col span={6}>
-          <Text>{cashflow.title}</Text>
+          <Group>
+            <Text>{cashflow.title}</Text>
+            {cashflow.recurring_cash_flow_id && (
+                <ThemeIcon
+                  variant="transparent"
+                  color={cashflow.amount < 0 ? "red" : "green"}
+                >
+                  <IconRepeat size={20} />
+                </ThemeIcon>
+            )}
+          </Group>
         </Grid.Col>
         <Grid.Col span={3}>
-          <FinanceCategoryBadges
-            categories={
-              cashflow.categories.map((c) => c.finance_category) || []
-            }
-            onPopoverOpen={openCategoryPopover}
-            onPopoverClose={handleCategoryClose}
-            showAddCategory={hovered}
-          />
+          <Stack>
+            <FinanceCategoryBadges
+              initialCategories={
+                cashflow.categories.map((c) => c.finance_category) || []
+              }
+              onPopoverOpen={openCategoryPopover}
+              onPopoverClose={handleCategoryClose}
+              showAddCategory={hovered}
+            />
+          </Stack>
         </Grid.Col>
       </Grid>
     </Card>

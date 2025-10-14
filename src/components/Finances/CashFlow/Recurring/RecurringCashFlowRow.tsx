@@ -150,7 +150,7 @@ export default function RecurringCashFlowRow({
             )}
           </Group>
           <FinanceCategoryBadges
-            categories={currentCategories ?? []}
+            initialCategories={currentCategories ?? []}
             onPopoverOpen={openCategoryPopover}
             onPopoverClose={handleCategoryClose}
             showAddCategory={hovered}

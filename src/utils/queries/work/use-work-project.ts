@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useWorkStore } from "@/stores/workManagerStore";
+import { useRouter } from "next/navigation";
 
 import { getAllWorkProjects } from "@/actions/work/workProject/get-all-work-projects";
 import { updateWorkProject } from "@/actions/work/workProject/update-work-project";
@@ -13,8 +13,9 @@ import {
   showActionErrorNotification,
   showActionSuccessNotification,
 } from "@/utils/notificationFunctions";
+import paths from "@/utils/paths";
 
-import { WorkProject } from "@/types/work.types";
+import { CompleteWorkProject, WorkProject } from "@/types/work.types";
 import { Tables } from "@/types/db.types";
 import { MutationOptions } from "@/types/query.types";
 
@@ -51,6 +52,17 @@ export const useUpdateWorkProjectMutation = ({
       context.client.setQueryData(["workProjects"], (old: WorkProject[]) =>
         old.map((p) => (p.id === data.id ? data : p))
       );
+      context.client.setQueryData(
+        ["workProjectById", variables.project.id],
+        (old: CompleteWorkProject) => ({
+          ...old,
+          ...data,
+        })
+      );
+      context.client.invalidateQueries({ queryKey: ["workProjects"] });
+      context.client.invalidateQueries({
+        queryKey: ["workProjectById", variables.project.id],
+      });
       showActionSuccessNotification(
         getLocalizedText(
           "Projekt erfolgreich aktualisiert",
@@ -116,6 +128,7 @@ export const useCreateWorkProjectMutation = ({
   onError?: () => void;
 }) => {
   const { locale, getLocalizedText } = useSettingsStore();
+  const router = useRouter();
   return useMutation({
     mutationKey: ["createWorkProject"],
     mutationFn: createWorkProject,
@@ -124,6 +137,14 @@ export const useCreateWorkProjectMutation = ({
         data,
         ...old,
       ]);
+      context.client.setQueryData(["workProjectById", data.id], () => ({
+        ...data,
+        timeEntries: [],
+      }));
+      context.client.invalidateQueries({ queryKey: ["workProjects"] });
+      context.client.invalidateQueries({
+        queryKey: ["workProjectById", data.id],
+      });
       showActionSuccessNotification(
         getLocalizedText(
           "Projekt erfolgreich erstellt",
@@ -133,6 +154,7 @@ export const useCreateWorkProjectMutation = ({
       );
       const { categories, ...project } = data;
       onSuccess?.(project);
+      router.push(paths.work.workDetailsPage(data.id));
     },
     onError: (error, variables, onMutateResult, context) => {
       showActionErrorNotification(

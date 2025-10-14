@@ -262,7 +262,7 @@ export default function FinanceProjectCard({
               <FinanceClientBadge client={project.finance_client} />
             )}
             <FinanceCategoryBadges
-              categories={project.categories.map(
+              initialCategories={project.categories.map(
                 (category) => category.finance_category
               )}
               onPopoverOpen={openBadgePopover}

@@ -1,27 +1,25 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { CompleteWorkProject } from "@/types/work.types";
+import { WorkProject, WorkTimeEntry } from "@/types/work.types";
 import { SingleCashFlow } from "@/types/finance.types";
 
 interface PayoutHourlyTimerProjectProps {
-  project: CompleteWorkProject;
+  project: WorkProject;
   title: string;
-  timeEntryIds: string[];
+  timeEntries: WorkTimeEntry[];
 }
 
 export async function payoutHourlyTimerProject({
   project,
   title,
-  timeEntryIds,
+  timeEntries,
 }: PayoutHourlyTimerProjectProps): Promise<{
   singleCashFlow: SingleCashFlow;
-  project: CompleteWorkProject;
 }> {
   const supabase = await createClient();
 
-  const totalAmount = project.timeEntries
-    .filter((timeEntry) => timeEntryIds.includes(timeEntry.id))
+  const totalAmount = timeEntries
     .reduce(
       (acc, timeEntry) =>
         acc + timeEntry.salary * (timeEntry.active_seconds / 3600),
@@ -57,17 +55,19 @@ export async function payoutHourlyTimerProject({
     throw new Error(categoriesError.message);
   }
 
-  for (const timeEntryId of timeEntryIds) {
-    const { error: timeEntryError } = await supabase
-      .from("timer_session")
-      .update({
-        single_cash_flow_id: cashflowData.id,
-      })
-      .eq("id", timeEntryId);
-      
-    if (timeEntryError) {
-      throw new Error(timeEntryError.message);
-    }
+  const { error: timeEntryError } = await supabase
+    .from("timer_session")
+    .update({
+      single_cash_flow_id: cashflowData.id,
+    })
+    .in(
+      "id",
+      timeEntries.map((timeEntry) => timeEntry.id)
+    )
+    .select();
+
+  if (timeEntryError) {
+    throw new Error(timeEntryError.message);
   }
 
   return {
@@ -75,6 +75,5 @@ export async function payoutHourlyTimerProject({
       ...cashflowData,
       categories: project.categories.map((c) => ({ finance_category: c })),
     },
-    project: { ...project, categories: project.categories },
   };
 }

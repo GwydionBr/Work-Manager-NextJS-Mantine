@@ -37,7 +37,7 @@ export default function EditProjectDrawer({
   const { mutate: deleteProjectMutation, isPending: isDeleting } =
     useDeleteWorkProjectMutation({});
   const { data: projects = [] } = useWorkProjectQuery();
-  
+
   const activeProject = useMemo(
     () => projects.find((p) => p.id === lastActiveProjectId),
     [projects, lastActiveProjectId]
@@ -105,6 +105,7 @@ export default function EditProjectDrawer({
             <ProjectForm
               project={activeProject}
               onCancel={handleClose}
+              onSuccess={handleClose}
               categoryIds={categoryIds}
               setCategoryIds={setCategoryIds}
               onOpenCategoryForm={() => drawersStack.open("category-form")}

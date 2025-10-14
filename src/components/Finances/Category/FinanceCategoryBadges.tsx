@@ -15,6 +15,7 @@ import {
   Stack,
   Transition,
   Skeleton,
+  Text,
 } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 
@@ -24,31 +25,27 @@ import FinanceCategoryForm from "./FinanceCategoryForm";
 import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
 
 interface FinanceCategoryBadgesProps {
-  categories: Tables<"finance_category">[];
+  initialCategories: Tables<"finance_category">[];
   showAddCategory?: boolean;
   onPopoverOpen: () => void;
   onPopoverClose: (categories: Tables<"finance_category">[] | null) => void;
 }
 
 export default function FinanceCategoryBadges({
-  categories,
+  initialCategories,
   showAddCategory = true,
   onPopoverOpen,
   onPopoverClose,
 }: FinanceCategoryBadgesProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useSettingsStore();
   const {
     data: financeCategories = [],
     isPending: isFinanceCategoriesPending,
   } = useFinanceCategoriesQuery();
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
-    categories.map((c) => c.id)
+    initialCategories.map((c) => c.id)
   );
-
-  useEffect(() => {
-    setSelectedCategories(categories.map((c) => c.id));
-  }, [categories]);
 
   const [
     isCategoryFormOpen,
@@ -66,7 +63,6 @@ export default function FinanceCategoryBadges({
   }, [financeCategories, selectedCategories]);
 
   if (isFinanceCategoriesPending) return <Skeleton height={30} width={100} />;
-  if (!isFinanceCategoriesPending) return null;
 
   const handlePopoverOpen = () => {
     onPopoverOpen();
@@ -75,10 +71,13 @@ export default function FinanceCategoryBadges({
 
   const handlePopoverClose = () => {
     onPopoverClose(
-      currentCategorySelection !== categories ? currentCategorySelection : null
+      currentCategorySelection !== initialCategories
+        ? currentCategorySelection
+        : null
     );
     closeCategoryForm();
     closeCategoryPopover();
+    
   };
 
   return (
@@ -131,11 +130,10 @@ export default function FinanceCategoryBadges({
                 clearable
                 comboboxProps={{ withinPortal: false }}
                 hidePickedOptions
-                nothingFoundMessage={
-                  locale === "de-DE"
-                    ? "Keine Kategorien gefunden"
-                    : "No categories found"
-                }
+                nothingFoundMessage={getLocalizedText(
+                  "Keine Kategorien gefunden",
+                  "No categories found"
+                )}
                 data={financeCategories.map((c) => ({
                   label: c.title,
                   value: c.id,
@@ -152,12 +150,12 @@ export default function FinanceCategoryBadges({
                 variant="subtle"
                 leftSection={<IconPlus size={16} />}
               >
-                {locale === "de-DE" ? "Kategorie" : "Category"}
+                {getLocalizedText("Kategorie", "Category")}
               </Button>
             </Group>
             <Collapse in={isCategoryFormOpen}>
               <Fieldset
-                legend={locale === "de-DE" ? "Neue Kategorie" : "New Category"}
+                legend={getLocalizedText("Neue Kategorie", "New Category")}
                 mt="lg"
                 maw={400}
                 miw={300}

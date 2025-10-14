@@ -43,6 +43,7 @@ import { IconClockPlus } from "@tabler/icons-react";
 
 import { formatDate } from "@/utils/formatFunctions";
 import { Tables } from "@/types/db.types";
+import { WorkTimeEntry } from "@/types/work.types";
 
 export default function WorkProjectDetailsPage() {
   const { projectId } = useParams();
@@ -234,15 +235,14 @@ export default function WorkProjectDetailsPage() {
     toggleSelectedMode();
   };
 
-  async function handleSessionPayout(sessions: Tables<"timer_session">[]) {
+  async function handleSessionPayout(timeEntries: WorkTimeEntry[]) {
     if (isProcessingPayout || !activeProject) return;
-    const selectedSessionIds = sessions.map((session) => session.id);
-
+    const { timeEntries: _, ...projectData } = activeProject;
     const title = `${getLocalizedText("Auszahlung", "Payout")} (${activeProject.title}) ${formatDate(new Date(), locale)}`;
     payoutHourlyTimerProjectMutation({
-      project: activeProject,
+      project: projectData,
       title,
-      timeEntryIds: selectedSessionIds,
+      timeEntries,
     });
   }
 

@@ -38,6 +38,7 @@ export default function NewProjectModal({
       >
         <ProjectForm
           onCancel={onClose}
+          onSuccess={onClose}
           categoryIds={categoryIds}
           setCategoryIds={setCategoryIds}
           setActiveProjectId={true}
