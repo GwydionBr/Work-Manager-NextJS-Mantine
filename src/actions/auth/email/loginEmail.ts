@@ -1,5 +1,6 @@
 "use server";
 
+import { Tables } from "@/types/db.types";
 import { createClient } from "@/utils/supabase/server";
 
 interface AuthFormData {
@@ -8,10 +9,9 @@ interface AuthFormData {
   terms: boolean;
 }
 
-export async function login(authFormData: AuthFormData): Promise<{
-  success: boolean;
-  error: string | null;
-}> {
+export async function login(
+  authFormData: AuthFormData
+): Promise<Tables<"profiles">> {
   const supabase = await createClient();
 
   // type-casting here for convenience
@@ -21,11 +21,22 @@ export async function login(authFormData: AuthFormData): Promise<{
     password: authFormData.password,
   };
 
-  const { error } = await supabase.auth.signInWithPassword(data);
+  const { data: userData, error } =
+    await supabase.auth.signInWithPassword(data);
 
   if (error) {
-    return { success: false, error: error.message };
+    throw new Error(error.message);
   }
 
-  return { success: true, error: null };
+  const { data: profileData, error: profileError } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", userData.user.id)
+    .single();
+
+  if (profileError) {
+    throw new Error(profileError.message);
+  }
+
+  return profileData;
 }

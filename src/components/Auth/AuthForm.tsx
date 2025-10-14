@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "@mantine/form";
-import { useRouter } from "next/navigation";
 import { upperFirst, useToggle } from "@mantine/hooks";
 
 import {
@@ -15,15 +14,16 @@ import {
   PaperProps,
   PasswordInput,
   Stack,
-  Text,
   TextInput,
   Title,
 } from "@mantine/core";
 import GithubButton from "../SocialButtons/GithubButton";
 
-import classes from "@/app/Auth.module.css";
-
-import { login, signup, signInWithGithub } from "@/actions";
+import { signInWithGithub } from "@/actions";
+import {
+  useLoginMutation,
+  useSignupMutation,
+} from "@/utils/queries/auth/use-auth";
 
 type AuthType = "login" | "register";
 
@@ -36,32 +36,18 @@ export default function AuthenticationForm({
   ...props
 }: AuthenticationFormProps) {
   const [type, toggle] = useToggle(["login", "register"] as const);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
-
+  const { mutate: login, isPending: isLoginPending } = useLoginMutation();
+  const { mutate: signup, isPending: isSignupPending } = useSignupMutation();
   useEffect(() => {
     toggle(defaultType);
   }, [defaultType]);
 
   async function handleSubmit(values: typeof form.values) {
-    setIsLoading(true);
     if (type === "login") {
-      const { success, error } = await login(values);
-      if (success) {
-        router.push("/work");
-      } else {
-        setError(error || "An error occurred");
-      }
+      login(values);
     } else {
-      const { success, error } = await signup(values);
-      if (success) {
-        router.push("/work");
-      } else {
-        setError(error || "An error occurred");
-      }
+      signup(values);
     }
-    setIsLoading(false);
   }
 
   async function handleGithub() {
@@ -90,7 +76,7 @@ export default function AuthenticationForm({
   });
 
   return (
-    <Paper radius="md" p="xl" className={classes.authForm} {...props}>
+    <Paper radius="md" p="xl" {...props}>
       <Title
         order={2}
         ta="center"
@@ -101,11 +87,7 @@ export default function AuthenticationForm({
         Welcome to Work Manager
       </Title>
       <Group grow mb="md" mt="md">
-        <GithubButton
-          radius="xl"
-          onClick={handleGithub}
-          className={classes.socialButton}
-        >
+        <GithubButton radius="xl" onClick={handleGithub}>
           Continue with Github
         </GithubButton>
       </Group>
@@ -162,11 +144,6 @@ export default function AuthenticationForm({
               }
             />
           )}
-          {error && (
-            <Text c="red" size="sm">
-              {error}
-            </Text>
-          )}
         </Stack>
         <Group justify="space-between" mt="xl">
           <Anchor
@@ -183,9 +160,7 @@ export default function AuthenticationForm({
           <Button
             type="submit"
             radius="xl"
-            loading={isLoading}
-            disabled={isLoading}
-            className={classes.authButton}
+            loading={isLoginPending || isSignupPending}
             size="md"
             onClick={() => handleSubmit(form.values)}
           >

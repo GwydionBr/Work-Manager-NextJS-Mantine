@@ -2,24 +2,14 @@
 
 import { createClient } from "@/utils/supabase/server";
 
-import { SimpleResponse } from "@/types/action.types";
-
-export async function logout(): Promise<SimpleResponse> {
+export async function logout(): Promise<boolean> {
   const supabase = await createClient();
 
   const { error } = await supabase.auth.signOut();
 
   if (error) {
-    return {
-      success: false,
-      error: error.message,
-      data: null,
-    };
+    throw new Error(error.message);
   }
 
-  return {
-    success: true,
-    error: null,
-    data: null,
-  };
+  return true;
 }

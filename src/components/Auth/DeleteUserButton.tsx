@@ -1,24 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useDeleteUserMutation } from "@/utils/queries/auth/use-auth";
 
 import { Button, ButtonProps } from "@mantine/core";
-import { useUserStore } from "@/stores/userStore";
 import { IconTrash } from "@tabler/icons-react";
-import {
-  showActionErrorNotification,
-  showActionSuccessNotification,
-  showDeleteConfirmationModal,
-} from "@/utils/notificationFunctions";
+import { showDeleteConfirmationModal } from "@/utils/notificationFunctions";
 
 interface DeleteUserButtonProps extends ButtonProps {}
 
 export default function DeleteUserButton({ ...props }: DeleteUserButtonProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const { deleteUser } = useUserStore();
-  const router = useRouter();
+  const { mutate: deleteUser, isPending } = useDeleteUserMutation();
   const { locale } = useSettingsStore();
 
   async function handleDelete() {
@@ -28,25 +20,7 @@ export default function DeleteUserButton({ ...props }: DeleteUserButtonProps) {
         ? "Sind Sie sicher, dass Sie Ihr Konto löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
         : "Are you sure you want to delete your account? This action cannot be undone.",
       async () => {
-        setIsLoading(true);
-        const response = await deleteUser();
-        if (response) {
-          router.push("/");
-          showActionSuccessNotification(
-            locale === "de-DE"
-              ? "Konto erfolgreich gelöscht"
-              : "Account deleted successfully",
-            locale
-          );
-        } else {
-          showActionErrorNotification(
-            locale === "de-DE"
-              ? "Konto konnte nicht gelöscht werden"
-              : "Account could not be deleted",
-            locale
-          );
-        }
-        setIsLoading(false);
+        deleteUser();
       },
       locale
     );
@@ -59,8 +33,7 @@ export default function DeleteUserButton({ ...props }: DeleteUserButtonProps) {
       color="red"
       onClick={handleDelete}
       variant="filled"
-      loading={isLoading}
-      disabled={isLoading}
+      loading={isPending}
       {...props}
     >
       Delete Account
