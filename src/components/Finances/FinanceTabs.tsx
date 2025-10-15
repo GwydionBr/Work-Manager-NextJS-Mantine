@@ -5,8 +5,7 @@ import { useSettingsStore } from "@/stores/settingsStore";
 
 import { Tabs } from "@mantine/core";
 import {
-  IconReload,
-  IconBriefcase,
+  IconDeviceDesktopDollar,
   IconPresentationAnalytics,
   IconCashBanknotePlus,
   IconCashBanknote,
@@ -41,9 +40,7 @@ export default function FinanceTabs() {
         style={{ zIndex: 100 }}
       >
         <Tabs.Tab
-          leftSection={
-            <IconCashBanknote color="light-dark(blue, cyan)" />
-          }
+          leftSection={<IconCashBanknote color="light-dark(blue, cyan)" />}
           value="Single"
         >
           {locale === "de-DE" ? "Einzel" : "Single"}
@@ -56,7 +53,9 @@ export default function FinanceTabs() {
         </Tabs.Tab>
         <Tabs.Tab
           value="Projects"
-          leftSection={<IconBriefcase color="light-dark(blue, cyan)" />}
+          leftSection={
+            <IconDeviceDesktopDollar color="light-dark(blue, cyan)" />
+          }
         >
           {locale === "de-DE" ? "Projekte" : "Projects"}
         </Tabs.Tab>

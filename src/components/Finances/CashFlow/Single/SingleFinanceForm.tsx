@@ -4,7 +4,7 @@ import { useForm } from "@mantine/form";
 import { useEffect } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { TextInput, NumberInput, Select, Stack } from "@mantine/core";
+import { TextInput, Select, Stack } from "@mantine/core";
 import UpdateButton from "@/components/UI/Buttons/UpdateButton";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
 import LocaleDatePickerInput from "@/components/UI/Locale/LocaleDatePickerInput";
@@ -15,18 +15,7 @@ import { currencies } from "@/constants/settings";
 
 import { CashFlowType, Currency } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
-
-const schema = z.object({
-  title: z.string().min(2, "Name must be at least 2 characters"),
-  amount: z.number(),
-  currency: z.enum(
-    currencies.map((currency) => currency.value) as [string, ...string[]]
-  ),
-  date: z
-    .string()
-    .or(z.date())
-    .transform((val) => new Date(val)),
-});
+import CustomNumberInput from "@/components/UI/CustomNumberInput";
 
 export interface SingleFinanceFormValues {
   title: string;
@@ -50,7 +39,33 @@ export default function SingleFinanceForm({
   isLoading,
   cashFlow,
 }: SingleFinanceFormProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useSettingsStore();
+
+  const schema = z.object({
+    title: z
+      .string()
+      .min(
+        2,
+        getLocalizedText(
+          "Name muss mindestens 2 Zeichen lang sein",
+          "Name must be at least 2 characters"
+        )
+      ),
+    amount: z.number().refine((val) => val !== 0, {
+      message: getLocalizedText(
+        "Betrag kann nicht 0 sein",
+        "Amount cannot be 0"
+      ),
+    }),
+    currency: z.enum(
+      currencies.map((currency) => currency.value) as [string, ...string[]]
+    ),
+    date: z
+      .string()
+      .or(z.date())
+      .transform((val) => new Date(val)),
+  });
+
   const form = useForm({
     initialValues: {
       title: cashFlow?.title ?? "",
@@ -85,11 +100,11 @@ export default function SingleFinanceForm({
           {...form.getInputProps("title")}
           data-autofocus
         />
-        <NumberInput
+        <CustomNumberInput
           withAsterisk
           allowNegative={type === "expense"}
           allowLeadingZeros={false}
-          label={locale === "de-DE" ? "Betrag" : "Amount"}
+          label={getLocalizedText("Betrag", "Amount")}
           onChange={(value) => {
             form.setFieldValue(
               "amount",
@@ -103,15 +118,13 @@ export default function SingleFinanceForm({
         />
         <Select
           withAsterisk
-          label={locale === "de-DE" ? "Währung" : "Currency"}
-          placeholder={
-            locale === "de-DE" ? "Währung auswählen" : "Select currency"
-          }
+          label={getLocalizedText("Währung", "Currency")}
+          placeholder={getLocalizedText("Währung auswählen", "Select currency")}
           data={currencies}
           {...form.getInputProps("currency")}
         />
         <LocaleDatePickerInput
-          label={locale === "de-DE" ? "Datum" : "Date"}
+          label={getLocalizedText("Datum", "Date")}
           withAsterisk
           mb="md"
           {...form.getInputProps("date")}

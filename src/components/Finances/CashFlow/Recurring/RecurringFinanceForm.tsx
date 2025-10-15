@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useForm } from "@mantine/form";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { TextInput, Select, NumberInput, Group, Stack } from "@mantine/core";
+import { TextInput, Select, Group, Stack } from "@mantine/core";
 import UpdateButton from "@/components/UI/Buttons/UpdateButton";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
 import LocaleDatePickerInput from "@/components/UI/Locale/LocaleDatePickerInput";
@@ -19,6 +19,7 @@ import {
   FinanceInterval,
 } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
+import CustomNumberInput from "@/components/UI/CustomNumberInput";
 
 const schema = z.object({
   title: z.string().min(2, "Name must be at least 2 characters"),
@@ -66,7 +67,7 @@ export default function RecurringFinanceForm({
   isLoading,
   cashFlow,
 }: RecurringFinanceFormProps) {
-  const { locale } = useSettingsStore();
+  const { locale, getLocalizedText } = useSettingsStore();
   const form = useForm({
     initialValues: {
       title: cashFlow?.title ?? "",
@@ -110,11 +111,11 @@ export default function RecurringFinanceForm({
           label={locale === "de-DE" ? "Beschreibung" : "Description"}
           {...form.getInputProps("description")}
         />
-        <NumberInput
+        <CustomNumberInput
           withAsterisk
           allowNegative={type === "expense"}
           allowLeadingZeros={false}
-          label={locale === "de-DE" ? "Betrag" : "Amount"}
+          label={getLocalizedText("Betrag", "Amount")}
           onChange={(value) => {
             form.setFieldValue(
               "amount",
@@ -128,35 +129,33 @@ export default function RecurringFinanceForm({
         />
         <Select
           withAsterisk
-          label={locale === "de-DE" ? "Währung" : "Currency"}
-          placeholder={
-            locale === "de-DE" ? "Währung auswählen" : "Select currency"
-          }
+          label={getLocalizedText("Währung", "Currency")}
+          placeholder={getLocalizedText("Währung auswählen", "Select currency")}
           data={currencies}
           {...form.getInputProps("currency")}
         />
         <Group grow>
           <LocaleDatePickerInput
-            label={locale === "de-DE" ? "Startdatum" : "Start Date"}
+            label={getLocalizedText("Startdatum", "Start Date")}
             withAsterisk
             {...form.getInputProps("start_date")}
           />
           <LocaleDatePickerInput
-            label={locale === "de-DE" ? "Enddatum" : "End Date"}
+            label={getLocalizedText("Enddatum", "End Date")}
             clearable
             {...form.getInputProps("end_date")}
           />
         </Group>
         <Select
           withAsterisk
-          label={
-            locale === "de-DE"
-              ? "Wiederholungsintervall auswählen"
-              : "Select the repetition interval"
-          }
-          placeholder={
-            locale === "de-DE" ? "Intervall auswählen" : "Select interval"
-          }
+          label={getLocalizedText(
+            "Wiederholungsintervall auswählen",
+            "Select the repetition interval"
+          )}
+          placeholder={getLocalizedText(
+            "Intervall auswählen",
+            "Select interval"
+          )}
           data={financeIntervals}
           {...form.getInputProps("interval")}
           mb="md"
