@@ -52,6 +52,7 @@ import {
   UpdateWorkProject,
   InsertWorkProject,
 } from "@/types/work.types";
+import CustomNumberInput from "@/components/UI/CustomNumberInput";
 
 interface ProjectFormProps {
   project?: WorkProject;
@@ -322,7 +323,7 @@ export default function ProjectForm({
 
             <Collapse in={!isHobby}>
               <Group align="flex-end">
-                <NumberInput
+                <CustomNumberInput
                   allowLeadingZeros={false}
                   allowNegative={false}
                   withAsterisk

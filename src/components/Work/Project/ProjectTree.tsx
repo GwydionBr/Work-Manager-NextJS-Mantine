@@ -1,6 +1,7 @@
 "use client";
 
-import { useViewportSize } from "@mantine/hooks";
+import { useState } from "react";
+import { useResizeObserver, useViewportSize } from "@mantine/hooks";
 import { useRouter, usePathname, useParams } from "next/navigation";
 
 import { NodeRendererProps, Tree } from "react-arborist";
@@ -17,9 +18,10 @@ import { ProjectTreeItem } from "@/types/work.types";
 import { findNodeById } from "@/utils/treeHelperFunctions";
 import { useWorkTree } from "@/hooks/useWorkTree";
 
-export default function ProjectTree() {
+export default function ProjectTree({ search }: { search: string }) {
   const { height } = useViewportSize();
   const { projectId } = useParams() as { projectId: string | undefined };
+  const [ref, rect] = useResizeObserver();
 
   const { projectTree, isPending, moveProject, moveFolder } = useWorkTree();
 
@@ -51,18 +53,22 @@ export default function ProjectTree() {
   }
 
   return (
-    <Box w="100%" h="100%">
+    <Box w="100%" h="100%" ref={ref}>
       <Tree<ProjectTreeItem>
         data={projectTree}
         openByDefault={false}
-        width={400}
+        width={rect.width}
         height={height - 175}
+        paddingTop={5}
         indent={24}
         rowHeight={30}
-        paddingTop={10}
+        searchTerm={search}
         selection={projectId ?? undefined}
         onDelete={(nodes) => {
           console.log(nodes.nodes.map((node) => node.data.name));
+        }}
+        onRename={(node) => {
+          console.log(node.name);
         }}
         onSelect={(nodes) => {
           if (nodes.length > 0) {
@@ -84,6 +90,11 @@ export default function ProjectTree() {
 
 function Node({ node, style, dragHandle }: NodeRendererProps<ProjectTreeItem>) {
   const pathname = usePathname();
+  const isEditing = node.isEditing;
+
+  if (isEditing) {
+    console.log(node.id);
+  }
 
   const isSelected = pathname.includes(node.id);
   const willReceiveDrop = node.willReceiveDrop;
@@ -122,7 +133,14 @@ function Node({ node, style, dragHandle }: NodeRendererProps<ProjectTreeItem>) {
       ref={dragHandle}
       onClick={handleClick}
     >
-      <Group gap="xs" style={{ flex: 1 }}>
+      <Group
+        gap="xs"
+        style={{
+          flex: 1,
+          whiteSpace: "nowrap",
+        }}
+        wrap="nowrap"
+      >
         {node.isLeaf ? (
           isSelected ? (
             <IconFileFilled
@@ -152,7 +170,7 @@ function Node({ node, style, dragHandle }: NodeRendererProps<ProjectTreeItem>) {
           />
         )}
         <Group>
-          <Text size="md" style={{ flex: 1 }}>
+          <Text size="md" style={{ flex: 1, textOverflow: "ellipsis" }}>
             {node.data.name}
           </Text>
           {!node.isOpen &&

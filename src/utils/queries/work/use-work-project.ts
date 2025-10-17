@@ -2,7 +2,6 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useRouter } from "next/navigation";
 
 import { getAllWorkProjects } from "@/actions/work/workProject/get-all-work-projects";
 import { updateWorkProject } from "@/actions/work/workProject/update-work-project";
@@ -13,7 +12,6 @@ import {
   showActionErrorNotification,
   showActionSuccessNotification,
 } from "@/utils/notificationFunctions";
-import paths from "@/utils/paths";
 
 import { CompleteWorkProject, WorkProject } from "@/types/work.types";
 import { Tables } from "@/types/db.types";
@@ -123,7 +121,6 @@ export const useCreateWorkProjectMutation = ({
   ...props
 }: CustomMutationProps<Tables<"timer_project">> = {}) => {
   const { locale, getLocalizedText } = useSettingsStore();
-  const router = useRouter();
   return useMutation({
     mutationKey: ["createWorkProject"],
     mutationFn: createWorkProject,
@@ -147,7 +144,6 @@ export const useCreateWorkProjectMutation = ({
       }
       const { categories, ...project } = data;
       props.onSuccess?.(project);
-      router.push(paths.work.workDetailsPage(data.id));
     },
     onError: (error, variables, onMutateResult, context) => {
       if (props.showNotification !== false) {

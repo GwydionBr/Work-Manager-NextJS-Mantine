@@ -42,7 +42,6 @@ import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import { IconClockPlus } from "@tabler/icons-react";
 
 import { formatDate } from "@/utils/formatFunctions";
-import { Tables } from "@/types/db.types";
 import { WorkTimeEntry } from "@/types/work.types";
 
 export default function WorkProjectDetailsPage() {

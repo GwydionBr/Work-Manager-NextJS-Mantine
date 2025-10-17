@@ -2,10 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useRouter } from "next/navigation";
 
 import { Modal, useModalsStack } from "@mantine/core";
 import ProjectForm from "./ProjectForm";
 import FinanceCategoryForm from "@/components/Finances/Category/FinanceCategoryForm";
+
+import paths from "@/utils/paths";
+import { Tables } from "@/types/db.types";
 
 interface NewProjectModalProps {
   opened: boolean;
@@ -16,6 +20,7 @@ export default function NewProjectModal({
   opened,
   onClose,
 }: NewProjectModalProps) {
+  const router = useRouter();
   const { getLocalizedText } = useSettingsStore();
   const stack = useModalsStack(["project-form", "category-form"]);
   const [categoryIds, setCategoryIds] = useState<string[]>([]);
@@ -28,6 +33,12 @@ export default function NewProjectModal({
     }
   }, [opened]);
 
+  const handleSuccess = (project: Tables<"timer_project">) => {
+    onClose();
+    setCategoryIds([]);
+    router.push(paths.work.workDetailsPage(project.id));
+  };
+
   return (
     <Modal.Stack>
       <Modal
@@ -38,7 +49,7 @@ export default function NewProjectModal({
       >
         <ProjectForm
           onCancel={onClose}
-          onSuccess={onClose}
+          onSuccess={handleSuccess}
           categoryIds={categoryIds}
           setCategoryIds={setCategoryIds}
           setActiveProjectId={true}
