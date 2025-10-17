@@ -148,12 +148,3 @@
   border-top: 1px solid
     light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-2));
 }
-
-.projectCategoriesRow {
-  border-radius: var(--mantine-radius-md);
-  margin: 1px;
-  padding: 4px;
-  background-color: var(--mantine-color-body);
-  border: 2px solid
-    light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
-}

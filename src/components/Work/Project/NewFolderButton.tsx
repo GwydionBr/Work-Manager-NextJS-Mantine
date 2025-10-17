@@ -84,10 +84,9 @@ export default function NewFolderButton() {
         <ActionIcon
           aria-label="Add folder"
           onClick={open}
-          size="sm"
-          variant="transparent"
+          variant="subtle"
         >
-          <IconFolderPlus />
+          <IconFolderPlus size={20} />
         </ActionIcon>
       </DelayedTooltip>
     </Group>

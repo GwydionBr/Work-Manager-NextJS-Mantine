@@ -14,6 +14,7 @@ import {
   Skeleton,
   Stack,
   Text,
+  TextInput,
   Transition,
 } from "@mantine/core";
 import NewProjectModal from "@/components/Work/Project/NewProjectModal";
@@ -21,7 +22,11 @@ import ProjectTree from "@/components/Work/Project/ProjectTree";
 import NewFolderButton from "@/components/Work/Project/NewFolderButton";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 import { SettingsTab } from "@/components/Settings/SettingsModal";
-import { IconArrowBarRight, IconFilePlus } from "@tabler/icons-react";
+import {
+  IconArrowBarRight,
+  IconFilePlus,
+  IconSearch,
+} from "@tabler/icons-react";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 
 import classes from "./Navbar.module.css";
@@ -43,6 +48,7 @@ export default function ProjectNavbar() {
   const router = useRouter();
   const pathname = usePathname();
   const [isOverview, setIsOverview] = useState<boolean>(false);
+  const [seachTree, setSeachTree] = useState<string>("");
   const [
     isProjectModalOpen,
     { open: openProjectModal, close: closeProjectModal },
@@ -191,24 +197,39 @@ export default function ProjectNavbar() {
         enterDelay={200}
       >
         {(styles) => (
-          <Group
-            className={classes.projectCategoriesRow}
-            justify="flex-end"
-            align="center"
-            gap={10}
-            px={10}
-            style={styles}
-          >
+          <Group wrap="nowrap" gap={5} align="center" style={styles}>
+            <TextInput
+              w="100%"
+              p={5}
+              radius={10}
+              leftSection={<IconSearch size={16} />}
+              placeholder="Search"
+              value={seachTree}
+              onChange={(e) => setSeachTree(e.target.value)}
+            />
             {!isProjectsPending && (
-              <DelayedTooltip
-                label={locale === "de-DE" ? "Neues Projekt" : "New Project"}
+              <Group
+              h={35}
+                wrap="nowrap"
+                bg="var(--mantine-color-body)"
+                gap={5}
+                mr={5}
+                style={{
+                  borderRadius: "var(--mantine-radius-md)",
+                  border:
+                    "1px solid light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-7))",
+                }}
               >
-                <ActionIcon onClick={openProjectModal} variant="subtle">
-                  <IconFilePlus size={20} />
-                </ActionIcon>
-              </DelayedTooltip>
+                <DelayedTooltip
+                  label={locale === "de-DE" ? "Neues Projekt" : "New Project"}
+                >
+                  <ActionIcon onClick={openProjectModal} variant="subtle">
+                    <IconFilePlus size={20} />
+                  </ActionIcon>
+                </DelayedTooltip>
+                <NewFolderButton />
+              </Group>
             )}
-            {!isProjectsPending && <NewFolderButton />}
           </Group>
         )}
       </Transition>
@@ -228,7 +249,7 @@ export default function ProjectNavbar() {
                 <Skeleton height={25} w={160} mx="md" />
               </Stack>
             ) : (
-              <ProjectTree />
+              <ProjectTree search={seachTree} />
             )}
           </ScrollArea>
         )}
