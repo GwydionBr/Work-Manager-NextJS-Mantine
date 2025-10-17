@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useResizeObserver, useViewportSize } from "@mantine/hooks";
 import { useRouter, usePathname, useParams } from "next/navigation";
 
@@ -45,9 +44,10 @@ export default function ProjectTree({ search }: { search: string }) {
 
   if (isPending) {
     return (
-      <Stack>
-        <Skeleton height={25} w={160} mx="md" />
-        <Skeleton height={25} w={160} mx="md" />
+      <Stack pt={10} gap="xs">
+        <Skeleton height={25} w={200} mx="md" />
+        <Skeleton height={25} w={200} mx="md" />
+        <Skeleton height={25} w={200} mx="md" />
       </Stack>
     );
   }
@@ -58,7 +58,7 @@ export default function ProjectTree({ search }: { search: string }) {
         data={projectTree}
         openByDefault={false}
         width={rect.width}
-        height={height - 175}
+        height={height - 200}
         paddingTop={5}
         indent={24}
         rowHeight={30}

@@ -11,7 +11,6 @@ import {
   Box,
   Group,
   ScrollArea,
-  Skeleton,
   Stack,
   Text,
   TextInput,
@@ -26,6 +25,7 @@ import {
   IconArrowBarRight,
   IconFilePlus,
   IconSearch,
+  IconX,
 } from "@tabler/icons-react";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 
@@ -33,6 +33,7 @@ import classes from "./Navbar.module.css";
 import Shortcut from "../UI/Shortcut";
 import PlusActionIcon from "../UI/ActionIcons/PlusActionIcon";
 import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
+import XActionIcon from "../UI/ActionIcons/XActionIcon";
 
 export default function ProjectNavbar() {
   const { setActiveProjectId } = useWorkStore();
@@ -40,6 +41,7 @@ export default function ProjectNavbar() {
 
   const {
     locale,
+    getLocalizedText,
     setSelectedTab,
     setIsModalOpen,
     isWorkNavbarOpen,
@@ -200,16 +202,39 @@ export default function ProjectNavbar() {
           <Group wrap="nowrap" gap={5} align="center" style={styles}>
             <TextInput
               w="100%"
+              styles={{
+                input: {
+                  borderRadius: "var(--mantine-radius-md)",
+                  backgroundColor: "var(--mantine-color-body)",
+                  border:
+                    "1px solid light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2))",
+                },
+              }}
               p={5}
               radius={10}
               leftSection={<IconSearch size={16} />}
-              placeholder="Search"
+              rightSection={
+                seachTree && (
+                  <XActionIcon
+                    onClick={() => setSeachTree("")}
+                    tooltipLabel={getLocalizedText(
+                      "Projekt Suche löschen",
+                      "Clear Project search"
+                    )}
+                    iconSize={16}
+                    variant="transparent"
+                    iconColor="var(--mantine-color-gray-6)"
+                  />
+                )
+              }
+              placeholder={getLocalizedText("Suche Projekt", "Search Project")}
+              aria-label={getLocalizedText("Suche Projekt", "Search Project")}
               value={seachTree}
               onChange={(e) => setSeachTree(e.target.value)}
             />
             {!isProjectsPending && (
               <Group
-              h={35}
+                h={35}
                 wrap="nowrap"
                 bg="var(--mantine-color-body)"
                 gap={5}
@@ -217,7 +242,7 @@ export default function ProjectNavbar() {
                 style={{
                   borderRadius: "var(--mantine-radius-md)",
                   border:
-                    "1px solid light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-7))",
+                    "1px solid light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2))",
                 }}
               >
                 <DelayedTooltip
@@ -242,15 +267,7 @@ export default function ProjectNavbar() {
       >
         {(styles) => (
           <ScrollArea h="100%" w="100%" style={styles}>
-            {isProjectsPending ? (
-              <Stack pt="md">
-                <Skeleton height={25} w={160} mx="md" />
-                <Skeleton height={25} w={160} mx="md" />
-                <Skeleton height={25} w={160} mx="md" />
-              </Stack>
-            ) : (
-              <ProjectTree search={seachTree} />
-            )}
+            <ProjectTree search={seachTree} />
           </ScrollArea>
         )}
       </Transition>
