@@ -16,6 +16,7 @@ import {
   UpdateWorkProject,
   UpdateWorkFolder,
 } from "@/types/work.types";
+import { createNewTree } from "@/utils/newTreeHelperFunctions";
 
 export const useWorkTree = () => {
   const { data: projects = [], isPending: isProjectsPending } =
@@ -39,6 +40,11 @@ export const useWorkTree = () => {
 
   const projectTree = useMemo(() => {
     const { tree } = createTree(cleanedProjects, folders);
+    return tree;
+  }, [projects, folders]);
+
+  const newProjectTree = useMemo(() => {
+    const { tree } = createNewTree(cleanedProjects, folders);
     return tree;
   }, [projects, folders]);
 
@@ -118,6 +124,7 @@ export const useWorkTree = () => {
 
   return {
     projectTree,
+    newProjectTree,
     isPending: isProjectsPending || isFoldersPending,
     moveFolder,
     moveProject,

@@ -2,7 +2,14 @@
 
 import { useDisclosure } from "@mantine/hooks";
 
-import { Modal, TextInput, Group, Stack, ActionIcon } from "@mantine/core";
+import {
+  Modal,
+  TextInput,
+  Group,
+  Stack,
+  ActionIcon,
+  ActionIconProps,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
@@ -17,7 +24,7 @@ const folderSchema = z.object({
   description: z.string().optional(),
 });
 
-export default function NewFolderButton() {
+export default function NewFolderButton({ ...props }: ActionIconProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const { mutate: createFolderMutation, isPending: isCreatingFolder } =
     useCreateWorkFolderMutation({
@@ -85,6 +92,7 @@ export default function NewFolderButton() {
           aria-label="Add folder"
           onClick={open}
           variant="subtle"
+          {...props}
         >
           <IconFolderPlus size={20} />
         </ActionIcon>

@@ -5,6 +5,8 @@ import { useRouter, usePathname, useParams } from "next/navigation";
 
 import { NodeRendererProps, Tree } from "react-arborist";
 import {
+  IconClipboardList,
+  IconClipboardListFilled,
   IconFile,
   IconFileFilled,
   IconFolderFilled,
@@ -58,7 +60,7 @@ export default function ProjectTree({ search }: { search: string }) {
         data={projectTree}
         openByDefault={false}
         width={rect.width}
-        height={height - 200}
+        height={height - 190}
         paddingTop={5}
         indent={24}
         rowHeight={30}
@@ -143,12 +145,12 @@ function Node({ node, style, dragHandle }: NodeRendererProps<ProjectTreeItem>) {
       >
         {node.isLeaf ? (
           isSelected ? (
-            <IconFileFilled
+            <IconClipboardListFilled
               color="light-dark(var(--mantine-color-green-8), var(--mantine-color-green-6))"
               size={22}
             />
           ) : (
-            <IconFile
+            <IconClipboardList
               color="light-dark(var(--mantine-color-gray-6), var(--mantine-color-gray-5))"
               size={22}
             />

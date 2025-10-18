@@ -9,6 +9,7 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import {
   ActionIcon,
   Box,
+  Divider,
   Group,
   ScrollArea,
   Stack,
@@ -25,7 +26,6 @@ import {
   IconArrowBarRight,
   IconFilePlus,
   IconSearch,
-  IconX,
 } from "@tabler/icons-react";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 
@@ -237,7 +237,7 @@ export default function ProjectNavbar() {
                 h={35}
                 wrap="nowrap"
                 bg="var(--mantine-color-body)"
-                gap={5}
+                gap={0}
                 mr={5}
                 style={{
                   borderRadius: "var(--mantine-radius-md)",
@@ -248,11 +248,16 @@ export default function ProjectNavbar() {
                 <DelayedTooltip
                   label={locale === "de-DE" ? "Neues Projekt" : "New Project"}
                 >
-                  <ActionIcon onClick={openProjectModal} variant="subtle">
+                  <ActionIcon
+                    h={35}
+                    onClick={openProjectModal}
+                    variant="subtle"
+                  >
                     <IconFilePlus size={20} />
                   </ActionIcon>
                 </DelayedTooltip>
-                <NewFolderButton />
+                <Divider orientation="vertical" />
+                <NewFolderButton h={35} />
               </Group>
             )}
           </Group>
@@ -268,6 +273,7 @@ export default function ProjectNavbar() {
         {(styles) => (
           <ScrollArea h="100%" w="100%" style={styles}>
             <ProjectTree search={seachTree} />
+            {/* <NewProjectTree /> */}
           </ScrollArea>
         )}
       </Transition>

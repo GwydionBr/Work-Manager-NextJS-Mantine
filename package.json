@@ -43,6 +43,7 @@
     "next-deploy-notifications": "^0.1.6",
     "react": "19.0.0",
     "react-arborist": "^3.4.3",
+    "react-complex-tree": "^2.6.1",
     "react-country-flag": "^3.1.0",
     "react-dom": "19.0.0",
     "recharts": "^2.15.3",
