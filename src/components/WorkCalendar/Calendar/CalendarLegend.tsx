@@ -65,7 +65,7 @@ export default function CalendarLegend({
             ))}
           </Group>
         ) : (
-          <Text size="sm" c="dimmed">
+          <Text ta="center" size="sm" c="dimmed">
             {locale === "de-DE"
               ? "Keine Einträge gefunden"
               : "No entries found"}

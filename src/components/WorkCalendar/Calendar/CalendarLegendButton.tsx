@@ -19,7 +19,9 @@ export default function CalendarLegendButton({ p }: CalendarLegendButtonProps) {
   );
   const [isOpen, { open, close }] = useDisclosure(false);
 
-  const { mutate: updateProjectMutation } = useUpdateWorkProjectMutation();
+  const { mutate: updateProjectMutation } = useUpdateWorkProjectMutation({
+    showNotification: false,
+  });
   const ref = useClickOutside(() => {
     close();
   });
