@@ -6,6 +6,7 @@ import { getAllWorkTimeEntries } from "@/actions/work/workTimeEntry/get-all-work
 import { createWorkTimeEntry } from "@/actions/work/workTimeEntry/create-work-time-entry";
 import { updateWorkTimeEntries } from "@/actions/work/workTimeEntry/update-work-time-entries";
 import { deleteWorkTimeEntries } from "@/actions/work/workTimeEntry/delete-work-time-entries";
+import { getWorkTimeEntriesByProjectId } from "@/actions/work/workTimeEntry/get-work-time-entries-by-project-id";
 import { CustomMutationProps } from "@/types/query.types";
 import {
   CompleteWorkProject,
@@ -25,6 +26,17 @@ export const useWorkTimeEntryQuery = () => {
   return useQuery({
     queryKey: ["workTimeEntries"],
     queryFn: getAllWorkTimeEntries,
+  });
+};
+
+export const useWorkTimeEntryByProjectId = ({
+  projectId,
+}: {
+  projectId: string;
+}) => {
+  return useQuery({
+    queryKey: ["workTimeEntries", projectId],
+    queryFn: () => getWorkTimeEntriesByProjectId({ projectId }),
   });
 };
 

@@ -9,6 +9,7 @@ import { useProjectFiltering } from "@/hooks/useProjectFiltering";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { usePayoutHourlyTimerProjectMutation } from "@/utils/queries/finances/use-payout";
 import { useWorkStore } from "@/stores/workManagerStore";
+import { useWorkTimeEntryByProjectId } from "@/utils/queries/work/use-work-time_entry";
 
 import {
   Box,
@@ -48,15 +49,18 @@ export default function WorkProjectDetailsPage() {
   const { projectId } = useParams();
   const { setActiveProjectId } = useWorkStore();
 
-  const { data: activeProject } = useWorkProjectByIdQuery({
+  const { data: project } = useWorkProjectByIdQuery({
+    projectId: projectId as string,
+  });
+  const { data: projectTimeEntries } = useWorkTimeEntryByProjectId({
     projectId: projectId as string,
   });
 
   useEffect(() => {
-    if (activeProject?.id) {
-      setActiveProjectId(activeProject.id);
+    if (project?.id) {
+      setActiveProjectId(project.id);
     }
-  }, [activeProject?.id]);
+  }, [project?.id]);
 
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
     null
@@ -106,7 +110,7 @@ export default function WorkProjectDetailsPage() {
 
   // Use the custom hook for filtering logic
   const { timeFilteredTimeEntries } = useProjectFiltering(
-    activeProject?.timeEntries ?? [],
+    projectTimeEntries ?? [],
     filterTimeSpan
   );
 
@@ -178,7 +182,7 @@ export default function WorkProjectDetailsPage() {
     [timeFilteredTimeEntries, lastSelectedIndex]
   );
 
-  if (!activeProject) {
+  if (!project || !projectTimeEntries) {
     return (
       <Stack align="center" w="100%" px="xl">
         <Header
@@ -189,25 +193,21 @@ export default function WorkProjectDetailsPage() {
     );
   }
 
-  const salary = formatMoney(
-    activeProject.salary,
-    activeProject.currency,
-    locale
-  );
+  const salary = formatMoney(project.salary, project.currency, locale);
 
   // Calculate total active seconds from all sessions
-  const totalActiveSeconds = activeProject.timeEntries.reduce(
+  const totalActiveSeconds = projectTimeEntries.reduce(
     (total, timeEntry) => total + timeEntry.active_seconds,
     0
   );
 
   const hourlySalary = formatMoney(
-    activeProject.hourly_payment
-      ? activeProject.salary
+    project.hourly_payment
+      ? project.salary
       : totalActiveSeconds > 0
-        ? (activeProject.salary / totalActiveSeconds) * 3600
+        ? (project.salary / totalActiveSeconds) * 3600
         : 0,
-    activeProject.currency,
+    project.currency,
     locale
   );
 
@@ -237,11 +237,10 @@ export default function WorkProjectDetailsPage() {
   };
 
   async function handleSessionPayout(timeEntries: WorkTimeEntry[]) {
-    if (isProcessingPayout || !activeProject) return;
-    const { timeEntries: _, ...projectData } = activeProject;
-    const title = `${getLocalizedText("Auszahlung", "Payout")} (${activeProject.title}) ${formatDate(new Date(), locale)}`;
+    if (isProcessingPayout || !project) return;
+    const title = `${getLocalizedText("Auszahlung", "Payout")} (${project.title}) ${formatDate(new Date(), locale)}`;
     payoutHourlyTimerProjectMutation({
-      project: projectData,
+      project,
       title,
       timeEntries,
     });
@@ -251,32 +250,32 @@ export default function WorkProjectDetailsPage() {
     (timeEntry) => !timeEntry.single_cash_flow_id
   );
 
-  const isPayoutAvailable = activeProject.hourly_payment
+  const isPayoutAvailable = project.hourly_payment
     ? timeFilteredTimeEntries.reduce(
         (acc, timeEntry) =>
           acc + timeEntry.salary * (timeEntry.active_seconds / 3600),
         0
       ) > 0
-    : activeProject.salary > activeProject.total_payout;
+    : project.salary > project.total_payout;
 
   return (
     <ScrollArea h="100vh" type="scroll">
       <Stack align="center" w="100%" px="xl">
         <Collapse in={!analysisOpened} transitionDuration={300} w="100%">
           <Header
-            headerTitle={activeProject.title}
+            headerTitle={project.title}
             leftSalary={
-              activeProject.hourly_payment
+              project.hourly_payment
                 ? undefined
-                : activeProject.salary === 0
+                : project.salary === 0
                   ? "Hobby"
                   : salary
             }
-            rightSalary={activeProject.salary === 0 ? undefined : hourlySalary}
-            description={activeProject.description ?? undefined}
+            rightSalary={project.salary === 0 ? undefined : hourlySalary}
+            description={project.description ?? undefined}
             rightButton={
               <Group>
-                {activeProject.timeEntries.length > 0 && (
+                {projectTimeEntries.length > 0 && (
                   <AnalysisActionIcon
                     onClick={openAnalysis}
                     tooltipLabel={getLocalizedText("Analyse", "Analysis")}
@@ -337,7 +336,7 @@ export default function WorkProjectDetailsPage() {
               <NewSessionModal
                 opened={sessionFormOpened}
                 onClose={closeSessionForm}
-                project={activeProject}
+                project={project}
               />
               <SelectActionIcon
                 disabled={selectableSessions.length === 0}
@@ -365,7 +364,7 @@ export default function WorkProjectDetailsPage() {
                     timeSpan={filterTimeSpan}
                     onTimeSpanChange={setFilterTimeSpan}
                     sessions={timeFilteredTimeEntries}
-                    project={activeProject}
+                    project={project}
                     isProcessingPayout={isProcessingPayout}
                     onSelectAll={selectAllTimeEntries}
                     handleSessionPayoutClick={handleSessionPayout}
@@ -373,14 +372,17 @@ export default function WorkProjectDetailsPage() {
                 </Collapse>
                 <Collapse in={payoutOpened}>
                   <Group>
-                    {activeProject.hourly_payment ? (
+                    {project.hourly_payment ? (
                       <HourlyPayoutCard
-                        project={activeProject}
+                        project={{
+                          ...project,
+                          timeEntries: projectTimeEntries,
+                        }}
                         handlePayoutClick={handleSessionPayout}
                         isProcessing={isProcessingPayout}
                       />
                     ) : (
-                      <ProjectPayoutCard project={activeProject} />
+                      <ProjectPayoutCard project={project} />
                     )}
                   </Group>
                 </Collapse>
@@ -397,7 +399,7 @@ export default function WorkProjectDetailsPage() {
               </Grid.Col>
             </Grid>
           </Stack>
-          {activeProject?.timeEntries.length > 0 ? (
+          {projectTimeEntries.length > 0 ? (
             <Box w="100%">
               {/* Session Hierarchy */}
               {timeFilteredTimeEntries.length > 0 ? (
@@ -421,7 +423,7 @@ export default function WorkProjectDetailsPage() {
                         .map((timeEntry) => timeEntry.id)
                     )
                   }
-                  project={activeProject}
+                  project={project}
                   isOverview={false}
                 />
               ) : (
@@ -448,9 +450,9 @@ export default function WorkProjectDetailsPage() {
         </Collapse>
         <Collapse in={analysisOpened} w="100%">
           <WorkAnalysis
-            sessions={activeProject.timeEntries}
+            sessions={projectTimeEntries}
             isOverview={false}
-            project={activeProject}
+            project={project}
             onClose={() => closeAnalysis()}
           />
         </Collapse>

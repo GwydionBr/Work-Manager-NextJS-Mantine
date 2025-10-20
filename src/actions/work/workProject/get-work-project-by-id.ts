@@ -1,18 +1,18 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { CompleteWorkProject } from "@/types/work.types";
+import { WorkProject } from "@/types/work.types";
 
 export async function getWorkProjectById({
   projectId,
 }: {
   projectId: string;
-}): Promise<CompleteWorkProject> {
+}): Promise<WorkProject> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("timer_project")
     .select(
-      `* , categories:timer_project_category(finance_category:finance_category_id(*)), time_entries:timer_session(*)`
+      `* , categories:timer_project_category(finance_category:finance_category_id(*))`
     )
     .eq("id", projectId)
     .single();
@@ -23,6 +23,5 @@ export async function getWorkProjectById({
   return {
     ...data,
     categories: data.categories.map((category) => category.finance_category),
-    timeEntries: data.time_entries,
   };
 }

@@ -7,7 +7,7 @@ import Layout from "@/components/AppShell/AppShell";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 2 * 60 * 1000,
+      staleTime: 10 * 1000,
       gcTime: Infinity,
     },
   },
