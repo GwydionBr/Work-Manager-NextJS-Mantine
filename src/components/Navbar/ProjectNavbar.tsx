@@ -40,7 +40,6 @@ export default function ProjectNavbar() {
   const { isPending: isProjectsPending } = useWorkProjectQuery();
 
   const {
-    locale,
     getLocalizedText,
     setSelectedTab,
     setIsModalOpen,
@@ -98,7 +97,7 @@ export default function ProjectNavbar() {
         >
           {(styles) => (
             <Text style={styles}>
-              {locale === "de-DE" ? "Projekte" : "Projects"}
+              {getLocalizedText("Projekte", "Projects")}
             </Text>
           )}
         </Transition>
@@ -113,12 +112,10 @@ export default function ProjectNavbar() {
               {(styles) => (
                 <Group gap={8} style={styles}>
                   <AdjustmentActionIcon
-                    aria-label="Adjust project settings"
-                    tooltipLabel={
-                      locale === "de-DE"
-                        ? "Projekteinstellungen anpassen"
-                        : "Adjust project settings"
-                    }
+                    tooltipLabel={getLocalizedText(
+                      "Projekteinstellungen anpassen",
+                      "Adjust project settings"
+                    )}
                     size="md"
                     iconSize={20}
                     onClick={() => {
@@ -128,9 +125,10 @@ export default function ProjectNavbar() {
                   />
                   <PlusActionIcon
                     onClick={openProjectModal}
-                    tooltipLabel={
-                      locale === "de-DE" ? "Neues Projekt" : "New Project"
-                    }
+                    tooltipLabel={getLocalizedText(
+                      "Neues Projekt",
+                      "New Project"
+                    )}
                   />
                 </Group>
               )}
@@ -145,17 +143,16 @@ export default function ProjectNavbar() {
                 <Stack gap={8} style={styles} align="center" mt={10}>
                   <PlusActionIcon
                     onClick={openProjectModal}
-                    tooltipLabel={
-                      locale === "de-DE" ? "Neues Projekt" : "New Project"
-                    }
+                    tooltipLabel={getLocalizedText(
+                      "Neues Projekt",
+                      "New Project"
+                    )}
                   />
                   <AdjustmentActionIcon
-                    aria-label="Adjust project settings"
-                    tooltipLabel={
-                      locale === "de-DE"
-                        ? "Projekteinstellungen anpassen"
-                        : "Adjust project settings"
-                    }
+                    tooltipLabel={getLocalizedText(
+                      "Projekteinstellungen anpassen",
+                      "Adjust project settings"
+                    )}
                     size="md"
                     iconSize={20}
                     onClick={() => {
@@ -188,7 +185,7 @@ export default function ProjectNavbar() {
               }
             }}
           >
-            {locale === "de-DE" ? "Übersicht" : "Overview"}
+            {getLocalizedText("Übersicht", "Overview")}
           </Box>
         )}
       </Transition>
@@ -246,7 +243,7 @@ export default function ProjectNavbar() {
                 }}
               >
                 <DelayedTooltip
-                  label={locale === "de-DE" ? "Neues Projekt" : "New Project"}
+                  label={getLocalizedText("Neues Projekt", "New Project")}
                 >
                   <ActionIcon
                     h={35}
@@ -296,14 +293,16 @@ export default function ProjectNavbar() {
         <DelayedTooltip
           label={
             <Stack align="center">
-              <Text>Toggle Navbar</Text>
+              <Text>
+                {getLocalizedText("Navbar umschalten", "Toggle navbar")}
+              </Text>
               <Shortcut keys={["mod", "J"]} />
             </Stack>
           }
         >
           <ActionIcon
             onClick={() => toggleWorkNavbar()}
-            aria-label="Toggle navbar"
+            aria-label={getLocalizedText("Navbar umschalten", "Toggle navbar")}
             variant="light"
           >
             <IconArrowBarRight

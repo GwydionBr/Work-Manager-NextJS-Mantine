@@ -258,6 +258,11 @@ export default function FinanceProjectCard({
             <Text size="sm" fw={700}>
               {project.title}
             </Text>
+            {project.description && (
+              <Text size="sm" c="dimmed">
+                {project.description}
+              </Text>
+            )}
           </Group>
 
           <Group gap="md" wrap="wrap" flex={2}>

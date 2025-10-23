@@ -18,6 +18,13 @@ CREATE SCHEMA IF NOT EXISTS "drizzle";
 ALTER SCHEMA "drizzle" OWNER TO "postgres";
 
 
+CREATE EXTENSION IF NOT EXISTS "pg_net" WITH SCHEMA "extensions";
+
+
+
+
+
+
 CREATE EXTENSION IF NOT EXISTS "pgsodium";
 
 
@@ -1846,10 +1853,19 @@ ALTER TABLE "public"."timer_session" ENABLE ROW LEVEL SECURITY;
 ALTER PUBLICATION "supabase_realtime" OWNER TO "postgres";
 
 
+
+
+
 GRANT USAGE ON SCHEMA "public" TO "postgres";
 GRANT USAGE ON SCHEMA "public" TO "anon";
 GRANT USAGE ON SCHEMA "public" TO "authenticated";
 GRANT USAGE ON SCHEMA "public" TO "service_role";
+
+
+
+
+
+
 
 
 
@@ -2295,24 +2311,20 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TAB
 
 
 RESET ALL;
-CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 
+--
+-- Dumped schema changes for auth and storage
+--
 
-  create policy "Anyone can upload an avatar."
-  on "storage"."objects"
-  as permissive
-  for insert
-  to public
-with check ((bucket_id = 'avatars'::text));
+CREATE OR REPLACE TRIGGER "on_auth_user_created" AFTER INSERT ON "auth"."users" FOR EACH ROW EXECUTE FUNCTION "public"."handle_new_user"();
 
 
 
-  create policy "Avatar images are publicly accessible."
-  on "storage"."objects"
-  as permissive
-  for select
-  to public
-using ((bucket_id = 'avatars'::text));
+CREATE POLICY "Anyone can upload an avatar." ON "storage"."objects" FOR INSERT WITH CHECK (("bucket_id" = 'avatars'::"text"));
+
+
+
+CREATE POLICY "Avatar images are publicly accessible." ON "storage"."objects" FOR SELECT USING (("bucket_id" = 'avatars'::"text"));
 
 
 

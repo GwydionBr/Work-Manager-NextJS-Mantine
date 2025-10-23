@@ -30,9 +30,11 @@ import {
 import { useFinanceClientQuery } from "@/utils/queries/finances/use-finance-client";
 import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
 import { Tables } from "@/types/db.types";
+import CustomNumberInput from "@/components/UI/CustomNumberInput";
 
 const projectSchema = z.object({
   title: z.string().min(1, "Title is required"),
+  description: z.string(),
   currency: z.enum(
     currencies.map((currency) => currency.value) as [Currency, ...Currency[]]
   ),
@@ -63,7 +65,7 @@ export default function FinanceProjectForm({
   onClientChange,
   onCategoryChange,
 }: FinanceProjectFormProps) {
-  const { locale, defaultFinanceCurrency } = useSettingsStore();
+  const { defaultFinanceCurrency, getLocalizedText } = useSettingsStore();
   const {
     mutate: addFinanceProjectMutation,
     isPending: isAddingFinanceProject,
@@ -78,6 +80,7 @@ export default function FinanceProjectForm({
     initialValues: financeProject
       ? {
           title: financeProject.title,
+          description: financeProject.description || "",
           currency: financeProject.currency,
           start_amount: financeProject.start_amount,
           finance_category_ids: financeProject.categories.map(
@@ -88,6 +91,7 @@ export default function FinanceProjectForm({
         }
       : {
           title: "",
+          description: "",
           currency: defaultFinanceCurrency,
           start_amount: 0,
           finance_category_ids: [],
@@ -114,6 +118,7 @@ export default function FinanceProjectForm({
       const updateProject = {
         ...financeProject,
         title: values.title,
+        description: values.description.length > 0 ? values.description : null,
         currency: values.currency,
         start_amount: values.start_amount,
         due_date: values.due_date || null,
@@ -130,6 +135,7 @@ export default function FinanceProjectForm({
     } else {
       const insertProject = {
         title: values.title,
+        description: values.description.length > 0 ? values.description : null,
         currency: values.currency,
         start_amount: values.start_amount,
         due_date: values.due_date || null,
@@ -175,33 +181,37 @@ export default function FinanceProjectForm({
       <Stack>
         <TextInput
           withAsterisk
-          label={locale === "de-DE" ? "Name" : "Title"}
-          placeholder={
-            locale === "de-DE" ? "Name des Projekts" : "Enter project name"
-          }
+          label={getLocalizedText("Name", "Title")}
+          placeholder={getLocalizedText(
+            "Name des Projekts",
+            "Enter project name"
+          )}
           {...form.getInputProps("title")}
           data-autofocus
         />
-        <NumberInput
+        <TextInput
+          label={getLocalizedText("Beschreibung", "Description")}
+          placeholder={getLocalizedText(
+            "Beschreibung eingeben",
+            "Enter description"
+          )}
+          {...form.getInputProps("description")}
+        />
+        <CustomNumberInput
           withAsterisk
           allowLeadingZeros={false}
-          label={locale === "de-DE" ? "Startbetrag" : "Start amount"}
-          placeholder={
-            locale === "de-DE" ? "Startbetrag eingeben" : "Enter start amount"
-          }
+          label={getLocalizedText("Startbetrag", "Start amount")}
           {...form.getInputProps("start_amount")}
         />
         <Select
           data={currencies}
           withAsterisk
-          label={locale === "de-DE" ? "Währung" : "Currency"}
-          placeholder={
-            locale === "de-DE" ? "Währung auswählen" : "Select currency"
-          }
+          label={getLocalizedText("Währung", "Currency")}
+          placeholder={getLocalizedText("Währung auswählen", "Select currency")}
           {...form.getInputProps("currency")}
         />
         <LocaleDatePickerInput
-          label={locale === "de-DE" ? "Fälligkeitsdatum" : "Due date"}
+          label={getLocalizedText("Fälligkeitsdatum", "Due date")}
           {...form.getInputProps("due_date")}
         />
         <Group wrap="nowrap">
@@ -211,17 +221,15 @@ export default function FinanceProjectForm({
             data={categoryOptions}
             searchable
             clearable
-            nothingFoundMessage={
-              locale === "de-DE"
-                ? "Keine Kategorien gefunden"
-                : "No categories found"
-            }
-            label={locale === "de-DE" ? "Finanzkategorie" : "Finance category"}
-            placeholder={
-              locale === "de-DE"
-                ? "Finanzkategorie auswählen"
-                : "Select finance category"
-            }
+            nothingFoundMessage={getLocalizedText(
+              "Keine Kategorien gefunden",
+              "No categories found"
+            )}
+            label={getLocalizedText("Finanzkategorie", "Finance category")}
+            placeholder={getLocalizedText(
+              "Finanzkategorie auswählen",
+              "Select finance category"
+            )}
             value={form.values.finance_category_ids}
             onChange={handleCategoryChange}
             error={form.errors.finance_category_ids}
@@ -237,7 +245,7 @@ export default function FinanceProjectForm({
             leftSection={<IconPlus size={20} />}
           >
             <Text fz="xs" c="dimmed">
-              {locale === "de-DE" ? "Neue Kategorie" : "Add Category"}
+              {getLocalizedText("Neue Kategorie", "Add Category")}
             </Text>
           </Button>
         </Group>
@@ -247,13 +255,12 @@ export default function FinanceProjectForm({
             data={clientOptions}
             searchable
             clearable
-            nothingFoundMessage={
-              locale === "de-DE" ? "Keine Kunden gefunden" : "No clients found"
-            }
-            label={locale === "de-DE" ? "Kunde" : "Client"}
-            placeholder={
-              locale === "de-DE" ? "Kunde auswählen" : "Select client"
-            }
+            nothingFoundMessage={getLocalizedText(
+              "Keine Kunden gefunden",
+              "No clients found"
+            )}
+            label={getLocalizedText("Kunde", "Client")}
+            placeholder={getLocalizedText("Kunde auswählen", "Select client")}
             value={form.values.finance_client_id || null}
             onChange={handleClientChange}
             error={form.errors.finance_client_id}
@@ -269,7 +276,7 @@ export default function FinanceProjectForm({
             leftSection={<IconPlus size={20} />}
           >
             <Text fz="xs" c="dimmed">
-              {locale === "de-DE" ? "Neuer Kunde" : "Add Client"}
+              {getLocalizedText("Neuer Kunde", "Add Client")}
             </Text>
           </Button>
         </Group>

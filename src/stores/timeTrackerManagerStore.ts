@@ -63,8 +63,8 @@ export const useTimeTrackerManager = create(
           timers: {} as Record<string, TimerData>,
           isTimerRunning: false,
         }),
-        
-      addTimer: (project, roundingSettings) => {  
+
+      addTimer: (project, roundingSettings) => {
         const timerData = {
           projectId: project.id,
           projectTitle: project.title,
@@ -103,15 +103,15 @@ export const useTimeTrackerManager = create(
         const currentTimers = get().timers;
         const timerCount = Object.keys(currentTimers).length;
 
-        // Check if maximum 3 time trackers reached
-        if (timerCount >= 3) {
+        // Check if maximum 5 time trackers reached
+        if (timerCount >= 5) {
           return {
             success: false,
             error: {
               german:
-                "Es können maximal 3 Timer gleichzeitig laufen. Bitte stoppen oder entfernen Sie einen bestehenden Timer.",
+                "Es können maximal 5 Timer gleichzeitig laufen. Bitte stoppen oder entfernen Sie einen bestehenden Timer.",
               english:
-                "Maximum 3 time trackers allowed. Please stop or remove an existing timer first.",
+                "Maximum 5 time trackers allowed. Please stop or remove an existing timer first.",
             },
           };
         }
