@@ -6,7 +6,6 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
 
 import {
-  NumberInput,
   Select,
   Stack,
   Textarea,
@@ -46,11 +45,10 @@ export default function SessionForm({
   project,
   submitting,
   onSubmit,
-  onCancel,
   onOpenProjectForm,
   onProjectChange,
 }: SessionFormProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useSettingsStore();
   const { data: workProjects = [] } = useWorkProjectQuery();
   const [userChangedStartTime, setUserChangedStartTime] = useState(false);
   const [userChangedEndTime, setUserChangedEndTime] = useState(false);
@@ -61,23 +59,23 @@ export default function SessionForm({
     start_time: z.string().transform((str) => new Date(str).toISOString()),
     end_time: z.string().transform((str) => new Date(str).toISOString()),
     active_seconds: z.number().min(1, {
-      message:
-        locale === "de-DE"
-          ? "Aktive Zeit muss größer als 0 sein"
-          : "Active time must be greater than 0",
+      message: getLocalizedText(
+        "Aktive Zeit muss grüßer als 0 sein",
+        "Active time must be greater than 0"
+      ),
     }),
     memo: z.string().optional(),
     currency: z.string().min(1, {
-      message:
-        locale === "de-DE"
-          ? "Währung ist erforderlich"
-          : "Currency is required",
+      message: getLocalizedText(
+        "Währung ist erforderlich",
+        "Currency is required"
+      ),
     }),
     salary: z.number().min(0, {
-      message:
-        locale === "de-DE"
-          ? "Gehalt muss positiv sein"
-          : "Salary must be positive",
+      message: getLocalizedText(
+        "Gehalt muss positiv sein",
+        "Salary must be positive"
+      ),
     }),
   });
 
@@ -223,41 +221,41 @@ export default function SessionForm({
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
       <Stack>
-        <Fieldset legend={locale === "de-DE" ? "Projekt" : "Project"}>
-          <Group wrap="nowrap">
-            <Select
-              w="100%"
-              withAsterisk
-              allowDeselect={false}
-              label={locale === "de-DE" ? "Projekt" : "Project"}
-              value={form.values.project_id}
-              error={form.errors.project_id}
-              placeholder={
-                locale === "de-DE" ? "Projekt auswählen" : "Select project"
-              }
-              data={projects}
-              searchable
-              onChange={handleProjectChange}
-            />
-            <Button
-              onClick={onOpenProjectForm}
-              leftSection={<IconPlus size={18} />}
-              fw={500}
-              variant="subtle"
-              w={150}
-              mt={25}
-              p={0}
-            >
-              <Text fz="xs" c="dimmed">
-                {locale === "de-DE" ? "Neues Projekt" : "Add Project"}
-              </Text>
-            </Button>
-          </Group>
+        <Fieldset legend={getLocalizedText("Projekt", "Project")}>
+          <Select
+            w="100%"
+            withAsterisk
+            allowDeselect={false}
+            label={getLocalizedText("Projekt", "Project")}
+            value={form.values.project_id}
+            error={form.errors.project_id}
+            placeholder={getLocalizedText(
+              "Projekt auswählen",
+              "Select project"
+            )}
+            data={projects}
+            searchable
+            onChange={handleProjectChange}
+            rightSection={
+              <Button
+                onClick={onOpenProjectForm}
+                leftSection={<IconPlus size={18} />}
+                fw={500}
+                variant="subtle"
+              >
+                <Text fz="xs" c="dimmed">
+                  {getLocalizedText("Neu", "New")}
+                </Text>
+              </Button>
+            }
+            rightSectionWidth={86}
+            rightSectionPointerEvents="auto"
+          />
         </Fieldset>
-        <Fieldset legend={locale === "de-DE" ? "Zeit" : "Time"}>
+        <Fieldset legend={getLocalizedText("Zeit", "Time")}>
           <Stack>
             <TimeInput
-              label={locale === "de-DE" ? "Aktive Zeit" : "Active Time"}
+              label={getLocalizedText("Aktive Zeit", "Active Time")}
               value={form.values.active_seconds}
               onChange={handleActiveSecondsChange}
               error={form.errors.active_seconds}
@@ -269,14 +267,14 @@ export default function SessionForm({
             <Group grow>
               <LocaleDateTimePicker
                 withAsterisk
-                label={locale === "de-DE" ? "Startzeit" : "Start Time"}
+                label={getLocalizedText("Startzeit", "Start Time")}
                 value={form.values.start_time}
                 onChange={handleStartTimeChange}
                 error={form.errors.start_time}
               />
               <LocaleDateTimePicker
                 withAsterisk
-                label={locale === "de-DE" ? "Endzeit" : "End Time"}
+                label={getLocalizedText("Endzeit", "End Time")}
                 value={form.values.end_time}
                 onChange={handleEndTimeChange}
                 error={form.errors.end_time}
@@ -284,19 +282,20 @@ export default function SessionForm({
             </Group>
           </Stack>
         </Fieldset>
-        <Fieldset legend={locale === "de-DE" ? "Finanzen" : "Finances"}>
+        <Fieldset legend={getLocalizedText("Finanzen", "Finances")}>
           <Collapse in={project?.hourly_payment !== false}>
             <CustomNumberInput
-              label={locale === "de-DE" ? "Gehalt" : "Salary"}
+              label={getLocalizedText("Gehalt", "Salary")}
               min={0}
               step={0.01}
               {...form.getInputProps("salary")}
             />
             <Select
-              label={locale === "de-DE" ? "Währung" : "Currency"}
-              placeholder={
-                locale === "de-DE" ? "Währung auswählen" : "Select currency"
-              }
+              label={getLocalizedText("Währung", "Currency")}
+              placeholder={getLocalizedText(
+                "Währung auswählen",
+                "Select currency"
+              )}
               data={currencies}
               {...form.getInputProps("currency")}
             />
@@ -306,8 +305,8 @@ export default function SessionForm({
           </Collapse>
         </Fieldset>
         <Textarea
-          label={locale === "de-DE" ? "Notiz" : "Memo"}
-          placeholder={locale === "de-DE" ? "Notiz eingeben" : "Memo"}
+          label={getLocalizedText("Notiz", "Memo")}
+          placeholder={getLocalizedText("Notiz eingeben", "Enter memo")}
           {...form.getInputProps("memo")}
         />
         {newSession ? (

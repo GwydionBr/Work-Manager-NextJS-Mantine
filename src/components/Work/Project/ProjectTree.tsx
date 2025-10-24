@@ -2,13 +2,12 @@
 
 import { useResizeObserver, useViewportSize } from "@mantine/hooks";
 import { useRouter, usePathname, useParams } from "next/navigation";
+import { useMemo } from "react";
 
 import { NodeRendererProps, Tree } from "react-arborist";
 import {
   IconClipboardList,
   IconClipboardListFilled,
-  IconFile,
-  IconFileFilled,
   IconFolderFilled,
   IconFolderOpen,
   IconFolder,
@@ -27,6 +26,33 @@ export default function ProjectTree({ search }: { search: string }) {
   const { projectTree, isPending, moveProject, moveFolder } = useWorkTree();
 
   const router = useRouter();
+
+  // Berechne die zu öffnenden Ordner basierend auf dem ausgewählten Projekt
+  const openFolders = useMemo(() => {
+    if (!projectId || !projectTree.length) return [];
+
+    const findParentFolders = (
+      tree: ProjectTreeItem[],
+      targetId: string,
+      parentIds: string[] = []
+    ): string[] => {
+      for (const node of tree) {
+        if (node.id === targetId) {
+          return parentIds;
+        }
+        if (node.children) {
+          const found = findParentFolders(node.children, targetId, [
+            ...parentIds,
+            node.id,
+          ]);
+          if (found.length > 0) return found;
+        }
+      }
+      return [];
+    };
+
+    return findParentFolders(projectTree, projectId);
+  }, [projectId, projectTree]);
 
   const handleMove = (
     dragIds: string[],
@@ -59,6 +85,13 @@ export default function ProjectTree({ search }: { search: string }) {
       <Tree<ProjectTreeItem>
         data={projectTree}
         openByDefault={false}
+        initialOpenState={openFolders.reduce(
+          (acc, folderId) => {
+            acc[folderId] = true;
+            return acc;
+          },
+          {} as Record<string, boolean>
+        )}
         width={rect.width}
         height={height - 190}
         paddingTop={5}
