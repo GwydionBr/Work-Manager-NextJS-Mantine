@@ -8,11 +8,7 @@ import { updateWorkTimeEntries } from "@/actions/work/workTimeEntry/update-work-
 import { deleteWorkTimeEntries } from "@/actions/work/workTimeEntry/delete-work-time-entries";
 import { getWorkTimeEntriesByProjectId } from "@/actions/work/workTimeEntry/get-work-time-entries-by-project-id";
 import { CustomMutationProps } from "@/types/query.types";
-import {
-  CompleteWorkProject,
-  InsertWorkTimeEntry,
-  WorkTimeEntry,
-} from "@/types/work.types";
+import { InsertWorkTimeEntry, WorkTimeEntry } from "@/types/work.types";
 import { TimerRoundingSettings } from "@/types/timeTracker.types";
 import {
   showActionErrorNotification,
@@ -101,15 +97,12 @@ export const useCreateWorkTimeEntryMutation = ({
         }
       );
       context.client.setQueryData(
-        ["workProjectById", createdTimeEntries[0].project_id],
-        (old: CompleteWorkProject) => {
+        ["workTimeEntries", createdTimeEntries[0].project_id],
+        (old: WorkTimeEntry[]) => {
           if (!old) {
             return undefined;
           }
-          return {
-            ...old,
-            timeEntries: [...old.timeEntries, ...createdTimeEntries],
-          };
+          return [...old, ...createdTimeEntries];
         }
       );
       props.onSuccess?.();
@@ -195,19 +188,16 @@ export const useUpdateWorkTimeEntryMutation = ({
           }
         );
         context.client.setQueryData(
-          ["workProjectById", variables.updateTimeEntry.project_id],
-          (old: CompleteWorkProject) => {
+          ["workTimeEntries", variables.updateTimeEntry.project_id],
+          (old: WorkTimeEntry[]) => {
             if (!old) {
               return undefined;
             }
-            return {
-              ...old,
-              timeEntries: old.timeEntries.map((entry) =>
-                entry.id === variables.updateTimeEntry.id
-                  ? variables.updateTimeEntry
-                  : entry
-              ),
-            };
+            return old.map((entry) =>
+              entry.id === variables.updateTimeEntry.id
+                ? variables.updateTimeEntry
+                : entry
+            );
           }
         );
       } else {
@@ -224,18 +214,15 @@ export const useUpdateWorkTimeEntryMutation = ({
           }
         );
         context.client.setQueryData(
-          ["workProjectById", variables.updateTimeEntry.project_id],
-          (old: CompleteWorkProject) => {
+          ["workTimeEntries", variables.updateTimeEntry.project_id],
+          (old: WorkTimeEntry[]) => {
             if (!old) {
               return undefined;
             }
-            const filteredOldTimeEntries = old.timeEntries.filter(
+            const filteredOldTimeEntries = old.filter(
               (entry) => entry.id !== variables.updateTimeEntry.id
             );
-            return {
-              ...old,
-              timeEntries: [...filteredOldTimeEntries, ...createdTimeEntries],
-            };
+            return [...filteredOldTimeEntries, ...createdTimeEntries];
           }
         );
       }
@@ -274,17 +261,12 @@ export const useDeleteWorkTimeEntryMutation = ({
         }
       );
       context.client.setQueryData(
-        ["workProjectById", data.project_id],
-        (old: CompleteWorkProject) => {
+        ["workTimeEntries", data.project_id],
+        (old: WorkTimeEntry[]) => {
           if (!old) {
             return undefined;
           }
-          return {
-            ...old,
-            timeEntries: old.timeEntries.filter(
-              (entry) => !variables.ids.includes(entry.id)
-            ),
-          };
+          return old.filter((entry) => !variables.ids.includes(entry.id));
         }
       );
       if (props.showNotification !== false) {

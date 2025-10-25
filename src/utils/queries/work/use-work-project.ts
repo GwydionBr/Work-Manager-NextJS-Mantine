@@ -48,10 +48,7 @@ export const useUpdateWorkProjectMutation = ({
       );
       context.client.setQueryData(
         ["workProjectById", variables.project.id],
-        (old: CompleteWorkProject) => ({
-          ...old,
-          ...data,
-        })
+        (old: WorkProject) => (old ? { ...old, ...data } : old)
       );
       if (props.showNotification !== false) {
         showActionSuccessNotification(

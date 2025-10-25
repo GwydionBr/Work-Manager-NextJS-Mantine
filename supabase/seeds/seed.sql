@@ -105,10 +105,10 @@ BEGIN
     INSERT INTO public.timer_session (project_id, start_time, end_time, true_end_time, active_seconds, salary, currency, user_id) VALUES
         (v_project_id_1, now() - interval '1 hour', now(), now(), 3600, 100, 'USD', v_user_id),
         (v_project_id_1, now() - interval '2 hours', now() - interval '1 hour', now() - interval '1 hour', 3600, 200, 'USD', v_user_id),
-        (v_project_id_1, now() - interval '3 hours', now() - interval '4 hours', now() - interval '4 hours', 3600, 100, 'USD', v_user_id),
-        (v_project_id_1, now() - interval '4 hours', now() - interval '5 hours', now() - interval '5 hours', 3600, 100, 'USD', v_user_id),
-        (v_project_id_1, now() - interval '5 hours', now() - interval '6 hours', now() - interval '6 hours', 3600, 200, 'USD', v_user_id),
-        (v_project_id_1, now() - interval '6 hours', now() - interval '7 hours', now() - interval '7 hours', 3600, 100, 'USD', v_user_id);
+        (v_project_id_1, now() - interval '3 hours', now() - interval '2 hours', now() - interval '2 hours', 3600, 100, 'USD', v_user_id),
+        (v_project_id_1, now() - interval '4 hours', now() - interval '3 hours', now() - interval '3 hours', 3600, 100, 'USD', v_user_id),
+        (v_project_id_1, now() - interval '5 hours', now() - interval '4 hours', now() - interval '4 hours', 3600, 200, 'USD', v_user_id),
+        (v_project_id_1, now() - interval '6 hours', now() - interval '5 hours', now() - interval '5 hours', 3600, 100, 'USD', v_user_id);
 
 
     SELECT id INTO v_project_id_2 FROM public.timer_project WHERE title = 'Project 2';
