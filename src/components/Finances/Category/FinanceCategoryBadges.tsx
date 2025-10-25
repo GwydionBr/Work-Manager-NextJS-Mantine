@@ -165,7 +165,10 @@ export default function FinanceCategoryBadges({
                 <FinanceCategoryForm
                   onClose={closeCategoryForm}
                   onSuccess={(category) => {
-                    setSelectedCategories((prev) => [...prev, category.id]);
+                    setSelectedCategories((prev) => {
+                      const newCategories = [...prev, category.id];
+                      return newCategories;
+                    });
                     closeCategoryForm();
                   }}
                 />

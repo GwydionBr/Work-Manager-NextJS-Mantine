@@ -31,12 +31,7 @@ export const usePayoutFinanceProjectMutation = ({
     }: {
       financeProject: FinanceProject;
       payoutWholeProject?: boolean;
-    }) =>
-      payoutFinanceProject(
-        financeProject,
-        locale,
-        payoutWholeProject
-      ),
+    }) => payoutFinanceProject(financeProject, locale, payoutWholeProject),
     onSuccess: (data, variables, onMutateResult, context) => {
       context.client.setQueryData(
         ["financeProjects"],
@@ -164,18 +159,16 @@ export const usePayoutHourlyTimerProjectMutation = ({
         (timeEntry) => timeEntry.id
       );
       context.client.setQueryData(
-        ["workProjectById", variables.project.id],
-        (old: CompleteWorkProject) => ({
-          ...old,
-          timeEntries: old.timeEntries.map((timeEntry) =>
+        ["workTimeEntries", variables.project.id],
+        (old: WorkTimeEntry[]) =>
+          old.map((timeEntry) =>
             timeEntryIds.includes(timeEntry.id)
               ? {
                   ...timeEntry,
                   single_cash_flow_id: data.singleCashFlow.id,
                 }
               : timeEntry
-          ),
-        })
+          )
       );
       if (props.showNotification !== false) {
         showActionSuccessNotification(
@@ -189,6 +182,7 @@ export const usePayoutHourlyTimerProjectMutation = ({
       props.onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
+      console.log("error", error);
       if (props.showNotification !== false) {
         showActionErrorNotification(
           getLocalizedText(
