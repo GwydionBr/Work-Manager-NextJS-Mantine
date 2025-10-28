@@ -25,12 +25,14 @@ export default function TimeTrackerTimeRow({
         border:
           state === TimerState.Running
             ? "2px solid var(--mantine-color-blue-6)"
-            : color
-              ? `none`
-              : "1px solid light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-3))",
+            : `1px solid ${color ?? "light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-3))"}`,
       }}
       icon={
-        <ThemeIcon variant="transparent" color="blue" w="100%">
+        <ThemeIcon
+          variant="transparent"
+          color="var(--mantine-color-blue-6)"
+          w="100%"
+        >
           <IconClock size={22} />
         </ThemeIcon>
       }
