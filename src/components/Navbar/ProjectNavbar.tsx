@@ -50,6 +50,7 @@ export default function ProjectNavbar() {
   const pathname = usePathname();
   const [isOverview, setIsOverview] = useState<boolean>(false);
   const [seachTree, setSeachTree] = useState<string>("");
+  const [isHydrated, setIsHydrated] = useState<boolean>(false);
   const [
     isProjectModalOpen,
     { open: openProjectModal, close: closeProjectModal },
@@ -57,6 +58,10 @@ export default function ProjectNavbar() {
   useEffect(() => {
     setIsOverview(pathname === "/work/overview");
   }, [pathname]);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   useHotkeys([["mod + J", () => toggleWorkNavbar()]]);
 
@@ -80,7 +85,11 @@ export default function ProjectNavbar() {
             >
               <ActionIcon
                 onClick={() => toggleWorkNavbar()}
-                aria-label="Toggle navbar"
+                aria-label={
+                  isHydrated
+                    ? getLocalizedText("Navbar umschalten", "Toggle navbar")
+                    : "Toggle navbar"
+                }
                 variant="light"
                 style={styles}
               >
@@ -225,7 +234,11 @@ export default function ProjectNavbar() {
                 )
               }
               placeholder={getLocalizedText("Suche Projekt", "Search Project")}
-              aria-label={getLocalizedText("Suche Projekt", "Search Project")}
+              aria-label={
+                isHydrated
+                  ? getLocalizedText("Suche Projekt", "Search Project")
+                  : "Search Project"
+              }
               value={seachTree}
               onChange={(e) => setSeachTree(e.target.value)}
             />
@@ -302,7 +315,11 @@ export default function ProjectNavbar() {
         >
           <ActionIcon
             onClick={() => toggleWorkNavbar()}
-            aria-label={getLocalizedText("Navbar umschalten", "Toggle navbar")}
+            aria-label={
+              isHydrated
+                ? getLocalizedText("Navbar umschalten", "Toggle navbar")
+                : "Toggle navbar"
+            }
             variant="light"
           >
             <IconArrowBarRight

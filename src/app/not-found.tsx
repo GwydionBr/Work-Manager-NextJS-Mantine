@@ -1,0 +1,58 @@
+"use client";
+
+import { useSettingsStore } from "@/stores/settingsStore";
+
+import {
+  Button,
+  Container,
+  Image,
+  SimpleGrid,
+  Text,
+  Title,
+} from "@mantine/core";
+import Link from "next/link";
+import classes from "./NotFound.module.css";
+
+export default function NotFound() {
+  const { getLocalizedText } = useSettingsStore();
+
+  return (
+    <Container className={classes.root}>
+      <SimpleGrid spacing={{ base: 40, sm: 80 }} cols={{ base: 1, sm: 2 }}>
+        <Image src="/404-image.svg" className={classes.mobileImage} />
+        <div>
+          <Title className={classes.title}>
+            {getLocalizedText(
+              "Etwas ist nicht richtig...",
+              "Something is not right..."
+            )}
+          </Title>
+          <Text c="dimmed" size="lg">
+            {getLocalizedText(
+              `Die Seite, die Sie öffnen möchten, existiert nicht. 
+              Möglicherweise haben Sie die Adresse falsch eingegeben oder die Seite wurde an einen anderen URL verschoben. 
+              Wenn Sie denken, dass dies ein Fehler ist, kontaktieren Sie den Support.`,
+              `The page you are trying to open does not exist. 
+              You may have mistyped the address, or the page has been moved to another URL. 
+              If you think this is an error contact support.`
+            )}
+          </Text>
+          <Link href="/">
+            <Button
+              variant="outline"
+              size="md"
+              mt="xl"
+              className={classes.control}
+            >
+              {getLocalizedText(
+                "Zurück zur Startseite",
+                "Get back to home page"
+              )}
+            </Button>
+          </Link>
+        </div>
+        <Image src="/404-image.svg" className={classes.desktopImage} />
+      </SimpleGrid>
+    </Container>
+  );
+}
