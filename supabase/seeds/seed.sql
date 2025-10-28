@@ -79,27 +79,27 @@ BEGIN
         ('Client 2', v_user_id),
         ('Client 3', v_user_id);
 
-    INSERT INTO public.timer_project (title, description, salary, currency, user_id) VALUES
-        ('Project 1', 'Project 1 description', 100, 'USD', v_user_id),
-        ('Project 2', 'Project 2 description', 200, 'USD', v_user_id),
-        ('Project 3', 'Project 3 description', 100, 'USD', v_user_id),
-        ('Project 4', 'Project 4 description', 200, 'USD', v_user_id),
-        ('Project 5', 'Project 5 description', 100, 'USD', v_user_id),
-        ('Project 6', 'Project 6 description', 200, 'USD', v_user_id),
-        ('Project 7', 'Project 7 description', 100, 'USD', v_user_id),
-        ('Project 8', 'Project 8 description', 200, 'USD', v_user_id),
-        ('Project 9', 'Project 9 description', 100, 'USD', v_user_id),
-        ('Project 10', 'Project 10 description', 200, 'USD', v_user_id),
-        ('Project 11', 'Project 11 description', 100, 'USD', v_user_id),
-        ('Project 12', 'Project 12 description', 200, 'USD', v_user_id),
-        ('Project 13', 'Project 13 description', 100, 'USD', v_user_id),
-        ('Project 14', 'Project 14 description', 200, 'USD', v_user_id),
-        ('Project 15', 'Project 15 description', 100, 'USD', v_user_id),
-        ('Project 16', 'Project 16 description', 200, 'USD', v_user_id),
-        ('Project 17', 'Project 17 description', 100, 'USD', v_user_id),
-        ('Project 18', 'Project 18 description', 200, 'USD', v_user_id),
-        ('Project 19', 'Project 19 description', 100, 'USD', v_user_id),
-        ('Project 20', 'Project 20 description', 200, 'USD', v_user_id);
+    INSERT INTO public.timer_project (title, description, salary, currency, user_id, color) VALUES
+        ('Project 1', 'Project 1 description', 100, 'USD', v_user_id, "#fab005"),
+        ('Project 2', 'Project 2 description', 200, 'USD', v_user_id, null),
+        ('Project 3', 'Project 3 description', 100, 'USD', v_user_id, null),
+        ('Project 4', 'Project 4 description', 200, 'USD', v_user_id, null),
+        ('Project 5', 'Project 5 description', 100, 'USD', v_user_id, null),
+        ('Project 6', 'Project 6 description', 200, 'USD', v_user_id, null),
+        ('Project 7', 'Project 7 description', 100, 'USD', v_user_id, null),
+        ('Project 8', 'Project 8 description', 200, 'USD', v_user_id, null),
+        ('Project 9', 'Project 9 description', 100, 'USD', v_user_id, null),
+        ('Project 10', 'Project 10 description', 200, 'USD', v_user_id, null),
+        ('Project 11', 'Project 11 description', 100, 'USD', v_user_id, null),
+        ('Project 12', 'Project 12 description', 200, 'USD', v_user_id, null),
+        ('Project 13', 'Project 13 description', 100, 'USD', v_user_id, null),
+        ('Project 14', 'Project 14 description', 200, 'USD', v_user_id, null),
+        ('Project 15', 'Project 15 description', 100, 'USD', v_user_id, null),
+        ('Project 16', 'Project 16 description', 200, 'USD', v_user_id, null),
+        ('Project 17', 'Project 17 description', 100, 'USD', v_user_id, null),
+        ('Project 18', 'Project 18 description', 200, 'USD', v_user_id, null),
+        ('Project 19', 'Project 19 description', 100, 'USD', v_user_id, null),
+        ('Project 20', 'Project 20 description', 200, 'USD', v_user_id, null);
 
     SELECT id INTO v_project_id_1 FROM public.timer_project WHERE title = 'Project 1';
     INSERT INTO public.timer_session (project_id, start_time, end_time, true_end_time, active_seconds, salary, currency, user_id) VALUES

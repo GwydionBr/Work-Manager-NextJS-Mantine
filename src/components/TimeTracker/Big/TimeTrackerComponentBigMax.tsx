@@ -13,20 +13,15 @@ import {
   Collapse,
 } from "@mantine/core";
 import { TimerRoundingSettings, TimerState } from "@/types/timeTracker.types";
-import TimeTrackerRow from "../TimeTrackerRow";
-import {
-  IconCurrencyEuro,
-  IconCurrencyDollar,
-  IconPlayerPlay,
-  IconPlayerStop,
-  IconX,
-  IconNotes,
-} from "@tabler/icons-react";
+import { IconPlayerPlay, IconPlayerStop, IconX } from "@tabler/icons-react";
 import { Currency } from "@/types/settings.types";
 import { getStatusColor } from "@/utils/workHelperFunctions";
 import ModifyTimeTrackerModal from "../ModifyTimeTracker/ModifyTimeTrackerModal";
 import TimeTrackerInfoHoverCard from "../TimeTrackerInfoHoverCard";
 import XActionIcon from "@/components/UI/ActionIcons/XActionIcon";
+import TimeTrackerMemoRow from "../TimeTrackerRow/TimeTrackerMemoRow";
+import TimeTrackerFinanceRow from "../TimeTrackerRow/TimeTrackerFinanceRow";
+import TimeTrackerTimeRow from "../TimeTrackerRow/TimeTrackerTimeRow";
 
 interface TimeTrackerComponentBigMaxProps {
   projectTitle: string;
@@ -52,9 +47,7 @@ interface TimeTrackerComponentBigMaxProps {
   submitTimer: () => void;
   cancelTimer: () => void;
   removeTimer: () => void;
-  setTempTimerRounding: (
-    timerRoundingSettings: TimerRoundingSettings
-  ) => void;
+  setTempTimerRounding: (timerRoundingSettings: TimerRoundingSettings) => void;
   modifyActiveSeconds: (delta: number) => void;
   modifyPausedSeconds: (delta: number) => void;
   setMemo: (memo: string) => void;
@@ -87,8 +80,7 @@ export default function TimeTrackerComponentBigMax({
   removeTimer,
   setMemo,
 }: TimeTrackerComponentBigMaxProps) {
-  const { locale } =
-    useSettingsStore();
+  const { locale } = useSettingsStore();
 
   const getLocaleState = () => {
     if (state === TimerState.Running) {
@@ -149,45 +141,20 @@ export default function TimeTrackerComponentBigMax({
 
         {/* Time Tracker Rows */}
         <Stack gap="md">
-          <TimeTrackerRow
-            icon={<IconNotes size={20} color="var(--mantine-color-orange-6)" />}
-            value={memo}
-            state={state}
-            activationState={TimerState.Running}
-            color="var(--mantine-color-orange-6)"
-            isMemo={true}
-            setMemo={setMemo}
-          />
+          <TimeTrackerMemoRow value={memo} setMemo={setMemo} />
           {hourlyPayment && (
-            <TimeTrackerRow
-              icon={
-                currency === "EUR" ? (
-                  <IconCurrencyEuro
-                    size={20}
-                    color="var(--mantine-color-grape-6)"
-                  />
-                ) : (
-                  <IconCurrencyDollar
-                    size={20}
-                    color="var(--mantine-color-grape-6)"
-                  />
-                )
-              }
-              value={moneyEarned}
+            <TimeTrackerFinanceRow
+              currency={currency}
+              moneyEarned={moneyEarned}
               state={state}
-              activationState={TimerState.Running}
-              color="var(--mantine-color-grape-6)"
+              color={color}
             />
           )}
-          <TimeTrackerRow
-            icon={
-              <IconPlayerPlay size={20} color="var(--mantine-color-blue-6)" />
-            }
-            value={activeTime}
-            secondValue={roundedActiveTime}
+          <TimeTrackerTimeRow
+            activeTime={activeTime}
+            roundedActiveTime={roundedActiveTime}
             state={state}
-            activationState={TimerState.Running}
-            color="var(--mantine-color-blue-6)"
+            color={color}
           />
           {/* {!roundInTimeSections && (
             <TimeTrackerRow

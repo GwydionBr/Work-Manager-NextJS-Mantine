@@ -27,7 +27,7 @@ import {
   IconMinus,
   IconSettings,
 } from "@tabler/icons-react";
-import TimeTrackerRow from "../TimeTrackerRow";
+import TimeTrackerRow from "../TimeTrackerRow/TimeTrackerRow";
 
 interface ModifyTimeProps {
   modifyActiveSeconds: (delta: number) => void;
@@ -272,7 +272,9 @@ export default function ModifyTime({
       <Card withBorder shadow="sm" radius="md" p="lg">
         <Title order={4} mb="md" c="dimmed">
           <IconSettings size={18} style={{ marginRight: "8px" }} />
-          {locale === "de-DE" ? "Benutzerdefinierte Anpassungen" : "Custom Adjustments"}
+          {locale === "de-DE"
+            ? "Benutzerdefinierte Anpassungen"
+            : "Custom Adjustments"}
         </Title>
 
         <Stack gap="md">
@@ -283,9 +285,18 @@ export default function ModifyTime({
               setTimeUnit(value as "seconds" | "minutes" | "hours")
             }
             data={[
-              { value: "seconds", label: locale === "de-DE" ? "Sekunden" : "Seconds" },
-              { value: "minutes", label: locale === "de-DE" ? "Minuten" : "Minutes" },
-              { value: "hours", label: locale === "de-DE" ? "Stunden" : "Hours" },
+              {
+                value: "seconds",
+                label: locale === "de-DE" ? "Sekunden" : "Seconds",
+              },
+              {
+                value: "minutes",
+                label: locale === "de-DE" ? "Minuten" : "Minutes",
+              },
+              {
+                value: "hours",
+                label: locale === "de-DE" ? "Stunden" : "Hours",
+              },
             ]}
             styles={{
               label: {
@@ -298,7 +309,11 @@ export default function ModifyTime({
           <Box>
             <Group gap="xs" align="end">
               <TextInput
-                label={locale === "de-DE" ? "Aktive Zeit ändern" : "Change Active Time"}
+                label={
+                  locale === "de-DE"
+                    ? "Aktive Zeit ändern"
+                    : "Change Active Time"
+                }
                 placeholder={`Value in ${timeUnit === "seconds" ? "seconds" : timeUnit === "minutes" ? "minutes" : "hours"}`}
                 value={activeTimeInput}
                 onChange={(event) =>
@@ -334,7 +349,11 @@ export default function ModifyTime({
           <Box>
             <Group gap="xs" align="end">
               <TextInput
-                label={locale === "de-DE" ? "Pausierte Zeit ändern" : "Change Paused Time"}
+                label={
+                  locale === "de-DE"
+                    ? "Pausierte Zeit ändern"
+                    : "Change Paused Time"
+                }
                 placeholder={`Value in ${timeUnit === "seconds" ? "seconds" : timeUnit === "minutes" ? "minutes" : "hours"}`}
                 value={pausedTimeInput}
                 onChange={(event) =>
