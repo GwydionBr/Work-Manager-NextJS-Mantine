@@ -7,31 +7,6 @@ export type Json =
   | Json[];
 
 export type Database = {
-  graphql_public: {
-    Tables: {
-      [_ in never]: never;
-    };
-    Views: {
-      [_ in never]: never;
-    };
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json;
-          operationName?: string;
-          query?: string;
-          variables?: Json;
-        };
-        Returns: Json;
-      };
-    };
-    Enums: {
-      [_ in never]: never;
-    };
-    CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
   public: {
     Tables: {
       appointment: {
@@ -77,6 +52,36 @@ export type Database = {
             referencedColumns: ["id"];
           },
         ];
+      };
+      bank_account: {
+        Row: {
+          created_at: string;
+          currency: Database["public"]["Enums"]["currency"];
+          description: string | null;
+          id: string;
+          saldo: number;
+          saldo_set_at: string;
+          title: string;
+        };
+        Insert: {
+          created_at?: string;
+          currency: Database["public"]["Enums"]["currency"];
+          description?: string | null;
+          id?: string;
+          saldo?: number;
+          saldo_set_at?: string;
+          title: string;
+        };
+        Update: {
+          created_at?: string;
+          currency?: Database["public"]["Enums"]["currency"];
+          description?: string | null;
+          id?: string;
+          saldo?: number;
+          saldo_set_at?: string;
+          title?: string;
+        };
+        Relationships: [];
       };
       finance_category: {
         Row: {
@@ -1577,9 +1582,6 @@ export type CompositeTypes<
     : never;
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
       amountUnits: ["kg", "g", "t", "ml", "l", "amount"],

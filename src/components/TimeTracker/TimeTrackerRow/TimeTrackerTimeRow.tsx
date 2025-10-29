@@ -1,6 +1,6 @@
 "use client";
 
-import { Flex, Group, Text, ThemeIcon } from "@mantine/core";
+import { Group, Text, Stack, ThemeIcon } from "@mantine/core";
 import { IconClock } from "@tabler/icons-react";
 import TimeTrackerRow from "@/components/TimeTracker/TimeTrackerRow/TimeTrackerRow";
 
@@ -37,10 +37,15 @@ export default function TimeTrackerTimeRow({
         </ThemeIcon>
       }
       children={
-        <Group justify="space-between" px="md">
-          <Text>{activeTime}</Text>
-          <Text c="dimmed">{roundedActiveTime}</Text>
-        </Group>
+        <Stack>
+          <Group>
+            
+          </Group>
+          <Group justify="space-between" px="md">
+            <Text>{activeTime}</Text>
+            <Text c="dimmed">{roundedActiveTime}</Text>
+          </Group>
+        </Stack>
       }
     />
   );
