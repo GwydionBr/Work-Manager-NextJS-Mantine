@@ -27,7 +27,7 @@ import {
   IconMinus,
   IconSettings,
 } from "@tabler/icons-react";
-import TimeTrackerRow from "../TimeTrackerRow/TimeTrackerRow";
+import TimeTrackerTimeRow from "../TimeTrackerRow/TimeTrackerTimeRow";
 
 interface ModifyTimeProps {
   modifyActiveSeconds: (delta: number) => void;
@@ -128,27 +128,11 @@ export default function ModifyTime({
         </Group>
 
         <Group gap="xl" justify="center">
-          <TimeTrackerRow
-            value={activeTime}
+          <TimeTrackerTimeRow
+            activeTime={activeTime}
+            roundedActiveTime=""
             state={state}
-            activationState={TimerState.Running}
-            color="var(--mantine-color-blue-6)"
-            icon={
-              <IconPlayerPlay size={16} color="var(--mantine-color-blue-6)" />
-            }
-          />
-
-          <TimeTrackerRow
-            value={pausedTime}
-            state={state}
-            activationState={TimerState.Paused}
-            color="var(--mantine-color-orange-6)"
-            icon={
-              <IconPlayerPause
-                size={16}
-                color="var(--mantine-color-orange-6)"
-              />
-            }
+            color={null}
           />
         </Group>
       </Card>
