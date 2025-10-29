@@ -37,15 +37,10 @@ export default function TimeTrackerTimeRow({
         </ThemeIcon>
       }
       children={
-        <Stack>
-          <Group>
-            
-          </Group>
-          <Group justify="space-between" px="md">
-            <Text>{activeTime}</Text>
-            <Text c="dimmed">{roundedActiveTime}</Text>
-          </Group>
-        </Stack>
+        <Group justify="space-between" px="md">
+          <Text>{activeTime}</Text>
+          <Text c="dimmed">{roundedActiveTime}</Text>
+        </Group>
       }
     />
   );

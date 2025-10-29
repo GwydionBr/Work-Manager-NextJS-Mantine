@@ -129,8 +129,8 @@ BEGIN
 
     -- create timer sessions for project 2
     INSERT INTO public.timer_session (project_id, start_time, end_time, true_end_time, active_seconds, salary, currency, user_id) VALUES
-        (v_project_id_2, now() - interval '1 hour', now(), now(), 3600, 200, 'USD', v_user_id),
-        (v_project_id_2, now() - interval '2 hours', now() - interval '1 hour', now() - interval '1 hour', 3600, 100, 'USD', v_user_id);
+        (v_project_id_2, now() - interval '25 hour', now() - interval '24 hour', now() - interval '24 hour', 3600, 200, 'USD', v_user_id),
+        (v_project_id_2, now() - interval '26 hours', now() - interval '25 hour', now() - interval '25 hour', 3600, 100, 'USD', v_user_id);
 
     -- create single cash flows
     INSERT INTO public.single_cash_flow (title, user_id, amount) VALUES
