@@ -38,7 +38,7 @@ export default function TimeTrackerTimeRow({
       }
       children={
         <Group justify="space-between" px="md">
-          <Text>{activeTime}</Text>
+          <Text fw={600}>{activeTime}</Text>
           <Text c="dimmed">{roundedActiveTime}</Text>
         </Group>
       }
