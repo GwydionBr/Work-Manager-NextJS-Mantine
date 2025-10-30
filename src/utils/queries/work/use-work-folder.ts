@@ -64,6 +64,21 @@ export const useUpdateWorkFolderMutation = ({
   return useMutation({
     mutationKey: ["updateWorkFolder"],
     mutationFn: updateWorkFolder,
+    onMutate: async (newFolder, context) => {
+      // Cancel the query to avoid race conditions
+      await context.client.cancelQueries({ queryKey: ["workFolders"] });
+      // Get the previous data
+      const previousFolders: WorkFolder[] | undefined =
+        context.client.getQueryData(["workFolders"]);
+      // Update the data in the cache
+      context.client.setQueryData(["workFolders"], (old: WorkFolder[]) =>
+        old.map((f) =>
+          f.id === newFolder.folder.id ? { ...f, ...newFolder.folder } : f
+        )
+      );
+      // Return the previous data
+      return { previousFolders };
+    },
     onSuccess: (data, variables, onMutateResult, context) => {
       context.client.setQueryData(["workFolders"], (old: WorkFolder[]) =>
         old.map((f) => (f.id === data.id ? data : f))
@@ -80,6 +95,11 @@ export const useUpdateWorkFolderMutation = ({
       props.onSuccess?.();
     },
     onError: (error, variables, onMutateResult, context) => {
+      // Rollback the data
+      context.client.setQueryData(
+        ["workFolders"],
+        onMutateResult?.previousFolders ?? []
+      );
       if (props.showNotification !== false) {
         showActionErrorNotification(
           getLocalizedText(

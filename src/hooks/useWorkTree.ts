@@ -26,6 +26,7 @@ export const useWorkTree = () => {
 
   const { mutate: updateWorkProject } = useUpdateWorkProjectMutation({
     showNotification: false,
+    optimisticUpdate: true,
   });
   const { mutate: updateWorkFolder } = useUpdateWorkFolderMutation({
     showNotification: false,

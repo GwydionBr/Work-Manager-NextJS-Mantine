@@ -41,6 +41,23 @@ export const useUpdateWorkProjectMutation = ({
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateWorkProject"],
+    onMutate: async (newProject, context) => {
+      // Cancel the query to avoid race conditions
+      await context.client.cancelQueries({ queryKey: ["workProjects"] });
+      // Get the previous data
+      const previousProjects: WorkProject[] | undefined =
+        context.client.getQueryData(["workProjects"]);
+      // Update the data in the cache
+      if (props.optimisticUpdate) {
+        context.client.setQueryData(["workProjects"], (old: WorkProject[]) =>
+          old.map((p) =>
+            p.id === newProject.project.id ? { ...p, ...newProject.project } : p
+          )
+        );
+      }
+      // Return the previous data
+      return { previousProjects };
+    },
     mutationFn: updateWorkProject,
     onSuccess: (data, variables, onMutateResult, context) => {
       context.client.setQueryData(["workProjects"], (old: WorkProject[]) =>
@@ -63,6 +80,11 @@ export const useUpdateWorkProjectMutation = ({
       props.onSuccess?.(project);
     },
     onError: (error, variables, onMutateResult, context) => {
+      // Rollback the data
+      context.client.setQueryData(
+        ["workProjects"],
+        onMutateResult?.previousProjects ?? []
+      );
       if (props.showNotification !== false) {
         showActionErrorNotification(
           getLocalizedText(
