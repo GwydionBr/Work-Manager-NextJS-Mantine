@@ -15,7 +15,7 @@ export default function LogoutButton({ ...props }: LogoutButtonProps) {
       leftSection={<IconLogout size={24} />}
       color="red"
       onClick={() => logout()}
-      variant="filled"
+      variant="light"
       loading={isPending}
       {...props}
     >
