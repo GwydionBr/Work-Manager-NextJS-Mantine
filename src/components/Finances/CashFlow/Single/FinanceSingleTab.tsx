@@ -29,7 +29,7 @@ import {
 } from "@tabler/icons-react";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
 import SingleCashflowRow from "./SingleCashflowRow";
-import FinancesNavbar from "../../FinancesNavbar";
+import FinancesNavbar from "../../FinancesNavbar/FinancesNavbar";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 import { SettingsTab } from "@/components/Settings/SettingsModal";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
@@ -40,6 +40,9 @@ import {
   useDeleteSingleCashflowMutation,
   useSingleCashflowQuery,
 } from "@/utils/queries/finances/use-single-cashflow";
+import FinancesNavbarToolbar from "../../FinancesNavbar/FinancesNavbarToolbar";
+import FinancesNavbarNavList from "../../FinancesNavbar/FinancesNavbarNavList";
+import FinancesNavbarDefaultCard from "../../FinancesNavbar/FinancesNavbarDefaultCard";
 
 export default function FinanceSingleTab() {
   const {
@@ -267,83 +270,91 @@ export default function FinanceSingleTab() {
   return (
     <Group>
       <FinancesNavbar
-        top={
-          <Group justify="space-between">
-            <AdjustmentActionIcon
-              size="lg"
-              variant="transparent"
-              tooltipLabel={getLocalizedText(
-                "Finanzeinstellungen anpassen",
-                "Adjust finance settings"
-              )}
-              iconSize={20}
-              onClick={() => {
-                setIsModalOpen(true);
-                setSelectedTab(SettingsTab.FINANCE);
-              }}
-            />
-            <DelayedTooltip
-              label={getLocalizedText(
-                "Einmalzahlung hinzufügen",
-                "Add Single Cash Flow"
-              )}
-            >
-              <ActionIcon
-                onClick={openCashFlowModal}
-                variant="transparent"
+        items={[
+          <FinancesNavbarToolbar
+            key="finance-single-toolbar"
+            toolbarItems={[
+              <AdjustmentActionIcon
+                key="finance-single-adjustment-action-icon"
                 size="lg"
+                variant="transparent"
+                tooltipLabel={getLocalizedText(
+                  "Finanzeinstellungen anpassen",
+                  "Adjust finance settings"
+                )}
+                iconSize={20}
+                onClick={() => {
+                  setIsModalOpen(true);
+                  setSelectedTab(SettingsTab.FINANCE);
+                }}
+              />,
+              <DelayedTooltip
+                key="finance-single-add-cash-flow-tooltip"
+                label={getLocalizedText(
+                  "Einmalzahlung hinzufügen",
+                  "Add Single Cash Flow"
+                )}
               >
-                <IconCashPlus size={22} />
-              </ActionIcon>
-            </DelayedTooltip>
-            <SelectActionIcon
-              iconSize={20}
-              onClick={handleToggleBulkSelection}
-              selected={bulkSelectionActive}
-              partiallySelected={
-                selectedCashFlows.length > 0 &&
-                selectedCashFlows.length < filteredSingleCashFlows.length
-              }
-              disabled={filteredSingleCashFlows.length === 0}
-              tooltipLabel={
-                bulkSelectionActive
-                  ? getLocalizedText(
-                      "Deaktiviere Mehrfachauswahl",
-                      "Deactivate bulk select"
-                    )
-                  : getLocalizedText(
-                      "Aktiviere Mehrfachauswahl",
-                      "Activate bulk select"
-                    )
-              }
-              mainControl
-            />
-          </Group>
-        }
-        isNavbar
-        navbarItems={navbarItems}
-        bottom={
-          <Stack>
-            <Text>{getLocalizedText("Dieser Monat", "This Month")}: </Text>
-            <Group justify="space-between">
-              <Text c="red">
-                {formatMoney(statistics.expenses[0], "EUR", locale)}
-              </Text>
-              <Text c="green">
-                {formatMoney(statistics.income[0], "EUR", locale)}
-              </Text>
-            </Group>
-            <Text>{getLocalizedText("Letzter Monat", "Last Month")}: </Text>
-            <Group justify="space-between">
-              <Text c="red">
-                {formatMoney(statistics.expenses[1], "EUR", locale)}
-              </Text>
-              <Text c="green">
-                {formatMoney(statistics.income[1], "EUR", locale)}
-              </Text>
-            </Group>
-          </Stack>
-        }
+                <ActionIcon
+                  onClick={openCashFlowModal}
+                  variant="transparent"
+                  size="lg"
+                >
+                  <IconCashPlus size={22} />
+                </ActionIcon>
+              </DelayedTooltip>,
+              <SelectActionIcon
+                key="finance-single-select-action-icon"
+                iconSize={20}
+                onClick={handleToggleBulkSelection}
+                selected={bulkSelectionActive}
+                partiallySelected={
+                  selectedCashFlows.length > 0 &&
+                  selectedCashFlows.length < filteredSingleCashFlows.length
+                }
+                disabled={filteredSingleCashFlows.length === 0}
+                tooltipLabel={
+                  bulkSelectionActive
+                    ? getLocalizedText(
+                        "Deaktiviere Mehrfachauswahl",
+                        "Deactivate bulk select"
+                      )
+                    : getLocalizedText(
+                        "Aktiviere Mehrfachauswahl",
+                        "Activate bulk select"
+                      )
+                }
+                mainControl
+              />,
+            ]}
+          />,
+          <FinancesNavbarNavList key="finance-single-navbar-list" navbarItems={navbarItems} />,
+          <FinancesNavbarDefaultCard
+            key="finance-single-default-card"
+            children={
+              <Stack>
+                <Text>{getLocalizedText("Dieser Monat", "This Month")}: </Text>
+                <Group justify="space-between">
+                  <Text c="red">
+                    {formatMoney(statistics.expenses[0], "EUR", locale)}
+                  </Text>
+                  <Text c="green">
+                    {formatMoney(statistics.income[0], "EUR", locale)}
+                  </Text>
+                </Group>
+                <Text>{getLocalizedText("Letzter Monat", "Last Month")}: </Text>
+                <Group justify="space-between">
+                  <Text c="red">
+                    {formatMoney(statistics.expenses[1], "EUR", locale)}
+                  </Text>
+                  <Text c="green">
+                    {formatMoney(statistics.income[1], "EUR", locale)}
+                  </Text>
+                </Group>
+              </Stack>
+            }
+          />,
+        ]}
       />
       <ScrollArea mb="md" ml={230} w="100%">
         <Collapse

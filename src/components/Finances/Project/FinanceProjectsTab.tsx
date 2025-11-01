@@ -44,9 +44,12 @@ import {
 } from "@/types/finance.types";
 import { showDeleteConfirmationModal } from "@/utils/notificationFunctions";
 import EditFinanceProjectDrawer from "./EditFinanceProjectDrawer";
-import FinancesNavbar from "../FinancesNavbar";
+import FinancesNavbar from "../FinancesNavbar/FinancesNavbar";
 import { SettingsTab } from "@/components/Settings/SettingsModal";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
+import FinancesNavbarNavList from "../FinancesNavbar/FinancesNavbarNavList";
+import FinancesNavbarDefaultCard from "../FinancesNavbar/FinancesNavbarDefaultCard";
+import FinancesNavbarToolbar from "../FinancesNavbar/FinancesNavbarToolbar";
 
 export default function FinanceProjectTab() {
   const { mutate: deleteFinanceProjectMutation, isPending: isDeleting } =
@@ -400,73 +403,79 @@ export default function FinanceProjectTab() {
   return (
     <Group align="flex-start" w="100%" wrap="nowrap" mb="xl">
       <FinancesNavbar
-        top={
-          <Group justify="space-between" align="center">
-            <AdjustmentActionIcon
-              size="lg"
-              variant="transparent"
-              tooltipLabel={getLocalizedText(
-                "Finanzeinstellungen anpassen",
-                "Adjust finance settings"
-              )}
-              iconSize={20}
-              onClick={() => {
-                setIsModalOpen(true);
-                setSelectedTab(SettingsTab.FINANCE);
-              }}
-            />
-
-            <DelayedTooltip
-              label={getLocalizedText(
-                "Finanzprojekt hinzufügen",
-                "Add Finance Project"
-              )}
-            >
-              <ActionIcon
-                onClick={toggleAddProjectModal}
-                variant="transparent"
+        items={[
+          <FinancesNavbarToolbar
+            key="finance-projects-toolbar"
+            toolbarItems={[
+              <AdjustmentActionIcon
+                key="finance-projects-adjustment-action-icon"
                 size="lg"
+                variant="transparent"
+                tooltipLabel={getLocalizedText(
+                  "Finanzeinstellungen anpassen",
+                  "Adjust finance settings"
+                )}
+                iconSize={20}
+                onClick={() => {
+                  setIsModalOpen(true);
+                  setSelectedTab(SettingsTab.FINANCE);
+                }}
+              />,
+              <DelayedTooltip
+                key="finance-projects-add-project-tooltip"
+                label={getLocalizedText(
+                  "Finanzprojekt hinzufügen",
+                  "Add Finance Project"
+                )}
               >
-                <IconMoneybagPlus size={20} />
-              </ActionIcon>
-            </DelayedTooltip>
-
-            <SelectActionIcon
-              iconSize={20}
-              disabled={isPending || filteredFinanceProjects.length === 0}
-              tooltipLabel={
-                selectedModeActive
-                  ? getLocalizedText(
-                      "Deaktiviere Mehrfachauswahl",
-                      "Deactivate bulk select"
-                    )
-                  : getLocalizedText(
-                      "Aktiviere Mehrfachauswahl",
-                      "Activate bulk select"
-                    )
-              }
-              mainControl
-              selected={selectedModeActive}
-              onClick={handleToggleSelectedMode}
-            />
-          </Group>
-        }
-        isNavbar
-        navbarItems={newNavbarItems}
-        bottom={
-          <Stack>
-            <Text size="sm" c="dimmed">
-              {filteredFinanceProjects.length}{" "}
-              {getLocalizedText("Projekte", "Projects")}
-            </Text>
-            <Group justify="space-between" align="center">
-              <Text size="sm" c="dimmed">
-                {getLocalizedText("Gesamtbetrag", "Total Amount")}:{" "}
-                {formatMoney(navbarItems.all.totalAmount, "EUR", locale)}
-              </Text>
-            </Group>
-          </Stack>
-        }
+                <ActionIcon
+                  onClick={toggleAddProjectModal}
+                  variant="transparent"
+                  size="lg"
+                >
+                  <IconMoneybagPlus size={20} />
+                </ActionIcon>
+              </DelayedTooltip>,
+              <SelectActionIcon
+                key="finance-projects-select-action-icon"
+                iconSize={20}
+                disabled={isPending || filteredFinanceProjects.length === 0}
+                tooltipLabel={
+                  selectedModeActive
+                    ? getLocalizedText(
+                        "Deaktiviere Mehrfachauswahl",
+                        "Deactivate bulk select"
+                      )
+                    : getLocalizedText(
+                        "Aktiviere Mehrfachauswahl",
+                        "Activate bulk select"
+                      )
+                }
+                mainControl
+                selected={selectedModeActive}
+                onClick={handleToggleSelectedMode}
+              />,
+            ]}
+          />,
+          <FinancesNavbarNavList key="finance-projects-navbar-list" navbarItems={newNavbarItems} />,
+          <FinancesNavbarDefaultCard
+            key="finance-projects-default-card"
+            children={
+              <Stack>
+                <Text size="sm" c="dimmed">
+                  {filteredFinanceProjects.length}{" "}
+                  {getLocalizedText("Projekte", "Projects")}
+                </Text>
+                <Group justify="space-between" align="center">
+                  <Text size="sm" c="dimmed">
+                    {getLocalizedText("Gesamtbetrag", "Total Amount")}:{" "}
+                    {formatMoney(navbarItems.all.totalAmount, "EUR", locale)}
+                  </Text>
+                </Group>
+              </Stack>
+            }
+          />,
+        ]}
       />
       <Stack w="100%" ml={220} align="center">
         <Stack gap={0} w="100%">

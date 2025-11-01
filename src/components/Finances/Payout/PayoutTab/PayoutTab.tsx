@@ -6,7 +6,7 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import { Stack, Group, ThemeIcon, Skeleton } from "@mantine/core";
 
 import PayoutRowCard from "./PayoutRowCard";
-import FinancesNavbar from "../../FinancesNavbar";
+import FinancesNavbar from "../../FinancesNavbar/FinancesNavbar";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 
 import { SettingsTab } from "@/components/Settings/SettingsModal";
@@ -16,11 +16,12 @@ import {
   IconList,
   IconMoneybag,
 } from "@tabler/icons-react";
-import { useWorkStore } from "@/stores/workManagerStore";
 import { useSingleCashflowQuery } from "@/utils/queries/finances/use-single-cashflow";
 import { Payout } from "@/types/finance.types";
 import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
 import { useWorkTimeEntryQuery } from "@/utils/queries/work/use-work-time_entry";
+import FinancesNavbarNavList from "../../FinancesNavbar/FinancesNavbarNavList";
+import FinancesNavbarToolbar from "../../FinancesNavbar/FinancesNavbarToolbar";
 
 export default function PayoutTab() {
   const { setIsModalOpen, setSelectedTab, getLocalizedText } =
@@ -131,24 +132,30 @@ export default function PayoutTab() {
   return (
     <Group w="100%">
       <FinancesNavbar
-        top={
-          <Group justify="space-between">
-            <AdjustmentActionIcon
-              size="lg"
-              tooltipLabel={getLocalizedText(
-                "Finanz Einstellungen anpassen",
-                "Adjust finance settings"
-              )}
-              iconSize={20}
-              onClick={() => {
-                setIsModalOpen(true);
-                setSelectedTab(SettingsTab.FINANCE);
-              }}
-            />
-          </Group>
-        }
-        isNavbar
-        navbarItems={navbarItems}
+        items={[
+          <FinancesNavbarToolbar
+            key="payout-toolbar"
+            toolbarItems={[
+              <AdjustmentActionIcon
+                key="payout-adjustment-action-icon"
+                size="lg"
+                tooltipLabel={getLocalizedText(
+                  "Finanz Einstellungen anpassen",
+                  "Adjust finance settings"
+                )}
+                iconSize={20}
+                onClick={() => {
+                  setIsModalOpen(true);
+                  setSelectedTab(SettingsTab.FINANCE);
+                }}
+              />,
+            ]}
+          />,
+          <FinancesNavbarNavList
+            key="payout-navbar-list"
+            navbarItems={navbarItems}
+          />,
+        ]}
       />
       <Stack w="100%" mb="xl" ml={230}>
         {isSingleCashFlowsPending || isProjectPending || isTimeEntryPending

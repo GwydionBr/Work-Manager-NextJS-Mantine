@@ -28,7 +28,7 @@ import {
   IconCheck,
   IconList,
 } from "@tabler/icons-react";
-import FinancesNavbar from "../../FinancesNavbar";
+import FinancesNavbar from "../../FinancesNavbar/FinancesNavbar";
 import RecurringCashFlowRow from "./RecurringCashFlowRow";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 import { SettingsTab } from "@/components/Settings/SettingsModal";
@@ -36,12 +36,14 @@ import { RecurringCashFlow } from "@/types/finance.types";
 import { formatMoney } from "@/utils/formatFunctions";
 import { useRecurringCashflowQuery } from "@/utils/queries/finances/use-recurring-cashflow";
 import { useProcessRecurringCashflows } from "@/hooks/useProcessRecurringCashflows";
+import FinancesNavbarDefaultCard from "../../FinancesNavbar/FinancesNavbarDefaultCard";
+import FinancesNavbarToolbar from "../../FinancesNavbar/FinancesNavbarToolbar";
+import FinancesNavbarNavList from "../../FinancesNavbar/FinancesNavbarNavList";
 
 export default function FinanceRecurringTab() {
   const { data: recurringCashFlows = [], isPending } =
     useRecurringCashflowQuery();
-  const { triggerProcessing } =
-    useProcessRecurringCashflows();
+  const { triggerProcessing } = useProcessRecurringCashflows();
   const { locale, defaultFinanceCurrency, setIsModalOpen, setSelectedTab } =
     useSettingsStore();
 
@@ -274,103 +276,97 @@ export default function FinanceRecurringTab() {
     <Group w="100%">
       {/* Navbar */}
       <FinancesNavbar
-        top={
-          <Group justify="space-between">
-            <AdjustmentActionIcon
-              size="lg"
-              variant="transparent"
-              tooltipLabel={
-                locale === "de-DE"
-                  ? "Finanzeinstellungen anpassen"
-                  : "Adjust finance settings"
-              }
-              iconSize={20}
-              onClick={() => {
-                setIsModalOpen(true);
-                setSelectedTab(SettingsTab.FINANCE);
-              }}
-            />
-            <DelayedTooltip
-              label={
-                locale === "de-DE"
-                  ? "Wiederkehrenden Cashflow hinzufügen"
-                  : "Add Recurring Cash Flow"
-              }
-            >
-              <ActionIcon
-                onClick={openCashFlowModal}
-                variant="transparent"
+        items={[
+          <FinancesNavbarToolbar
+            key="finance-recurring-toolbar"
+            toolbarItems={[
+              <AdjustmentActionIcon
+                key="finance-recurring-adjustment-action-icon"
                 size="lg"
+                variant="transparent"
+                tooltipLabel={
+                  locale === "de-DE"
+                    ? "Finanzeinstellungen anpassen"
+                    : "Adjust finance settings"
+                }
+                iconSize={20}
+                onClick={() => {
+                  setIsModalOpen(true);
+                  setSelectedTab(SettingsTab.FINANCE);
+                }}
+              />,
+              <DelayedTooltip
+                key="finance-recurring-add-cash-flow-tooltip"
+                label={
+                  locale === "de-DE"
+                    ? "Wiederkehrenden Cashflow hinzufügen"
+                    : "Add Recurring Cash Flow"
+                }
               >
-                <IconCashPlus size={22} />
-              </ActionIcon>
-            </DelayedTooltip>
-            {/* <SelectActionIcon
-              iconSize={20}   
-              onClick={toggleBulkSelection}
-              selected={bulkSelectionActive}
-              partiallySelected={
-                selectedCashFlows.length > 0 &&
-                selectedCashFlows.length < filteredActiveCashFlows.length
-              }
-              disabled={filteredActiveCashFlows.length === 0}
-              tooltipLabel={
-                bulkSelectionActive
-                  ? locale === "de-DE"
-                    ? "Deaktiviere Mehrfachauswahl"
-                    : "Deactivate bulk select"
-                  : locale === "de-DE"
-                    ? "Aktiviere Mehrfachauswahl"
-                    : "Activate bulk select"
-              }
-              mainControl
-            /> */}
-          </Group>
-        }
-        isNavbar
-        navbarItems={navbarItems}
-        bottom={
-          <Stack align="flex-start">
-            <Group justify="space-between">
-              <Group gap="xs">
-                <Text>{locale === "de-DE" ? "Ausgaben" : "Expense"}:</Text>
-                <Text c="red" fw={700}>
-                  {activeExpenseSum
-                    ? formatMoney(
-                        activeExpenseSum,
-                        defaultFinanceCurrency,
-                        locale
-                      )
-                    : 0}
-                </Text>
-              </Group>
-              <Group gap="xs">
-                <Text>{locale === "de-DE" ? "Einnahmen" : "Income"}:</Text>
-                <Text c="green" fw={700}>
-                  {activeIncomeSum
-                    ? formatMoney(
-                        activeIncomeSum,
-                        defaultFinanceCurrency,
-                        locale
-                      )
-                    : 0}
-                </Text>
-              </Group>
-            </Group>
-            <Divider />
-            <Group justify="center">
-              <Text>{locale === "de-DE" ? "Gesamt" : "Total"}:</Text>
-              <Text
-                c={activeTotalSum && activeTotalSum > 0 ? "green" : "red"}
-                fw={700}
-              >
-                {activeTotalSum
-                  ? formatMoney(activeTotalSum, defaultFinanceCurrency, locale)
-                  : 0}
-              </Text>
-            </Group>
-          </Stack>
-        }
+                <ActionIcon
+                  onClick={openCashFlowModal}
+                  variant="transparent"
+                  size="lg"
+                >
+                  <IconCashPlus size={22} />
+                </ActionIcon>
+              </DelayedTooltip>,
+            ]}
+          />,
+          <FinancesNavbarNavList
+            key="finance-recurring-navbar-list"
+            navbarItems={navbarItems}
+          />,
+          <FinancesNavbarDefaultCard
+            key="finance-recurring-default-card"
+            children={
+              <Stack align="flex-start">
+                <Group justify="space-between">
+                  <Group gap="xs">
+                    <Text>{locale === "de-DE" ? "Ausgaben" : "Expense"}:</Text>
+                    <Text c="red" fw={700}>
+                      {activeExpenseSum
+                        ? formatMoney(
+                            activeExpenseSum,
+                            defaultFinanceCurrency,
+                            locale
+                          )
+                        : 0}
+                    </Text>
+                  </Group>
+                  <Group gap="xs">
+                    <Text>{locale === "de-DE" ? "Einnahmen" : "Income"}:</Text>
+                    <Text c="green" fw={700}>
+                      {activeIncomeSum
+                        ? formatMoney(
+                            activeIncomeSum,
+                            defaultFinanceCurrency,
+                            locale
+                          )
+                        : 0}
+                    </Text>
+                  </Group>
+                </Group>
+                <Divider />
+                <Group justify="center">
+                  <Text>{locale === "de-DE" ? "Gesamt" : "Total"}:</Text>
+                  <Text
+                    c={activeTotalSum && activeTotalSum > 0 ? "green" : "red"}
+                    fw={700}
+                  >
+                    {activeTotalSum
+                      ? formatMoney(
+                          activeTotalSum,
+                          defaultFinanceCurrency,
+                          locale
+                        )
+                      : 0}
+                  </Text>
+                </Group>
+              </Stack>
+            }
+          />,
+        ]}
       />
       {/* Tables */}
       <Stack gap="sm" mb="xl" ml={230} w="100%">
