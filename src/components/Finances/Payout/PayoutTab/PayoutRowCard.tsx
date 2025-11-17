@@ -13,9 +13,7 @@ import {
   Box,
 } from "@mantine/core";
 import {
-  IconCurrencyDollar,
   IconClock,
-  IconReceipt,
   IconFolder,
   IconTrendingUp,
   IconTrendingDown,
@@ -48,7 +46,7 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
   };
 
   const hasCurrencyConversion =
-    payout.end_currency && payout.end_currency !== payout.start_currency;
+    payout.start_currency && payout.currency !== payout.start_currency;
   const totalSessions = payout.timer_sessions?.length || 0;
   const totalTime = getTotalSessionTime();
 
@@ -92,15 +90,6 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
                 >
                   {totalTime}
                 </Badge>
-                {payout.timer_session_project && (
-                  <Badge
-                    color="violet"
-                    variant="transparent"
-                    leftSection={<IconFolder size={12} />}
-                  >
-                    {payout.timer_session_project.title}
-                  </Badge>
-                )}
               </Group>
             )}
             {totalSessions === 0 && !payout.timer_project && (
@@ -138,7 +127,11 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
             </Text>
             <Group gap="xs" align="center">
               <Text size="lg" fw={700} c="green">
-                {formatMoney(payout.start_value, payout.start_currency, locale)}
+                {formatMoney(
+                  payout.start_value ?? payout.value,
+                  payout.currency ?? payout.currency,
+                  locale
+                )}
               </Text>
             </Group>
           </Stack>
@@ -156,11 +149,7 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
                 </Text>
                 <Group gap="xs" align="center">
                   <Text size="lg" fw={700} c="blue">
-                    {formatMoney(
-                      payout.end_value!,
-                      payout.end_currency!,
-                      locale
-                    )}
+                    {formatMoney(payout.value!, payout.currency!, locale)}
                   </Text>
                 </Group>
               </Stack>
@@ -179,7 +168,7 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
           >
             <Group gap="xs" align="center">
               <ThemeIcon size="sm" color="blue" variant="light">
-                {payout.end_value! > payout.start_value ? (
+                {payout.value > payout.start_value! ? (
                   <IconTrendingUp size={14} />
                 ) : (
                   <IconTrendingDown size={14} />
@@ -188,8 +177,8 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
               <Text size="sm" c="blue" fw={500}>
                 {locale === "de-DE" ? "Konvertierungsrate" : "Conversion Rate"}:
                 1 {payout.start_currency} ={" "}
-                {(payout.end_value! / payout.start_value).toFixed(4)}{" "}
-                {payout.end_currency}
+                {(payout.value / payout.start_value!).toFixed(4)}{" "}
+                {payout.currency}
               </Text>
             </Group>
           </Card>

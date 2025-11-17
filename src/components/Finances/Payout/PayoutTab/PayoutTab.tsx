@@ -10,17 +10,10 @@ import FinancesNavbar from "../../FinancesNavbar/FinancesNavbar";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 
 import { SettingsTab } from "@/components/Settings/SettingsModal";
-import {
-  IconClock,
-  IconFolder,
-  IconList,
-  IconMoneybag,
-} from "@tabler/icons-react";
 import { useSingleCashflowQuery } from "@/utils/queries/finances/use-single-cashflow";
 import { Payout } from "@/types/finance.types";
 import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
 import { useWorkTimeEntryQuery } from "@/utils/queries/work/use-work-time_entry";
-import FinancesNavbarNavList from "../../FinancesNavbar/FinancesNavbarNavList";
 import FinancesNavbarToolbar from "../../FinancesNavbar/FinancesNavbarToolbar";
 
 export default function PayoutTab() {
@@ -35,16 +28,14 @@ export default function PayoutTab() {
     useWorkProjectQuery();
   const { data: timerSessions = [], isPending: isTimeEntryPending } =
     useWorkTimeEntryQuery();
-  const [typeFilter, setTypeFilter] = useState<
-    "all" | "project" | "session" | "financeProject"
-  >("all");
 
   const payoutData = useMemo<Payout[]>(() => {
     return payouts.map((payout) => ({
       ...payout,
-      cashflow: payout.cashflow_id
-        ? (singleCashFlows.find((flow) => flow.id === payout.cashflow_id) ??
-          null)
+      cashflow: payout.single_cashflow_id
+        ? (singleCashFlows.find(
+            (flow) => flow.id === payout.single_cashflow_id
+          ) ?? null)
         : null,
       timer_project: payout.timer_project_id
         ? (projects.find((project) => project.id === payout.timer_project_id) ??
@@ -54,80 +45,8 @@ export default function PayoutTab() {
         timerSessions
           .map((session) => (session.payout_id === payout.id ? session : null))
           .filter((session) => session !== null) ?? [],
-      timer_session_project: payout.timer_session_project_id
-        ? (projects.find(
-            (project) => project.id === payout.timer_session_project_id
-          ) ?? null)
-        : null,
     }));
   }, [payouts, singleCashFlows, projects, timerSessions]);
-
-  const filteredPayoutData = useMemo(() => {
-    return payoutData.filter((payout) => {
-      if (typeFilter === "all") return true;
-      if (typeFilter === "project") return payout.timer_project !== null;
-      if (typeFilter === "session") return payout.timer_sessions.length > 0;
-      if (typeFilter === "financeProject")
-        return payout.finance_project_id !== null;
-    });
-  }, [payoutData, typeFilter]);
-
-  const navbarItems = useMemo(() => {
-    return [
-      [
-        {
-          label: getLocalizedText("Alle", "All"),
-          leftSection: (
-            <ThemeIcon variant="transparent" color="gray">
-              <IconList />
-            </ThemeIcon>
-          ),
-          active: typeFilter === "all",
-          onClick: () => setTypeFilter("all"),
-          disabled: payoutData.length === 0,
-        },
-        {
-          label: getLocalizedText("Projekte", "Projects"),
-          leftSection: (
-            <ThemeIcon variant="transparent" color="grape">
-              <IconFolder />
-            </ThemeIcon>
-          ),
-          active: typeFilter === "project",
-          onClick: () => setTypeFilter("project"),
-          disabled:
-            payoutData.filter((payout) => payout.timer_project !== null)
-              .length === 0,
-        },
-        {
-          label: getLocalizedText("Sessions", "Sessions"),
-          leftSection: (
-            <ThemeIcon variant="transparent" color="yellow">
-              <IconClock />
-            </ThemeIcon>
-          ),
-          active: typeFilter === "session",
-          onClick: () => setTypeFilter("session"),
-          disabled:
-            payoutData.filter((payout) => payout.timer_sessions.length > 0)
-              .length === 0,
-        },
-        {
-          label: getLocalizedText("Finance Projects", "Finance Projects"),
-          leftSection: (
-            <ThemeIcon variant="transparent" color="green">
-              <IconMoneybag />
-            </ThemeIcon>
-          ),
-          active: typeFilter === "financeProject",
-          onClick: () => setTypeFilter("financeProject"),
-          disabled:
-            payoutData.filter((payout) => payout.finance_project_id !== null)
-              .length === 0,
-        },
-      ],
-    ];
-  }, [typeFilter, payoutData]);
 
   return (
     <Group w="100%">
@@ -151,10 +70,6 @@ export default function PayoutTab() {
               />,
             ]}
           />,
-          <FinancesNavbarNavList
-            key="payout-navbar-list"
-            navbarItems={navbarItems}
-          />,
         ]}
       />
       <Stack w="100%" mb="xl" ml={230}>
@@ -162,7 +77,7 @@ export default function PayoutTab() {
           ? Array.from({ length: 3 }, (_, i) => (
               <Skeleton height={200} w="100%" key={i} radius="md" />
             ))
-          : filteredPayoutData.map((payout) => (
+          : payoutData.map((payout) => (
               <PayoutRowCard key={payout.id} payout={payout} />
             ))}
       </Stack>

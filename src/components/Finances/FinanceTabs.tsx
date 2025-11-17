@@ -10,6 +10,7 @@ import {
   IconCashBanknotePlus,
   IconCashBanknote,
   IconRepeat,
+  IconReceipt2,
 } from "@tabler/icons-react";
 import FinanceOverviewTab from "@/components/Finances/Overview/FinanceOverviewTab";
 import FinanceRecurringTab from "@/components/Finances/CashFlow/Recurring/FinanceRecurringTab";
@@ -60,7 +61,7 @@ export default function FinanceTabs() {
           {locale === "de-DE" ? "Projekte" : "Projects"}
         </Tabs.Tab>
         <Tabs.Tab
-          leftSection={<IconCashBanknotePlus color="light-dark(blue, cyan)" />}
+          leftSection={<IconReceipt2 color="light-dark(blue, cyan)" />}
           value="Payout"
         >
           {locale === "de-DE" ? "Auszahlung" : "Payout"}

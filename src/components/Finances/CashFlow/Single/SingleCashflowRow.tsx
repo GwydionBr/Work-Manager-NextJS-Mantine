@@ -22,7 +22,11 @@ import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import { formatMoney } from "@/utils/formatFunctions";
 import { SingleCashFlow } from "@/types/finance.types";
 import { Tables } from "@/types/db.types";
-import { IconRepeat } from "@tabler/icons-react";
+import {
+  IconDeviceDesktopDollar,
+  IconReceipt2,
+  IconRepeat,
+} from "@tabler/icons-react";
 
 interface SingleCashflowRowProps extends CardProps {
   cashflow: SingleCashFlow;
@@ -131,14 +135,6 @@ export default function SingleCashflowRow({
         <Grid.Col span={6}>
           <Group>
             <Text>{cashflow.title}</Text>
-            {cashflow.recurring_cash_flow_id && (
-              <ThemeIcon
-                variant="transparent"
-                color={cashflow.amount < 0 ? "red" : "green"}
-              >
-                <IconRepeat size={20} />
-              </ThemeIcon>
-            )}
           </Group>
         </Grid.Col>
         <Grid.Col span={3}>
@@ -150,6 +146,28 @@ export default function SingleCashflowRow({
               showAddCategory={hovered}
             />
           </Stack>
+        </Grid.Col>
+        <Grid.Col span={1}>
+          <Group justify="flex-end">
+            {cashflow.recurring_cash_flow_id && (
+              <ThemeIcon
+                variant="transparent"
+                color={cashflow.amount < 0 ? "red" : "green"}
+              >
+                <IconRepeat size={20} />
+              </ThemeIcon>
+            )}
+            {cashflow.payout_id && (
+              <ThemeIcon variant="transparent" color="blue">
+                <IconReceipt2 size={20} />
+              </ThemeIcon>
+            )}
+            {cashflow.finance_project_id && (
+              <ThemeIcon variant="transparent" color="gray">
+                <IconDeviceDesktopDollar size={20} />
+              </ThemeIcon>
+            )}
+          </Group>
         </Grid.Col>
       </Grid>
     </Card>
