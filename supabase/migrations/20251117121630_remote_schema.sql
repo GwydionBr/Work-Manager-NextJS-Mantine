@@ -280,6 +280,20 @@ CREATE TABLE IF NOT EXISTS "public"."appointment" (
 ALTER TABLE "public"."appointment" OWNER TO "postgres";
 
 
+CREATE TABLE IF NOT EXISTS "public"."bank_account" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "title" "text" NOT NULL,
+    "description" "text",
+    "currency" "public"."currency" NOT NULL,
+    "saldo" double precision DEFAULT '0'::double precision NOT NULL,
+    "saldo_set_at" timestamp with time zone DEFAULT ("now"() AT TIME ZONE 'utc'::"text") NOT NULL
+);
+
+
+ALTER TABLE "public"."bank_account" OWNER TO "postgres";
+
+
 CREATE TABLE IF NOT EXISTS "public"."finance_category" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
@@ -489,6 +503,25 @@ CREATE TABLE IF NOT EXISTS "public"."group_task" (
 
 
 ALTER TABLE "public"."group_task" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."old_payou_data" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "title" "text" NOT NULL,
+    "start_currency" "public"."currency" NOT NULL,
+    "end_currency" "public"."currency",
+    "start_value" numeric NOT NULL,
+    "end_value" numeric,
+    "cashflow_id" "uuid" NOT NULL,
+    "user_id" "uuid" DEFAULT "auth"."uid"() NOT NULL,
+    "timer_project_id" "uuid",
+    "finance_project_id" "uuid",
+    "timer_session_project_id" "uuid"
+);
+
+
+ALTER TABLE "public"."old_payou_data" OWNER TO "postgres";
 
 
 CREATE TABLE IF NOT EXISTS "public"."payout" (
@@ -768,6 +801,11 @@ ALTER TABLE ONLY "public"."appointment"
 
 
 
+ALTER TABLE ONLY "public"."bank_account"
+    ADD CONSTRAINT "bank_account_pkey" PRIMARY KEY ("id");
+
+
+
 ALTER TABLE ONLY "public"."finance_category"
     ADD CONSTRAINT "cash_flow_category_pkey" PRIMARY KEY ("id");
 
@@ -850,6 +888,11 @@ ALTER TABLE ONLY "public"."group"
 
 ALTER TABLE ONLY "public"."group_task"
     ADD CONSTRAINT "group_task_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."old_payou_data"
+    ADD CONSTRAINT "old_payou_data_pkey" PRIMARY KEY ("id");
 
 
 
@@ -1090,6 +1133,31 @@ ALTER TABLE ONLY "public"."group_task"
 
 ALTER TABLE ONLY "public"."group"
     ADD CONSTRAINT "group_user_id_fkey1" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."old_payou_data"
+    ADD CONSTRAINT "old_payou_data_cashflow_id_fkey" FOREIGN KEY ("cashflow_id") REFERENCES "public"."single_cash_flow"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."old_payou_data"
+    ADD CONSTRAINT "old_payou_data_finance_project_id_fkey" FOREIGN KEY ("finance_project_id") REFERENCES "public"."finance_project"("id") ON DELETE SET NULL;
+
+
+
+ALTER TABLE ONLY "public"."old_payou_data"
+    ADD CONSTRAINT "old_payou_data_timer_project_id_fkey" FOREIGN KEY ("timer_project_id") REFERENCES "public"."timer_project"("id") ON DELETE SET NULL;
+
+
+
+ALTER TABLE ONLY "public"."old_payou_data"
+    ADD CONSTRAINT "old_payou_data_timer_session_project_id_fkey" FOREIGN KEY ("timer_session_project_id") REFERENCES "public"."timer_project"("id") ON DELETE SET NULL;
+
+
+
+ALTER TABLE ONLY "public"."old_payou_data"
+    ADD CONSTRAINT "old_payou_data_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
 
 
 
@@ -1764,6 +1832,9 @@ CREATE POLICY "Users can update own profile." ON "public"."profiles" FOR UPDATE 
 ALTER TABLE "public"."appointment" ENABLE ROW LEVEL SECURITY;
 
 
+ALTER TABLE "public"."bank_account" ENABLE ROW LEVEL SECURITY;
+
+
 ALTER TABLE "public"."finance_category" ENABLE ROW LEVEL SECURITY;
 
 
@@ -1807,6 +1878,9 @@ ALTER TABLE "public"."group_member" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."group_task" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."old_payou_data" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."payout" ENABLE ROW LEVEL SECURITY;
@@ -2082,6 +2156,12 @@ GRANT ALL ON TABLE "public"."appointment" TO "service_role";
 
 
 
+GRANT ALL ON TABLE "public"."bank_account" TO "anon";
+GRANT ALL ON TABLE "public"."bank_account" TO "authenticated";
+GRANT ALL ON TABLE "public"."bank_account" TO "service_role";
+
+
+
 GRANT ALL ON TABLE "public"."finance_category" TO "anon";
 GRANT ALL ON TABLE "public"."finance_category" TO "authenticated";
 GRANT ALL ON TABLE "public"."finance_category" TO "service_role";
@@ -2169,6 +2249,12 @@ GRANT ALL ON TABLE "public"."group_member" TO "service_role";
 GRANT ALL ON TABLE "public"."group_task" TO "anon";
 GRANT ALL ON TABLE "public"."group_task" TO "authenticated";
 GRANT ALL ON TABLE "public"."group_task" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."old_payou_data" TO "anon";
+GRANT ALL ON TABLE "public"."old_payou_data" TO "authenticated";
+GRANT ALL ON TABLE "public"."old_payou_data" TO "service_role";
 
 
 
@@ -2310,7 +2396,6 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TAB
 
 
 
-RESET ALL;
 
 --
 -- Dumped schema changes for auth and storage

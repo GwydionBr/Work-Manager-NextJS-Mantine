@@ -1,5 +1,9 @@
 -- supabase/seed.sql
 --
+-- Ensure extensions are available
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA "extensions";
+
 -- create test users
 INSERT INTO
     auth.users (
@@ -23,11 +27,11 @@ INSERT INTO
     ) (
         select
             '00000000-0000-0000-0000-000000000000',
-            uuid_generate_v4 (),
+            extensions.uuid_generate_v4 (),
             'authenticated',
             'authenticated',
             'test' || (ROW_NUMBER() OVER ()) || '@test.com',
-            crypt ('TestPassword', gen_salt ('bf')),
+            extensions.crypt ('TestPassword', extensions.gen_salt ('bf')),
             current_timestamp,
             current_timestamp,
             current_timestamp,
