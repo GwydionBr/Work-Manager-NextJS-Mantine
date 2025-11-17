@@ -3,6 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { WorkProject, WorkTimeEntry } from "@/types/work.types";
 import { SingleCashFlow } from "@/types/finance.types";
+import { Tables } from "@/types/db.types";
 
 interface PayoutHourlyTimerProjectProps {
   project: WorkProject;
@@ -16,6 +17,7 @@ export async function payoutHourlyTimerProject({
   timeEntries,
 }: PayoutHourlyTimerProjectProps): Promise<{
   singleCashFlow: SingleCashFlow;
+  payout: Tables<"payout">;
 }> {
   const supabase = await createClient();
 
@@ -27,12 +29,28 @@ export async function payoutHourlyTimerProject({
     )
     .toFixed(2);
 
+  const { data: payoutData, error: payoutError } = await supabase
+    .from("payout")
+    .insert({
+      title,
+      value: Number(totalAmount),
+      currency: project.currency,
+      timer_project_id: project.id,
+    })
+    .select()
+    .single();
+
+  if (payoutError) {
+    throw new Error(payoutError.message);
+  }
+
   const { data: cashflowData, error: cashFlowError } = await supabase
     .from("single_cash_flow")
     .insert({
       title,
       amount: Number(totalAmount),
       currency: project.currency,
+      payout_id: payoutData.id,
     })
     .select()
     .single();
@@ -75,5 +93,6 @@ export async function payoutHourlyTimerProject({
       ...cashflowData,
       categories: project.categories.map((c) => ({ finance_category: c })),
     },
+    payout: payoutData,
   };
 }

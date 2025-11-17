@@ -754,7 +754,6 @@ export type Database = {
           created_at: string
           currency: Database["public"]["Enums"]["currency"]
           id: string
-          single_cashflow_id: string
           start_currency: Database["public"]["Enums"]["currency"] | null
           start_value: number | null
           timer_project_id: string | null
@@ -766,7 +765,6 @@ export type Database = {
           created_at?: string
           currency: Database["public"]["Enums"]["currency"]
           id?: string
-          single_cashflow_id: string
           start_currency?: Database["public"]["Enums"]["currency"] | null
           start_value?: number | null
           timer_project_id?: string | null
@@ -778,7 +776,6 @@ export type Database = {
           created_at?: string
           currency?: Database["public"]["Enums"]["currency"]
           id?: string
-          single_cashflow_id?: string
           start_currency?: Database["public"]["Enums"]["currency"] | null
           start_value?: number | null
           timer_project_id?: string | null
@@ -787,13 +784,6 @@ export type Database = {
           value?: number
         }
         Relationships: [
-          {
-            foreignKeyName: "payout_single_cashflow_id_fkey"
-            columns: ["single_cashflow_id"]
-            isOneToOne: false
-            referencedRelation: "single_cash_flow"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "payout_timer_project_id_fkey"
             columns: ["timer_project_id"]

@@ -99,8 +99,6 @@ alter table "public"."payout" drop column "timer_session_project_id";
 
 alter table "public"."payout" add column "currency" public.currency not null;
 
-alter table "public"."payout" add column "single_cashflow_id" uuid not null;
-
 alter table "public"."payout" add column "value" numeric not null;
 
 alter table "public"."payout" alter column "start_currency" drop not null;
@@ -140,10 +138,6 @@ alter table "public"."old_payout_data" validate constraint "old_payou_data_timer
 alter table "public"."old_payout_data" add constraint "old_payou_data_user_id_fkey" FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE not valid;
 
 alter table "public"."old_payout_data" validate constraint "old_payou_data_user_id_fkey";
-
-alter table "public"."payout" add constraint "payout_single_cashflow_id_fkey" FOREIGN KEY (single_cashflow_id) REFERENCES public.single_cash_flow(id) ON DELETE CASCADE not valid;
-
-alter table "public"."payout" validate constraint "payout_single_cashflow_id_fkey";
 
 alter table "public"."single_cash_flow" add constraint "single_cash_flow_payout_id_fkey" FOREIGN KEY (payout_id) REFERENCES public.payout(id) ON DELETE SET NULL not valid;
 

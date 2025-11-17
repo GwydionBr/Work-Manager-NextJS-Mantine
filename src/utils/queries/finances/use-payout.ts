@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { Tables } from "@/types/db.types";
 import { FinanceProject, SingleCashFlow } from "@/types/finance.types";
@@ -11,12 +11,17 @@ import {
 } from "@/utils/notificationFunctions";
 import { payoutFinanceAdjustment } from "@/actions/finance/payout/payout-finance-adjustment";
 import { payoutHourlyTimerProject } from "@/actions/finance/payout/payout-hourly-timer-project";
-import {
-  CompleteWorkProject,
-  WorkProject,
-  WorkTimeEntry,
-} from "@/types/work.types";
+import { getAllPayouts } from "@/actions/finance/payout/get-all-payouts";
+import { WorkProject, WorkTimeEntry } from "@/types/work.types";
 import { CustomMutationProps } from "@/types/query.types";
+
+// Query to get all payouts
+export function usePayoutQuery() {
+  return useQuery({
+    queryKey: ["payouts"],
+    queryFn: () => getAllPayouts(),
+  });
+}
 
 // Mutation to payout a finance project
 export const usePayoutFinanceProjectMutation = ({
