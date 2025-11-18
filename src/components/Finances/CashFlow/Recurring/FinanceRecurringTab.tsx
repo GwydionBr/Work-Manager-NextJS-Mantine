@@ -28,7 +28,7 @@ import {
   IconCheck,
   IconList,
 } from "@tabler/icons-react";
-import FinancesNavbar from "../../FinancesNavbar/FinancesNavbar";
+import FinancesNavbar from "@/components/Finances/FinancesNavbar/FinancesNavbar";
 import RecurringCashFlowRow from "./RecurringCashFlowRow";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 import { SettingsTab } from "@/components/Settings/SettingsModal";
@@ -36,9 +36,10 @@ import { RecurringCashFlow } from "@/types/finance.types";
 import { formatMoney } from "@/utils/formatFunctions";
 import { useRecurringCashflowQuery } from "@/utils/queries/finances/use-recurring-cashflow";
 import { useProcessRecurringCashflows } from "@/hooks/useProcessRecurringCashflows";
-import FinancesNavbarDefaultCard from "../../FinancesNavbar/FinancesNavbarDefaultCard";
-import FinancesNavbarToolbar from "../../FinancesNavbar/FinancesNavbarToolbar";
-import FinancesNavbarNavList from "../../FinancesNavbar/FinancesNavbarNavList";
+import FinancesNavbarDefaultCard from "@/components/Finances/FinancesNavbar/FinancesNavbarDefaultCard";
+import FinancesNavbarToolbar from "@/components/Finances/FinancesNavbar/FinancesNavbarToolbar";
+import FinancesNavbarNavList from "@/components/Finances/FinancesNavbar/FinancesNavbarNavList";
+import SelectBankAccount from "@/components/Finances/BankAccount/SelectBankAccount";
 
 export default function FinanceRecurringTab() {
   const { data: recurringCashFlows = [], isPending } =
@@ -312,6 +313,10 @@ export default function FinanceRecurringTab() {
                 </ActionIcon>
               </DelayedTooltip>,
             ]}
+          />,
+          <FinancesNavbarDefaultCard
+            key="finance-recurring-bank-account-card"
+            children={<SelectBankAccount />}
           />,
           <FinancesNavbarNavList
             key="finance-recurring-navbar-list"

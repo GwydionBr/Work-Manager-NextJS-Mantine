@@ -28,8 +28,8 @@ import {
   IconList,
 } from "@tabler/icons-react";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
-import SingleCashflowRow from "./SingleCashflowRow";
-import FinancesNavbar from "../../FinancesNavbar/FinancesNavbar";
+import SingleCashflowRow from "@/components/Finances/CashFlow/Single/SingleCashflowRow";
+import FinancesNavbar from "@/components/Finances/FinancesNavbar/FinancesNavbar";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 import { SettingsTab } from "@/components/Settings/SettingsModal";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
@@ -40,9 +40,10 @@ import {
   useDeleteSingleCashflowMutation,
   useSingleCashflowQuery,
 } from "@/utils/queries/finances/use-single-cashflow";
-import FinancesNavbarToolbar from "../../FinancesNavbar/FinancesNavbarToolbar";
-import FinancesNavbarNavList from "../../FinancesNavbar/FinancesNavbarNavList";
-import FinancesNavbarDefaultCard from "../../FinancesNavbar/FinancesNavbarDefaultCard";
+import FinancesNavbarToolbar from "@/components/Finances/FinancesNavbar/FinancesNavbarToolbar";
+import FinancesNavbarNavList from "@/components/Finances/FinancesNavbar/FinancesNavbarNavList";
+import FinancesNavbarDefaultCard from "@/components/Finances/FinancesNavbar/FinancesNavbarDefaultCard";
+import SelectBankAccount from "@/components/Finances/BankAccount/SelectBankAccount";
 
 export default function FinanceSingleTab() {
   const {
@@ -328,7 +329,14 @@ export default function FinanceSingleTab() {
               />,
             ]}
           />,
-          <FinancesNavbarNavList key="finance-single-navbar-list" navbarItems={navbarItems} />,
+          <FinancesNavbarDefaultCard
+            key="finance-single-bank-account-card"
+            children={<SelectBankAccount />}
+          />,
+          <FinancesNavbarNavList
+            key="finance-single-navbar-list"
+            navbarItems={navbarItems}
+          />,
           <FinancesNavbarDefaultCard
             key="finance-single-default-card"
             children={
