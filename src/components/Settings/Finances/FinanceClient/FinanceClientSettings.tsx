@@ -14,17 +14,14 @@ import {
   Modal,
 } from "@mantine/core";
 import FinanceClientRow from "./FinanceClientRow";
+import FinanceSettingsHeader from "@/components/Settings/Finances/FinanceSettingsHeader";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import FinanceClientForm from "@/components/Finances/FinanceClient/FinanceClientForm";
 import { useCallback, useMemo, useState } from "react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import { IconUserPlus, IconUsers } from "@tabler/icons-react";
-import {
-  showActionErrorNotification,
-  showActionSuccessNotification,
-  showDeleteConfirmationModal,
-} from "@/utils/notificationFunctions";
+import { showDeleteConfirmationModal } from "@/utils/notificationFunctions";
 import {
   useDeleteFinanceClientMutation,
   useFinanceClientQuery,
@@ -39,7 +36,7 @@ export default function FinanceClientSettings() {
     useFinanceClientQuery();
   const { mutate: deleteFinanceClientsMutation } =
     useDeleteFinanceClientMutation();
-  const { locale } = useSettingsStore();
+  const { locale, getLocalizedText } = useSettingsStore();
   const [isClientFormOpen, { open: openClientForm, close: closeClientForm }] =
     useDisclosure(false);
   const [selectedModeActive, { toggle: toggleSelectedMode }] =
@@ -65,50 +62,29 @@ export default function FinanceClientSettings() {
 
   const onDelete = (ids: string[]) => {
     showDeleteConfirmationModal(
-      locale === "de-DE" ? "Kunde löschen" : "Delete Client",
-      locale === "de-DE" ? (
-        <Stack>
-          <Text>
-            Sind Sie sicher, dass Sie diese Kunden
-            {ids.length > 1 ? "n" : ""} löschen möchten?
-          </Text>
-          <List>
-            {financeClients
-              .filter((client) => ids.includes(client.id))
-              .map((client) => (
-                <List.Item key={client.id}>
-                  <Stack gap={0}>
-                    <Text>{client.name}</Text>
-                    <Text fz="xs" c="dimmed">
-                      {client.description}
-                    </Text>
-                  </Stack>
-                </List.Item>
-              ))}
-          </List>
-        </Stack>
-      ) : (
-        <Stack>
-          <Text>
-            Are you sure you want to delete{" "}
-            {ids.length > 1 ? "these clients" : "this client"}?
-          </Text>
-          <List>
-            {financeClients
-              .filter((client) => ids.includes(client.id))
-              .map((client) => (
-                <List.Item key={client.id}>
-                  <Stack gap={0}>
-                    <Text>{client.name}</Text>
-                    <Text fz="xs" c="dimmed">
-                      {client.description}
-                    </Text>
-                  </Stack>
-                </List.Item>
-              ))}
-          </List>
-        </Stack>
-      ),
+      getLocalizedText("Kunde löschen", "Delete Client"),
+      <Stack>
+        <Text>
+          {getLocalizedText(
+            "Sind Sie sicher, dass Sie diese Kunden löschen möchten",
+            "Are you sure you want to delete these clients"
+          )}
+        </Text>
+        <List>
+          {financeClients
+            .filter((client) => ids.includes(client.id))
+            .map((client) => (
+              <List.Item key={client.id}>
+                <Stack gap={0}>
+                  <Text>{client.name}</Text>
+                  <Text fz="xs" c="dimmed">
+                    {client.description}
+                  </Text>
+                </Stack>
+              </List.Item>
+            ))}
+        </List>
+      </Stack>,
       () => {
         deleteFinanceClientsMutation(ids);
       },
@@ -140,57 +116,35 @@ export default function FinanceClientSettings() {
   return (
     <Group w="100%">
       <Stack align="center" w="100%">
-        <Group justify="space-between" w="100%">
-          <PlusActionIcon onClick={openClientForm} disabled={isFetchingFinanceClients} />
-          <Modal
-            opened={isClientFormOpen}
-            onClose={closeClientForm}
-            closeOnClickOutside
-            withOverlay
-            trapFocus
-            returnFocus
-            title={
-              <Group>
-                <IconUserPlus />
-                <Text>
-                  {locale === "de-DE" ? "Kunde hinzufügen" : "Add Client"}
-                </Text>
-              </Group>
-            }
-            size="md"
-            padding="md"
-          >
-            <FinanceClientForm onClose={closeClientForm} />
-          </Modal>
-          <Group
-            align="center"
-            gap="xs"
-            mb="md"
-            style={{
-              borderBottom:
-                "1px solid light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-3))",
-            }}
-          >
-            <IconUsers size={20} />
-            <Text fw={500} fz="lg">
-              {locale === "de-DE" ? "Finanz Kunden" : "Finance Clients"}
-            </Text>
-          </Group>
-          <SelectActionIcon
-            disabled={isFetchingFinanceClients || financeClients.length === 0}
-            tooltipLabel={
-              locale === "de-DE"
-                ? "Aktiviere Mehrfachauswahl"
-                : "Activate bulk select"
-            }
-            mainControl
-            selected={selectedModeActive}
-            onClick={toggleSelectedMode}
-          />
-        </Group>
+        <FinanceSettingsHeader
+          onAdd={openClientForm}
+          addDisabled={isFetchingFinanceClients}
+          selectDisabled={
+            isFetchingFinanceClients || financeClients.length === 0
+          }
+          selectedModeActive={selectedModeActive}
+          toggleSelectedMode={toggleSelectedMode}
+          modalTitle={
+            <Group>
+              <IconUserPlus />
+              <Text>{getLocalizedText("Kunde hinzufügen", "Add Client")}</Text>
+            </Group>
+          }
+          modalChildren={<FinanceClientForm onClose={closeClientForm} />}
+          modalOpened={isClientFormOpen}
+          modalOnClose={closeClientForm}
+          title={
+            <Group>
+              <IconUsers size={20} />
+              <Text fw={500} fz="lg">
+                {getLocalizedText("Finanz Kunden", "Finance Clients")}
+              </Text>
+            </Group>
+          }
+        />
         {!isFetchingFinanceClients && financeClients.length === 0 ? (
           <Text fz="sm" c="dimmed">
-            {locale === "de-DE" ? "Keine Kunden gefunden" : "No clients found"}
+            {getLocalizedText("Keine Kunden gefunden", "No clients found")}
           </Text>
         ) : (
           <Stack gap="xs" align="center" w="100%" maw={500}>
@@ -206,7 +160,7 @@ export default function FinanceClientSettings() {
                     }
                   />
                   <Text fz="sm" c="dimmed">
-                    {locale === "de-DE" ? "Alle" : "All"}
+                    {getLocalizedText("Alle", "All")}
                   </Text>
                 </Group>
                 <DeleteActionIcon

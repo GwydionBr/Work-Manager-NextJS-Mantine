@@ -3,19 +3,21 @@
 import { useState } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
 
-import { Grid } from "@mantine/core";
+import { Grid, ScrollArea } from "@mantine/core";
 import SettingsNavbar from "@/components/Navbar/SettingsNavbar";
 import FinanceCategorySettings from "./FinanceCategory/FinanceCategorySettings";
-import FinanceRuleSettings from "./FinanceRuleSettings";
-import FinanceDefaultSettings from "./FinanceDefaultSettings";
+import FinanceRuleSettings from "./FinanceRuleSettings/FinanceRuleSettings";
+import FinanceDefaultSettings from "./FinanceDefaultSettings/FinanceDefaultSettings";
 import FinanceClientSettings from "./FinanceClient/FinanceClientSettings";
-import { IconCategory, IconUsers } from "@tabler/icons-react";
+import { IconCategory, IconUsers, IconBuildingBank } from "@tabler/icons-react";
+import FinanceBankAccountSettings from "./FinanceBankAccount/FinanceBankAccountSettings";
 
 enum FinanceSettingType {
   DEFAULT = "default",
   CATEGORIES = "categories",
   RULES = "rules",
   CLIENTS = "clients",
+  BANK_ACCOUNTS = "bank-accounts",
 }
 
 export default function FinanceSettings() {
@@ -50,10 +52,12 @@ export default function FinanceSettings() {
               onClick: () => setActiveSetting(FinanceSettingType.CLIENTS),
               active: activeSetting === FinanceSettingType.CLIENTS,
             },
-            // {
-            //   title: locale === "de-DE" ? "Regeln" : "Rules",
-            //   onClick: () => setActiveSetting(FinanceSettingType.RULES),
-            // },
+            {
+              title: locale === "de-DE" ? "Bankkonten" : "Bank Accounts",
+              icon: <IconBuildingBank size={20} />,
+              onClick: () => setActiveSetting(FinanceSettingType.BANK_ACCOUNTS),
+              active: activeSetting === FinanceSettingType.BANK_ACCOUNTS,
+            },
           ]}
         />
       </Grid.Col>
@@ -68,6 +72,9 @@ export default function FinanceSettings() {
           <FinanceClientSettings />
         )}
         {activeSetting === FinanceSettingType.RULES && <FinanceRuleSettings />}
+        {activeSetting === FinanceSettingType.BANK_ACCOUNTS && (
+          <FinanceBankAccountSettings />
+        )}
       </Grid.Col>
     </Grid>
   );

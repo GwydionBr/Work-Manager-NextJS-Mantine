@@ -7,7 +7,7 @@ import { Radio, Select, Stack } from "@mantine/core";
 
 import { currencies } from "@/constants/settings";
 import { Currency } from "@/types/settings.types";
-import SettingsRow from "../SettingsRow";
+import SettingsRow from "../../SettingsRow";
 
 export default function FinanceDefaultSettings() {
   const {

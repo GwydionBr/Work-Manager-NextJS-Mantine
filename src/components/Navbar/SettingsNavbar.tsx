@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Stack } from "@mantine/core";
+import { Button, NavLink, Stack } from "@mantine/core";
 
 interface SettingsNavbarItem {
   title: string;
@@ -26,15 +26,14 @@ export default function SettingsNavbar({ items }: SettingsNavbarProps) {
       }}
     >
       {items.map((item) => (
-        <Button
+        <NavLink
           key={item.title}
           leftSection={item.icon}
           onClick={item.onClick}
-          variant={item.active ? "filled" : "subtle"}
           w="100%"
-        >
-          {item.title}
-        </Button>
+          label={item.title}
+          active={item.active}
+        />
       ))}
     </Stack>
   );

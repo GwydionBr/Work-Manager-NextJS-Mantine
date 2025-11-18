@@ -14,15 +14,14 @@ import {
   Modal,
 } from "@mantine/core";
 import FinanceCategoryRow from "./FinanceCategoryRow";
+import FinanceSettingsHeader from "@/components/Settings/Finances/FinanceSettingsHeader";
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import FinanceCategoryForm from "@/components/Finances/Category/FinanceCategoryForm";
 import { useCallback, useMemo, useState } from "react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import { IconCategory, IconCategoryPlus } from "@tabler/icons-react";
-import {
-  showDeleteConfirmationModal,
-} from "@/utils/notificationFunctions";
+import { showDeleteConfirmationModal } from "@/utils/notificationFunctions";
 import {
   useDeleteFinanceCategoryMutation,
   useFinanceCategoriesQuery,
@@ -37,7 +36,7 @@ export default function FinanceCategorySettings() {
     useFinanceCategoriesQuery();
   const { mutate: deleteFinanceCategoriesMutation } =
     useDeleteFinanceCategoryMutation();
-  const { locale } = useSettingsStore();
+  const { locale, getLocalizedText } = useSettingsStore();
   const [
     isCategoryFormOpen,
     { open: openCategoryForm, close: closeCategoryForm },
@@ -65,50 +64,29 @@ export default function FinanceCategorySettings() {
 
   const onDelete = (ids: string[]) => {
     showDeleteConfirmationModal(
-      locale === "de-DE" ? "Kategorie löschen" : "Delete Category",
-      locale === "de-DE" ? (
-        <Stack>
-          <Text>
-            Sind Sie sicher, dass Sie diese Kategorie
-            {ids.length > 1 ? "n" : ""} löschen möchten?
-          </Text>
-          <List>
-            {financeCategories
-              .filter((category) => ids.includes(category.id))
-              .map((category) => (
-                <List.Item key={category.id}>
-                  <Stack gap={0}>
-                    <Text>{category.title}</Text>
-                    <Text fz="xs" c="dimmed">
-                      {category.description}
-                    </Text>
-                  </Stack>
-                </List.Item>
-              ))}
-          </List>
-        </Stack>
-      ) : (
-        <Stack>
-          <Text>
-            Are you sure you want to delete{" "}
-            {ids.length > 1 ? "these categories" : "this category"}?
-          </Text>
-          <List>
-            {financeCategories
-              .filter((category) => ids.includes(category.id))
-              .map((category) => (
-                <List.Item key={category.id}>
-                  <Stack gap={0}>
-                    <Text>{category.title}</Text>
-                    <Text fz="xs" c="dimmed">
-                      {category.description}
-                    </Text>
-                  </Stack>
-                </List.Item>
-              ))}
-          </List>
-        </Stack>
-      ),
+      getLocalizedText("Kategorie löschen", "Delete Category"),
+      <Stack>
+        <Text>
+          {getLocalizedText(
+            "Sind Sie sicher, dass Sie diese Kategorien löschen möchten",
+            "Are you sure you want to delete these categories?"
+          )}
+        </Text>
+        <List>
+          {financeCategories
+            .filter((category) => ids.includes(category.id))
+            .map((category) => (
+              <List.Item key={category.id}>
+                <Stack gap={0}>
+                  <Text>{category.title}</Text>
+                  <Text fz="xs" c="dimmed">
+                    {category.description}
+                  </Text>
+                </Stack>
+              </List.Item>
+            ))}
+        </List>
+      </Stack>,
       () => {
         deleteFinanceCategoriesMutation(ids);
       },
@@ -140,59 +118,40 @@ export default function FinanceCategorySettings() {
   return (
     <Group w="100%">
       <Stack align="center" w="100%">
-        <Group justify="space-between" w="100%">
-          <PlusActionIcon onClick={openCategoryForm} disabled={isFetchingCategories} />
-          <Modal
-            opened={isCategoryFormOpen}
-            onClose={closeCategoryForm}
-            closeOnClickOutside
-            withOverlay
-            trapFocus
-            returnFocus
-            title={
-              <Group>
-                <IconCategoryPlus />
-                <Text>
-                  {locale === "de-DE" ? "Kategorie hinzufügen" : "Add category"}
-                </Text>
-              </Group>
-            }
-            size="md"
-            padding="md"
-          >
-            <FinanceCategoryForm onClose={closeCategoryForm} />
-          </Modal>
-          <Group
-            align="center"
-            gap="xs"
-            mb="md"
-            style={{
-              borderBottom:
-                "1px solid light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-3))",
-            }}
-          >
-            <IconCategory size={20} />
-            <Text fw={500} fz="lg">
-              {locale === "de-DE" ? "Finanz Kategorien" : "Finance Categories"}
-            </Text>
-          </Group>
-          <SelectActionIcon
-            disabled={isFetchingCategories || financeCategories.length === 0}
-            tooltipLabel={
-              locale === "de-DE"
-                ? "Aktiviere Mehrfachauswahl"
-                : "Activate bulk select"
-            }
-            mainControl
-            selected={selectedModeActive}
-            onClick={toggleSelectedMode}
-          />
-        </Group>
+        <FinanceSettingsHeader
+          onAdd={openCategoryForm}
+          addDisabled={isFetchingCategories}
+          selectDisabled={
+            isFetchingCategories || financeCategories.length === 0
+          }
+          selectedModeActive={selectedModeActive}
+          toggleSelectedMode={toggleSelectedMode}
+          modalTitle={
+            <Group>
+              <IconCategoryPlus />
+              <Text>
+                {getLocalizedText("Kategorie hinzufügen", "Add Category")}
+              </Text>
+            </Group>
+          }
+          modalChildren={<FinanceCategoryForm onClose={closeCategoryForm} />}
+          modalOpened={isCategoryFormOpen}
+          modalOnClose={closeCategoryForm}
+          title={
+            <Group>
+              <IconCategoryPlus />
+              <Text>
+                {getLocalizedText("Finanz Kategorien", "Finance Categories")}
+              </Text>
+            </Group>
+          }
+        />
         {!isFetchingCategories && financeCategories.length === 0 ? (
           <Text fz="sm" c="dimmed">
-            {locale === "de-DE"
-              ? "Keine Kategorien gefunden"
-              : "No categories found"}
+            {getLocalizedText(
+              "Keine Kategorien gefunden",
+              "No categories found"
+            )}
           </Text>
         ) : (
           <Stack gap="xs" align="center" w="100%" maw={500}>
@@ -213,7 +172,7 @@ export default function FinanceCategorySettings() {
                     }
                   />
                   <Text fz="sm" c="dimmed">
-                    {locale === "de-DE" ? "Alle" : "All"}
+                    {getLocalizedText("Alle", "All")}
                   </Text>
                 </Group>
                 <DeleteActionIcon
