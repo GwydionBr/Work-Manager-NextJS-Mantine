@@ -77,6 +77,7 @@ export async function payoutHourlyTimerProject({
     .from("timer_session")
     .update({
       single_cash_flow_id: cashflowData.id,
+      payout_id: payoutData.id,
     })
     .in(
       "id",

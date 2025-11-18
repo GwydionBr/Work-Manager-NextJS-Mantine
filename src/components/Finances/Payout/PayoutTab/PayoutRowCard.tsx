@@ -14,7 +14,7 @@ import {
 } from "@mantine/core";
 import {
   IconClock,
-  IconFolder,
+  IconClipboardList,
   IconTrendingUp,
   IconTrendingDown,
   IconArrowRight,
@@ -29,7 +29,7 @@ interface PayoutRowCardProps {
 }
 
 export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
-  const { locale } = useSettingsStore();
+  const { locale, getLocalizedText } = useSettingsStore();
 
   const getTotalSessionTime = () => {
     if (!payout.timer_sessions || payout.timer_sessions.length === 0)
@@ -98,9 +98,10 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
                 variant="transparent"
                 leftSection={<IconClock size={12} />}
               >
-                {locale === "de-DE"
-                  ? "Keine bestehenden Sitzungen"
-                  : "No existing sessions"}
+                {getLocalizedText(
+                  "Keine bestehenden Sitzungen",
+                  "No existing sessions"
+                )}
               </Badge>
             )}
             {payout.timer_project && (
@@ -108,7 +109,7 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
                 <Badge
                   color="violet"
                   variant="transparent"
-                  leftSection={<IconFolder size={12} />}
+                  leftSection={<IconClipboardList size={12} />}
                 >
                   {payout.timer_project.title}
                 </Badge>
@@ -123,7 +124,7 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
         <Group justify="space-between" align="center">
           <Stack gap="xs">
             <Text size="sm" c="dimmed" fw={500}>
-              {locale === "de-DE" ? "Auszahlungsbetrag" : "Payout Amount"}
+              {getLocalizedText("Auszahlungsbetrag", "Payout Amount")}
             </Text>
             <Group gap="xs" align="center">
               <Text size="lg" fw={700} c="green">
@@ -143,9 +144,7 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
               </ThemeIcon>
               <Stack gap="xs" align="center">
                 <Text size="sm" c="dimmed" fw={500}>
-                  {locale === "de-DE"
-                    ? "Nach Konvertierung"
-                    : "After Conversion"}
+                  {getLocalizedText("Nach Konvertierung", "After Conversion")}
                 </Text>
                 <Group gap="xs" align="center">
                   <Text size="lg" fw={700} c="blue">
@@ -175,8 +174,8 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
                 )}
               </ThemeIcon>
               <Text size="sm" c="blue" fw={500}>
-                {locale === "de-DE" ? "Konvertierungsrate" : "Conversion Rate"}:
-                1 {payout.start_currency} ={" "}
+                {getLocalizedText("Konvertierungsrate", "Conversion Rate")}: 1{" "}
+                {payout.start_currency} ={" "}
                 {(payout.value / payout.start_value!).toFixed(4)}{" "}
                 {payout.currency}
               </Text>
