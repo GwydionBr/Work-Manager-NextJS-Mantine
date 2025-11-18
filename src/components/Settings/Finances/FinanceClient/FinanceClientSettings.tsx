@@ -133,14 +133,8 @@ export default function FinanceClientSettings() {
           modalChildren={<FinanceClientForm onClose={closeClientForm} />}
           modalOpened={isClientFormOpen}
           modalOnClose={closeClientForm}
-          title={
-            <Group>
-              <IconUsers size={20} />
-              <Text fw={500} fz="lg">
-                {getLocalizedText("Finanz Kunden", "Finance Clients")}
-              </Text>
-            </Group>
-          }
+          titleIcon={<IconUsers size={20} />}
+          titleText={getLocalizedText("Finanz Kunden", "Finance Clients")}
         />
         {!isFetchingFinanceClients && financeClients.length === 0 ? (
           <Text fz="sm" c="dimmed">

@@ -1,31 +1,21 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useCallback, useMemo, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
-
-import {
-  Stack,
-  Text,
-  Skeleton,
-  Group,
-  Collapse,
-  List,
-  Modal,
-} from "@mantine/core";
-import FinanceCategoryRow from "./FinanceCategoryRow";
-import FinanceSettingsHeader from "@/components/Settings/Finances/FinanceSettingsHeader";
-import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
-import FinanceCategoryForm from "@/components/Finances/Category/FinanceCategoryForm";
-import { useCallback, useMemo, useState } from "react";
-import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
-import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
-import { IconCategory, IconCategoryPlus } from "@tabler/icons-react";
-import { showDeleteConfirmationModal } from "@/utils/notificationFunctions";
 import {
   useDeleteFinanceCategoryMutation,
   useFinanceCategoriesQuery,
 } from "@/utils/queries/finances/use-finance-category";
+
+import { Stack, Text, Skeleton, Group, Collapse, List } from "@mantine/core";
+import { IconCategoryPlus } from "@tabler/icons-react";
+import FinanceCategoryRow from "@/components/Settings/Finances/FinanceCategory/FinanceCategoryRow";
+import FinanceSettingsHeader from "@/components/Settings/Finances/FinanceSettingsHeader";
+import FinanceCategoryForm from "@/components/Finances/Category/FinanceCategoryForm";
+import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
+import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
+import { showDeleteConfirmationModal } from "@/utils/notificationFunctions";
 
 export default function FinanceCategorySettings() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -137,14 +127,11 @@ export default function FinanceCategorySettings() {
           modalChildren={<FinanceCategoryForm onClose={closeCategoryForm} />}
           modalOpened={isCategoryFormOpen}
           modalOnClose={closeCategoryForm}
-          title={
-            <Group>
-              <IconCategoryPlus />
-              <Text>
-                {getLocalizedText("Finanz Kategorien", "Finance Categories")}
-              </Text>
-            </Group>
-          }
+          titleIcon={<IconCategoryPlus />}
+          titleText={getLocalizedText(
+            "Finanz Kategorien",
+            "Finance Categories"
+          )}
         />
         {!isFetchingCategories && financeCategories.length === 0 ? (
           <Text fz="sm" c="dimmed">

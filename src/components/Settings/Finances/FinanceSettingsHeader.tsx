@@ -1,33 +1,50 @@
 import { useSettingsStore } from "@/stores/settingsStore";
 
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
-import { Group, Modal } from "@mantine/core";
+import { Group, Modal, Text } from "@mantine/core";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 
 interface FinanceSettingsHeaderProps {
-  title: React.ReactNode;
-  onAdd: () => void;
-  addDisabled: boolean;
-  selectDisabled: boolean;
-  selectedModeActive: boolean;
-  toggleSelectedMode: () => void;
-  modalTitle: React.ReactNode;
-  modalOpened: boolean;
-  modalOnClose: () => void;
-  modalChildren: React.ReactNode;
+  titleIcon?: React.ReactNode;
+  titleText: string;
+  onAdd?: () => void;
+  addDisabled?: boolean;
+  selectDisabled?: boolean;
+  selectedModeActive?: boolean;
+  toggleSelectedMode?: () => void;
+  modalTitle?: React.ReactNode;
+  modalOpened?: boolean;
+  modalOnClose?: () => void;
+  modalChildren?: React.ReactNode;
 }
 
+/**
+ * @description - The Header Component for the Finance Settings
+ * @param titleText - The text to display in the title (required)
+ * @param titleIcon - The icon to display in the title (optional)
+ * @param onAdd - The function to call when the add button is clicked (optional)
+ * @param addDisabled - Whether the add button is disabled (optional)
+ * @param selectDisabled - Whether the select button is disabled (optional)
+ * @param selectedModeActive - Whether the selected mode is active (optional)
+ * @param toggleSelectedMode - The function to call when the selected mode is toggled (optional)
+ * @param modalTitle - The title to display in the modal (optional)
+ * @param modalOpened - Whether the modal is opened (optional)
+ * @param modalOnClose - The function to call when the modal is closed (optional)
+ * @param modalChildren - The children to display in the modal (optional)
+ */
+
 export default function FinanceSettingsHeader({
-  title,
-  onAdd,
-  addDisabled,
-  selectDisabled,
-  selectedModeActive,
-  toggleSelectedMode,
-  modalTitle,
-  modalOpened,
-  modalOnClose,
-  modalChildren,
+  titleText,
+  titleIcon,
+  onAdd = () => {},
+  addDisabled = false,
+  selectDisabled = false,
+  selectedModeActive = false,
+  toggleSelectedMode = () => {},
+  modalTitle = null,
+  modalOpened = false,
+  modalChildren = null,
+  modalOnClose = () => {},
 }: FinanceSettingsHeaderProps) {
   const { getLocalizedText } = useSettingsStore();
   return (
@@ -55,7 +72,12 @@ export default function FinanceSettingsHeader({
             "1px solid light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-3))",
         }}
       >
-        {title}
+        <Group>
+          {titleIcon}
+          <Text fw={500} fz="lg">
+            {titleText}
+          </Text>
+        </Group>
       </Group>
       <SelectActionIcon
         disabled={selectDisabled}
