@@ -47,6 +47,9 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
 
   const hasCurrencyConversion =
     payout.start_currency && payout.currency !== payout.start_currency;
+  const hasValueChange =
+    payout.start_value !== null && payout.start_value !== payout.value;
+  const showExtendedInfo = hasCurrencyConversion || hasValueChange;
   const totalSessions = payout.timer_sessions?.length || 0;
   const totalTime = getTotalSessionTime();
 
@@ -59,7 +62,6 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
       w="100%"
       bg="light-dark(var(--mantine-color-white), var(--mantine-color-dark-6))"
       style={{ transition: "all 0.2s ease" }}
-      className="hover:shadow-md"
     >
       <Stack gap="md">
         {/* Header */}
@@ -130,21 +132,23 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
               <Text size="lg" fw={700} c="green">
                 {formatMoney(
                   payout.start_value ?? payout.value,
-                  payout.currency ?? payout.currency,
+                  payout.start_currency ?? payout.currency,
                   locale
                 )}
               </Text>
             </Group>
           </Stack>
 
-          {hasCurrencyConversion && (
+          {showExtendedInfo && (
             <>
               <ThemeIcon size="md" color="blue" variant="transparent">
                 <IconArrowRight size={20} />
               </ThemeIcon>
               <Stack gap="xs" align="center">
                 <Text size="sm" c="dimmed" fw={500}>
-                  {getLocalizedText("Nach Konvertierung", "After Conversion")}
+                  {hasCurrencyConversion
+                    ? getLocalizedText("Nach Konvertierung", "After Conversion")
+                    : getLocalizedText("Nach Anpassung", "After Adjustment")}
                 </Text>
                 <Group gap="xs" align="center">
                   <Text size="lg" fw={700} c="blue">
@@ -156,8 +160,8 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
           )}
         </Group>
 
-        {/* Conversion Rate (if applicable) */}
-        {hasCurrencyConversion && (
+        {/* Conversion Rate or Value Difference (if applicable) */}
+        {showExtendedInfo && (
           <Card
             p="sm"
             withBorder
@@ -167,18 +171,36 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
           >
             <Group gap="xs" align="center">
               <ThemeIcon size="sm" color="blue" variant="light">
-                {payout.value > payout.start_value! ? (
+                {payout.value! > payout.start_value! ? (
                   <IconTrendingUp size={14} />
                 ) : (
                   <IconTrendingDown size={14} />
                 )}
               </ThemeIcon>
-              <Text size="sm" c="blue" fw={500}>
-                {getLocalizedText("Konvertierungsrate", "Conversion Rate")}: 1{" "}
-                {payout.start_currency} ={" "}
-                {(payout.value / payout.start_value!).toFixed(4)}{" "}
-                {payout.currency}
-              </Text>
+              {hasCurrencyConversion ? (
+                <Text size="sm" c="blue" fw={500}>
+                  {getLocalizedText("Konvertierungsrate", "Conversion Rate")}: 1{" "}
+                  {payout.start_currency} ={" "}
+                  {(payout.value! / payout.start_value!).toFixed(4)}{" "}
+                  {payout.currency}
+                </Text>
+              ) : (
+                <Group gap="xs" align="center">
+                  <Text size="sm" c="blue" fw={500}>
+                    {getLocalizedText("Differenz", "Difference")}:{" "}
+                    {formatMoney(
+                      payout.value! - payout.start_value!,
+                      payout.currency!,
+                      locale
+                    )}{" "}
+                    (
+                    {((payout.value! / payout.start_value! - 1) * 100).toFixed(
+                      2
+                    )}
+                    %)
+                  </Text>
+                </Group>
+              )}
             </Group>
           </Card>
         )}

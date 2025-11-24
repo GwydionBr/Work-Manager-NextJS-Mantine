@@ -4,17 +4,22 @@ import { createClient } from "@/utils/supabase/server";
 import { WorkProject, WorkTimeEntry } from "@/types/work.types";
 import { SingleCashFlow } from "@/types/finance.types";
 import { Tables } from "@/types/db.types";
+import { Currency } from "@/types/settings.types";
 
 interface PayoutHourlyTimerProjectProps {
   project: WorkProject;
   title: string;
   timeEntries: WorkTimeEntry[];
+  endCurrency?: Currency;
+  endValue?: number;
 }
 
 export async function payoutHourlyTimerProject({
   project,
   title,
   timeEntries,
+  endCurrency,
+  endValue,
 }: PayoutHourlyTimerProjectProps): Promise<{
   singleCashFlow: SingleCashFlow;
   payout: Tables<"payout">;
@@ -33,8 +38,10 @@ export async function payoutHourlyTimerProject({
     .from("payout")
     .insert({
       title,
-      value: Number(totalAmount),
-      currency: project.currency,
+      value: endValue ? endValue : Number(totalAmount),
+      currency: endCurrency ? endCurrency : project.currency,
+      start_value: endValue ? Number(totalAmount) : null,
+      start_currency: endCurrency ? project.currency : null,
       timer_project_id: project.id,
     })
     .select()
@@ -48,8 +55,8 @@ export async function payoutHourlyTimerProject({
     .from("single_cash_flow")
     .insert({
       title,
-      amount: Number(totalAmount),
-      currency: project.currency,
+      amount: endValue ? endValue : Number(totalAmount),
+      currency: endCurrency ? endCurrency : project.currency,
       payout_id: payoutData.id,
     })
     .select()
@@ -78,6 +85,7 @@ export async function payoutHourlyTimerProject({
     .update({
       single_cash_flow_id: cashflowData.id,
       payout_id: payoutData.id,
+      paid: true,
     })
     .in(
       "id",

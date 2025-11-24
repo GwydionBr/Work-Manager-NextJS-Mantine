@@ -8,7 +8,6 @@ import { IconChevronRight } from "@tabler/icons-react";
 
 import { formatDate, formatMoney } from "@/utils/formatFunctions";
 
-import { Tables } from "@/types/db.types";
 import { Currency } from "@/types/settings.types";
 import { WorkTimeEntry } from "@/types/work.types";
 

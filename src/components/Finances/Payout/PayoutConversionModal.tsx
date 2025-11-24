@@ -22,7 +22,7 @@ import { IconArrowDown, IconCashBanknotePlus } from "@tabler/icons-react";
 import { currencies } from "@/constants/settings";
 import { formatMoney } from "@/utils/formatFunctions";
 
-interface SessionModalFormProps {
+interface PayoutConversionModalProps {
   opened: boolean;
   handleClose: () => void;
   startValue: number;
@@ -36,15 +36,15 @@ const schema = z.object({
   endCurrency: z.string().min(1, { message: "Currency is required" }),
 });
 
-export default function SessionModalForm({
+export default function PayoutConversionModal({
   opened,
   handleClose,
   startValue,
   startCurrency,
   onSubmit,
   isProcessing,
-}: SessionModalFormProps) {
-  const { locale, defaultFinanceCurrency } = useSettingsStore();
+}: PayoutConversionModalProps) {
+  const { locale, getLocalizedText, defaultFinanceCurrency } = useSettingsStore();
 
   const form = useForm({
     initialValues: {
@@ -71,7 +71,7 @@ export default function SessionModalForm({
       title={
         <Group gap="xs">
           <IconCashBanknotePlus size={20} />
-          <Text fw={600}>{locale === "de-DE" ? "Auszahlung" : "Payout"}</Text>
+          <Text fw={600}>{getLocalizedText("Auszahlung", "Payout")}</Text>
         </Group>
       }
       styles={{
@@ -90,7 +90,7 @@ export default function SessionModalForm({
       <form onSubmit={form.onSubmit(onSubmit)}>
         <Stack>
           <Text>
-            {locale === "de-DE" ? "Startwert" : "Start Value"}:{" "}
+            {getLocalizedText("Startwert", "Start Value")}:{" "}
             {startValueString}
           </Text>
           <Divider />
@@ -99,13 +99,13 @@ export default function SessionModalForm({
           </Group>
           <Divider />
           <NumberInput
-            label={locale === "de-DE" ? "Endwert" : "End Value"}
+            label={getLocalizedText("Endwert", "End Value")}
             {...form.getInputProps("endValue")}
           />
           <Select
-            label={locale === "de-DE" ? "Endwährung" : "End Currency"}
+            label={getLocalizedText("Endwährung", "End Currency")}
             placeholder={
-              locale === "de-DE" ? "Währung auswählen" : "Select currency"
+              getLocalizedText("Währung auswählen", "Select currency")
             }
             data={currencies}
             value={form.values.endCurrency}
@@ -120,7 +120,7 @@ export default function SessionModalForm({
             loading={isProcessing}
             leftSection={<IconCashBanknotePlus />}
           >
-            {locale === "de-DE" ? "Auszahlen" : "Payout"}
+            {getLocalizedText("Auszahlen", "Payout")}
           </Button>
         </Stack>
       </form>

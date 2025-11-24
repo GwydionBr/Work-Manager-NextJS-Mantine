@@ -1,3 +1,5 @@
+"use client";
+
 import { Stack, NavLink, Card, Divider } from "@mantine/core";
 
 interface FinancesNavbarNavListProps {

@@ -44,6 +44,8 @@ import { IconClockPlus } from "@tabler/icons-react";
 
 import { formatDate } from "@/utils/formatFunctions";
 import { WorkTimeEntry } from "@/types/work.types";
+import { Currency } from "@/types/settings.types";
+import PayoutConversionModal from "@/components/Finances/Payout/PayoutConversionModal";
 
 export default function WorkProjectDetailsPage() {
   const { projectId } = useParams();
@@ -94,6 +96,18 @@ export default function WorkProjectDetailsPage() {
     useDisclosure(false);
   const [payoutOpened, { open: openPayout, close: closePayout }] =
     useDisclosure(false);
+  const [
+    payoutConversionOpened,
+    { open: openPayoutConversion, close: closePayoutConversion },
+  ] = useDisclosure(false);
+  const [payoutConvertionStartValues, setPayoutConvertionStartValues] =
+    useState<{
+      value: number;
+      timeEntries: WorkTimeEntry[];
+    }>({
+      value: 0,
+      timeEntries: [],
+    });
   const [
     selectedModeActive,
     {
@@ -236,15 +250,36 @@ export default function WorkProjectDetailsPage() {
     toggleSelectedMode();
   };
 
-  async function handleSessionPayout(timeEntries: WorkTimeEntry[]) {
+  const handleSessionPayoutClick = (timeEntries: WorkTimeEntry[]) => {
+    setPayoutConvertionStartValues({
+      value:
+        Math.round(
+          timeEntries.reduce(
+            (acc, timeEntry) =>
+              acc + timeEntry.salary * (timeEntry.active_seconds / 3600),
+            0
+          ) * 100
+        ) / 100,
+      timeEntries,
+    });
+    openPayoutConversion();
+  };
+
+  const handleSessionPayout = (
+    timeEntries: WorkTimeEntry[],
+    endCurrency?: Currency,
+    endValue?: number
+  ) => {
     if (isProcessingPayout || !project) return;
     const title = `${getLocalizedText("Auszahlung", "Payout")} (${project.title}) ${formatDate(new Date(), locale)}`;
     payoutHourlyTimerProjectMutation({
       project,
       title,
       timeEntries,
+      endCurrency,
+      endValue,
     });
-  }
+  };
 
   const selectableSessions = timeFilteredTimeEntries.filter(
     (timeEntry) => !timeEntry.single_cash_flow_id
@@ -367,7 +402,7 @@ export default function WorkProjectDetailsPage() {
                     project={project}
                     isProcessingPayout={isProcessingPayout}
                     onSelectAll={selectAllTimeEntries}
-                    handleSessionPayoutClick={handleSessionPayout}
+                    handleSessionPayoutClick={handleSessionPayoutClick}
                   />
                 </Collapse>
                 <Collapse in={payoutOpened}>
@@ -378,7 +413,7 @@ export default function WorkProjectDetailsPage() {
                           ...project,
                           timeEntries: projectTimeEntries,
                         }}
-                        handlePayoutClick={handleSessionPayout}
+                        handlePayoutClick={handleSessionPayoutClick}
                         isProcessing={isProcessingPayout}
                       />
                     ) : (
@@ -393,10 +428,24 @@ export default function WorkProjectDetailsPage() {
                     selectedSessions={selectedTimeEntryIds}
                     timeFilteredSessions={timeFilteredTimeEntries}
                     toggleAllSessions={toggleAllTimeEntries}
-                    handleSessionPayoutClick={handleSessionPayout}
+                    handleSessionPayoutClick={handleSessionPayoutClick}
                   />
                 </Collapse>
               </Grid.Col>
+              <PayoutConversionModal
+                opened={payoutConversionOpened}
+                handleClose={closePayoutConversion}
+                startValue={payoutConvertionStartValues.value}
+                startCurrency={project.currency}
+                onSubmit={(values) =>
+                  handleSessionPayout(
+                    payoutConvertionStartValues.timeEntries,
+                    values.endCurrency,
+                    values.endValue
+                  )
+                }
+                isProcessing={isProcessingPayout}
+              />
             </Grid>
           </Stack>
           {projectTimeEntries.length > 0 ? (

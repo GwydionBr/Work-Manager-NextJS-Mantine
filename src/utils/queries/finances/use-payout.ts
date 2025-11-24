@@ -12,7 +12,7 @@ import {
 import { payoutFinanceAdjustment } from "@/actions/finance/payout/payout-finance-adjustment";
 import { payoutHourlyTimerProject } from "@/actions/finance/payout/payout-hourly-timer-project";
 import { getAllPayouts } from "@/actions/finance/payout/get-all-payouts";
-import { WorkProject, WorkTimeEntry } from "@/types/work.types";
+import { WorkTimeEntry } from "@/types/work.types";
 import { CustomMutationProps } from "@/types/query.types";
 
 // Query to get all payouts
@@ -146,19 +146,17 @@ export const usePayoutHourlyTimerProjectMutation = ({
   const { locale, getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["payoutHourlyTimerProject"],
-    mutationFn: ({
-      project,
-      title,
-      timeEntries,
-    }: {
-      project: WorkProject;
-      title: string;
-      timeEntries: WorkTimeEntry[];
-    }) => payoutHourlyTimerProject({ project, title, timeEntries }),
+    mutationFn: payoutHourlyTimerProject,
     onSuccess: (data, variables, onMutateResult, context) => {
       context.client.setQueryData(
         ["singleCashFlows"],
-        (old: SingleCashFlow[]) => [data.singleCashFlow, ...(old || [])]
+        (old: SingleCashFlow[] | undefined) =>
+          old ? [data.singleCashFlow, ...old] : [data.singleCashFlow]
+      );
+      context.client.setQueryData(
+        ["payouts"],
+        (old: Tables<"payout">[] | undefined) =>
+          old ? [data.payout, ...old] : [data.payout]
       );
       const timeEntryIds = variables.timeEntries.map(
         (timeEntry) => timeEntry.id
