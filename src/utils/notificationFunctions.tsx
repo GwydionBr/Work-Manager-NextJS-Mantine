@@ -1,7 +1,8 @@
 "use client";
 
-import { notifications } from "@mantine/notifications";
-import { modals } from "@mantine/modals";
+import { useSettingsStore } from "@/stores/settingsStore";
+
+import { Group, List, Stack, Text } from "@mantine/core";
 import {
   IconAlertTriangleFilled,
   IconCheck,
@@ -9,12 +10,19 @@ import {
   IconTrash,
   IconX,
 } from "@tabler/icons-react";
-import { Group, List, Stack, Text } from "@mantine/core";
+
+import { notifications } from "@mantine/notifications";
+import { modals } from "@mantine/modals";
+import {
+  getLocalizedText as getLocalizedTextUtil,
+  formatTimeSpan as formatTimeSpanUtil,
+} from "@/utils/formatFunctions";
+
 import { InsertWorkTimeEntry, WorkTimeEntry } from "@/types/work.types";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { Locale } from "@/types/settings.types";
 
 // Helper function to get current locale from store (can be used outside React components)
-const getCurrentLocale = (): string => {
+const getCurrentLocale = (): Locale => {
   return useSettingsStore.getState().locale;
 };
 
@@ -26,20 +34,13 @@ const getFormat24h = (): boolean => {
 // Helper function to get localized text (automatically reads locale from store)
 const getLocalizedText = (de: string, en: string): string => {
   const locale = getCurrentLocale();
-  return locale === "de-DE" ? de : en;
+  return getLocalizedTextUtil(de, en, locale);
 };
 
 // Helper function to format time span (automatically reads format24h from store)
 const formatTimeSpan = (start: Date, end: Date): string => {
   const format24h = getFormat24h();
-  const localeForTime = format24h ? "de-DE" : "en-US";
-  const formatSingleDateTime = (date: Date): string => {
-    return date.toLocaleString(localeForTime, {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-  return `${formatSingleDateTime(start)} - ${formatSingleDateTime(end)}`;
+  return formatTimeSpanUtil(start, end, format24h);
 };
 
 export const showDeleteConfirmationModal = (

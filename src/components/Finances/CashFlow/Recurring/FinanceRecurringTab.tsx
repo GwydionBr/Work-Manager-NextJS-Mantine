@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useLocale } from "@/hooks/useLocale";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Stack,
@@ -34,7 +34,6 @@ import RecurringCashFlowRow from "./RecurringCashFlowRow";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 import { SettingsTab } from "@/components/Settings/SettingsModal";
 import { RecurringCashFlow } from "@/types/finance.types";
-import { formatMoney } from "@/utils/formatFunctions";
 import { useRecurringCashflowQuery } from "@/utils/queries/finances/use-recurring-cashflow";
 import { useProcessRecurringCashflows } from "@/hooks/useProcessRecurringCashflows";
 import FinancesNavbarDefaultCard from "@/components/Finances/FinancesNavbar/FinancesNavbarDefaultCard";
@@ -48,7 +47,7 @@ export default function FinanceRecurringTab() {
   const { triggerProcessing } = useProcessRecurringCashflows();
   const { defaultFinanceCurrency, setIsModalOpen, setSelectedTab } =
     useSettingsStore();
-  const { locale, getLocalizedText } = useLocale();
+  const { getLocalizedText, formatMoney } = useFormatter();
 
   const [filter, setFilter] = useState<
     "all" | "active" | "completed" | "future"
@@ -331,11 +330,7 @@ export default function FinanceRecurringTab() {
                     <Text>{getLocalizedText("Ausgaben", "Expense")}:</Text>
                     <Text c="red" fw={700}>
                       {activeExpenseSum
-                        ? formatMoney(
-                            activeExpenseSum,
-                            defaultFinanceCurrency,
-                            locale
-                          )
+                        ? formatMoney(activeExpenseSum, defaultFinanceCurrency)
                         : 0}
                     </Text>
                   </Group>
@@ -343,11 +338,7 @@ export default function FinanceRecurringTab() {
                     <Text>{getLocalizedText("Einnahmen", "Income")}:</Text>
                     <Text c="green" fw={700}>
                       {activeIncomeSum
-                        ? formatMoney(
-                            activeIncomeSum,
-                            defaultFinanceCurrency,
-                            locale
-                          )
+                        ? formatMoney(activeIncomeSum, defaultFinanceCurrency)
                         : 0}
                     </Text>
                   </Group>
@@ -360,11 +351,7 @@ export default function FinanceRecurringTab() {
                     fw={700}
                   >
                     {activeTotalSum
-                      ? formatMoney(
-                          activeTotalSum,
-                          defaultFinanceCurrency,
-                          locale
-                        )
+                      ? formatMoney(activeTotalSum, defaultFinanceCurrency)
                       : 0}
                   </Text>
                 </Group>

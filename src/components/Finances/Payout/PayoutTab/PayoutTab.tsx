@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useLocale } from "@/hooks/useLocale";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Stack, Group, Skeleton } from "@mantine/core";
 
@@ -20,7 +20,7 @@ import { usePayoutQuery } from "@/utils/queries/finances/use-payout";
 
 export default function PayoutTab() {
   const { setIsModalOpen, setSelectedTab } = useSettingsStore();
-  const { getLocalizedText } = useLocale();
+  const { getLocalizedText } = useFormatter();
 
   const { data: payouts = [], isPending: isPayoutsPending } = usePayoutQuery();
   const { data: singleCashFlows = [], isPending: isSingleCashFlowsPending } =

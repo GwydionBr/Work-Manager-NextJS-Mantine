@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useHover, useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useLocale } from "@/hooks/useLocale";
+import { useFormatter } from "@/hooks/useFormatter";
 import { useUpdateSingleCashflowMutation } from "@/utils/queries/finances/use-single-cashflow";
 
 import {
@@ -20,7 +20,6 @@ import {
 import FinanceCategoryBadges from "@/components/Finances/Category/FinanceCategoryBadges";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 
-import { formatMoney } from "@/utils/formatFunctions";
 import { SingleCashFlow } from "@/types/finance.types";
 import { Tables } from "@/types/db.types";
 import {
@@ -45,7 +44,7 @@ export default function SingleCashflowRow({
   onToggleSelected,
   ...props
 }: SingleCashflowRowProps) {
-  const { locale } = useSettingsStore();
+  const { formatMoney } = useFormatter();
   const {
     mutate: updateSingleCashFlowMutation,
     isPending: isUpdatingSingleCashFlow,
@@ -129,7 +128,7 @@ export default function SingleCashflowRow({
         <Grid.Col span={2}>
           <Group>
             <Text fw={700} c={cashflow.amount < 0 ? "red" : "green"}>
-              {formatMoney(cashflow.amount, cashflow.currency, locale)}
+              {formatMoney(cashflow.amount, cashflow.currency)}
             </Text>
           </Group>
         </Grid.Col>

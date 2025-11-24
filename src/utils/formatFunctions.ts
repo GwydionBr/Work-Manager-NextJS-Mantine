@@ -58,3 +58,11 @@ export function formatMoney(
 export function getCurrencySymbol(currency: Currency): string {
   return shortCurrencies.find((c) => c.value === currency)?.label ?? "$";
 }
+
+export function getLocalizedText(
+  de: string,
+  en: string,
+  locale: Locale
+): string {
+  return locale === "de-DE" ? de : en;
+}
