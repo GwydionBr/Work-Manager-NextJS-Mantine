@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useHover, useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useLocale } from "@/hooks/useLocale";
 import { useUpdateSingleCashflowMutation } from "@/utils/queries/finances/use-single-cashflow";
 
 import {

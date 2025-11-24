@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useLocale } from "@/hooks/useLocale";
 
 import { Stack, Group, Skeleton } from "@mantine/core";
 
@@ -18,8 +19,8 @@ import FinancesNavbarToolbar from "../../FinancesNavbar/FinancesNavbarToolbar";
 import { usePayoutQuery } from "@/utils/queries/finances/use-payout";
 
 export default function PayoutTab() {
-  const { setIsModalOpen, setSelectedTab, getLocalizedText } =
-    useSettingsStore();
+  const { setIsModalOpen, setSelectedTab } = useSettingsStore();
+  const { getLocalizedText } = useLocale();
 
   const { data: payouts = [], isPending: isPayoutsPending } = usePayoutQuery();
   const { data: singleCashFlows = [], isPending: isSingleCashFlowsPending } =

@@ -7,6 +7,7 @@ import { useFinanceProjectQuery } from "@/utils/queries/finances/use-finance-pro
 import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
 import { useDeleteFinanceProjectMutation } from "@/utils/queries/finances/use-finance-project";
 import { useFinanceClientQuery } from "@/utils/queries/finances/use-finance-client";
+import { useLocale } from "@/hooks/useLocale";
 
 import {
   ActionIcon,
@@ -63,8 +64,9 @@ export default function FinanceProjectTab() {
   const { data: financeClients = [] } = useFinanceClientQuery();
   const { data: financeProjects = [], isPending } = useFinanceProjectQuery();
   const { data: financeCategories = [] } = useFinanceCategoriesQuery();
-  const { locale, setIsModalOpen, setSelectedTab, getLocalizedText } =
+  const { locale, setIsModalOpen, setSelectedTab } =
     useSettingsStore();
+  const { getLocalizedText } = useLocale();
 
   // Bulk selection
   const [

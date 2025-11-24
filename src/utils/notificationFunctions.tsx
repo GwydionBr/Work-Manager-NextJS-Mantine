@@ -1,3 +1,5 @@
+"use client";
+
 import { Locale } from "@/types/settings.types";
 import { notifications } from "@mantine/notifications";
 import { modals } from "@mantine/modals";
@@ -10,7 +12,7 @@ import {
 } from "@tabler/icons-react";
 import { Group, List, Stack, Text } from "@mantine/core";
 import { InsertWorkTimeEntry, WorkTimeEntry } from "@/types/work.types";
-import { formatTimeSpan } from "./formatFunctions";
+import { useFormatter } from "@/hooks/useFormatter";
 
 export const showDeleteConfirmationModal = (
   title: string,
@@ -19,6 +21,7 @@ export const showDeleteConfirmationModal = (
   locale: Locale,
   loading?: boolean
 ) => {
+  const { formatTimeSpan, getLocalizedText } = useFormatter();
   modals.openConfirmModal({
     title: (
       <Group>
@@ -34,8 +37,8 @@ export const showDeleteConfirmationModal = (
     },
     cancelProps: { variant: "outline", leftSection: <IconX size={24} /> },
     labels: {
-      confirm: locale === "de-DE" ? "Löschen" : "Delete",
-      cancel: locale === "de-DE" ? "Abbrechen" : "Cancel",
+      confirm: getLocalizedText("Löschen", "Delete"),
+      cancel: getLocalizedText("Abbrechen", "Cancel"),
     },
     onConfirm,
   });
@@ -92,6 +95,7 @@ export const showOverlapNotification = (
   createdSessions: WorkTimeEntry[],
   format24h: boolean
 ) => {
+  const { formatTimeSpan, getLocalizedText } = useFormatter();
   const isSingleOverlap =
     overlappingSessions && overlappingSessions.length === 1;
   const isSingleCreatedSession =
@@ -100,7 +104,7 @@ export const showOverlapNotification = (
     style: {
       maxHeight: "600px",
     },
-    title: locale === "de-DE" ? "Überschneidung Erkannnt" : "Overlap detected",
+    title: getLocalizedText("Überschneidung Erkannnt", "Overlap detected"),
     message: (
       <Stack>
         <Text>
@@ -111,16 +115,16 @@ export const showOverlapNotification = (
         {originalSession && (
           <Group>
             <Text>
-              {locale === "de-DE"
-                ? "Ursprüngliche Sitzung: "
-                : "Original session: "}
+              {getLocalizedText(
+                "Ursprüngliche Sitzung: ",
+                "Original session: "
+              )}
             </Text>
             <List>
               <List.Item key={originalSession.id}>
                 {formatTimeSpan(
                   new Date(originalSession.start_time),
-                  new Date(originalSession.end_time),
-                  format24h
+                  new Date(originalSession.end_time)
                 )}
               </List.Item>
             </List>
@@ -129,20 +133,15 @@ export const showOverlapNotification = (
         <Group>
           <Text>
             {isSingleOverlap
-              ? locale === "de-DE"
-                ? "Überschneidung: "
-                : "Overlap: "
-              : locale === "de-DE"
-                ? "Überschneidungen: "
-                : "Overlaps: "}
+              ? getLocalizedText("Überschneidung: ", "Overlap: ")
+              : getLocalizedText("Überschneidungen: ", "Overlaps: ")}
           </Text>
           <List>
             {overlappingSessions.map((fragment) => (
               <List.Item key={fragment.id}>
                 {formatTimeSpan(
                   new Date(fragment.start_time),
-                  new Date(fragment.end_time),
-                  format24h
+                  new Date(fragment.end_time)
                 )}
               </List.Item>
             ))}
@@ -151,20 +150,15 @@ export const showOverlapNotification = (
         <Group>
           <Text>
             {isSingleCreatedSession
-              ? locale === "de-DE"
-                ? "Erstellte Sitzung: "
-                : "Created session: "
-              : locale === "de-DE"
-                ? "Erstellte Sitzungen: "
-                : "Created sessions: "}
+              ? getLocalizedText("Erstellte Sitzung: ", "Created session: ")
+              : getLocalizedText("Erstellte Sitzungen: ", "Created sessions: ")}
           </Text>
           <List>
             {createdSessions.map((session) => (
               <List.Item key={session.id}>
                 {formatTimeSpan(
                   new Date(session.start_time),
-                  new Date(session.end_time),
-                  format24h
+                  new Date(session.end_time)
                 )}
               </List.Item>
             ))}

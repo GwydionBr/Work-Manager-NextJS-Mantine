@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useLocale } from "@/hooks/useLocale";
 
 import {
   Stack,
@@ -45,8 +46,9 @@ export default function FinanceRecurringTab() {
   const { data: recurringCashFlows = [], isPending } =
     useRecurringCashflowQuery();
   const { triggerProcessing } = useProcessRecurringCashflows();
-  const { locale, defaultFinanceCurrency, setIsModalOpen, setSelectedTab } =
+  const { defaultFinanceCurrency, setIsModalOpen, setSelectedTab } =
     useSettingsStore();
+  const { locale, getLocalizedText } = useLocale();
 
   const [filter, setFilter] = useState<
     "all" | "active" | "completed" | "future"
@@ -179,7 +181,7 @@ export default function FinanceRecurringTab() {
     return [
       [
         {
-          label: locale === "de-DE" ? "Alle" : "All",
+          label: getLocalizedText("Alle", "All"),
           leftSection: (
             <ThemeIcon variant="transparent" color="gray">
               <IconList />
@@ -190,7 +192,7 @@ export default function FinanceRecurringTab() {
           disabled: recurringCashFlows.length === 0,
         },
         {
-          label: locale === "de-DE" ? "Aktiv" : "Active",
+          label: getLocalizedText("Aktiv", "Active"),
           leftSection: (
             <ThemeIcon variant="transparent" color="grape">
               <IconList />
@@ -201,7 +203,7 @@ export default function FinanceRecurringTab() {
           disabled: activeCashFlows.length === 0,
         },
         {
-          label: locale === "de-DE" ? "Abgeschlossen" : "Completed",
+          label: getLocalizedText("Abgeschlossen", "Completed"),
           leftSection: (
             <ThemeIcon variant="transparent" color="green">
               <IconCheck />
@@ -212,7 +214,7 @@ export default function FinanceRecurringTab() {
           disabled: completedCashFlows.length === 0,
         },
         {
-          label: locale === "de-DE" ? "Zukünftig" : "Future",
+          label: getLocalizedText("Zukünftig", "Future"),
           leftSection: (
             <ThemeIcon variant="transparent" color="blue">
               <IconCalendarEvent />
@@ -225,7 +227,7 @@ export default function FinanceRecurringTab() {
       ],
       [
         {
-          label: locale === "de-DE" ? "Ausgaben" : "Expense",
+          label: getLocalizedText("Ausgaben", "Expense"),
           leftSection: (
             <ThemeIcon variant="transparent" color="red">
               <IconCashMoveBack />
@@ -239,7 +241,7 @@ export default function FinanceRecurringTab() {
               .length === 0,
         },
         {
-          label: locale === "de-DE" ? "Einnahmen" : "Income",
+          label: getLocalizedText("Einnahmen", "Income"),
           leftSection: (
             <ThemeIcon variant="transparent" color="green">
               <IconCashMove />
@@ -254,22 +256,22 @@ export default function FinanceRecurringTab() {
         },
       ],
     ];
-  }, [filter, locale, recurringCashFlows, typeFilter]);
+  }, [filter, getLocalizedText, recurringCashFlows, typeFilter]);
 
   function getIntervalLabel(interval: FinanceInterval) {
     switch (interval) {
       case "day":
-        return locale === "de-DE" ? "Täglich" : "Daily";
+        return getLocalizedText("Täglich", "Daily");
       case "week":
-        return locale === "de-DE" ? "Wöchentlich" : "Weekly";
+        return getLocalizedText("Wöchentlich", "Weekly");
       case "month":
-        return locale === "de-DE" ? "Monatlich" : "Monthly";
+        return getLocalizedText("Monatlich", "Monthly");
       case "1/4 year":
-        return locale === "de-DE" ? "Vierteljährlich" : "Quarterly";
+        return getLocalizedText("Vierteljährlich", "Quarterly");
       case "1/2 year":
-        return locale === "de-DE" ? "Halbjährlich" : "Half Yearly";
+        return getLocalizedText("Halbjährlich", "Half Yearly");
       case "year":
-        return locale === "de-DE" ? "Jährlich" : "Yearly";
+        return getLocalizedText("Jährlich", "Yearly");
     }
   }
 
@@ -285,11 +287,10 @@ export default function FinanceRecurringTab() {
                 key="finance-recurring-adjustment-action-icon"
                 size="lg"
                 variant="transparent"
-                tooltipLabel={
-                  locale === "de-DE"
-                    ? "Finanzeinstellungen anpassen"
-                    : "Adjust finance settings"
-                }
+                tooltipLabel={getLocalizedText(
+                  "Finanzeinstellungen anpassen",
+                  "Adjust finance settings"
+                )}
                 iconSize={20}
                 onClick={() => {
                   setIsModalOpen(true);
@@ -298,11 +299,10 @@ export default function FinanceRecurringTab() {
               />,
               <DelayedTooltip
                 key="finance-recurring-add-cash-flow-tooltip"
-                label={
-                  locale === "de-DE"
-                    ? "Wiederkehrenden Cashflow hinzufügen"
-                    : "Add Recurring Cash Flow"
-                }
+                label={getLocalizedText(
+                  "Wiederkehrenden Cashflow hinzufügen",
+                  "Add Recurring Cash Flow"
+                )}
               >
                 <ActionIcon
                   onClick={openCashFlowModal}
@@ -328,7 +328,7 @@ export default function FinanceRecurringTab() {
               <Stack align="flex-start">
                 <Group justify="space-between">
                   <Group gap="xs">
-                    <Text>{locale === "de-DE" ? "Ausgaben" : "Expense"}:</Text>
+                    <Text>{getLocalizedText("Ausgaben", "Expense")}:</Text>
                     <Text c="red" fw={700}>
                       {activeExpenseSum
                         ? formatMoney(
@@ -340,7 +340,7 @@ export default function FinanceRecurringTab() {
                     </Text>
                   </Group>
                   <Group gap="xs">
-                    <Text>{locale === "de-DE" ? "Einnahmen" : "Income"}:</Text>
+                    <Text>{getLocalizedText("Einnahmen", "Income")}:</Text>
                     <Text c="green" fw={700}>
                       {activeIncomeSum
                         ? formatMoney(
@@ -354,7 +354,7 @@ export default function FinanceRecurringTab() {
                 </Group>
                 <Divider />
                 <Group justify="center">
-                  <Text>{locale === "de-DE" ? "Gesamt" : "Total"}:</Text>
+                  <Text>{getLocalizedText("Gesamt", "Total")}:</Text>
                   <Text
                     c={activeTotalSum && activeTotalSum > 0 ? "green" : "red"}
                     fw={700}
@@ -388,7 +388,7 @@ export default function FinanceRecurringTab() {
                     w="100%"
                     label={
                       <Badge color="blue" variant="outline">
-                        {locale === "de-DE" ? "Aktiv" : "Active"}
+                        {getLocalizedText("Aktiv", "Active")}
                       </Badge>
                     }
                     labelPosition="left"
@@ -419,7 +419,7 @@ export default function FinanceRecurringTab() {
                     w="100%"
                     label={
                       <Badge color="blue" variant="outline">
-                        {locale === "de-DE" ? "Zukünftig" : "Future"}
+                        {getLocalizedText("Zukünftig", "Future")}
                       </Badge>
                     }
                     labelPosition="left"
@@ -449,7 +449,7 @@ export default function FinanceRecurringTab() {
                     labelPosition="left"
                     label={
                       <Badge color="blue" variant="outline">
-                        {locale === "de-DE" ? "Abgeschlossen" : "Completed"}
+                        {getLocalizedText("Abgeschlossen", "Completed")}
                       </Badge>
                     }
                   />

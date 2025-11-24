@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useLocale } from "@/hooks/useLocale";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Group,
@@ -20,7 +22,6 @@ import {
 import EditCashFlowDrawer from "@/components/Finances/CashFlow/EditCashFlowDrawer";
 import CashFlowModal from "@/components/Finances/CashFlow/AddCashFlowModal";
 
-import { formatDate, formatMoney } from "@/utils/formatFunctions";
 import {
   IconCashMove,
   IconCashMoveBack,
@@ -58,8 +59,9 @@ export default function FinanceSingleTab() {
   });
   const { data: singleCashFlows = [], isPending: isSingleCashFlowsPending } =
     useSingleCashflowQuery();
-  const { locale, setIsModalOpen, setSelectedTab, getLocalizedText } =
-    useSettingsStore();
+  const { setIsModalOpen, setSelectedTab } = useSettingsStore();
+  const { locale, getLocalizedText } = useLocale();
+  const { formatMoney, formatDate } = useFormatter();
   const [typeFilter, setTypeFilter] = useState<"all" | "expense" | "income">(
     "all"
   );
@@ -266,7 +268,7 @@ export default function FinanceSingleTab() {
         },
       ],
     ];
-  }, [locale, singleCashFlows, typeFilter]);
+  }, [getLocalizedText, singleCashFlows, typeFilter]);
 
   return (
     <Group>
@@ -344,19 +346,19 @@ export default function FinanceSingleTab() {
                 <Text>{getLocalizedText("Dieser Monat", "This Month")}: </Text>
                 <Group justify="space-between">
                   <Text c="red">
-                    {formatMoney(statistics.expenses[0], "EUR", locale)}
+                    {formatMoney(statistics.expenses[0], "EUR")}
                   </Text>
                   <Text c="green">
-                    {formatMoney(statistics.income[0], "EUR", locale)}
+                    {formatMoney(statistics.income[0], "EUR")}
                   </Text>
                 </Group>
                 <Text>{getLocalizedText("Letzter Monat", "Last Month")}: </Text>
                 <Group justify="space-between">
                   <Text c="red">
-                    {formatMoney(statistics.expenses[1], "EUR", locale)}
+                    {formatMoney(statistics.expenses[1], "EUR")}
                   </Text>
                   <Text c="green">
-                    {formatMoney(statistics.income[1], "EUR", locale)}
+                    {formatMoney(statistics.income[1], "EUR")}
                   </Text>
                 </Group>
               </Stack>
@@ -436,7 +438,7 @@ export default function FinanceSingleTab() {
                       mt={5}
                       label={
                         <Badge variant="light">
-                          {formatDate(new Date(cashFlow.date), locale)}
+                          {formatDate(new Date(cashFlow.date))}
                         </Badge>
                       }
                       labelPosition="left"
