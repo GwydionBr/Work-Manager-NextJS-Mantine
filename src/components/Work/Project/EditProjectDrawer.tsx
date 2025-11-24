@@ -52,7 +52,9 @@ export default function EditProjectDrawer({
 
   useEffect(() => {
     if (activeProject) {
-      setCategoryIds(activeProject.categories.map((c) => c.id));
+      if (activeProject.categories) {
+        setCategoryIds(activeProject.categories.map((c) => c.id));
+      }
     }
   }, [activeProject]);
 
