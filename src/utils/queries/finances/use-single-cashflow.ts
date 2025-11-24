@@ -1,7 +1,8 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
+
 import { getAllSingleCashFlows } from "@/actions/finance/singleCashflow/get-all-single-cashflows";
 import { deleteSingleCashFlows } from "@/actions/finance/singleCashflow/delete-single-cashflows";
 import {
@@ -29,7 +30,7 @@ export const useSingleCashflowQuery = () => {
 export const useUpdateSingleCashflowMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["updateSingleCashFlow"],
     mutationFn: ({
@@ -45,8 +46,7 @@ export const useUpdateSingleCashflowMutation = ({
       );
       if (props.showNotification !== false) {
         showActionSuccessNotification(
-          getLocalizedText("Cashflow aktualisiert", "Cashflow updated"),
-          locale
+          getLocalizedText("Cashflow aktualisiert", "Cashflow updated")
         );
       }
       props.onSuccess?.();
@@ -57,8 +57,7 @@ export const useUpdateSingleCashflowMutation = ({
           getLocalizedText(
             "Cashflow konnten nicht aktualisiert werden",
             "Cashflow could not be updated"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -70,7 +69,7 @@ export const useUpdateSingleCashflowMutation = ({
 export const useAddSingleCashflowMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
 
   return useMutation({
     mutationKey: ["addSingleCashFlow"],
@@ -83,8 +82,7 @@ export const useAddSingleCashflowMutation = ({
       );
       if (props.showNotification !== false) {
         showActionSuccessNotification(
-          getLocalizedText("Cashflow hinzugefügt", "Cashflow added"),
-          locale
+          getLocalizedText("Cashflow hinzugefügt", "Cashflow added")
         );
       }
       props.onSuccess?.();
@@ -95,8 +93,7 @@ export const useAddSingleCashflowMutation = ({
           getLocalizedText(
             "Cashflow konnten nicht hinzugefügt werden",
             "Cashflow could not be added"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -108,7 +105,7 @@ export const useAddSingleCashflowMutation = ({
 export const useDeleteSingleCashflowMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["deleteSingleCashFlows"],
     mutationFn: (ids: string[]) => deleteSingleCashFlows({ ids }),
@@ -120,8 +117,7 @@ export const useDeleteSingleCashflowMutation = ({
       );
       if (props.showNotification !== false) {
         showActionSuccessNotification(
-          getLocalizedText("Cashflow gelöscht", "Cashflow deleted"),
-          locale
+          getLocalizedText("Cashflow gelöscht", "Cashflow deleted")
         );
       }
       props.onSuccess?.();
@@ -132,8 +128,7 @@ export const useDeleteSingleCashflowMutation = ({
           getLocalizedText(
             "Cashflow konnten nicht gelöscht werden",
             "Income could not be deleted"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();

@@ -10,6 +10,7 @@ import { useFinanceStore } from "@/stores/financeStore";
 import { useGroupStore } from "@/stores/groupStore";
 import { useTaskStore } from "@/stores/taskStore";
 import { useCalendarStore } from "@/stores/calendarStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { logout } from "@/actions/auth/logout";
 import {
@@ -32,7 +33,7 @@ const resetAllStores = () => {
 
 export const useLogoutMutation = () => {
   const router = useRouter();
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationFn: logout,
     onSuccess: (data, variables, onMutateResult, context) => {
@@ -42,8 +43,7 @@ export const useLogoutMutation = () => {
     },
     onError: (error) => {
       showActionErrorNotification(
-        getLocalizedText("Fehler beim Ausloggen", "Error logging out"),
-        locale
+        getLocalizedText("Fehler beim Ausloggen", "Error logging out")
       );
     },
   });
@@ -51,7 +51,7 @@ export const useLogoutMutation = () => {
 
 export const useDeleteUserMutation = () => {
   const router = useRouter();
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationFn: deleteUser,
     onSuccess: (data, variables, onMutateResult, context) => {
@@ -62,8 +62,7 @@ export const useDeleteUserMutation = () => {
         getLocalizedText(
           "Konto erfolgreich gelöscht",
           "Account deleted successfully"
-        ),
-        locale
+        )
       );
     },
     onError: (error) => {
@@ -71,15 +70,14 @@ export const useDeleteUserMutation = () => {
         getLocalizedText(
           "Fehler beim Löschen des Kontos",
           "Error deleting account"
-        ),
-        locale
+        )
       );
     },
   });
 };
 
 export const useLoginMutation = () => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const router = useRouter();
   return useMutation({
     mutationFn: login,
@@ -89,8 +87,7 @@ export const useLoginMutation = () => {
     },
     onError: (error) => {
       showActionErrorNotification(
-        getLocalizedText("Fehler beim Login", "Error logging in"),
-        locale
+        getLocalizedText("Fehler beim Login", "Error logging in")
       );
     },
   });
@@ -98,7 +95,7 @@ export const useLoginMutation = () => {
 
 export const useSignupMutation = () => {
   const router = useRouter();
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationFn: signup,
     onSuccess: (data, variables, onMutateResult, context) => {
@@ -107,8 +104,7 @@ export const useSignupMutation = () => {
     },
     onError: (error) => {
       showActionErrorNotification(
-        getLocalizedText("Fehler beim Registrieren", "Error registering"),
-        locale
+        getLocalizedText("Fehler beim Registrieren", "Error registering")
       );
     },
   });

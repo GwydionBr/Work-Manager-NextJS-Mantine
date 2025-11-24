@@ -2,7 +2,7 @@
 
 import { useDisclosure } from "@mantine/hooks";
 import { useDeleteWorkTimeEntryMutation } from "@/utils/queries/work/use-work-time_entry";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Group, Text, Divider, Stack, Button, Collapse } from "@mantine/core";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
@@ -24,7 +24,7 @@ export default function SessionSelector({
   toggleAllSessions,
   handleSessionPayoutClick,
 }: SessionSelectorProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const {
     mutate: deleteWorkTimeEntryMutation,
     isPending: isDeletingWorkTimeEntry,
@@ -34,16 +34,16 @@ export default function SessionSelector({
 
   const handleDelete = () => {
     showDeleteConfirmationModal(
-      locale === "de-DE" ? "Auswahl löschen" : "Delete Selection",
-      locale === "de-DE"
-        ? "Sind Sie sicher, dass Sie diese Auswahl löschen möchten?"
-        : "Are you sure you want to delete this selection?",
+      getLocalizedText("Auswahl löschen", "Delete Selection"),
+      getLocalizedText(
+        "Sind Sie sicher, dass Sie diese Auswahl löschen möchten?",
+        "Are you sure you want to delete this selection?"
+      ),
       async () => {
         deleteWorkTimeEntryMutation({
           ids: selectedSessions,
         });
-      },
-      locale
+      }
     );
   };
 
@@ -81,7 +81,7 @@ export default function SessionSelector({
           />
 
           <Text fz="sm" c="dimmed">
-            {locale === "de-DE" ? "Alle" : "All"}
+            {getLocalizedText("Alle", "All")}
           </Text>
         </Group>
         <Divider orientation="vertical" />
@@ -92,7 +92,7 @@ export default function SessionSelector({
               (session) => !session.single_cash_flow_id
             ).length
           }{" "}
-          {locale === "de-DE" ? "Sitzungen" : "Sessions"}
+          {getLocalizedText("Sitzungen", "Sessions")}
         </Text>
       </Group>
       <Collapse in={selectedSessions.length > 0}>
@@ -108,23 +108,23 @@ export default function SessionSelector({
             leftSection={<IconCashBanknotePlus />}
             color="violet"
           >
-            {locale === "de-DE" ? "Auswahl auszahlen" : "Pay Selection"}
+            {getLocalizedText("Auswahl auszahlen", "Pay Selection")}
           </Button>
           <Button
             variant="outline"
             onClick={handleEdit}
             leftSection={<IconPencil />}
           >
-            {locale === "de-DE" ? "Auswahl bearbeiten" : "Edit Selection"}
+            {getLocalizedText("Auswahl bearbeiten", "Edit Selection")}
           </Button>
           <Collapse in={editModalOpened}>
             <Text>
-              {locale === "de-DE" ? "Kommt bald..." : "Coming soon..."}
+              {getLocalizedText("Kommt bald...", "Coming soon...")}
             </Text>
           </Collapse>
           <DeleteButton
             onClick={handleDelete}
-            label={locale === "de-DE" ? "Auswahl löschen" : "Delete Selection"}
+            label={getLocalizedText("Auswahl löschen", "Delete Selection")}
             loading={isDeletingWorkTimeEntry}
           />
         </Stack>

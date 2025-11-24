@@ -1,7 +1,8 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
+
 import { getAllWorkFolders } from "@/actions/work/folder/get-all-work-folder";
 import { createWorkFolder } from "@/actions/work/folder/create-work-folder";
 import { WorkFolder } from "@/types/work.types";
@@ -22,7 +23,7 @@ export const useWorkFolderQuery = () => {
 export const useCreateWorkFolderMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["createWorkFolder"],
     mutationFn: createWorkFolder,
@@ -36,8 +37,7 @@ export const useCreateWorkFolderMutation = ({
           getLocalizedText(
             "Ordner erfolgreich erstellt",
             "Folder successfully created"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -48,8 +48,7 @@ export const useCreateWorkFolderMutation = ({
           getLocalizedText(
             "Ordner konnten nicht erstellt werden",
             "Folder could not be created"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -60,7 +59,7 @@ export const useCreateWorkFolderMutation = ({
 export const useUpdateWorkFolderMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["updateWorkFolder"],
     mutationFn: updateWorkFolder,
@@ -88,8 +87,7 @@ export const useUpdateWorkFolderMutation = ({
           getLocalizedText(
             "Ordner erfolgreich aktualisiert",
             "Folder successfully updated"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -105,8 +103,7 @@ export const useUpdateWorkFolderMutation = ({
           getLocalizedText(
             "Ordner konnten nicht aktualisiert werden",
             "Folder could not be updated"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();

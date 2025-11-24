@@ -1,7 +1,8 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
+
 import { Tables } from "@/types/db.types";
 import { FinanceProject, SingleCashFlow } from "@/types/finance.types";
 import { payoutFinanceProject } from "@/actions/finance/payout/payout-finance-project";
@@ -27,7 +28,7 @@ export function usePayoutQuery() {
 export const usePayoutFinanceProjectMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { locale, getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["payoutFinanceProject"],
     mutationFn: ({
@@ -54,8 +55,7 @@ export const usePayoutFinanceProjectMutation = ({
           getLocalizedText(
             "Finanzprojekt erfolgreich ausgezahlt",
             "Finance project successfully paid out"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -67,8 +67,7 @@ export const usePayoutFinanceProjectMutation = ({
           getLocalizedText(
             "Finanzprojekt konnten nicht ausgezahlt werden",
             "Finance project could not be paid out"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -80,7 +79,7 @@ export const usePayoutFinanceProjectMutation = ({
 export const usePayoutFinanceAdjustmentMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["payoutFinanceAdjustment"],
     mutationFn: ({
@@ -118,8 +117,7 @@ export const usePayoutFinanceAdjustmentMutation = ({
           getLocalizedText(
             "Finanzanpassung erfolgreich ausgezahlt",
             "Finance adjustment successfully paid out"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -130,8 +128,7 @@ export const usePayoutFinanceAdjustmentMutation = ({
           getLocalizedText(
             "Finanzanpassung konnten nicht ausgezahlt werden",
             "Finance adjustment could not be paid out"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -143,7 +140,7 @@ export const usePayoutFinanceAdjustmentMutation = ({
 export const usePayoutHourlyTimerProjectMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["payoutHourlyTimerProject"],
     mutationFn: payoutHourlyTimerProject,
@@ -178,8 +175,7 @@ export const usePayoutHourlyTimerProjectMutation = ({
           getLocalizedText(
             "Projekt erfolgreich ausgezahlt",
             "Project successfully paid out"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -191,8 +187,7 @@ export const usePayoutHourlyTimerProjectMutation = ({
           getLocalizedText(
             "Projekt konnten nicht ausgezahlt werden",
             "Project could not be paid out"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();

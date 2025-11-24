@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useLocale } from "@/hooks/useLocale";
 import { useFormatter } from "@/hooks/useFormatter";
 
 import {
@@ -60,7 +59,7 @@ export default function FinanceSingleTab() {
   const { data: singleCashFlows = [], isPending: isSingleCashFlowsPending } =
     useSingleCashflowQuery();
   const { setIsModalOpen, setSelectedTab } = useSettingsStore();
-  const { locale, getLocalizedText } = useLocale();
+  const { getLocalizedText } = useFormatter();
   const { formatMoney, formatDate } = useFormatter();
   const [typeFilter, setTypeFilter] = useState<"all" | "expense" | "income">(
     "all"
@@ -221,7 +220,6 @@ export default function FinanceSingleTab() {
       async () => {
         deleteSingleCashFlows(selectedCashFlows);
       },
-      locale,
       isDeletingSingleCashFlows
     );
   };

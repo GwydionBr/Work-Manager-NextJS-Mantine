@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { getAllFinanceClients } from "@/actions/finance/financeClient/get-all-finance-clients";
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
@@ -24,7 +24,7 @@ export const useFinanceClientQuery = () => {
 export const useAddFinanceClientMutation = ({
   ...props
 }: CustomMutationProps<Tables<"finance_client">> = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["addFinanceClient"],
     mutationFn: (financeClient: TablesInsert<"finance_client">) =>
@@ -39,8 +39,7 @@ export const useAddFinanceClientMutation = ({
           getLocalizedText(
             "Finanzkunde erfolgreich hinzugefügt",
             "Finance client successfully added"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.(data);
@@ -51,8 +50,7 @@ export const useAddFinanceClientMutation = ({
           getLocalizedText(
             "Finanzkunde konnten nicht hinzugefügt werden",
             "Finance client could not be added"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -64,7 +62,7 @@ export const useAddFinanceClientMutation = ({
 export const useUpdateFinanceClientMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["updateFinanceClient"],
     mutationFn: (financeClient: TablesUpdate<"finance_client">) =>
@@ -80,8 +78,7 @@ export const useUpdateFinanceClientMutation = ({
           getLocalizedText(
             "Finanzkunde erfolgreich aktualisiert",
             "Finance client successfully updated"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -92,8 +89,7 @@ export const useUpdateFinanceClientMutation = ({
           getLocalizedText(
             "Finanzkunde konnten nicht aktualisiert werden",
             "Finance client could not be updated"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -105,7 +101,7 @@ export const useUpdateFinanceClientMutation = ({
 export const useDeleteFinanceClientMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["deleteFinanceClient"],
     mutationFn: (ids: string[]) => deleteFinanceClients(ids),
@@ -120,8 +116,7 @@ export const useDeleteFinanceClientMutation = ({
           getLocalizedText(
             "Finanzkunde erfolgreich gelöscht",
             "Finance client successfully deleted"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -132,8 +127,7 @@ export const useDeleteFinanceClientMutation = ({
           getLocalizedText(
             "Finanzkunde konnten nicht gelöscht werden",
             "Finance client could not be deleted"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();

@@ -1,23 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
-import {
-  Stack,
-  Text,
-  Skeleton,
-  Group,
-  Collapse,
-  List,
-  Modal,
-} from "@mantine/core";
+import { Stack, Text, Skeleton, Group, Collapse, List } from "@mantine/core";
 import FinanceClientRow from "./FinanceClientRow";
 import FinanceSettingsHeader from "@/components/Settings/Finances/FinanceSettingsHeader";
-import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import FinanceClientForm from "@/components/Finances/FinanceClient/FinanceClientForm";
-import { useCallback, useMemo, useState } from "react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import { IconUserPlus, IconUsers } from "@tabler/icons-react";
@@ -36,7 +26,7 @@ export default function FinanceClientSettings() {
     useFinanceClientQuery();
   const { mutate: deleteFinanceClientsMutation } =
     useDeleteFinanceClientMutation();
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const [isClientFormOpen, { open: openClientForm, close: closeClientForm }] =
     useDisclosure(false);
   const [selectedModeActive, { toggle: toggleSelectedMode }] =
@@ -87,8 +77,7 @@ export default function FinanceClientSettings() {
       </Stack>,
       () => {
         deleteFinanceClientsMutation(ids);
-      },
-      locale
+      }
     );
   };
 

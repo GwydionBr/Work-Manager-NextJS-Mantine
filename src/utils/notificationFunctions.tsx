@@ -1,6 +1,5 @@
 "use client";
 
-import { Locale } from "@/types/settings.types";
 import { notifications } from "@mantine/notifications";
 import { modals } from "@mantine/modals";
 import {
@@ -12,16 +11,43 @@ import {
 } from "@tabler/icons-react";
 import { Group, List, Stack, Text } from "@mantine/core";
 import { InsertWorkTimeEntry, WorkTimeEntry } from "@/types/work.types";
-import { useFormatter } from "@/hooks/useFormatter";
+import { useSettingsStore } from "@/stores/settingsStore";
+
+// Helper function to get current locale from store (can be used outside React components)
+const getCurrentLocale = (): string => {
+  return useSettingsStore.getState().locale;
+};
+
+// Helper function to get format24h from store (can be used outside React components)
+const getFormat24h = (): boolean => {
+  return useSettingsStore.getState().format24h;
+};
+
+// Helper function to get localized text (automatically reads locale from store)
+const getLocalizedText = (de: string, en: string): string => {
+  const locale = getCurrentLocale();
+  return locale === "de-DE" ? de : en;
+};
+
+// Helper function to format time span (automatically reads format24h from store)
+const formatTimeSpan = (start: Date, end: Date): string => {
+  const format24h = getFormat24h();
+  const localeForTime = format24h ? "de-DE" : "en-US";
+  const formatSingleDateTime = (date: Date): string => {
+    return date.toLocaleString(localeForTime, {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+  return `${formatSingleDateTime(start)} - ${formatSingleDateTime(end)}`;
+};
 
 export const showDeleteConfirmationModal = (
   title: string,
   message: React.ReactNode,
   onConfirm: () => void,
-  locale: Locale,
   loading?: boolean
 ) => {
-  const { formatTimeSpan, getLocalizedText } = useFormatter();
   modals.openConfirmModal({
     title: (
       <Group>
@@ -44,12 +70,9 @@ export const showDeleteConfirmationModal = (
   });
 };
 
-export const showActionSuccessNotification = (
-  message: string,
-  locale: Locale
-) => {
+export const showActionSuccessNotification = (message: string) => {
   notifications.show({
-    title: locale === "de-DE" ? "Erfolg" : "Success",
+    title: getLocalizedText("Erfolg", "Success"),
     message,
     color: "green",
     autoClose: 3000,
@@ -59,12 +82,9 @@ export const showActionSuccessNotification = (
   });
 };
 
-export const showActionErrorNotification = (
-  message: string,
-  locale: Locale
-) => {
+export const showActionErrorNotification = (message: string) => {
   notifications.show({
-    title: locale === "de-DE" ? "Fehler" : "Error",
+    title: getLocalizedText("Fehler", "Error"),
     message,
     color: "red",
     autoClose: 3000,
@@ -74,13 +94,13 @@ export const showActionErrorNotification = (
   });
 };
 
-export const showCompleteOverlapNotification = (locale: Locale) => {
+export const showCompleteOverlapNotification = () => {
   notifications.show({
-    title: locale === "de-DE" ? "Komplette Überschneidung" : "Complete overlap",
-    message:
-      locale === "de-DE"
-        ? "Timer Sitzung überschneided sich komplett mit bereits bestehenden Sitzungen und wurde daher nicht gespeichert."
-        : "Timer session completely overlaps with another session and was not saved.",
+    title: getLocalizedText("Komplette Überschneidung", "Complete overlap"),
+    message: getLocalizedText(
+      "Timer Sitzung überschneided sich komplett mit bereits bestehenden Sitzungen und wurde daher nicht gespeichert.",
+      "Timer session completely overlaps with another session and was not saved."
+    ),
     color: "red",
     icon: <IconAlertCircle />,
     autoClose: false,
@@ -89,13 +109,10 @@ export const showCompleteOverlapNotification = (locale: Locale) => {
 };
 
 export const showOverlapNotification = (
-  locale: Locale,
   originalSession: InsertWorkTimeEntry,
   overlappingSessions: WorkTimeEntry[],
-  createdSessions: WorkTimeEntry[],
-  format24h: boolean
+  createdSessions: WorkTimeEntry[]
 ) => {
-  const { formatTimeSpan, getLocalizedText } = useFormatter();
   const isSingleOverlap =
     overlappingSessions && overlappingSessions.length === 1;
   const isSingleCreatedSession =
@@ -108,9 +125,10 @@ export const showOverlapNotification = (
     message: (
       <Stack>
         <Text>
-          {locale === "de-DE"
-            ? "Timer Sitzung hat Überschneidungen und wurde angepasst."
-            : "Timer session has overlaps and was adjusted."}
+          {getLocalizedText(
+            "Timer Sitzung hat Überschneidungen und wurde angepasst.",
+            "Timer session has overlaps and was adjusted."
+          )}
         </Text>
         {originalSession && (
           <Group>

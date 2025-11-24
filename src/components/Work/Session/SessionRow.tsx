@@ -1,19 +1,13 @@
 "use client";
 
 import { useDeleteWorkTimeEntryMutation } from "@/utils/queries/work/use-work-time_entry";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import { useDisclosure, useHover } from "@mantine/hooks";
 
 import { Card, Group, Stack, Text, Box, Transition } from "@mantine/core";
 import { IconClock } from "@tabler/icons-react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import EditSessionDrawer from "@/components/Work/Session/EditSessionDrawer";
-
-import {
-  formatTimeSpan,
-  formatTime,
-  formatMoney,
-} from "@/utils/formatFunctions";
 
 import type { Tables } from "@/types/db.types";
 import PencilActionIcon from "@/components/UI/ActionIcons/PencilActionIcon";
@@ -37,7 +31,8 @@ export default function SessionRow({
   isOverview = false,
   selectedModeActive,
 }: SessionRowProps) {
-  const { locale, format24h } = useSettingsStore();
+  const { getLocalizedText, formatTimeSpan, formatTime, formatMoney } =
+    useFormatter();
   const [editDrawerOpened, editDrawerHandler] = useDisclosure(false);
   const {
     mutate: deleteWorkTimeEntryMutation,
@@ -50,16 +45,16 @@ export default function SessionRow({
 
   async function handleDelete() {
     showDeleteConfirmationModal(
-      locale === "de-DE" ? "Sitzung löschen" : "Delete Session",
-      locale === "de-DE"
-        ? "Sind Sie sicher, dass Sie diese Sitzung löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
-        : "Are you sure you want to delete this session? This action cannot be undone.",
+      getLocalizedText("Sitzung löschen", "Delete Session"),
+      getLocalizedText(
+        "Sind Sie sicher, dass Sie diese Sitzung löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+        "Are you sure you want to delete this session? This action cannot be undone."
+      ),
       async () => {
         deleteWorkTimeEntryMutation({
           ids: [session.id],
         });
-      },
-      locale
+      }
     );
   }
 
@@ -141,13 +136,12 @@ export default function SessionRow({
                 <Text>
                   {formatTimeSpan(
                     new Date(session.start_time),
-                    new Date(session.end_time),
-                    format24h
+                    new Date(session.end_time)
                   )}
                 </Text>
                 {sessionPaid && (
                   <Text size="xs" c="green" fw={500}>
-                    {locale === "de-DE" ? "✓ Bezahlt" : "✓ Paid"}
+                    {getLocalizedText("✓ Bezahlt", "✓ Paid")}
                   </Text>
                 )}
               </Group>
@@ -158,13 +152,9 @@ export default function SessionRow({
               )}
               <Group>
                 <Text size="sm" c="teal">
-                  {locale === "de-DE" ? "Aktiv" : "Active"}:{" "}
+                  {getLocalizedText("Aktiv", "Active")}:{" "}
                   {formatTime(session.active_seconds)}
                 </Text>
-                {/* <Text size="sm" c="dimmed">
-                  {locale === "de-DE" ? "Pausiert" : "Paused"}:{" "}
-                  {formatTime(session.paused_seconds)}
-                </Text> */}
               </Group>
             </Stack>
             <Transition
@@ -178,16 +168,18 @@ export default function SessionRow({
                 <Group style={styles}>
                   <PencilActionIcon
                     onClick={() => editDrawerHandler.open()}
-                    tooltipLabel={
-                      locale === "de-DE" ? "Sitzung bearbeiten" : "Edit session"
-                    }
+                    tooltipLabel={getLocalizedText(
+                      "Sitzung bearbeiten",
+                      "Edit session"
+                    )}
                   />
                   <DeleteActionIcon
                     loading={isDeletingWorkTimeEntry}
                     onClick={() => handleDelete()}
-                    tooltipLabel={
-                      locale === "de-DE" ? "Sitzung löschen" : "Delete session"
-                    }
+                    tooltipLabel={getLocalizedText(
+                      "Sitzung löschen",
+                      "Delete session"
+                    )}
                   />
                 </Group>
               )}
@@ -206,7 +198,7 @@ export default function SessionRow({
               }}
             >
               {session.hourly_payment
-                ? formatMoney(earnings, session.currency, locale)
+                ? formatMoney(earnings, session.currency)
                 : ""}
             </Text>
           </Group>

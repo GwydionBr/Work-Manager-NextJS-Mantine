@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useFormatter } from "@/hooks/useFormatter";
 import { useRecurringCashflowQuery } from "@/utils/queries/finances/use-recurring-cashflow";
 import { useSingleCashflowQuery } from "@/utils/queries/finances/use-single-cashflow";
+
 import { processRecurringCashFlows } from "@/utils/helper/processRecurringCashflows";
 import { createMultipleSingleCashFlows } from "@/actions/finance/singleCashflow/create-multiple-single-cashflows";
-import { useSettingsStore } from "@/stores/settingsStore";
 import {
   showActionErrorNotification,
   showActionSuccessNotification,
@@ -15,11 +16,9 @@ import { SingleCashFlow } from "@/types/finance.types";
 
 const LAST_PROCESSED_KEY = "lastRecurringCashflowProcessed";
 
-
 export function useProcessRecurringCashflows() {
   const queryClient = useQueryClient();
-  const { locale, getLocalizedText } = useSettingsStore();
-  const lastProcessedRef = useRef<Date | null>(null);
+  const { getLocalizedText } = useFormatter();
 
   // Get recurring and single cashflows
   const { data: recurringCashFlows = [] } = useRecurringCashflowQuery();
@@ -50,8 +49,7 @@ export function useProcessRecurringCashflows() {
           getLocalizedText(
             `${data.length} wiederkehrende Cashflows verarbeitet`,
             `${data.length} recurring cashflows processed`
-          ),
-          locale
+          )
         );
       }
     },
@@ -61,8 +59,7 @@ export function useProcessRecurringCashflows() {
         getLocalizedText(
           "Fehler beim Verarbeiten der wiederkehrenden Cashflows",
           "Error processing recurring cashflows"
-        ),
-        locale
+        )
       );
     },
   });

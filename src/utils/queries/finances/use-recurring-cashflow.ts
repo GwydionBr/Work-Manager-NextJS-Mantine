@@ -1,6 +1,8 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useFormatter } from "@/hooks/useFormatter";
+
 import { getAllRecurringCashFlows } from "@/actions/finance/recurringCashflow/get-all-recurring-cashflows";
 import { addRecurringCashFlow } from "@/actions/finance/recurringCashflow/create-recurring-cashflow";
 import { updateRecurringCashFlow } from "@/actions/finance/recurringCashflow/update-recurring-cashflow";
@@ -10,7 +12,6 @@ import {
   SingleCashFlow,
   UpdateRecurringCashFlow,
 } from "@/types/finance.types";
-import { useSettingsStore } from "@/stores/settingsStore";
 import {
   showActionErrorNotification,
   showActionSuccessNotification,
@@ -30,7 +31,7 @@ export const useRecurringCashflowQuery = () => {
 export const useUpdateRecurringCashflowMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["updateRecurringCashFlow"],
     mutationFn: ({
@@ -70,8 +71,7 @@ export const useUpdateRecurringCashflowMutation = ({
           getLocalizedText(
             "Wiederkehrender Cashflow erfolgreich aktualisiert",
             "Recurring cash flow updated successfully"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -82,8 +82,7 @@ export const useUpdateRecurringCashflowMutation = ({
           getLocalizedText(
             "Fehler beim Aktualisieren der wiederkehrenden Zahlung",
             "Failed to update recurring cash flow"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -95,7 +94,7 @@ export const useUpdateRecurringCashflowMutation = ({
 export const useAddRecurringCashflowMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["addRecurringCashFlow"],
     mutationFn: addRecurringCashFlow,
@@ -115,8 +114,7 @@ export const useAddRecurringCashflowMutation = ({
           getLocalizedText(
             "Wiederkehrender Cashflow erfolgreich hinzugefügt",
             "Recurring cash flow added successfully"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -127,8 +125,7 @@ export const useAddRecurringCashflowMutation = ({
           getLocalizedText(
             "Fehler beim Hinzufügen der wiederkehrenden Zahlung",
             "Failed to add recurring cash flow"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -140,7 +137,7 @@ export const useAddRecurringCashflowMutation = ({
 export const useDeleteRecurringCashflowMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["deleteRecurringCashFlow"],
     mutationFn: deleteRecurringCashflow,
@@ -173,8 +170,7 @@ export const useDeleteRecurringCashflowMutation = ({
           getLocalizedText(
             "Wiederkehrender Cashflow erfolgreich gelöscht",
             "Recurring cash flow deleted successfully"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -185,8 +181,7 @@ export const useDeleteRecurringCashflowMutation = ({
           getLocalizedText(
             "Fehler beim Löschen der wiederkehrenden Zahlung",
             "Failed to delete recurring cash flow"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();

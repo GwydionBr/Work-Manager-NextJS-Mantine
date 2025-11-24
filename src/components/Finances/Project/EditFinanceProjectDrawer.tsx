@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSettingsStore } from "@/stores/settingsStore";
-import { useFinanceStore } from "@/stores/financeStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Drawer, Group, Text, useDrawersStack } from "@mantine/core";
 import { IconAlertTriangleFilled, IconMoneybag } from "@tabler/icons-react";
@@ -28,7 +27,7 @@ export default function EditFinanceProjectDrawer({
   onClose,
   financeProject,
 }: EditFinanceProjectDrawerProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const { mutate: deleteFinanceProjectMutation, isPending: isDeleting } =
     useDeleteFinanceProjectMutation();
   const [isLoading, setIsLoading] = useState(false);
@@ -59,14 +58,14 @@ export default function EditFinanceProjectDrawer({
   const handleDelete = async () => {
     setIsLoading(true);
     showDeleteConfirmationModal(
-      locale === "de-DE" ? "Finanzprojekt löschen" : "Delete Finance Project",
-      locale === "de-DE"
-        ? "Bist du dir sicher, dass du dieses Finanzprojekt löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden."
-        : "Are you sure you want to delete this finance project? This action cannot be undone.",
+      getLocalizedText("Finanzprojekt löschen", "Delete Finance Project"),
+      getLocalizedText(
+        "Bist du dir sicher, dass du dieses Finanzprojekt löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.",
+        "Are you sure you want to delete this finance project? This action cannot be undone."
+      ),
       () => {
         deleteFinanceProjectMutation([financeProject.id]);
-      },
-      locale
+      }
     );
     setIsLoading(false);
   };
@@ -79,17 +78,17 @@ export default function EditFinanceProjectDrawer({
         title={
           <Group>
             <DeleteActionIcon
-              tooltipLabel={
-                locale === "de-DE"
-                  ? "Finanzprojekt löschen"
-                  : "Delete Finance Project"
-              }
+              tooltipLabel={getLocalizedText(
+                "Finanzprojekt löschen",
+                "Delete Finance Project"
+              )}
               onClick={() => drawerStack.open("delete-finance-project")}
             />
             <Text>
-              {locale === "de-DE"
-                ? "Finanzprojekt bearbeiten"
-                : "Edit Finance Project"}
+              {getLocalizedText(
+                "Finanzprojekt bearbeiten",
+                "Edit Finance Project"
+              )}
             </Text>
             <IconMoneybag />
           </Group>
@@ -115,18 +114,20 @@ export default function EditFinanceProjectDrawer({
           <Group>
             <IconAlertTriangleFilled size={25} color="red" />
             <Text>
-              {locale === "de-DE"
-                ? "Finanzprojekt löschen"
-                : "Delete Finance Project"}
+              {getLocalizedText(
+                "Finanzprojekt löschen",
+                "Delete Finance Project"
+              )}
             </Text>
           </Group>
         }
         size="md"
       >
         <Text>
-          {locale === "de-DE"
-            ? "Bist du dir sicher, dass du dieses Finanzprojekt löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden."
-            : "Are you sure you want to delete this finance project? This action cannot be undone."}
+          {getLocalizedText(
+            "Bist du dir sicher, dass du dieses Finanzprojekt löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.",
+            "Are you sure you want to delete this finance project? This action cannot be undone."
+          )}
         </Text>
         <Group mt="md" justify="flex-end" gap="sm">
           <CancelButton
@@ -135,11 +136,10 @@ export default function EditFinanceProjectDrawer({
           />
           <DeleteButton
             onClick={handleDelete}
-            tooltipLabel={
-              locale === "de-DE"
-                ? "Finanzprojekt löschen"
-                : "Delete Finance Project"
-            }
+            tooltipLabel={getLocalizedText(
+              "Finanzprojekt löschen",
+              "Delete Finance Project"
+            )}
             loading={isLoading}
           />
         </Group>
@@ -147,7 +147,7 @@ export default function EditFinanceProjectDrawer({
       <Drawer
         {...drawerStack.register("client-form")}
         onClose={() => drawerStack.close("client-form")}
-        title={<Text>{locale === "de-DE" ? "Kunde" : "Client"}</Text>}
+        title={<Text>{getLocalizedText("Kunde", "Client")}</Text>}
       >
         <FinanceClientForm
           onClose={() => drawerStack.close("client-form")}
@@ -157,13 +157,11 @@ export default function EditFinanceProjectDrawer({
       <Drawer
         {...drawerStack.register("category-form")}
         onClose={() => drawerStack.close("category-form")}
-        title={<Text>{locale === "de-DE" ? "Kategorie" : "Category"}</Text>}
+        title={<Text>{getLocalizedText("Kategorie", "Category")}</Text>}
       >
         <FinanceCategoryForm
           onClose={() => drawerStack.close("category-form")}
-          onSuccess={(category) =>
-            setCategories((prev) => [...prev, category])
-          }
+          onSuccess={(category) => setCategories((prev) => [...prev, category])}
         />
       </Drawer>
     </Drawer.Stack>

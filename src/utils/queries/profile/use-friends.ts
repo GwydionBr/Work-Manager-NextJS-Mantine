@@ -1,7 +1,8 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
+
 import { getAllFriends } from "@/actions/profile/friendship/get-all-friends";
 import { createFriendship } from "@/actions/profile/friendship/create-friendship";
 import { Friend, FriendshipStatusEnum } from "@/types/profile.types";
@@ -24,7 +25,7 @@ export const useFriendsQuery = () => {
 export const useCreateFriendshipMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { getLocalizedText, locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["createFriendship"],
     mutationFn: (profileId: string) => createFriendship({ profileId }),
@@ -38,8 +39,7 @@ export const useCreateFriendshipMutation = ({
           getLocalizedText(
             "Freund erfolgreich angefragt",
             "Friendship successfully requested"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -50,8 +50,7 @@ export const useCreateFriendshipMutation = ({
           getLocalizedText(
             "Freund konnte nicht hinzugefügt werden",
             "Error in Friendship request"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -62,7 +61,7 @@ export const useCreateFriendshipMutation = ({
 export const useAcceptFriendshipMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { getLocalizedText, locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["acceptFriendship"],
     mutationFn: (friendshipId: string) => acceptFriendship({ friendshipId }),
@@ -79,8 +78,7 @@ export const useAcceptFriendshipMutation = ({
           getLocalizedText(
             "Freund erfolgreich akzeptiert",
             "Friend successfully accepted"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -91,8 +89,7 @@ export const useAcceptFriendshipMutation = ({
           getLocalizedText(
             "Freund konnte nicht akzeptiert werden",
             "Friend could not be accepted"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -103,7 +100,7 @@ export const useAcceptFriendshipMutation = ({
 export const useDeclineFriendshipMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { getLocalizedText, locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["declineFriendship"],
     mutationFn: (friendshipId: string) => declineFriendship({ friendshipId }),
@@ -120,8 +117,7 @@ export const useDeclineFriendshipMutation = ({
           getLocalizedText(
             "Freund erfolgreich abgelehnt",
             "Friend successfully declined"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -132,8 +128,7 @@ export const useDeclineFriendshipMutation = ({
           getLocalizedText(
             "Freund konnte nicht abgelehnt werden",
             "Friend could not be declined"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -144,7 +139,7 @@ export const useDeclineFriendshipMutation = ({
 export const useRemoveFriendMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { getLocalizedText, locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["removeFriend"],
     mutationFn: (friendshipId: string) => deleteFriendship({ friendshipId }),
@@ -157,8 +152,7 @@ export const useRemoveFriendMutation = ({
           getLocalizedText(
             "Freund erfolgreich entfernt",
             "Friend successfully removed"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -169,8 +163,7 @@ export const useRemoveFriendMutation = ({
           getLocalizedText(
             "Freund konnte nicht entfernt werden",
             "Friend could not be removed"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();

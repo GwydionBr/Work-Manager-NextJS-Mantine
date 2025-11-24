@@ -2,7 +2,7 @@
 
 import { useEffect, useCallback, useMemo, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import {
   useDeleteFinanceCategoryMutation,
   useFinanceCategoriesQuery,
@@ -26,7 +26,7 @@ export default function FinanceCategorySettings() {
     useFinanceCategoriesQuery();
   const { mutate: deleteFinanceCategoriesMutation } =
     useDeleteFinanceCategoryMutation();
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const [
     isCategoryFormOpen,
     { open: openCategoryForm, close: closeCategoryForm },
@@ -79,8 +79,7 @@ export default function FinanceCategorySettings() {
       </Stack>,
       () => {
         deleteFinanceCategoriesMutation(ids);
-      },
-      locale
+      }
     );
   };
 

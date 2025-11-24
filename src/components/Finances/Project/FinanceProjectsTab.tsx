@@ -7,7 +7,7 @@ import { useFinanceProjectQuery } from "@/utils/queries/finances/use-finance-pro
 import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
 import { useDeleteFinanceProjectMutation } from "@/utils/queries/finances/use-finance-project";
 import { useFinanceClientQuery } from "@/utils/queries/finances/use-finance-client";
-import { useLocale } from "@/hooks/useLocale";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   ActionIcon,
@@ -64,9 +64,8 @@ export default function FinanceProjectTab() {
   const { data: financeClients = [] } = useFinanceClientQuery();
   const { data: financeProjects = [], isPending } = useFinanceProjectQuery();
   const { data: financeCategories = [] } = useFinanceCategoriesQuery();
-  const { locale, setIsModalOpen, setSelectedTab } =
-    useSettingsStore();
-  const { getLocalizedText } = useLocale();
+  const { setIsModalOpen, setSelectedTab } = useSettingsStore();
+  const { getLocalizedText, locale } = useFormatter();
 
   // Bulk selection
   const [
@@ -320,8 +319,7 @@ export default function FinanceProjectTab() {
           ),
       () => {
         deleteFinanceProjectMutation(ids);
-      },
-      locale
+      }
     );
   };
 
@@ -459,7 +457,10 @@ export default function FinanceProjectTab() {
               />,
             ]}
           />,
-          <FinancesNavbarNavList key="finance-projects-navbar-list" navbarItems={newNavbarItems} />,
+          <FinancesNavbarNavList
+            key="finance-projects-navbar-list"
+            navbarItems={newNavbarItems}
+          />,
           <FinancesNavbarDefaultCard
             key="finance-projects-default-card"
             children={

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { getAllFinanceProjects } from "@/actions/finance/financeProject/get-all-finance-projects";
 import { updateFinanceProject } from "@/actions/finance/financeProject/update-finance-project";
@@ -30,7 +30,7 @@ export function useFinanceProjectQuery() {
 export const useUpdateFinanceProjectMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["updateFinanceProject"],
     mutationFn: (financeProject: UpdateFinanceProject) =>
@@ -45,8 +45,7 @@ export const useUpdateFinanceProjectMutation = ({
           getLocalizedText(
             "Finanzprojekt erfolgreich aktualisiert",
             "Finance project successfully updated"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -57,8 +56,7 @@ export const useUpdateFinanceProjectMutation = ({
           getLocalizedText(
             "Finanzprojekt konnten nicht aktualisiert werden",
             "Finance project could not be updated"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -70,7 +68,7 @@ export const useUpdateFinanceProjectMutation = ({
 export const useDeleteFinanceProjectMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["deleteFinanceProject"],
     mutationFn: (ids: string[]) => deleteFinanceProjects(ids),
@@ -84,8 +82,7 @@ export const useDeleteFinanceProjectMutation = ({
           getLocalizedText(
             "Finanzprojekt erfolgreich gelöscht",
             "Finance project successfully deleted"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -96,8 +93,7 @@ export const useDeleteFinanceProjectMutation = ({
           getLocalizedText(
             "Finanzprojekt konnten nicht gelöscht werden",
             "Finance project could not be deleted"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -109,7 +105,7 @@ export const useDeleteFinanceProjectMutation = ({
 export const useCreateFinanceProjectMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["createFinanceProject"],
     mutationFn: (financeProject: InsertFinanceProject) =>
@@ -124,8 +120,7 @@ export const useCreateFinanceProjectMutation = ({
           getLocalizedText(
             "Finanzprojekt erfolgreich erstellt",
             "Finance project successfully created"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -136,8 +131,7 @@ export const useCreateFinanceProjectMutation = ({
           getLocalizedText(
             "Finanzprojekt konnten nicht erstellt werden",
             "Finance project could not be created"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();

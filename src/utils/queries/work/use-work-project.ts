@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { getAllWorkProjects } from "@/actions/work/workProject/get-all-work-projects";
 import { updateWorkProject } from "@/actions/work/workProject/update-work-project";
@@ -38,7 +38,7 @@ export const useWorkProjectByIdQuery = ({
 export const useUpdateWorkProjectMutation = ({
   ...props
 }: CustomMutationProps<Tables<"timer_project">> = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["updateWorkProject"],
     onMutate: async (newProject, context) => {
@@ -72,8 +72,7 @@ export const useUpdateWorkProjectMutation = ({
           getLocalizedText(
             "Projekt erfolgreich aktualisiert",
             "Project successfully updated"
-          ),
-          locale
+          )
         );
       }
       const { categories, ...project } = data;
@@ -90,8 +89,7 @@ export const useUpdateWorkProjectMutation = ({
           getLocalizedText(
             "Projekt konnten nicht aktualisiert werden",
             "Project could not be updated"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -102,7 +100,7 @@ export const useUpdateWorkProjectMutation = ({
 export const useDeleteWorkProjectMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["deleteWorkProject"],
     mutationFn: deleteWorkProjects,
@@ -115,8 +113,7 @@ export const useDeleteWorkProjectMutation = ({
           getLocalizedText(
             "Projekt erfolgreich gelöscht",
             "Project successfully deleted"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -127,8 +124,7 @@ export const useDeleteWorkProjectMutation = ({
           getLocalizedText(
             "Projekt konnten nicht gelöscht werden",
             "Project could not be deleted"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -139,7 +135,7 @@ export const useDeleteWorkProjectMutation = ({
 export const useCreateWorkProjectMutation = ({
   ...props
 }: CustomMutationProps<Tables<"timer_project">> = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["createWorkProject"],
     mutationFn: createWorkProject,
@@ -157,8 +153,7 @@ export const useCreateWorkProjectMutation = ({
           getLocalizedText(
             "Projekt erfolgreich erstellt",
             "Project successfully created"
-          ),
-          locale
+          )
         );
       }
       const { categories, ...project } = data;
@@ -170,8 +165,7 @@ export const useCreateWorkProjectMutation = ({
           getLocalizedText(
             "Projekt konnten nicht erstellt werden",
             "Project could not be created"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();

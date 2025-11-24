@@ -1,6 +1,8 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useFormatter } from "@/hooks/useFormatter";
+
 import { getProfile } from "@/actions/profile/get-profile";
 import { getOtherProfiles } from "@/actions/profile/get-other-profiles";
 import { updateProfile } from "@/actions/profile/update-profile";
@@ -9,7 +11,6 @@ import {
   showActionErrorNotification,
   showActionSuccessNotification,
 } from "@/utils/notificationFunctions";
-import { useSettingsStore } from "@/stores/settingsStore";
 import { CustomMutationProps } from "@/types/query.types";
 
 export const useProfileQuery = () => {
@@ -29,7 +30,7 @@ export const useOtherProfilesQuery = () => {
 export const useUpdateProfileMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["updateProfile"],
     mutationFn: (profile: TablesUpdate<"profiles">) =>
@@ -41,8 +42,7 @@ export const useUpdateProfileMutation = ({
           getLocalizedText(
             "Profil erfolgreich aktualisiert",
             "Profile successfully updated"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -53,8 +53,7 @@ export const useUpdateProfileMutation = ({
           getLocalizedText(
             "Profil konnten nicht aktualisiert werden",
             "Profile could not be updated"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();

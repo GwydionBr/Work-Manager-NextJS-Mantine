@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { updateFinanceAdjustment } from "@/actions/finance/financeAdjustment/update-finance-adjustment";
 import { deleteFinanceAdjustments } from "@/actions/finance/financeAdjustment/delete-finance-adjustments";
@@ -18,8 +18,8 @@ import { CustomMutationProps } from "@/types/query.types";
 // Mutation to create a finance adjustment
 export const useCreateFinanceAdjustmentMutation = ({
   ...props
-  }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+}: CustomMutationProps = {}) => {
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["createFinanceAdjustment"],
     mutationFn: (adjustment: TablesInsert<"finance_project_adjustment">) =>
@@ -39,8 +39,7 @@ export const useCreateFinanceAdjustmentMutation = ({
           getLocalizedText(
             "Finanzanpassung erfolgreich erstellt",
             "Finance adjustment successfully created"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -51,8 +50,7 @@ export const useCreateFinanceAdjustmentMutation = ({
           getLocalizedText(
             "Finanzanpassung konnten nicht erstellt werden",
             "Finance adjustment could not be created"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -64,7 +62,7 @@ export const useCreateFinanceAdjustmentMutation = ({
 export const useUpdateFinanceAdjustmentMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["updateFinanceAdjustment"],
     mutationFn: (adjustment: TablesUpdate<"finance_project_adjustment">) =>
@@ -89,8 +87,7 @@ export const useUpdateFinanceAdjustmentMutation = ({
           getLocalizedText(
             "Finanzanpassung erfolgreich aktualisiert",
             "Finance adjustment successfully updated"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -101,8 +98,7 @@ export const useUpdateFinanceAdjustmentMutation = ({
           getLocalizedText(
             "Finanzanpassung konnten nicht aktualisiert werden",
             "Finance adjustment could not be updated"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -114,7 +110,7 @@ export const useUpdateFinanceAdjustmentMutation = ({
 export const useDeleteFinanceAdjustmentMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["deleteFinanceAdjustment"],
     mutationFn: (ids: string[]) => deleteFinanceAdjustments(ids),
@@ -132,8 +128,7 @@ export const useDeleteFinanceAdjustmentMutation = ({
           getLocalizedText(
             "Finanzanpassung erfolgreich gelöscht",
             "Finance adjustment successfully deleted"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -144,8 +139,7 @@ export const useDeleteFinanceAdjustmentMutation = ({
           getLocalizedText(
             "Finanzanpassung konnten nicht gelöscht werden",
             "Finance adjustment could not be deleted"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();

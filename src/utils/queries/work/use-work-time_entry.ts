@@ -39,7 +39,7 @@ export const useWorkTimeEntryByProjectId = ({
 export const useCreateWorkTimeEntryMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText, format24h } = useSettingsStore();
+  const { getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["createWorkTimeEntry"],
     mutationFn: ({
@@ -62,18 +62,16 @@ export const useCreateWorkTimeEntryMutation = ({
       const { createdTimeEntries, overlappingTimeEntries } = data;
       if (!createdTimeEntries) {
         if (props.showNotification !== false) {
-          showCompleteOverlapNotification(locale);
+          showCompleteOverlapNotification();
         }
         props.onSuccess?.();
         return;
       } else if (overlappingTimeEntries) {
         if (props.showNotification !== false) {
           showOverlapNotification(
-            locale,
             variables.newTimeEntry,
             overlappingTimeEntries,
-            createdTimeEntries,
-            format24h
+            createdTimeEntries
           );
         }
       } else {
@@ -82,8 +80,7 @@ export const useCreateWorkTimeEntryMutation = ({
             getLocalizedText(
               "Arbeitszeit erfolgreich erstellt",
               "Work time successfully created"
-            ),
-            locale
+            )
           );
         }
       }
@@ -113,8 +110,7 @@ export const useCreateWorkTimeEntryMutation = ({
           getLocalizedText(
             "Arbeitszeit konnten nicht erstellt werden",
             "Work time could not be created"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -125,7 +121,7 @@ export const useCreateWorkTimeEntryMutation = ({
 export const useUpdateWorkTimeEntryMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText, format24h } = useSettingsStore();
+  const { getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["updateWorkTimeEntry"],
     mutationFn: ({
@@ -148,18 +144,16 @@ export const useUpdateWorkTimeEntryMutation = ({
       const { createdTimeEntries, overlappingTimeEntries } = data;
       if (!createdTimeEntries) {
         if (props.showNotification !== false) {
-          showCompleteOverlapNotification(locale);
+          showCompleteOverlapNotification();
         }
         props.onSuccess?.();
         return;
       } else if (overlappingTimeEntries) {
         if (props.showNotification !== false) {
           showOverlapNotification(
-            locale,
             variables.updateTimeEntry,
             overlappingTimeEntries,
-            createdTimeEntries,
-            format24h
+            createdTimeEntries
           );
         }
       } else {
@@ -168,8 +162,7 @@ export const useUpdateWorkTimeEntryMutation = ({
             getLocalizedText(
               "Arbeitszeit erfolgreich aktualisiert",
               "Work time successfully updated"
-            ),
-            locale
+            )
           );
         }
       }
@@ -234,8 +227,7 @@ export const useUpdateWorkTimeEntryMutation = ({
           getLocalizedText(
             "Arbeitszeit konnten nicht aktualisiert werden",
             "Work time could not be updated"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -246,7 +238,7 @@ export const useUpdateWorkTimeEntryMutation = ({
 export const useDeleteWorkTimeEntryMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useSettingsStore();
   return useMutation({
     mutationKey: ["deleteWorkTimeEntry"],
     mutationFn: deleteWorkTimeEntries,
@@ -274,8 +266,7 @@ export const useDeleteWorkTimeEntryMutation = ({
           getLocalizedText(
             "Arbeitszeit erfolgreich gelöscht",
             "Work time successfully deleted"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -286,8 +277,7 @@ export const useDeleteWorkTimeEntryMutation = ({
           getLocalizedText(
             "Arbeitszeit konnten nicht gelöscht werden",
             "Work time could not be deleted"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();

@@ -1,7 +1,8 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
+
 import { getAllAppointments } from "@/actions/appointments/get-all-appointments";
 import { createAppointment } from "@/actions/appointments/create-appointment";
 import { deleteAppointments } from "@/actions/appointments/delete-appointments";
@@ -23,7 +24,7 @@ export const useAppointmentsQuery = () => {
 export const useCreateAppointmentMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["createAppointment"],
     mutationFn: createAppointment,
@@ -37,8 +38,7 @@ export const useCreateAppointmentMutation = ({
           getLocalizedText(
             "Termin erfolgreich erstellt",
             "Appointment successfully created"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -49,8 +49,7 @@ export const useCreateAppointmentMutation = ({
           getLocalizedText(
             "Termin konnten nicht erstellt werden",
             "Appointment could not be created"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -61,7 +60,7 @@ export const useCreateAppointmentMutation = ({
 export const useUpdateAppointmentMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["updateAppointment"],
     mutationFn: updateAppointment,
@@ -76,8 +75,7 @@ export const useUpdateAppointmentMutation = ({
           getLocalizedText(
             "Termin erfolgreich aktualisiert",
             "Appointment successfully updated"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -88,8 +86,7 @@ export const useUpdateAppointmentMutation = ({
           getLocalizedText(
             "Termin konnten nicht aktualisiert werden",
             "Appointment could not be updated"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -100,7 +97,7 @@ export const useUpdateAppointmentMutation = ({
 export const useDeleteAppointmentsMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["deleteAppointments"],
     mutationFn: deleteAppointments,
@@ -115,8 +112,7 @@ export const useDeleteAppointmentsMutation = ({
           getLocalizedText(
             "Termin erfolgreich gelöscht",
             "Appointment successfully deleted"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -127,8 +123,7 @@ export const useDeleteAppointmentsMutation = ({
           getLocalizedText(
             "Termin konnten nicht gelöscht werden",
             "Appointment could not be deleted"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();

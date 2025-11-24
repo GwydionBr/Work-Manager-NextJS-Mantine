@@ -1,8 +1,9 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useFormatter } from "@/hooks/useFormatter";
+
 import { getAllFinanceCategories } from "@/actions/finance/financeCategory/get-all-finance-categories";
-import { useSettingsStore } from "@/stores/settingsStore";
 import { createFinanceCategory } from "@/actions/finance/financeCategory/create-finance-category";
 import { Tables, TablesInsert, TablesUpdate } from "@/types/db.types";
 import {
@@ -25,7 +26,7 @@ export const useFinanceCategoriesQuery = () => {
 export const useAddFinanceCategoryMutation = ({
   ...props
 }: CustomMutationProps<Tables<"finance_category">> = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["addFinanceCategory"],
     mutationFn: (category: TablesInsert<"finance_category">) =>
@@ -40,8 +41,7 @@ export const useAddFinanceCategoryMutation = ({
           getLocalizedText(
             "Kategorie erfolgreich hinzugefügt",
             "Category successfully added"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.(data);
@@ -52,8 +52,7 @@ export const useAddFinanceCategoryMutation = ({
           getLocalizedText(
             "Kategorie konnten nicht hinzugefügt werden",
             "Category could not be added"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -65,7 +64,7 @@ export const useAddFinanceCategoryMutation = ({
 export const useUpdateFinanceCategoryMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["updateFinanceCategory"],
     mutationFn: (category: TablesUpdate<"finance_category">) =>
@@ -81,8 +80,7 @@ export const useUpdateFinanceCategoryMutation = ({
           getLocalizedText(
             "Kategorie erfolgreich aktualisiert",
             "Category successfully updated"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -93,8 +91,7 @@ export const useUpdateFinanceCategoryMutation = ({
           getLocalizedText(
             "Kategorie konnten nicht aktualisiert werden",
             "Category could not be updated"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();
@@ -106,7 +103,7 @@ export const useUpdateFinanceCategoryMutation = ({
 export const useDeleteFinanceCategoryMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["deleteFinanceCategory"],
     mutationFn: (ids: string[]) => deleteFinanceCategories({ ids }),
@@ -121,8 +118,7 @@ export const useDeleteFinanceCategoryMutation = ({
           getLocalizedText(
             "Kategorie erfolgreich gelöscht",
             "Category successfully deleted"
-          ),
-          locale
+          )
         );
       }
       props.onSuccess?.();
@@ -133,8 +129,7 @@ export const useDeleteFinanceCategoryMutation = ({
           getLocalizedText(
             "Kategorie konnten nicht gelöscht werden",
             "Category could not be deleted"
-          ),
-          locale
+          )
         );
       }
       props.onError?.();

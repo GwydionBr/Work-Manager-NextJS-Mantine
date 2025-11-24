@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import {
   useRemoveFriendMutation,
   useFriendsQuery,
@@ -20,7 +20,7 @@ import FriendsTable from "./FriendsTable";
 import { showDeleteConfirmationModal } from "@/utils/notificationFunctions";
 
 export default function FriendList() {
-  const { getLocalizedText, locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const { data: friends } = useFriendsQuery();
   const { mutate: removeFriend, isPending: isRemovingFriend } =
     useRemoveFriendMutation();
@@ -38,8 +38,7 @@ export default function FriendList() {
       ),
       () => {
         removeFriend(id);
-      },
-      locale
+      }
     );
   }
 
@@ -101,10 +100,7 @@ export default function FriendList() {
             <Group mb="sm">
               <IconUserPlus color="light-dark(var(--mantine-color-blue-9), var(--mantine-color-blue-4))" />
               <Text>
-                {locale === "de-DE"
-                  ? "Freundschaftsanfragen"
-                  : "Friend requests"}
-                :
+                {getLocalizedText("Freundschaftsanfragen", "Friend requests")}
               </Text>
             </Group>
             <FriendsTable
@@ -128,9 +124,10 @@ export default function FriendList() {
                 <Group mb="sm">
                   <IconHourglass color="light-dark(var(--mantine-color-orange-7), var(--mantine-color-orange-4))" />
                   <Text>
-                    {locale === "de-DE"
-                      ? "Ausstehende Freundschaftsanfragen"
-                      : "Pending friend requests"}
+                    {getLocalizedText(
+                      "Ausstehende Freundschaftsanfragen",
+                      "Pending friend requests"
+                    )}
                   </Text>
                 </Group>
                 <FriendsTable friends={requestedFriends} />
@@ -142,9 +139,10 @@ export default function FriendList() {
                 <Group mb="sm">
                   <IconUserX color="red" />
                   <Text>
-                    {locale === "de-DE"
-                      ? "Abgelehnte Freundschaftsanfragen"
-                      : "Declined friend requests"}
+                    {getLocalizedText(
+                      "Abgelehnte Freundschaftsanfragen",
+                      "Declined friend requests"
+                    )}
                   </Text>
                 </Group>
                 <FriendsTable friends={declinedFriends} />
