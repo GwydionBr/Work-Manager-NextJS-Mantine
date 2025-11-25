@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useFormatter } from "@/hooks/useFormatter";
 
@@ -13,7 +14,10 @@ export default function LocaleSettings() {
   const { locale, setLocale, format24h, setFormat24h } = useSettingsStore();
   const { getLocalizedText } = useFormatter();
 
-  const currentLocale = locales.find((l) => l.value === locale);
+  const currentLocale = useMemo(
+    () => locales.find((l) => l.value === locale),
+    [locale]
+  );
 
   return (
     <Group>
@@ -32,7 +36,10 @@ export default function LocaleSettings() {
             <ReactCountryFlag
               countryCode={currentLocale.flag}
               svg
-              style={{ width: "1.2em", height: "1.2em" }}
+              style={{
+                width: "1.2em",
+                height: "1.2em",
+              }}
             />
           )
         }

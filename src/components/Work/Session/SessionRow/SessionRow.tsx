@@ -4,7 +4,7 @@ import { useDeleteWorkTimeEntryMutation } from "@/utils/queries/work/use-work-ti
 import { useFormatter } from "@/hooks/useFormatter";
 import { useDisclosure, useHover } from "@mantine/hooks";
 
-import { Card, Group, Stack, Text, Box, Transition } from "@mantine/core";
+import { Card, Group, Stack, Text, Box } from "@mantine/core";
 import { IconClock } from "@tabler/icons-react";
 import DeleteActionIcon from "@/components/UI/ActionIcons/DeleteActionIcon";
 import EditSessionDrawer from "@/components/Work/Session/EditSessionDrawer";
@@ -13,6 +13,8 @@ import type { Tables } from "@/types/db.types";
 import PencilActionIcon from "@/components/UI/ActionIcons/PencilActionIcon";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import { showDeleteConfirmationModal } from "@/utils/notificationFunctions";
+
+import classes from "./SessionRow.module.css";
 
 interface SessionRowProps {
   session: Tables<"timer_session"> & { index: number };
@@ -85,23 +87,14 @@ export default function SessionRow({
   return (
     <Box>
       <Card
-        shadow="xs"
-        withBorder
-        p="sm"
-        mt="sm"
-        radius={20}
         ref={ref}
-        bg={
-          isSelected
-            ? "light-dark(var(--mantine-color-blue-0), var(--mantine-color-dark-4))"
-            : "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))"
-        }
-        style={{
-          opacity: sessionPaid ? 0.6 : 1,
-          borderColor: sessionPaid ? "var(--mantine-color-green-4)" : undefined,
-          borderWidth: isSelected ? "2px" : undefined,
-          cursor: showCheckbox ? "pointer" : "default",
+        className={classes.card}
+        mod={{
+          selected: isSelected,
+          paid: sessionPaid,
+          selectable: showCheckbox,
         }}
+        withBorder
         onClick={
           showCheckbox
             ? (e: React.MouseEvent<HTMLDivElement>) =>
@@ -111,25 +104,18 @@ export default function SessionRow({
       >
         <Group justify="space-between">
           <Group gap="xl">
-            <Box w={0}>
-              <Transition
-                mounted={showCheckbox || false}
-                transition="fade-right"
-                duration={200}
-              >
-                {(styles) => (
-                  <SelectActionIcon
-                    style={styles}
-                    onClick={() => {}}
-                    selected={isSelected}
-                  />
-                )}
-              </Transition>
+            <Box className={classes.checkboxContainer}>
+              <SelectActionIcon
+                className={classes.checkboxIcon}
+                mod={{ visible: showCheckbox }}
+                onClick={() => {}}
+                selected={isSelected}
+              />
             </Box>
             <Stack
               gap="xs"
-              ml={showCheckbox ? 40 : 0}
-              style={{ transition: "margin 0.2s ease" }}
+              className={classes.contentStack}
+              mod={{ withcheckbox: showCheckbox }}
             >
               <Group>
                 <IconClock size={14} color="gray" />
@@ -157,33 +143,26 @@ export default function SessionRow({
                 </Text>
               </Group>
             </Stack>
-            <Transition
-              mounted={hovered && !sessionPaid && !selectedModeActive}
-              transition="fade-left"
-              duration={200}
-              enterDelay={100}
-              exitDelay={100}
+            <Group
+              className={classes.actionIconsGroup}
+              mod={{ visible: hovered && !sessionPaid && !selectedModeActive }}
             >
-              {(styles) => (
-                <Group style={styles}>
-                  <PencilActionIcon
-                    onClick={() => editDrawerHandler.open()}
-                    tooltipLabel={getLocalizedText(
-                      "Sitzung bearbeiten",
-                      "Edit session"
-                    )}
-                  />
-                  <DeleteActionIcon
-                    loading={isDeletingWorkTimeEntry}
-                    onClick={() => handleDelete()}
-                    tooltipLabel={getLocalizedText(
-                      "Sitzung löschen",
-                      "Delete session"
-                    )}
-                  />
-                </Group>
-              )}
-            </Transition>
+              <PencilActionIcon
+                onClick={() => editDrawerHandler.open()}
+                tooltipLabel={getLocalizedText(
+                  "Sitzung bearbeiten",
+                  "Edit session"
+                )}
+              />
+              <DeleteActionIcon
+                loading={isDeletingWorkTimeEntry}
+                onClick={() => handleDelete()}
+                tooltipLabel={getLocalizedText(
+                  "Sitzung löschen",
+                  "Delete session"
+                )}
+              />
+            </Group>
           </Group>
           <Group>
             {isOverview && project && (
@@ -191,12 +170,7 @@ export default function SessionRow({
                 {project.title}
               </Text>
             )}
-            <Text
-              style={{
-                textDecoration: sessionPaid ? "line-through" : "none",
-                color: sessionPaid ? "var(--mantine-color-green-6)" : undefined,
-              }}
-            >
+            <Text className={classes.salaryText} mod={{ paid: sessionPaid }}>
               {session.hourly_payment
                 ? formatMoney(earnings, session.currency)
                 : ""}

@@ -4,7 +4,7 @@ import { useFormatter } from "@/hooks/useFormatter";
 
 import { Accordion, Box } from "@mantine/core";
 import { IconCalendar, IconClock, IconFolder } from "@tabler/icons-react";
-import SessionRow from "@/components/Work/Session/SessionRow";
+import SessionRow from "@/components/Work/Session/SessionRow/SessionRow";
 
 import type { Tables } from "@/types/db.types";
 import type { Year } from "@/types/timerSession.types";

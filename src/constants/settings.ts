@@ -3,9 +3,10 @@ import {
   RoundingDirection,
   FinanceInterval,
   Locale,
+  Language,
 } from "@/types/settings.types";
 
-export const locales = [
+export const locales: Language[] = [
   {
     value: "en-US",
     label: "English",

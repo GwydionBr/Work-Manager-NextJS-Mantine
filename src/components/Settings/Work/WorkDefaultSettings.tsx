@@ -46,7 +46,7 @@ export default function WorkDefaultSettings() {
         </Button>
       )}
       <NumberInput
-        w={100}
+        w={120}
         label={getLocalizedText("Standard Gehalt", "Default Salary")}
         allowNegative={false}
         allowDecimal={false}
