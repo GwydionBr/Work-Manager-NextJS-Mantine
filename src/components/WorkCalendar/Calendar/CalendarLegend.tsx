@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import { useCalendarStore } from "@/stores/calendarStore";
 
 import { Group, ActionIcon, Text, Grid, SegmentedControl } from "@mantine/core";
@@ -20,9 +20,8 @@ export default function CalendarLegend({
   visibleProjects,
   handleScrollToNow,
 }: CalendarLegendProps) {
-  const { locale } = useSettingsStore();
-  const { viewMode, setViewMode } =
-    useCalendarStore();
+  const { getLocalizedText } = useFormatter();
+  const { viewMode, setViewMode } = useCalendarStore();
 
   return (
     <Grid
@@ -40,11 +39,10 @@ export default function CalendarLegend({
       <Grid.Col span={{ base: 3, md: 2 }}>
         <Group justify="flex-start" pl="md">
           <DelayedTooltip
-            label={
-              locale === "de-DE"
-                ? "Springe zur aktuellen Zeit"
-                : "Scroll to current time"
-            }
+            label={getLocalizedText(
+              "Springe zur aktuellen Zeit",
+              "Scroll to current time"
+            )}
           >
             <ActionIcon
               variant="light"
@@ -66,9 +64,7 @@ export default function CalendarLegend({
           </Group>
         ) : (
           <Text ta="center" size="sm" c="dimmed">
-            {locale === "de-DE"
-              ? "Keine Einträge gefunden"
-              : "No entries found"}
+            {getLocalizedText("Keine Einträge gefunden", "No entries found")}
           </Text>
         )}
       </Grid.Col>
@@ -80,9 +76,9 @@ export default function CalendarLegend({
             value={viewMode}
             onChange={(v) => setViewMode(v as ViewMode)}
             data={[
-              { label: locale === "de-DE" ? "Tag" : "Day", value: "day" },
+              { label: getLocalizedText("Tag", "Day"), value: "day" },
               {
-                label: locale === "de-DE" ? "Woche" : "Week",
+                label: getLocalizedText("Woche", "Week"),
                 value: "week",
               },
             ]}

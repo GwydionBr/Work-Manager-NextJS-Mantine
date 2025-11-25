@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Stack,
@@ -48,6 +49,7 @@ export default function ModifyRounding({
   timerRoundingSettings,
   onClose,
 }: ModifyRoundingProps) {
+  const { getLocalizedText } = useFormatter();
   const { locale, setSelectedTab, setIsModalOpen } = useSettingsStore();
   const [roundingSettings, setRoundingSettings] =
     useState<TimerRoundingSettings>(timerRoundingSettings);
@@ -101,16 +103,17 @@ export default function ModifyRounding({
         <Group justify="space-between" mb="md">
           <Title order={4} c="dimmed">
             <IconSettings size={18} style={{ marginRight: "8px" }} />
-            {locale === "de-DE"
-              ? "Aktuelle Rundungs-Einstellungen"
-              : "Current Rounding Settings"}
+            {getLocalizedText(
+              "Aktuelle Rundungs-Einstellungen",
+              "Current Rounding Settings"
+            )}
           </Title>
         </Group>
 
         <Group gap="xl" justify="center">
           <Box>
             <Text size="sm" c="dimmed" mb="xs">
-              {locale === "de-DE" ? "Aktuelle Rundung" : "Current Rounding"}
+              {getLocalizedText("Aktuelle Rundung", "Current Rounding")}
             </Text>
             <Text fw={600}>
               {timerRoundingSettings.roundInTimeFragments
@@ -122,7 +125,7 @@ export default function ModifyRounding({
 
           <Box>
             <Text size="sm" c="dimmed" mb="xs">
-              {locale === "de-DE" ? "Aktueller Modus" : "Current Mode"}
+              {getLocalizedText("Aktueller Modus", "Current Mode")}
             </Text>
             <Text fw={600}>
               {getRoundingLabel(
@@ -139,18 +142,15 @@ export default function ModifyRounding({
       <Card withBorder shadow="sm" radius="md" p="lg">
         <Title order={4} mb="md" c="dimmed">
           <IconSettings size={18} style={{ marginRight: "8px" }} />
-          {locale === "de-DE"
-            ? "Rundungs-Einstellungen"
-            : "Rounding Configuration"}
+          {getLocalizedText("Rundungs-Einstellungen", "Rounding Configuration")}
         </Title>
 
         <Stack gap="md">
           <Switch
-            label={
-              locale === "de-DE"
-                ? "Runden in Zeitabschnitten"
-                : "Round in time fragments"
-            }
+            label={getLocalizedText(
+              "Runden in Zeitabschnitten",
+              "Round in time fragments"
+            )}
             checked={roundingSettings.roundInTimeFragments}
             onChange={(event) =>
               setRoundingSettings({
@@ -162,10 +162,11 @@ export default function ModifyRounding({
           <Collapse in={!roundingSettings.roundInTimeFragments}>
             <Group gap="md" align="end">
               <NumberInput
-                label={
-                  locale === "de-DE" ? "Rundungsintervall" : "Rounding Interval"
-                }
-                suffix={locale === "de-DE" ? " Minuten" : " minutes"}
+                label={getLocalizedText(
+                  "Rundungsintervall",
+                  "Rounding Interval"
+                )}
+                suffix={getLocalizedText(" Minuten", " minutes")}
                 value={roundingSettings.roundingInterval}
                 onChange={(value) =>
                   setRoundingSettings({
@@ -178,7 +179,7 @@ export default function ModifyRounding({
                 w={150}
               />
               <Select
-                label={locale === "de-DE" ? "Rundungs-Modus" : "Rounding Mode"}
+                label={getLocalizedText("Rundungs-Modus", "Rounding Mode")}
                 value={roundingSettings.roundingDirection}
                 onChange={(value) =>
                   setRoundingSettings({
@@ -196,16 +197,14 @@ export default function ModifyRounding({
               <Select
                 w={200}
                 data={getRoundingInTimeFragments(locale)}
-                label={
-                  locale === "de-DE"
-                    ? "Zeitabschnittsintervall"
-                    : "Time Fragment Interval"
-                }
-                placeholder={
-                  locale === "de-DE"
-                    ? "Intervall auswählen"
-                    : "Select Default Rounding Amount"
-                }
+                label={getLocalizedText(
+                  "Zeitabschnittsintervall",
+                  "Time Fragment Interval"
+                )}
+                placeholder={getLocalizedText(
+                  "Intervall auswählen",
+                  "Select Default Rounding Amount"
+                )}
                 value={roundingSettings.timeFragmentInterval.toString()}
                 onChange={(value) =>
                   setRoundingSettings({
@@ -224,9 +223,10 @@ export default function ModifyRounding({
               disabled={loading}
               leftSection={<IconSettings size={16} />}
             >
-              {locale === "de-DE"
-                ? "Rundungs-Einstellungen anwenden"
-                : "Apply Rounding Settings"}
+              {getLocalizedText(
+                "Rundungs-Einstellungen anwenden",
+                "Apply Rounding Settings"
+              )}
             </Button>
           )}
         </Stack>
@@ -236,14 +236,14 @@ export default function ModifyRounding({
       <Card withBorder shadow="sm" radius="md" p="lg">
         <Title order={4} mb="md" c="dimmed">
           <IconClock size={18} style={{ marginRight: "8px" }} />
-          {locale === "de-DE" ? "Rundungs-Vorschau" : "Rounding Preview"}
+          {getLocalizedText("Rundungs-Vorschau", "Rounding Preview")}
         </Title>
 
         <Stack gap="md">
           <Group gap="xl" justify="center">
             <Box>
               <Text size="sm" c="dimmed" mb="xs">
-                {locale === "de-DE" ? "Aktive Zeit" : "Current Active Time"}
+                {getLocalizedText("Aktive Zeit", "Current Active Time")}
               </Text>
               <Text fw={600} c="blue.7">
                 {formatTime(activeSeconds)}
@@ -252,9 +252,10 @@ export default function ModifyRounding({
 
             <Box>
               <Text size="sm" c="dimmed" mb="xs">
-                {locale === "de-DE"
-                  ? "Gerundete aktive Zeit"
-                  : "Rounded Active Time"}
+                {getLocalizedText(
+                  "Gerundete aktive Zeit",
+                  "Rounded Active Time"
+                )}
               </Text>
               <Text fw={600} c="green.7">
                 {formatTime(previewRoundedSeconds)}
@@ -270,9 +271,10 @@ export default function ModifyRounding({
               radius="md"
             >
               <Text size="sm">
-                {locale === "de-DE"
-                  ? "Zeit wird angepasst um"
-                  : "Time will be adjusted by"}
+                {getLocalizedText(
+                  "Zeit wird angepasst um",
+                  "Time will be adjusted by"
+                )}
                 {formatTime(Math.abs(previewRoundedSeconds - activeSeconds))}(
                 {previewRoundedSeconds > activeSeconds ? "+" : "-"})
               </Text>
@@ -293,14 +295,15 @@ export default function ModifyRounding({
             color="red"
             style={{ marginRight: "4px", verticalAlign: "middle" }}
           />
-          {locale === "de-DE"
-            ? `Hinweis: Rundungs-Einstellungen beeinflussen, wie die Zeit berechnet und gespeichert wird.
+          {getLocalizedText(
+            `Hinweis: Rundungs-Einstellungen beeinflussen, wie die Zeit berechnet und gespeichert wird.
              Die Rundungsänderungen werden nur für diesen Zeitrechner beibehalten und werden nach 
              Erstellung einer Zeitaufnahme zurückgesetzt. Um bleibende Rundungsänderungen zu erhalten,
-             können Sie die Rundungs-Einstellungen im Projekt oder in den`
-            : `Note: Rounding settings affect how time is calculated and saved.
+             können Sie die Rundungs-Einstellungen im Projekt oder in den`,
+            `Note: Rounding settings affect how time is calculated and saved.
              The rounding changes are kept for this time tracker only and will be reset after creating a time entry.
-             To keep permanent rounding changes, you can save the rounding settings in the project or in the`}{" "}
+             To keep permanent rounding changes, you can save the rounding settings in the project or in the`
+          )}{" "}
           <Anchor
             component="button"
             onClick={() => {
@@ -312,9 +315,9 @@ export default function ModifyRounding({
             fw={500}
             inline
           >
-            {locale === "de-DE" ? "Arbeits-Einstellungen" : "Work Settings"}
+            {getLocalizedText("Arbeits-Einstellungen", "Work Settings")}
           </Anchor>{" "}
-          {locale === "de-DE" ? "speichern." : ""}
+          {getLocalizedText("speichern.", "save.")}
         </Text>
       </Paper>
     </Stack>

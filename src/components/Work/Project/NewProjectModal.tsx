@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import { useRouter } from "next/navigation";
 
 import { Modal, useModalsStack } from "@mantine/core";
@@ -21,7 +21,7 @@ export default function NewProjectModal({
   onClose,
 }: NewProjectModalProps) {
   const router = useRouter();
-  const { getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const stack = useModalsStack(["project-form", "category-form"]);
   const [categoryIds, setCategoryIds] = useState<string[]>([]);
 

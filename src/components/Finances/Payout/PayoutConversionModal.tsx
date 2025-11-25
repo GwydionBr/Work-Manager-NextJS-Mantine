@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import { useForm } from "@mantine/form";
 import { zodResolver } from "mantine-form-zod-resolver";
 
@@ -20,7 +21,6 @@ import {
 } from "@mantine/core";
 import { IconArrowDown, IconCashBanknotePlus } from "@tabler/icons-react";
 import { currencies } from "@/constants/settings";
-import { formatMoney } from "@/utils/formatFunctions";
 
 interface PayoutConversionModalProps {
   opened: boolean;
@@ -44,7 +44,8 @@ export default function PayoutConversionModal({
   onSubmit,
   isProcessing,
 }: PayoutConversionModalProps) {
-  const { locale, getLocalizedText, defaultFinanceCurrency } = useSettingsStore();
+  const { defaultFinanceCurrency } = useSettingsStore();
+  const { getLocalizedText, formatMoney } = useFormatter();
 
   const form = useForm({
     initialValues: {
@@ -62,7 +63,7 @@ export default function PayoutConversionModal({
     form.setFieldValue("endValue", Math.round(startValue * 100) / 100);
   }, [startValue]);
 
-  const startValueString = formatMoney(startValue ?? 0, startCurrency, locale);
+  const startValueString = formatMoney(startValue ?? 0, startCurrency);
 
   return (
     <Modal

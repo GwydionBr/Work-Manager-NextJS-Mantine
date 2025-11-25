@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useForm } from "@mantine/form";
 import { upperFirst, useToggle } from "@mantine/hooks";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Anchor,
@@ -36,6 +37,7 @@ export default function AuthenticationForm({
   ...props
 }: AuthenticationFormProps) {
   const [type, toggle] = useToggle(["login", "register"] as const);
+  const { getLocalizedText } = useFormatter();
   const { mutate: login, isPending: isLoginPending } = useLoginMutation();
   const { mutate: signup, isPending: isSignupPending } = useSignupMutation();
   useEffect(() => {
@@ -65,13 +67,25 @@ export default function AuthenticationForm({
       email: (val) => (/^\S+@\S+$/.test(val) ? null : "Invalid email"),
       password: (val) =>
         val.length <= 6
-          ? "Password should include at least 6 characters"
+          ? getLocalizedText(
+              "Passwort muss mindestens 6 Zeichen lang sein",
+              "Password must be at least 6 characters long"
+            )
           : null,
       confirmPassword: (val, values) =>
         type === "register" && val !== values.password
-          ? "Passwords do not match"
+          ? getLocalizedText(
+              "Passwörter stimmen nicht überein",
+              "Passwords do not match"
+            )
           : null,
-      terms: (val) => (val ? null : "You must accept the terms and conditions"),
+      terms: (val) =>
+        val
+          ? null
+          : getLocalizedText(
+              "Sie müssen die Nutzungsbedingungen akzeptieren",
+              "You must accept the terms and conditions"
+            ),
     },
   });
 
@@ -84,20 +98,33 @@ export default function AuthenticationForm({
         mb={50}
         c="var(--mantine-color-text)"
       >
-        Welcome to Work Manager
+        {getLocalizedText(
+          "Willkommen beim Work Manager",
+          "Welcome to Work Manager"
+        )}
       </Title>
       <Group grow mb="md" mt="md">
         <GithubButton radius="xl" onClick={handleGithub}>
-          Continue with Github
+          {getLocalizedText("Mit Github fortfahren", "Continue with Github")}
         </GithubButton>
       </Group>
-      <Divider label="Or continue with email" labelPosition="center" my="lg" />
+      <Divider
+        label={getLocalizedText(
+          "Oder mit E-Mail fortfahren",
+          "Or continue with email"
+        )}
+        labelPosition="center"
+        my="lg"
+      />
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack>
           <TextInput
             required
-            label="Email"
-            placeholder="email@example.com"
+            label={getLocalizedText("E-Mail", "Email")}
+            placeholder={getLocalizedText(
+              "email@beispiel.com",
+              "email@example.com"
+            )}
             value={form.values.email}
             onChange={(event) =>
               form.setFieldValue("email", event.currentTarget.value)
@@ -108,15 +135,18 @@ export default function AuthenticationForm({
           />
           <PasswordInput
             required
-            label="Password"
-            placeholder="Your password"
+            label={getLocalizedText("Passwort", "Password")}
+            placeholder={getLocalizedText("Dein Passwort", "Your password")}
             value={form.values.password}
             onChange={(event) =>
               form.setFieldValue("password", event.currentTarget.value)
             }
             error={
               form.errors.password &&
-              "Password should include at least 6 characters"
+              getLocalizedText(
+                "Passwort muss mindestens 6 Zeichen lang sein",
+                "Password must be at least 6 characters long"
+              )
             }
             radius="md"
             size="md"
@@ -124,20 +154,32 @@ export default function AuthenticationForm({
           {type === "register" && (
             <PasswordInput
               required
-              label="Confirm Password"
-              placeholder="Confirm your password"
+              label={getLocalizedText("Bestätige Passwort", "Confirm Password")}
+              placeholder={getLocalizedText(
+                "Bestätige dein Passwort",
+                "Confirm your password"
+              )}
               value={form.values.confirmPassword}
               onChange={(event) =>
                 form.setFieldValue("confirmPassword", event.currentTarget.value)
               }
-              error={form.errors.confirmPassword && "Passwords do not match"}
+              error={
+                form.errors.confirmPassword &&
+                getLocalizedText(
+                  "Passwörter stimmen nicht überein",
+                  "Passwords do not match"
+                )
+              }
               radius="md"
               size="md"
             />
           )}
           {type === "register" && (
             <Checkbox
-              label="I accept terms and conditions"
+              label={getLocalizedText(
+                "Ich akzeptiere die Nutzungsbedingungen",
+                "I accept terms and conditions"
+              )}
               checked={form.values.terms}
               onChange={(event) =>
                 form.setFieldValue("terms", event.currentTarget.checked)
@@ -154,8 +196,14 @@ export default function AuthenticationForm({
             size="sm"
           >
             {type === "register"
-              ? "Already have an account? Login"
-              : "Don't have an account? Register"}
+              ? getLocalizedText(
+                  "Hast du bereits ein Konto? Login",
+                  "Already have an account? Login"
+                )
+              : getLocalizedText(
+                  "Hast du noch kein Konto? Registrieren",
+                  "Don't have an account? Register"
+                )}
           </Anchor>
           <Button
             type="submit"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Avatar, Box, Group, Table, Text } from "@mantine/core";
 
@@ -25,7 +25,7 @@ export default function FriendsTable({
   checkIconAction,
   xIconAction,
 }: FriendsTableProps) {
-  const { getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
 
   const rows = friends.map((friend) => (
     <Table.Tr key={friend.friendshipId}>

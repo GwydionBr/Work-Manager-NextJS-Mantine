@@ -1,8 +1,7 @@
 "use client";
 
 import { Box, Stack, Text } from "@mantine/core";
-import useSettingsStore from "@/stores/settingsStore";
-import { formatDateTime } from "@/utils/formatFunctions";
+import { useFormatter } from "@/hooks/useFormatter";
 
 interface TimeColumnProps {
   hourHeight: number;
@@ -21,7 +20,7 @@ export function TimeColumn({
   const timeUnitsPerHour = hourMultiplier;
 
   // Locale aus den Settings lesen
-  const { format24h } = useSettingsStore();
+  const { formatDateTime } = useFormatter();
 
   // Berechne die Gesamtanzahl der Zeiteinheiten für 24 Stunden
   const totalTimeUnits = 24 * timeUnitsPerHour;
@@ -38,7 +37,7 @@ export function TimeColumn({
     const minutes = Math.floor(normalizedTotalMinutes % 60);
 
     const date = new Date(1970, 0, 1, hours, minutes, 0, 0);
-    return formatDateTime(date, format24h);
+    return formatDateTime(date);
   };
 
   return (

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useForm } from "@mantine/form";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { TextInput, Select, Group, Stack } from "@mantine/core";
 import UpdateButton from "@/components/UI/Buttons/UpdateButton";
@@ -67,7 +67,7 @@ export default function RecurringFinanceForm({
   isLoading,
   cashFlow,
 }: RecurringFinanceFormProps) {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const form = useForm({
     initialValues: {
       title: cashFlow?.title ?? "",
@@ -103,12 +103,12 @@ export default function RecurringFinanceForm({
       <Stack>
         <TextInput
           withAsterisk
-          label="Name"
+          label={getLocalizedText("Name", "Name")}
           {...form.getInputProps("title")}
           data-autofocus
         />
         <TextInput
-          label={locale === "de-DE" ? "Beschreibung" : "Description"}
+          label={getLocalizedText("Beschreibung", "Description")}
           {...form.getInputProps("description")}
         />
         <CustomNumberInput

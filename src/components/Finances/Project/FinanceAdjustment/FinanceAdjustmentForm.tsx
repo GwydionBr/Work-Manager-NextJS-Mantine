@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useForm } from "@mantine/form";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Group, NumberInput } from "@mantine/core";
 import { TextInput } from "@mantine/core";
@@ -33,7 +33,7 @@ export default function FinanceAdjustmentForm({
   onDropdownClose,
   projectId,
 }: FinanceAdjustmentFormProps) {
-  const { getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const { mutate: addFinanceAdjustment, isPending: isAdding } =
     useCreateFinanceAdjustmentMutation({ onSuccess: () => handleClose() });
   const { data: financeClients = [] } = useFinanceClientQuery();

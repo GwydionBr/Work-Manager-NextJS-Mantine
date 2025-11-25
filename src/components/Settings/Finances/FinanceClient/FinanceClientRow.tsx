@@ -1,9 +1,17 @@
 "use client";
 
 import { useHover, useDisclosure } from "@mantine/hooks";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
-import { Card, Group, Box, Stack, Text, Transition, Modal } from "@mantine/core";
+import {
+  Card,
+  Group,
+  Box,
+  Stack,
+  Text,
+  Transition,
+  Modal,
+} from "@mantine/core";
 import { Tables } from "@/types/db.types";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import React from "react";
@@ -29,7 +37,7 @@ export default function FinanceClientRow({
   onDelete,
 }: FinanceClientRowProps) {
   const { hovered, ref } = useHover();
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const [isClientFormOpen, { open: openClientForm, close: closeClientForm }] =
     useDisclosure(false);
 
@@ -66,9 +74,10 @@ export default function FinanceClientRow({
               {(styles) => (
                 <SelectActionIcon
                   onClick={() => {}}
-                  tooltipLabel={
-                    locale === "de-DE" ? "Kunde auswählen" : "Select client"
-                  }
+                  tooltipLabel={getLocalizedText(
+                    "Kunde auswählen",
+                    "Select client"
+                  )}
                   selected={isSelected}
                   style={styles}
                 />
@@ -105,7 +114,7 @@ export default function FinanceClientRow({
               <Text fz="xs" c="dimmed">
                 {client.phone}
               </Text>
-            )}  
+            )}
             {client.address && (
               <Text fz="xs" c="dimmed">
                 {client.address}
@@ -132,12 +141,14 @@ export default function FinanceClientRow({
       <Modal
         opened={isClientFormOpen}
         onClose={closeClientForm}
-        title={<Group>
-          <IconPencil />
-          <Text>
-            {locale === "de-DE" ? "Kunde bearbeiten" : "Edit client"}
-          </Text>
-        </Group>}
+        title={
+          <Group>
+            <IconPencil />
+            <Text>
+              {getLocalizedText("Kunde bearbeiten", "Edit client")}
+            </Text>
+          </Group>
+        }
       >
         <FinanceClientForm onClose={closeClientForm} client={client} />
       </Modal>

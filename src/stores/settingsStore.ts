@@ -61,7 +61,6 @@ interface SettingsActions {
   setShowChangeCurrencyWindow: (
     showChangeCurrencyWindow: boolean | null
   ) => Promise<void>;
-  getLocalizedText: (de: string, en: string) => string;
 }
 
 export const useSettingsStore = create<SettingsState & SettingsActions>()(
@@ -350,9 +349,6 @@ export const useSettingsStore = create<SettingsState & SettingsActions>()(
           show_change_curreny_window: showChangeCurrencyWindow,
         });
         set({ showChangeCurrencyWindow: showChangeCurrencyWindow });
-      },
-      getLocalizedText(de, en) {
-        return get().locale === "de-DE" ? de : en;
       },
     }),
     {

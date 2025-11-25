@@ -1,8 +1,8 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
-import { Text, Stack, Card, Group } from "@mantine/core";
+import { Text, Card, Group } from "@mantine/core";
 
 import type { Tables } from "@/types/db.types";
 import { IconBrandCashapp } from "@tabler/icons-react";
@@ -11,10 +11,8 @@ interface ProjectPayoutCardProps {
   project: Tables<"timer_project">;
 }
 
-export default function ProjectPayoutCard({
-  project,
-}: ProjectPayoutCardProps) {
-  const { locale } = useSettingsStore();
+export default function ProjectPayoutCard({ project }: ProjectPayoutCardProps) {
+  const { getLocalizedText } = useFormatter();
 
   return (
     <Card withBorder radius="md" mb="md" p="md" shadow="md" w="100%" maw={400}>
@@ -22,7 +20,7 @@ export default function ProjectPayoutCard({
         <Group p="md" gap="md">
           <IconBrandCashapp />
           <Text size="sm" fw={500}>
-            {locale === "de-DE" ? "Schnelle Auszahlung" : "Quick Payout"}
+            {getLocalizedText("Schnelle Auszahlung", "Quick Payout")}
           </Text>
         </Group>
       </Card.Section>

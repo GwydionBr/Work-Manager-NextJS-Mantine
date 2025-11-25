@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
 
 import { alpha, Stack, Text } from "@mantine/core";
@@ -22,7 +22,7 @@ export default function TimeTrackerEvent({
   const { isTimerRunning, getRunningTimer } = useTimeTrackerManager();
 
   const timer = getRunningTimer();
-  const { locale, format24h } = useSettingsStore();
+  const { locale, format24h } = useFormatter();
   const { data: projects = [] } = useWorkProjectQuery();
   const project = useMemo(
     () => projects.find((p) => p.id === timer?.projectId),

@@ -5,7 +5,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
 import { useWorkFolderQuery } from "@/utils/queries/work/use-work-folder";
 import { useWorkTimeEntryQuery } from "@/utils/queries/work/use-work-time_entry";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import { useTimeEntryFiltering } from "@/hooks/useSessionFiltering";
 
 import { Box, Collapse, Group, Stack, Text } from "@mantine/core";
@@ -34,7 +34,7 @@ export default function WorkOverviewPage() {
     payoutOpened,
     { open: openPayout, close: closePayout, toggle: togglePayout },
   ] = useDisclosure(false);
-  const { locale } = useSettingsStore();
+  const { getLocalizedText, locale } = useFormatter();
   const { data: projects = [] } = useWorkProjectQuery();
   const { data: folders = [] } = useWorkFolderQuery();
   const { data: timerSessions = [] } = useWorkTimeEntryQuery();
@@ -68,7 +68,7 @@ export default function WorkOverviewPage() {
   return (
     <Stack align="center" w="100%" px="xl">
       <Header
-        headerTitle={locale === "de-DE" ? "Übersicht" : "Work Overview"}
+        headerTitle={getLocalizedText("Übersicht", "Work Overview")}
         rightButton={
           <Group>
             <AnalysisActionIcon
@@ -85,7 +85,7 @@ export default function WorkOverviewPage() {
         <Group justify="center" p="xs">
           {/* <FilterActionIcon
             onClick={toggleFilter}
-            tooltipLabel={locale === "de-DE" ? "Filter" : "Filter"}
+            tooltipLabel={getLocalizedText("Filter", "Filter")}
             filled={filterOpened}
           /> */}
           <NewSessionModal
@@ -94,7 +94,7 @@ export default function WorkOverviewPage() {
           />
           {/* <PayoutActionIcon
             onClick={togglePayout}
-            tooltipLabel={locale === "de-DE" ? "Auszahlung" : "Payout"}
+            tooltipLabel={getLocalizedText("Auszahlung", "Payout")}
           /> */}
         </Group>
         {/* Bulk Selection Controls */}
@@ -151,17 +151,19 @@ export default function WorkOverviewPage() {
             />
           ) : (
             <Text size="lg" c="gray" ta="center">
-              {locale === "de-DE"
-                ? "Keine Sitzungen im ausgewählten Zeitraum"
-                : "No Sessions in the time period"}
+              {getLocalizedText(
+                "Keine Sitzungen im ausgewählten Zeitraum",
+                "No Sessions in the time period"
+              )}
             </Text>
           )}
         </Box>
       ) : (
         <Text size="lg" c="gray" ta="center">
-          {locale === "de-DE"
-            ? "Fügen Sie eine Sitzung hinzu, um sie hier zu sehen"
-            : "Add a Session to see it here"}
+          {getLocalizedText(
+            "Fügen Sie eine Sitzung hinzu, um sie hier zu sehen",
+            "Add a Session to see it here"
+          )}
         </Text>
       )}
     </Stack>

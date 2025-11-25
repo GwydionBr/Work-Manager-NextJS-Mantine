@@ -2,9 +2,8 @@
 
 import { useMemo } from "react";
 import { useDisclosure, useHover } from "@mantine/hooks";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
-import { formatDate, formatMoney } from "@/utils/formatFunctions";
 import { Badge, Card, CardProps, Group, Text, ThemeIcon } from "@mantine/core";
 import {
   IconCalendar,
@@ -40,7 +39,7 @@ export default function RecurringCashFlowRow({
   getIntervalLabel,
   ...props
 }: RecurringCashFlowRowProps) {
-  const { locale } = useSettingsStore();
+  const { formatMoney, formatDate } = useFormatter();
   const {
     mutate: updateRecurringCashFlow,
     isPending: isUpdatingRecurringCashFlow,
@@ -110,7 +109,7 @@ export default function RecurringCashFlowRow({
       <Group justify="space-between" grow>
         <Group>
           <Text fw={700} c={cashflow.amount <= 0 ? "red" : "green"} w={70}>
-            {formatMoney(cashflow.amount, cashflow.currency, locale)}
+            {formatMoney(cashflow.amount, cashflow.currency)}
           </Text>
           <Badge variant="light">{getIntervalLabel(cashflow.interval)}</Badge>
         </Group>
@@ -125,7 +124,7 @@ export default function RecurringCashFlowRow({
                 <ThemeIcon variant="transparent" color="green">
                   <IconCalendar size={20} />
                 </ThemeIcon>
-                <Text>{formatDate(new Date(cashflow.start_date), locale)}</Text>
+                <Text>{formatDate(new Date(cashflow.start_date))}</Text>
               </Group>
             )}
             {showEndDate && cashflow.end_date && (
@@ -133,7 +132,7 @@ export default function RecurringCashFlowRow({
                 <ThemeIcon variant="transparent" color="red">
                   <IconCalendarOff size={20} />
                 </ThemeIcon>
-                <Text>{formatDate(new Date(cashflow.end_date), locale)}</Text>
+                <Text>{formatDate(new Date(cashflow.end_date))}</Text>
               </Group>
             )}
             {showNextDate && nextDate && (
@@ -144,7 +143,7 @@ export default function RecurringCashFlowRow({
                 >
                   <IconCalendarTime size={20} />
                 </ThemeIcon>
-                <Text>{formatDate(nextDate, locale)}</Text>
+                <Text>{formatDate(nextDate)}</Text>
               </Group>
             )}
           </Group>

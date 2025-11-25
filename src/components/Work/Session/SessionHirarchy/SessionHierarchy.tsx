@@ -1,11 +1,10 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Accordion, Box } from "@mantine/core";
 import { IconCalendar, IconClock, IconFolder } from "@tabler/icons-react";
 import SessionRow from "@/components/Work/Session/SessionRow";
-import { formatDate, formatMonth } from "@/utils/formatFunctions";
 
 import type { Tables } from "@/types/db.types";
 import type { Year } from "@/types/timerSession.types";
@@ -36,7 +35,7 @@ export default function SessionHierarchy({
   isOverview,
   selectedModeActive,
 }: SessionHierarchyProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText, formatDate, formatMonth } = useFormatter();
 
   const getBorderColor = (sessionIds: string[]): string | undefined => {
     const groupIds = sessionIds.filter((id) => selectableIdSet.has(id));
@@ -118,7 +117,7 @@ export default function SessionHierarchy({
                     >
                       <CustomAccordionControl
                         icon={<IconFolder size={18} color="blue" />}
-                        label={formatMonth(Number(month), locale)}
+                        label={formatMonth(Number(month))}
                         earnings={monthData.totalEarnings}
                         time={monthData.totalTime}
                         selectedSessionIds={selectedSessions}
@@ -159,11 +158,10 @@ export default function SessionHierarchy({
                                   icon={
                                     <IconCalendar size={18} color="orange" />
                                   }
-                                  label={
-                                    locale === "de-DE"
-                                      ? `${week}. Woche`
-                                      : `Week ${week}`
-                                  }
+                                  label={getLocalizedText(
+                                    `${week}. Woche`,
+                                    `Week ${week}`
+                                  )}
                                   earnings={weekData.totalEarnings}
                                   time={weekData.totalTime}
                                   selectedSessionIds={selectedSessions}
@@ -210,10 +208,7 @@ export default function SessionHierarchy({
                                                 color="green"
                                               />
                                             }
-                                            label={formatDate(
-                                              new Date(day),
-                                              locale
-                                            )}
+                                            label={formatDate(new Date(day))}
                                             earnings={dayData.totalEarnings}
                                             time={dayData.totalTime}
                                             selectedSessionIds={

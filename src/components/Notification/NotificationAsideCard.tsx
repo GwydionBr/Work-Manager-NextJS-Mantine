@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import {
-  useFriendsQuery,
   useAcceptFriendshipMutation,
   useDeclineFriendshipMutation,
 } from "@/utils/queries/profile/use-friends";
 import { useGroupStore } from "@/stores/groupStore";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Divider,
@@ -39,6 +39,7 @@ export default function NotificationAsideCard({
     useDeclineFriendshipMutation();
   const { groupRequests, answerGroupRequest } = useGroupStore();
   const { defaultGroupColor } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const [friendRequestsOpened, setFriendRequestsOpened] = useState(false);
   const [groupRequestsOpened, setGroupRequestsOpened] = useState(false);
 
@@ -59,7 +60,7 @@ export default function NotificationAsideCard({
                   <IconUserPlus color="light-dark(var(--mantine-color-blue-9), var(--mantine-color-blue-4))" />
                 </Indicator>
                 <Text className={classes.notificationTitle}>
-                  Friend Requests
+                  {getLocalizedText("Freundschaftsanfragen", "Friend Requests")}
                 </Text>
               </Group>
             </Popover.Target>
@@ -107,7 +108,7 @@ export default function NotificationAsideCard({
                   <IconUsersPlus color="light-dark(var(--mantine-color-blue-9), var(--mantine-color-blue-4))" />
                 </Indicator>
                 <Text className={classes.notificationTitle}>
-                  Group Requests
+                  {getLocalizedText("Gruppenanfragen", "Group Requests")}
                 </Text>
               </Group>
             </Popover.Target>

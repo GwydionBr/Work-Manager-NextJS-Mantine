@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Card, Text, Badge, Group } from "@mantine/core";
 import {
@@ -47,50 +47,50 @@ export default function StatisticCard({
   badge,
   badgeColor = "green",
 }: StatisticCardProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
 
   // Get title and default styling based on type
   const getCardConfig = () => {
     switch (type) {
       case "totalIncome":
         return {
-          title: locale === "de-DE" ? "Gesamteinnahmen" : "Total Income",
+          title: getLocalizedText("Gesamteinnahmen", "Total Income"),
           defaultColor: "teal" as const,
           icon: IconCash,
         };
       case "totalExpense":
         return {
-          title: locale === "de-DE" ? "Gesamtausgaben" : "Total Expenses",
+          title: getLocalizedText("Gesamtausgaben", "Total Expenses"),
           defaultColor: "red" as const,
           icon: IconReceipt,
         };
       case "net":
         return {
-          title: locale === "de-DE" ? "Netto" : "Net",
+          title: getLocalizedText("Netto", "Net"),
           defaultColor: "green" as const,
           icon: IconChartBar,
         };
       case "profitMargin":
         return {
-          title: locale === "de-DE" ? "Gewinnspanne" : "Profit Margin",
+          title: getLocalizedText("Gewinnspanne", "Profit Margin"),
           defaultColor: "green" as const,
           icon: IconTrendingUp,
         };
       case "bestPeriod":
         return {
-          title: locale === "de-DE" ? "Bester Zeitraum" : "Best Period",
+          title: getLocalizedText("Bester Zeitraum", "Best Period"),
           defaultColor: "green" as const,
           icon: IconTrophy,
         };
       case "worstPeriod":
         return {
-          title: locale === "de-DE" ? "Schlechtester Zeitraum" : "Worst Period",
+          title: getLocalizedText("Schlechtester Zeitraum", "Worst Period"),
           defaultColor: "red" as const,
           icon: IconAlertTriangle,
         };
       default:
         return {
-          title: locale === "de-DE" ? "Statistik" : "Statistic",
+          title: getLocalizedText("Statistik", "Statistic"),
           defaultColor: "blue" as const,
           icon: IconChartBar,
         };

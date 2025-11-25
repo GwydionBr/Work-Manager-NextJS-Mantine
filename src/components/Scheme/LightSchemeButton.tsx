@@ -1,3 +1,6 @@
+"use client";
+import { useFormatter } from "@/hooks/useFormatter";
+
 import { IconSunHighFilled } from "@tabler/icons-react";
 import { ActionIcon, HoverCard, Text } from "@mantine/core";
 
@@ -14,6 +17,7 @@ export default function LightSchemeButton({
   active,
   navbarMode,
 }: LightSchemeButtonProps) {
+  const { getLocalizedText } = useFormatter();
   return (
     <HoverCard
       width={60}
@@ -27,7 +31,10 @@ export default function LightSchemeButton({
           onClick={onClick}
           variant="default"
           size="xl"
-          aria-label="select light scheme"
+          aria-label={getLocalizedText(
+            "Heller Modus auswählen",
+            "Select light scheme"
+          )}
           bg="light-dark(var(--mantine-color-white), var(--mantine-color-white))"
           className={active ? classes.activeButton : ""}
         >
@@ -35,7 +42,11 @@ export default function LightSchemeButton({
         </ActionIcon>
       </HoverCard.Target>
       <HoverCard.Dropdown>
-        <Text size="xs">{navbarMode ? "Dark Mode" : "Light Mode"}</Text>
+        <Text size="xs">
+          {navbarMode
+            ? getLocalizedText("Dunkler Modus", "Dark Mode")
+            : getLocalizedText("Heller Modus", "Light Mode")}
+        </Text>
       </HoverCard.Dropdown>
     </HoverCard>
   );

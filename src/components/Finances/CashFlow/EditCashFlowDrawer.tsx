@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Center,
@@ -66,7 +66,7 @@ export default function EditCashFlowDrawer({
   opened: boolean;
   onClose: () => void;
 }) {
-  const { getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const [deleteMode, setDeleteMode] = useState<DeleteRecurringCashFlowMode>(
     DeleteRecurringCashFlowMode.delete_all
   );

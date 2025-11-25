@@ -1,8 +1,8 @@
 "use client";
 
 import { useHover, useHotkeys } from "@mantine/hooks";
-import { useSettingsStore } from "@/stores/settingsStore";
 import { useCalendarStore } from "@/stores/calendarStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { alpha, Box, Skeleton, Stack, Text } from "@mantine/core";
 
@@ -20,7 +20,6 @@ import CalendarSessionEvent from "./CalendarEvent/CalendarSessionEvent";
 import TimeTrackerEvent from "./CalendarEvent/TimeTrackerEvent/TimeTrackerEvent";
 import NewSessionEvent from "./CalendarEvent/NewSessionEvent";
 import CalendarAppointmentEvent from "./CalendarEvent/CalendarAppointmentEvent";
-import { formatDateTime } from "@/utils/formatFunctions";
 
 interface DayColumnProps {
   day: Date;
@@ -62,7 +61,7 @@ export function DayColumn({
   snapYToInterval,
 }: DayColumnProps) {
   const { hovered, ref: hoverRef } = useHover();
-  const { format24h } = useSettingsStore();
+  const { formatDateTime } = useFormatter();
   const { addingMode } = useCalendarStore();
   useHotkeys([["escape", () => setStartNewSession(null)]]);
 
@@ -188,7 +187,7 @@ export function DayColumn({
             }}
           >
             <Text ta="center">
-              {formatDateTime(yToTime(snappedY, day), format24h)}
+              {formatDateTime(yToTime(snappedY, day))}
             </Text>
           </Stack>
         )}

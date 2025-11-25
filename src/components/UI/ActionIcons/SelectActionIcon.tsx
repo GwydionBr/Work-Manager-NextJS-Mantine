@@ -2,12 +2,10 @@ import { ActionIcon, ActionIconProps } from "@mantine/core";
 import {
   IconSquareRounded,
   IconSquareRoundedCheck,
-  IconSquareRoundedCheckFilled,
   IconListDetails,
   IconSquareRoundedMinusFilled,
 } from "@tabler/icons-react";
 import DelayedTooltip from "../DelayedTooltip";
-import React from "react";
 
 interface SelectActionIconProps extends ActionIconProps {
   onClick: React.MouseEventHandler<HTMLButtonElement>;

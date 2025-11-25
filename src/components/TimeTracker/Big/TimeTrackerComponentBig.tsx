@@ -3,7 +3,7 @@
 import { TimerRoundingSettings, TimerState } from "@/types/timeTracker.types";
 
 import { Stack, Collapse } from "@mantine/core";
-import { Currency, RoundingDirection } from "@/types/settings.types";
+import { Currency } from "@/types/settings.types";
 import TimeTrackerComponentBigMin from "./TimeTrackerComponentBigMin";
 import TimeTrackerComponentBigMax from "./TimeTrackerComponentBigMax";
 

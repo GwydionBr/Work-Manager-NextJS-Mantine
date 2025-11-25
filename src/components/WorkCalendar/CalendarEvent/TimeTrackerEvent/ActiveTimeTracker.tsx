@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, Group, Stack, Text, Indicator } from "@mantine/core";
 import { TimerState } from "@/types/timeTracker.types";
 import { TimerData } from "@/stores/timeTrackerManagerStore";

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Stack,
@@ -26,7 +27,7 @@ export default function FinanceInitializer() {
   const [categories, setCategories] = useState<Tables<"finance_category">[]>(
     []
   );
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const { setIsModalOpen, setSelectedTab } = useSettingsStore();
   return (
     <Container size="md" py="xl">
@@ -42,25 +43,28 @@ export default function FinanceInitializer() {
               <IconCash size={40} />
             </ThemeIcon>
             <Title order={2} ta="center" fw={700}>
-              {locale === "de-DE" ? "Finanzmanagement" : "Financial Management"}
+              {getLocalizedText("Finanzmanagement", "Financial Management")}
             </Title>
           </Stack>
 
           <Stack gap="md">
             <Text size="lg" ta="center" c="dimmed" fw={500}>
-              {locale === "de-DE"
-                ? "Starten Sie das Verfolgen Ihrer Einnahmen und Ausgaben, um Ihre Finanzen effektiv zu verwalten"
-                : "Start tracking your income and expenses to manage your finances effectively"}
+              {getLocalizedText(
+                "Starten Sie das Verfolgen Ihrer Einnahmen und Ausgaben, um Ihre Finanzen effektiv zu verwalten",
+                "Start tracking your income and expenses to manage your finances effectively"
+              )}
             </Text>
             <Text size="sm" ta="center" c="dimmed">
-              {locale === "de-DE"
-                ? "Fügen Sie Ihre erste finanzielle Eintragung hinzu, um Ihr Cashflow zu verfolgen. Sie können sowohl einmalige als auch wiederkehrende Transaktionen verfolgen."
-                : "Add your first financial entry to begin monitoring your cash flow. You can track both one-time and recurring transactions."}
+              {getLocalizedText(
+                "Fügen Sie Ihre erste finanzielle Eintragung hinzu, um Ihr Cashflow zu verfolgen. Sie können sowohl einmalige als auch wiederkehrende Transaktionen verfolgen.",
+                "Add your first financial entry to begin monitoring your cash flow. You can track both one-time and recurring transactions."
+              )}
             </Text>
             <Text size="sm" ta="center" c="dimmed">
-              {locale === "de-DE"
-                ? "Möchten Sie Ihre finanziellen Einstellungen anpassen? Besuchen Sie die"
-                : "Want to customize your financial settings? Visit the"}{" "}
+              {getLocalizedText(
+                "Möchten Sie Ihre finanziellen Einstellungen anpassen? Besuchen Sie die",
+                "Want to customize your financial settings? Visit the"
+              )}{" "}
               <Anchor
                 component="button"
                 onClick={() => {
@@ -71,13 +75,12 @@ export default function FinanceInitializer() {
                 fw={500}
                 inline
               >
-                {locale === "de-DE"
-                  ? "Finanz Einstellungen"
-                  : "Finance Settings"}
+                {getLocalizedText("Finanz Einstellungen", "Finance Settings")}
               </Anchor>{" "}
-              {locale === "de-DE"
-                ? "um Standardwährungen und andere Einstellungen zu konfigurieren."
-                : "to configure default currencies and other preferences."}
+              {getLocalizedText(
+                "um Standardwährungen und andere Einstellungen zu konfigurieren.",
+                "to configure default currencies and other preferences."
+              )}
             </Text>
           </Stack>
 
@@ -92,9 +95,7 @@ export default function FinanceInitializer() {
           <Modal
             opened={opened}
             onClose={close}
-            title={
-              locale === "de-DE" ? "Finanz Einstellungen" : "Finance Settings"
-            }
+            title={getLocalizedText("Finanz Einstellungen", "Finance Settings")}
           >
             <FinanceCategoryForm
               onClose={close}

@@ -19,12 +19,6 @@ import Aside from "./Aside";
 import InitializeProfile from "@/components/Account/InitializeProfile";
 import { useProfileQuery } from "@/utils/queries/profile/use-profile";
 
-enum FetchPriority {
-  Settings = "settings",
-  Work = "work",
-  User = "user",
-  Calendar = "calendar",
-}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { data: profile } = useProfileQuery();

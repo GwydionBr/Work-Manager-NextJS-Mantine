@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Radio, Select, Stack } from "@mantine/core";
 
@@ -10,12 +11,12 @@ import { Currency } from "@/types/settings.types";
 import SettingsRow from "../../SettingsRow";
 
 export default function FinanceDefaultSettings() {
+  const { getLocalizedText } = useFormatter();
   const {
     defaultFinanceCurrency: financeCurrency,
     setDefaultFinanceCurrency: setFinanceCurrency,
     showChangeCurrencyWindow,
     setShowChangeCurrencyWindow,
-    getLocalizedText,
   } = useSettingsStore();
 
   const [showCCW, setShowCCW] = useState<"true" | "false" | "null">("null");

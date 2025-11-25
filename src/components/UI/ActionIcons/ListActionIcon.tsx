@@ -1,5 +1,5 @@
 import { ActionIcon, ActionIconProps } from "@mantine/core";
-import { IconEdit, IconList } from "@tabler/icons-react";
+import { IconList } from "@tabler/icons-react";
 import DelayedTooltip from "../DelayedTooltip";
 
 interface ListActionIconProps extends ActionIconProps {

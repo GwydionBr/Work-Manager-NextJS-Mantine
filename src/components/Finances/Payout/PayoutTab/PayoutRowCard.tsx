@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Card,
@@ -20,8 +20,6 @@ import {
   IconArrowRight,
 } from "@tabler/icons-react";
 
-import { formatDate, formatMoney } from "@/utils/formatFunctions";
-
 import { Payout } from "@/types/finance.types";
 
 interface PayoutRowCardProps {
@@ -29,7 +27,7 @@ interface PayoutRowCardProps {
 }
 
 export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText, formatDate, formatMoney } = useFormatter();
 
   const getTotalSessionTime = () => {
     if (!payout.timer_sessions || payout.timer_sessions.length === 0)
@@ -71,7 +69,7 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
               {payout.title}
             </Text>
             <Text size="sm" c="dimmed">
-              {formatDate(new Date(payout.created_at), locale)}
+              {formatDate(new Date(payout.created_at))}
             </Text>
           </Box>
 
@@ -133,7 +131,6 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
                 {formatMoney(
                   payout.start_value ?? payout.value,
                   payout.start_currency ?? payout.currency,
-                  locale
                 )}
               </Text>
             </Group>
@@ -152,7 +149,7 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
                 </Text>
                 <Group gap="xs" align="center">
                   <Text size="lg" fw={700} c="blue">
-                    {formatMoney(payout.value!, payout.currency!, locale)}
+                    {formatMoney(payout.value!, payout.currency!)}
                   </Text>
                 </Group>
               </Stack>
@@ -191,7 +188,6 @@ export default function PayoutRowCard({ payout }: PayoutRowCardProps) {
                     {formatMoney(
                       payout.value! - payout.start_value!,
                       payout.currency!,
-                      locale
                     )}{" "}
                     (
                     {((payout.value! / payout.start_value! - 1) * 100).toFixed(

@@ -1,3 +1,7 @@
+"use client";
+
+import { useFormatter } from "@/hooks/useFormatter";
+
 import classes from "./Home.module.css";
 import {
   Text,
@@ -20,24 +24,32 @@ import {
 import HomeHeader from "@/components/Home/HomeHeader";
 
 export default function HomePage() {
+  const { getLocalizedText } = useFormatter();
+
   const features = [
     {
       icon: <IconClock size={32} />,
-      title: "Time Tracking",
-      description:
-        "Efficiently track and manage your working hours across different projects with an intuitive interface.",
+      title: getLocalizedText("Zeiterfassung", "Time Tracking"),
+      description: getLocalizedText(
+        "Effizienter Tracken und Verwalten Ihrer Arbeitsstunden über verschiedene Projekte mit einer intuitiven Oberfläche.",
+        "Efficiently track and manage your working hours across different projects with an intuitive interface."
+      ),
     },
     {
       icon: <IconUsers size={32} />,
-      title: "Group Management",
-      description:
-        "Organize teams and manage shared projects and resources effectively.",
+      title: getLocalizedText("Gruppenverwaltung", "Group Management"),
+      description: getLocalizedText(
+        "Organisieren Sie Teams und verwalten Sie gemeinsame Projekte und Ressourcen effektiv.",
+        "Organize teams and manage shared projects and resources effectively."
+      ),
     },
     {
       icon: <IconChartBar size={32} />,
-      title: "Financial Overview",
-      description:
-        "Keep track of your finances and project budgets with detailed insights.",
+      title: getLocalizedText("Finanzübersicht", "Financial Overview"),
+      description: getLocalizedText(
+        "Verwalten Sie Ihre Finanzen und Projektbudgets mit detaillierten Einblicken.",
+        "Keep track of your finances and project budgets with detailed insights."
+      ),
     },
   ];
 
@@ -54,12 +66,16 @@ export default function HomePage() {
               mb="md"
               c="light-dark(var(--mantine-color-dark-7), var(--mantine-color-gray-2))"
             >
-              Welcome to Work Manager
+              {getLocalizedText(
+                "Willkommen beim Work Manager",
+                "Welcome to Work Manager"
+              )}
             </Title>
             <Text size="xl" c="dimmed" maw={600} mx="auto" mb={40}>
-              Your central platform for efficient project management, time
-              tracking, and financial control. Optimize your workflows and boost
-              your productivity.
+              {getLocalizedText(
+                "Ihre zentrale Plattform für effizientes Projektmanagement, Zeiterfassung und Finanzkontrolle. Optimieren Sie Ihre Arbeitsabläufe und steigern Sie Ihre Produktivität.",
+                "Your central platform for efficient project management, time tracking, and financial control. Optimize your workflows and boost your productivity."
+              )}
             </Text>
             <Button
               component={Link}
@@ -68,7 +84,7 @@ export default function HomePage() {
               className={classes.primaryButton}
               rightSection={<IconArrowRight size={20} />}
             >
-              Go to Console
+              {getLocalizedText("Zur Konsole gehen", "Go to Console")}
             </Button>
           </Box>
 
@@ -110,10 +126,16 @@ export default function HomePage() {
           {/* Call to Action */}
           <Box ta="center" py={80}>
             <Title order={2} mb="md" c="dark.7">
-              Ready to Boost Your Productivity?
+              {getLocalizedText(
+                "Bereit, Ihre Produktivität zu steigern?",
+                "Ready to Boost Your Productivity?"
+              )}
             </Title>
             <Text size="lg" c="dimmed" mb={30}>
-              Start now and experience the benefits of Work Manager.
+              {getLocalizedText(
+                "Starten Sie jetzt und erleben Sie die Vorteile des Work Managers.",
+                "Start now and experience the benefits of Work Manager."
+              )}
             </Text>
             <Button
               component={Link}
@@ -122,7 +144,7 @@ export default function HomePage() {
               className={classes.primaryButton}
               rightSection={<IconArrowRight size={20} />}
             >
-              Get Started
+              {getLocalizedText("Los geht's", "Get Started")}
             </Button>
           </Box>
         </Stack>

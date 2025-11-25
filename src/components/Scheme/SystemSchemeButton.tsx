@@ -1,6 +1,7 @@
 "use client";
 
 import { useColorScheme } from "@mantine/hooks";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { IconSunMoon } from "@tabler/icons-react";
 import { ActionIcon, HoverCard, Text } from "@mantine/core";
@@ -19,7 +20,8 @@ export default function SystemSchemeButton({
   navbarMode,
 }: SystemSchemeButtonProps) {
   const colorScheme = useColorScheme();
-
+  const { getLocalizedText } = useFormatter();
+  
   return (
     <HoverCard
       width={80}
@@ -33,7 +35,7 @@ export default function SystemSchemeButton({
           onClick={onClick}
           variant="default"
           size="xl"
-          aria-label="select system scheme"
+          aria-label={getLocalizedText("Systemmodus auswählen", "Select system scheme")}
           bg={
             colorScheme === "light"
               ? "var(--mantine-color-gray-0)"
@@ -52,7 +54,9 @@ export default function SystemSchemeButton({
         </ActionIcon>
       </HoverCard.Target>
       <HoverCard.Dropdown>
-        <Text size="xs">System Scheme</Text>
+        <Text size="xs">
+          {getLocalizedText("Systemschema", "System Scheme")}
+        </Text>
       </HoverCard.Dropdown>
     </HoverCard>
   );

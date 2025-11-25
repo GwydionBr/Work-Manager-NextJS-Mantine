@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Box, DEFAULT_THEME, Group, Popover, Text } from "@mantine/core";
 
@@ -9,6 +10,7 @@ import classes from "./GroupSettings.module.css";
 import DefaultColorPicker from "@/components/UI/DefaultColorPicker";
 
 export default function GroupDefaultSettings() {
+  const { getLocalizedText } = useFormatter();
   const { defaultGroupColor: groupColor, setDefaultGroupColor: setGroupColor } =
     useSettingsStore();
   const [color, setColor] = useState<string | null>(null);
@@ -24,7 +26,7 @@ export default function GroupDefaultSettings() {
   return (
     <Group>
       <Text size="sm" fw={500}>
-        Default Group Color
+        {getLocalizedText("Standard Gruppenfarbe", "Default Group Color")}
       </Text>
       <Popover onClose={handleColorChange} position="top">
         <Popover.Target>

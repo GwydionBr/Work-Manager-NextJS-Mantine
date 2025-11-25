@@ -1,3 +1,5 @@
+"use client";
+
 import { Stack, Text, List, Group } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconAlertCircle } from "@tabler/icons-react";

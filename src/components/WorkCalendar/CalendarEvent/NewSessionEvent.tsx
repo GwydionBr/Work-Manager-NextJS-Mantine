@@ -1,7 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
-import { formatTimeSpan } from "@/utils/formatFunctions";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Box, Stack, Text } from "@mantine/core";
 
@@ -14,7 +13,7 @@ export default function NewSessionEvent({
   y: number;
   yToTime: (y: number) => Date;
 }) {
-  const { locale, format24h } = useSettingsStore();
+  const { formatTimeSpan, getLocalizedText } = useFormatter();
 
   const actualStart = Math.min(start, y);
   const actualEnd = Math.max(start, y);
@@ -38,15 +37,15 @@ export default function NewSessionEvent({
       >
         {!isStartDynamic ? (
           <Text ta="center">
-            {locale === "de-DE" ? "Zeitraum auswählen" : "Select timespan"}
+            {getLocalizedText("Zeitraum auswählen", "Select timespan")}
           </Text>
         ) : null}
         <Text ta="center" fw={600}>
-          {formatTimeSpan(yToTime(actualStart), yToTime(actualEnd), format24h)}
+          {formatTimeSpan(yToTime(actualStart), yToTime(actualEnd))}
         </Text>
         {isStartDynamic ? (
           <Text ta="center">
-            {locale === "de-DE" ? "Zeitraum auswählen" : "Select timespan"}
+            {getLocalizedText("Zeitraum auswählen", "Select timespan")}
           </Text>
         ) : null}
       </Stack>

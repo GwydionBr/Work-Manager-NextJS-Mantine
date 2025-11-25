@@ -1,7 +1,8 @@
 "use client";
 
 import { useForm } from "@mantine/form";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
+
 import { Fieldset, Select, Stack, TextInput } from "@mantine/core";
 
 import { z } from "zod";
@@ -39,7 +40,7 @@ export default function FinanceClientForm({
   onSuccess,
   client,
 }: FinanceClientFormProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
 
   const { mutate: addFinanceClientMutation, isPending: isAddingFinanceClient } =
     useAddFinanceClientMutation({
@@ -87,39 +88,37 @@ export default function FinanceClientForm({
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <Stack>
-        <Fieldset
-          legend={locale === "de-DE" ? "Kunden Details" : "Client details"}
-        >
+        <Fieldset legend={getLocalizedText("Kunden Details", "Client details")}>
           <Stack>
             <TextInput
               withAsterisk
-              label={locale === "de-DE" ? "Name" : "Name"}
+              label={getLocalizedText("Name", "Name")}
               {...form.getInputProps("name")}
               data-autofocus
             />
             <TextInput
-              label={locale === "de-DE" ? "Beschreibung" : "Description"}
+              label={getLocalizedText("Beschreibung", "Description")}
               {...form.getInputProps("description")}
             />
           </Stack>
         </Fieldset>
-        <Fieldset legend={locale === "de-DE" ? "Kontakt" : "Contact"}>
+        <Fieldset legend={getLocalizedText("Kontakt", "Contact")}>
           <TextInput
-            label={locale === "de-DE" ? "Email" : "Email"}
+            label={getLocalizedText("Email", "Email")}
             {...form.getInputProps("email")}
           />
           <TextInput
-            label={locale === "de-DE" ? "Telefon" : "Phone"}
+            label={getLocalizedText("Telefon", "Phone")}
             {...form.getInputProps("phone")}
           />
           <TextInput
-            label={locale === "de-DE" ? "Adresse" : "Address"}
+            label={getLocalizedText("Adresse", "Address")}
             {...form.getInputProps("address")}
           />
         </Fieldset>
-        <Fieldset legend={locale === "de-DE" ? "Finanzen" : "Finances"}>
+        <Fieldset legend={getLocalizedText("Finanzen", "Finances")}>
           <Select
-            label={locale === "de-DE" ? "Währung" : "Currency"}
+            label={getLocalizedText("Währung", "Currency")}
             data={currencies}
             {...form.getInputProps("currency")}
           />

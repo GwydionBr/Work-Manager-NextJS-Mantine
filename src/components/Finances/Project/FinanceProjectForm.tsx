@@ -1,13 +1,13 @@
 "use client";
 
 import { useForm } from "@mantine/form";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import {
   Group,
-  NumberInput,
   Select,
   Stack,
   Button,
@@ -65,7 +65,8 @@ export default function FinanceProjectForm({
   onClientChange,
   onCategoryChange,
 }: FinanceProjectFormProps) {
-  const { defaultFinanceCurrency, getLocalizedText } = useSettingsStore();
+  const { defaultFinanceCurrency } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const {
     mutate: addFinanceProjectMutation,
     isPending: isAddingFinanceProject,

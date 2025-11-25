@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import { useCreateWorkTimeEntryMutation } from "@/utils/queries/work/use-work-time_entry";
 
 import { Group, Modal, Text, useModalsStack } from "@mantine/core";
@@ -27,13 +28,13 @@ export default function NewSessionModal({
   initialValues,
   project,
 }: NewSessionModalProps) {
+  const { getLocalizedText } = useFormatter();
   const stack = useModalsStack([
     "session-form",
     "project-form",
     "category-form",
   ]);
   const {
-    locale,
     timerRoundingSettings,
     defaultSalaryAmount,
     defaultSalaryCurrency,
@@ -118,7 +119,7 @@ export default function NewSessionModal({
           <Group>
             <IconClockPlus />
             <Text>
-              {locale === "de-DE" ? "Sitzung hinzufügen" : "Add Session"}
+              {getLocalizedText("Sitzung hinzufügen", "Add Session")}
             </Text>
           </Group>
         }
@@ -149,7 +150,7 @@ export default function NewSessionModal({
       <Modal
         size="lg"
         {...stack.register("project-form")}
-        title={locale === "de-DE" ? "Projekt hinzufügen" : "Add Project"}
+        title={getLocalizedText("Projekt hinzufügen", "Add Project")}
         transitionProps={{ transition: "fade-right", duration: 400 }}
       >
         <ProjectForm
@@ -167,7 +168,7 @@ export default function NewSessionModal({
         size="lg"
         {...stack.register("category-form")}
         onClose={() => stack.close("category-form")}
-        title={locale === "de-DE" ? "Kategorie hinzufügen" : "Add Category"}
+        title={getLocalizedText("Kategorie hinzufügen", "Add Category")}
       >
         <FinanceCategoryForm
           onClose={() => stack.close("category-form")}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Collapse,
@@ -50,7 +50,7 @@ export default function TimeInput({
   autoFocus = false,
   isOpen,
 }: TimeInputProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const timeComponents = secondsToTimeComponents(value);
 
   const handleHoursChange = (hours: string | number) => {
@@ -109,7 +109,7 @@ export default function TimeInput({
                   min={0}
                   max={999}
                   placeholder="0"
-                  label={locale === "de-DE" ? "Stunden" : "Hours"}
+                  label={getLocalizedText("Stunden", "Hours")}
                   size="sm"
                   value={
                     timeComponents.hours > 0 ? timeComponents.hours : undefined
@@ -132,7 +132,7 @@ export default function TimeInput({
                   min={0}
                   max={59}
                   placeholder="0"
-                  label={locale === "de-DE" ? "Minuten" : "Minutes"}
+                  label={getLocalizedText("Minuten", "Minutes")}
                   size="sm"
                   value={
                     timeComponents.minutes > 0

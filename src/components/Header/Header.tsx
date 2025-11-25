@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Text, Title, Stack, Group, Flex, Box } from "@mantine/core";
 
@@ -25,7 +25,7 @@ export default function Header({
   rightButton,
   leftButton,
 }: HeaderProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return (
     <Stack align="center" justify="center" py="xl" w="100%">
       <Flex
@@ -52,7 +52,7 @@ export default function Header({
           </Title>
           {rightSalary && (
             <Text c={leftSalary ? "blue" : "red"} fw={leftSalary ? 400 : 700}>
-              {rightSalary} / {locale === "de-DE" ? "Stunde" : "Hour"}
+              {rightSalary} / {getLocalizedText("Stunde", "Hour")}
             </Text>
           )}
           {primaryButton && primaryButton}

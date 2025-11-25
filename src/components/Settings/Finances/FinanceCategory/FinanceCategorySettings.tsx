@@ -18,6 +18,7 @@ import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 import { showDeleteConfirmationModal } from "@/utils/notificationFunctions";
 
 export default function FinanceCategorySettings() {
+  const { getLocalizedText } = useFormatter();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
     null
@@ -26,7 +27,6 @@ export default function FinanceCategorySettings() {
     useFinanceCategoriesQuery();
   const { mutate: deleteFinanceCategoriesMutation } =
     useDeleteFinanceCategoryMutation();
-  const { getLocalizedText } = useFormatter();
   const [
     isCategoryFormOpen,
     { open: openCategoryForm, close: closeCategoryForm },

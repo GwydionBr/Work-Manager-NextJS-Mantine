@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Group, Stack, Text } from "@mantine/core";
+import { Group, Stack, Text } from "@mantine/core";
 import { Tables } from "@/types/db.types";
 import { getCurrencySymbol } from "@/utils/formatFunctions";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "@mantine/form";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { TextInput, Stack, Textarea } from "@mantine/core";
 import { z } from "zod";
@@ -31,7 +31,7 @@ export default function FinanceCategoryForm({
   onSuccess,
   category,
 }: FinanceCategoryFormProps) {
-  const { getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const {
     mutate: addFinanceCategoryMutation,
     isPending: isAddingFinanceCategory,

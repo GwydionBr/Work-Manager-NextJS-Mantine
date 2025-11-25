@@ -7,7 +7,7 @@ import {
   useDeclineFriendshipMutation,
   useAcceptFriendshipMutation,
 } from "@/utils/queries/profile/use-friends";
-import { modals } from "@mantine/modals";
+
 
 import { Divider, Grid, Group, Stack, Text, Box } from "@mantine/core";
 import {
@@ -17,6 +17,8 @@ import {
   IconUserPlus,
 } from "@tabler/icons-react";
 import FriendsTable from "./FriendsTable";
+
+import { modals } from "@mantine/modals";
 import { showDeleteConfirmationModal } from "@/utils/notificationFunctions";
 
 export default function FriendList() {

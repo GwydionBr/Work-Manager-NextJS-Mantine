@@ -1,13 +1,12 @@
 "use client";
 
 import { useFinanceStore } from "@/stores/financeStore";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Tabs } from "@mantine/core";
 import {
   IconDeviceDesktopDollar,
   IconPresentationAnalytics,
-  IconCashBanknotePlus,
   IconCashBanknote,
   IconRepeat,
   IconReceipt2,
@@ -20,10 +19,8 @@ import PayoutTab from "./Payout/PayoutTab/PayoutTab";
 import FinanceSingleTab from "./CashFlow/Single/FinanceSingleTab";
 
 export default function FinanceTabs() {
-  const { locale } = useSettingsStore();
-  const { activeTab, setActiveTab } =
-    useFinanceStore();
-
+  const { getLocalizedText } = useFormatter();
+  const { activeTab, setActiveTab } = useFinanceStore();
 
   return (
     <Tabs
@@ -44,13 +41,13 @@ export default function FinanceTabs() {
           leftSection={<IconCashBanknote color="light-dark(blue, cyan)" />}
           value="Single"
         >
-          {locale === "de-DE" ? "Einzel" : "Single"}
+          {getLocalizedText("Einzel", "Single")}
         </Tabs.Tab>
         <Tabs.Tab
           leftSection={<IconRepeat color="light-dark(blue, cyan) " />}
           value="Recurring"
         >
-          {locale === "de-DE" ? "Wiederkehrend" : "Recurring"}
+          {getLocalizedText("Wiederkehrend", "Recurring")}
         </Tabs.Tab>
         <Tabs.Tab
           value="Projects"
@@ -58,13 +55,13 @@ export default function FinanceTabs() {
             <IconDeviceDesktopDollar color="light-dark(blue, cyan)" />
           }
         >
-          {locale === "de-DE" ? "Projekte" : "Projects"}
+          {getLocalizedText("Projekte", "Projects")}
         </Tabs.Tab>
         <Tabs.Tab
           leftSection={<IconReceipt2 color="light-dark(blue, cyan)" />}
           value="Payout"
         >
-          {locale === "de-DE" ? "Auszahlung" : "Payout"}
+          {getLocalizedText("Auszahlung", "Payout")}
         </Tabs.Tab>
         <Tabs.Tab
           leftSection={
@@ -72,7 +69,7 @@ export default function FinanceTabs() {
           }
           value="Analysis"
         >
-          {locale === "de-DE" ? "Analyse" : "Analysis"}
+          {getLocalizedText("Analyse", "Analysis")}
         </Tabs.Tab>
       </Tabs.List>
 

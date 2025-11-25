@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import { useAddSingleCashflowMutation } from "@/utils/queries/finances/use-single-cashflow";
 import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
 
@@ -52,8 +53,9 @@ export default function FinanceForm({
 }: FinanceFormProps) {
   const [type, setType] = useState<CashFlowType>("income");
   const [isRecurring, setIsRecurring] = useState<boolean>(!isSingle);
-  const { getLocalizedText, defaultFinanceCurrency: financeCurrency } =
+  const { defaultFinanceCurrency: financeCurrency } =
     useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const { mutate: addRecurringCashFlow, isPending: isAddingRecurringCashFlow } =
     useAddRecurringCashflowMutation({ onSuccess: () => onClose() });
   const { data: financeCategories, isPending: isFinanceCategoriesPending } =

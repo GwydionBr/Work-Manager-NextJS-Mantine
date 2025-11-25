@@ -7,6 +7,7 @@ import {
 } from "@/utils/queries/profile/use-friends";
 import { useGroupStore } from "@/stores/groupStore";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Group, Indicator, Stack, Text } from "@mantine/core";
 import { IconUserPlus, IconUsersPlus } from "@tabler/icons-react";
@@ -24,6 +25,7 @@ export default function NotificationPopover() {
     useDeclineFriendshipMutation();
   const { groupRequests, answerGroupRequest } = useGroupStore();
   const { defaultGroupColor } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
 
   const requestedFriends = useMemo(
     () =>
@@ -41,7 +43,9 @@ export default function NotificationPopover() {
             <Indicator size={16} label={requestedFriends.length}>
               <IconUserPlus color="light-dark(var(--mantine-color-blue-9), var(--mantine-color-blue-4))" />
             </Indicator>
-            <Text className={classes.notificationTitle}>Friend Requests</Text>
+            <Text className={classes.notificationTitle}>
+              {getLocalizedText("Freundschaftsanfragen", "Friend Requests")}
+            </Text>
           </Group>
           <Stack>
             {requestedFriends.map((request) => (
@@ -74,7 +78,9 @@ export default function NotificationPopover() {
             <Indicator size={16} label={groupRequests.length}>
               <IconUsersPlus color="light-dark(var(--mantine-color-blue-9), var(--mantine-color-blue-4))" />
             </Indicator>
-            <Text className={classes.notificationTitle}>Group Requests</Text>
+            <Text className={classes.notificationTitle}>
+              {getLocalizedText("Gruppenanfragen", "Group Requests")}
+            </Text>
           </Group>
           <Stack>
             {groupRequests.map((request) => (

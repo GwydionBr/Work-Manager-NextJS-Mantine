@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Group, Modal, Text, useModalsStack } from "@mantine/core";
 import CashflowForm from "@/components/Finances/CashFlow/CashflowForm";
@@ -24,7 +24,7 @@ export default function CashFlowModal({
   const [categories, setCategories] = useState<Tables<"finance_category">[]>(
     []
   );
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   useEffect(() => {
     if (opened) {
       modalStack.open("cash-flow");
@@ -47,7 +47,7 @@ export default function CashFlowModal({
           <Group>
             <IconCashPlus />
             <Text>
-              {locale === "de-DE" ? "Zahlung hinzufügen" : "Add Cash Flow"}
+              {getLocalizedText("Zahlung hinzufügen", "Add Cash Flow")}
             </Text>
           </Group>
         }
@@ -67,7 +67,7 @@ export default function CashFlowModal({
           <Group>
             <IconCategoryPlus />
             <Text>
-              {locale === "de-DE" ? "Kategorie hinzufügen" : "Add Category"}
+              {getLocalizedText("Kategorie hinzufügen", "Add Category")}
             </Text>
           </Group>
         }

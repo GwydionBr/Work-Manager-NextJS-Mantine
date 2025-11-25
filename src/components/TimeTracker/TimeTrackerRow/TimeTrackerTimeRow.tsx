@@ -1,6 +1,6 @@
 "use client";
 
-import { Group, Text, Stack, ThemeIcon } from "@mantine/core";
+import { Group, Text, ThemeIcon } from "@mantine/core";
 import { IconClock } from "@tabler/icons-react";
 import TimeTrackerRow from "@/components/TimeTracker/TimeTrackerRow/TimeTrackerRow";
 

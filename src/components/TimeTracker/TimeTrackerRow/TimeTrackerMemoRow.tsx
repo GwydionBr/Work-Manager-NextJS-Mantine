@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import TimeTrackerRow from "@/components/TimeTracker/TimeTrackerRow/TimeTrackerRow";
 import { TextInput, ThemeIcon } from "@mantine/core";
@@ -15,7 +15,7 @@ export default function TimeTrackerMemoRow({
   value,
   setMemo,
 }: TimeTrackerMemoRowProps) {
-  const { getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
 
   return (
     <TimeTrackerRow

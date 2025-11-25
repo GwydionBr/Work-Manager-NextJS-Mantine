@@ -1,7 +1,7 @@
 "use client";
 
 import { useHover } from "@mantine/hooks";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import { useTimeTrackerManager } from "@/stores/timeTrackerManagerStore";
 import { useMemo } from "react";
 
@@ -16,7 +16,6 @@ import {
 } from "@mantine/core";
 
 import { CalendarDay } from "@/types/workCalendar.types";
-import { formatDate, formatMoney, formatTime } from "@/utils/formatFunctions";
 import { calculateSessionTimeForDay } from "../calendarUtils";
 import { isToday } from "date-fns";
 import { TimerState } from "@/types/timeTracker.types";
@@ -36,7 +35,7 @@ export default function ColumnHeader({
   visibleProjects,
 }: ColumnHeaderProps) {
   const { hovered, ref } = useHover();
-  const { locale } = useSettingsStore();
+  const { formatDate, formatMoney, formatTime } = useFormatter();
   const { isTimerRunning, getRunningTimer } = useTimeTrackerManager();
   const timer = getRunningTimer();
   const isDayToday = day ? isToday(day.day) : false;
@@ -90,7 +89,7 @@ export default function ColumnHeader({
           {icon && icon}
           {day && (
             <Stack gap={4}>
-              <Text fw={600}>{formatDate(day.day, locale)}</Text>
+              <Text fw={600}>{formatDate(day.day)}</Text>
               <Group justify="center">
                 {timer && isToday(day.day) && (
                   <Indicator
@@ -144,7 +143,7 @@ export default function ColumnHeader({
                     </Text>
                     {earnings > 0 && (
                       <Text size="xs" c="dimmed" fw={500}>
-                        {formatMoney(earnings, p.currency, locale)}
+                        {formatMoney(earnings, p.currency)}
                       </Text>
                     )}
                   </Stack>

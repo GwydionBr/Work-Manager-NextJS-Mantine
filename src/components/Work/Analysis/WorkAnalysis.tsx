@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { DateRange, useWorkChartData } from "@/hooks/useWorkChartData";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Stack, Paper, Text, Box, Card, ScrollArea } from "@mantine/core";
 import WorkChartControls, { ChartType } from "./WorkChartControls";
 import AnalysisChart from "../../Analysis/AnalysisChart";
 import WorkStatisticsCards from "./WorkStatisticsCards";
-import { formatDate, formatTime } from "@/utils/formatFunctions";
 import {
   getStartOfMonth,
   getEndOfMonth,
@@ -31,7 +30,7 @@ export default function WorkAnalysis({
   isOverview,
   onClose,
 }: WorkAnalysisProps) {
-  const { locale } = useSettingsStore();
+  const { locale, getLocalizedText, formatDate, formatTime } = useFormatter();
   // Chart configuration state
   const [interval, setInterval] = useState<FinanceInterval>("day");
   const [chartType, setChartType] = useState<ChartType>("area");
@@ -64,7 +63,7 @@ export default function WorkAnalysis({
   const formatCurrencyWithSettings = (amount: number) =>
     formatCurrency(amount, project?.currency ?? "USD", locale);
   const formatDateWithInterval = (dateString: string) =>
-    formatDate(new Date(dateString), locale);
+    formatDate(new Date(dateString));
   const formatTimeWithSettings = (seconds: number) => formatTime(seconds);
 
   return (
@@ -86,9 +85,10 @@ export default function WorkAnalysis({
             {chartData.length === 0 ? (
               <Stack align="center" justify="center" h={300}>
                 <Text c="dimmed">
-                  {locale === "de-DE"
-                    ? "Keine Daten für den ausgewählten Zeitraum"
-                    : "No data for the selected time period"}
+                  {getLocalizedText(
+                    "Keine Daten für den ausgewählten Zeitraum",
+                    "No data for the selected time period"
+                  )}
                 </Text>
               </Stack>
             ) : (

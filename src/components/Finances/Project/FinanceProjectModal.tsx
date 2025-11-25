@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { Modal, useModalsStack, Group, Text } from "@mantine/core";
 import FinanceProjectForm from "./FinanceProjectForm";
-import useSettingsStore from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import FinanceClientForm from "../FinanceClient/FinanceClientForm";
 import FinanceCategoryForm from "../Category/FinanceCategoryForm";
 import {
@@ -23,7 +23,7 @@ export default function FinanceProjectFormModal({
   opened,
   onClose,
 }: FinanceProjectFormModalProps) {
-  const { getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const [financeClient, setFinanceClient] =
     useState<Tables<"finance_client"> | null>(null);
   const [categories, setCategories] = useState<Tables<"finance_category">[]>(

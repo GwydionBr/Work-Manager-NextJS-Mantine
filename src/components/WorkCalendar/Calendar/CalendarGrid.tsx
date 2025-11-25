@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useMouse, useDisclosure, useHover } from "@mantine/hooks";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Grid, Stack, Group, Box, Text } from "@mantine/core";
 import { DayColumn } from "@/components/WorkCalendar/DayColumn";
@@ -17,7 +18,6 @@ import { getStartOfDay } from "@/components/WorkCalendar/calendarUtils";
 import { CalendarDay } from "@/types/workCalendar.types";
 import PrevActionIcon from "@/components/UI/ActionIcons/PrevActionIcon";
 import NextActionIcon from "@/components/UI/ActionIcons/NextActionIcon";
-import { formatDateTime } from "@/utils/formatFunctions";
 import { WorkProject } from "@/types/work.types";
 
 interface CalendarGridProps {
@@ -55,8 +55,8 @@ export default function CalendarGrid({
     defaultProjectHourlyPayment,
     timerRoundingSettings,
     showCalendarTime,
-    format24h,
   } = useSettingsStore();
+  const { formatDateTime } = useFormatter();
   const { roundInTimeFragments, timeFragmentInterval } = timerRoundingSettings;
 
   const { ref, x, y } = useMouse();
@@ -228,7 +228,7 @@ export default function CalendarGrid({
                     }}
                   >
                     <Text>
-                      {formatDateTime(yToTime(y, new Date()), format24h)}
+                      {formatDateTime(yToTime(y, new Date()))}
                     </Text>
                   </Stack>
                 )}

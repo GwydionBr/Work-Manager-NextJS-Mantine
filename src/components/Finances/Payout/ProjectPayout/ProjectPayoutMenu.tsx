@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Button,
@@ -13,7 +13,6 @@ import {
 } from "@mantine/core";
 import { IconBrandCashapp, IconAlertCircle } from "@tabler/icons-react";
 
-import * as helper from "@/utils/formatFunctions";
 import type { Tables } from "@/types/db.types";
 
 interface ProjectPayoutMenuProps {
@@ -35,7 +34,7 @@ export default function ProjectPayoutMenu({
   setUseCustomAmount,
   setPayoutAmount,
 }: ProjectPayoutMenuProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText, formatMoney, getCurrencySymbol } = useFormatter();
 
   const handleProjectSalaryPayout = async () => {
     openModal();
@@ -43,27 +42,21 @@ export default function ProjectPayoutMenu({
   return (
     <Stack p="md" gap="md">
       <Text size="sm" fw={500}>
-        {locale === "de-DE"
-          ? "Projektgehalt auszahlen"
-          : "Project Salary Payout"}
+        {getLocalizedText("Projektgehalt auszahlen", "Project Salary Payout")}
       </Text>
 
       <Stack gap="xs">
         <Text size="sm" c="dimmed">
-          {locale === "de-DE" ? "Gesamtgehalt" : "Total Salary"}:{" "}
-          {helper.formatMoney(project.salary, project.currency, locale)}
+          {getLocalizedText("Gesamtgehalt", "Total Salary")}:{" "}
+          {formatMoney(project.salary, project.currency)}
         </Text>
         <Text size="sm" c="dimmed">
-          {locale === "de-DE" ? "Bereits ausgezahlt" : "Already Paid"}:{" "}
-          {helper.formatMoney(
-            project.total_payout || 0,
-            project.currency,
-            locale
-          )}
+          {getLocalizedText("Bereits ausgezahlt", "Already Paid")}:{" "}
+          {formatMoney(project.total_payout || 0, project.currency)}
         </Text>
         <Text size="sm" fw={500} c="teal">
-          {locale === "de-DE" ? "Verfügbar" : "Available"}:{" "}
-          {helper.formatMoney(availablePayout, project.currency, locale)}
+          {getLocalizedText("Verfügbar", "Available")}:{" "}
+          {formatMoney(availablePayout, project.currency)}
         </Text>
       </Stack>
 
@@ -72,11 +65,10 @@ export default function ProjectPayoutMenu({
           <Divider />
 
           <Switch
-            label={
-              locale === "de-DE"
-                ? "Benutzerdefinierter Betrag"
-                : "Custom Amount"
-            }
+            label={getLocalizedText(
+              "Benutzerdefinierter Betrag",
+              "Custom Amount"
+            )}
             checked={useCustomAmount}
             onChange={(event) =>
               setUseCustomAmount(event.currentTarget.checked)
@@ -86,10 +78,8 @@ export default function ProjectPayoutMenu({
           {useCustomAmount ? (
             <NumberInput
               allowLeadingZeros={false}
-              label={locale === "de-DE" ? "Auszahlungsbetrag" : "Payout Amount"}
-              placeholder={
-                locale === "de-DE" ? "Betrag eingeben" : "Enter amount"
-              }
+              label={getLocalizedText("Auszahlungsbetrag", "Payout Amount")}
+              placeholder={getLocalizedText("Betrag eingeben", "Enter amount")}
               min={0}
               max={availablePayout}
               step={0.01}
@@ -99,16 +89,17 @@ export default function ProjectPayoutMenu({
               }
               rightSection={
                 <Text size="xs" c="dimmed">
-                  {helper.getCurrencySymbol(project.currency)}
+                  {getCurrencySymbol(project.currency)}
                 </Text>
               }
             />
           ) : (
             <Text size="sm" c="dimmed">
-              {locale === "de-DE"
-                ? "Wird den vollen verfügbaren Betrag auszahlen:"
-                : "Will payout full available amount:"}{" "}
-              {helper.formatMoney(availablePayout, project.currency, locale)}
+              {getLocalizedText(
+                "Wird den vollen verfügbaren Betrag auszahlen:",
+                "Will payout full available amount:"
+              )}{" "}
+              {formatMoney(availablePayout, project.currency)}
             </Text>
           )}
 
@@ -123,14 +114,15 @@ export default function ProjectPayoutMenu({
             color="teal"
             leftSection={<IconBrandCashapp size={16} />}
           >
-            {`Payout ${useCustomAmount ? helper.formatMoney(payoutAmount, project.currency, locale) : helper.formatMoney(availablePayout, project.currency, locale)}`}
+            {`Payout ${useCustomAmount ? formatMoney(payoutAmount, project.currency) : formatMoney(availablePayout, project.currency)}`}
           </Button>
         </>
       ) : (
         <Alert icon={<IconAlertCircle size={16} />} color="blue">
-          {locale === "de-DE"
-            ? "Kein Auszahlungsbetrag verfügbar - Projektgehalt bereits vollständig ausgezahlt"
-            : "No payout available - project salary already fully paid"}
+          {getLocalizedText(
+            "Kein Auszahlungsbetrag verfügbar - Projektgehalt bereits vollständig ausgezahlt",
+            "No payout available - project salary already fully paid"
+          )}
         </Alert>
       )}
     </Stack>

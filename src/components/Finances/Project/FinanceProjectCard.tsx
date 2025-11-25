@@ -7,7 +7,7 @@ import {
   useHover,
   mergeRefs,
 } from "@mantine/hooks";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import { useUpdateFinanceProjectMutation } from "@/utils/queries/finances/use-finance-project";
 import {
   usePayoutFinanceProjectMutation,
@@ -31,7 +31,6 @@ import {
 } from "@mantine/core";
 
 import { FinanceProject } from "@/types/finance.types";
-import { formatMoney } from "@/utils/formatFunctions";
 import FinanceAdjustmentForm from "./FinanceAdjustment/FinanceAdjustmentForm";
 import FinanceAdjustmentRow from "./FinanceAdjustment/FinanceAdjustmentRow";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
@@ -71,7 +70,7 @@ export default function FinanceProjectCard({
   onOpenEditProject,
   ...props
 }: FinanceProjectCardProps) {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText, formatMoney } = useFormatter();
   const {
     mutate: updateFinanceProjectMutation,
     isPending: isUpdatingFinanceProject,
@@ -250,10 +249,10 @@ export default function FinanceProjectCard({
         <Group justify="space-between" align="center" w="100%">
           <Group align="center" gap="xs" flex={2}>
             <Text fw={700} c={isPositive ? "green" : "red"}>
-              {formatMoney(totalAmountOpen, project.currency, locale)}
+              {formatMoney(totalAmountOpen, project.currency)}
             </Text>
             <Text c="dimmed" size="sm">
-              ({formatMoney(project.start_amount, project.currency, locale)})
+              ({formatMoney(project.start_amount, project.currency)})
             </Text>
             <Text size="sm" fw={700}>
               {project.title}
@@ -297,7 +296,7 @@ export default function FinanceProjectCard({
                   </ThemeIcon>
                   <Text fw={600} c={adjustmentTotal > 0 ? "green" : "red"}>
                     {adjustmentTotal > 0 ? "+" : ""}
-                    {formatMoney(adjustmentTotal, project.currency, locale)}
+                    {formatMoney(adjustmentTotal, project.currency)}
                   </Text>
                 </Group>
               ) : (

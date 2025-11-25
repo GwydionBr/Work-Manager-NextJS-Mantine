@@ -1,9 +1,10 @@
 "use client";
 
+import { useFormatter } from "@/hooks/useFormatter";
+
 import { alpha, Card, HoverCard, Stack, Text } from "@mantine/core";
 
 import { CalendarSession } from "@/types/workCalendar.types";
-import { formatTime } from "@/utils/formatFunctions";
 import CalendarEventHoverCard from "./CalendarEventHoverCard";
 
 interface CalendarSessionEventProps {
@@ -21,6 +22,7 @@ export default function CalendarSessionEvent({
   toY,
   handleSessionClick,
 }: CalendarSessionEventProps) {
+  const { formatTime } = useFormatter();
   const start = new Date(s.start_time);
   const end = new Date(s.end_time);
   const top = toY(start);

@@ -7,6 +7,7 @@ import {
 } from "@/stores/timeTrackerManagerStore";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Alert, Stack, Text } from "@mantine/core";
 import { TimerState } from "@/types/timeTracker.types";
@@ -37,7 +38,8 @@ export default function TimerManager({
     updateTimer,
   } = useTimeTrackerManager();
   const { activeProjectId } = useWorkStore();
-  const { timerRoundingSettings, locale } = useSettingsStore();
+  const { timerRoundingSettings } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const { data: projects = [] } = useWorkProjectQuery();
 
   const activeProject = useMemo(
@@ -77,12 +79,11 @@ export default function TimerManager({
     if (!result.success) {
       setErrorMessage(
         result.error
-          ? locale === "de-DE"
-            ? result.error.german
-            : result.error.english
-          : locale === "de-DE"
-            ? "Timer konnte nicht hinzugefügt werden"
-            : "Failed to add timer"
+          ? getLocalizedText(result.error.german, result.error.english)
+          : getLocalizedText(
+              "Timer konnte nicht hinzugefügt werden",
+              "Failed to add timer"
+            )
       );
       setTimeout(() => {
         setErrorMessage(null);
@@ -122,7 +123,7 @@ export default function TimerManager({
         <PlusActionIcon onClick={() => {}} />
         <TimeTrackerActionIcon
           action={() => {}}
-          label={locale === "de-DE" ? "Timer verkleinern" : "Minimize Timer"}
+          label={getLocalizedText("Timer verkleinern", "Minimize Timer")}
           indicatorLabel="0"
           state={TimerState.Stopped}
           getStatusColor={() => getStatusColor(TimerState.Stopped)}
@@ -143,12 +144,8 @@ export default function TimerManager({
         action={() => setIsTimeTrackerMinimized(!isTimeTrackerMinimized)}
         label={
           isTimeTrackerMinimized
-            ? locale === "de-DE"
-              ? "Timer vergrößern"
-              : "Expand Timer"
-            : locale === "de-DE"
-              ? "Timer verkleinern"
-              : "Minimize Timer"
+            ? getLocalizedText("Timer vergrößern", "Expand Timer")
+            : getLocalizedText("Timer verkleinern", "Minimize Timer")
         }
         indicatorLabel={activeTimerCount.toString()}
         state={mainTimerStatus}
@@ -159,7 +156,7 @@ export default function TimerManager({
         <Alert
           color="red"
           variant="filled"
-          title={locale === "de-DE" ? "Fehler" : "Error"}
+          title={getLocalizedText("Fehler", "Error")}
           withCloseButton
           onClose={() => setErrorMessage(null)}
         >

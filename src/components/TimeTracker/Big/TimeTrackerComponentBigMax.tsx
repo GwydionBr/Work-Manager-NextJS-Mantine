@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Badge,
@@ -80,15 +80,15 @@ export default function TimeTrackerComponentBigMax({
   removeTimer,
   setMemo,
 }: TimeTrackerComponentBigMaxProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
 
   const getLocaleState = () => {
     if (state === TimerState.Running) {
-      return locale === "de-DE" ? "Aktiv" : "Running";
+      return getLocalizedText("Aktiv", "Running");
     } else if (state === TimerState.Paused) {
-      return locale === "de-DE" ? "Pausiert" : "Paused";
+      return getLocalizedText("Pausiert", "Paused");
     } else if (state === TimerState.Stopped) {
-      return locale === "de-DE" ? "Gestoppt" : "Stopped";
+      return getLocalizedText("Gestoppt", "Stopped");
     }
   };
 

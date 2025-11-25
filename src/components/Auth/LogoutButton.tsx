@@ -1,6 +1,7 @@
 "use client";
 
 import { useLogoutMutation } from "@/utils/queries/auth/use-auth";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Button, ButtonProps } from "@mantine/core";
 import { IconLogout } from "@tabler/icons-react";
@@ -9,7 +10,7 @@ interface LogoutButtonProps extends ButtonProps {}
 
 export default function LogoutButton({ ...props }: LogoutButtonProps) {
   const { mutate: logout, isPending } = useLogoutMutation();
-
+  const { getLocalizedText } = useFormatter();
   return (
     <Button
       leftSection={<IconLogout size={24} />}
@@ -19,7 +20,7 @@ export default function LogoutButton({ ...props }: LogoutButtonProps) {
       loading={isPending}
       {...props}
     >
-      Logout
+      {getLocalizedText("Abmelden", "Logout")}
     </Button>
   );
 }

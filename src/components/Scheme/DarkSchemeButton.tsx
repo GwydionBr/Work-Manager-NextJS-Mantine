@@ -1,3 +1,7 @@
+"use client";
+
+import { useFormatter } from "@/hooks/useFormatter";
+
 import { IconMoonStars } from "@tabler/icons-react";
 import { ActionIcon, HoverCard, Text } from "@mantine/core";
 
@@ -14,6 +18,7 @@ export default function DarkSchemeButton({
   active,
   navbarMode,
 }: DarkSchemeButtonProps) {
+  const { getLocalizedText } = useFormatter();
   return (
     <HoverCard
       width={60}
@@ -27,7 +32,10 @@ export default function DarkSchemeButton({
           onClick={onClick}
           variant="default"
           size="xl"
-          aria-label="select dark scheme"
+          aria-label={getLocalizedText(
+            "Dunkler Modus auswählen",
+            "Select dark scheme"
+          )}
           bg="var(--mantine-color-dark-6)"
           className={active ? classes.activeButton : ""}
         >
@@ -35,7 +43,11 @@ export default function DarkSchemeButton({
         </ActionIcon>
       </HoverCard.Target>
       <HoverCard.Dropdown>
-        <Text size="xs">{navbarMode ? "Light Mode" : "Dark Mode"}</Text>
+        <Text size="xs">
+          {navbarMode
+            ? getLocalizedText("Heller Modus", "Light Mode")
+            : getLocalizedText("Dunkler Modus", "Dark Mode")}
+        </Text>
       </HoverCard.Dropdown>
     </HoverCard>
   );

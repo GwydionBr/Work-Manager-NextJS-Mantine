@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import { useForm } from "@mantine/form";
 import { z } from "zod";
 import { zodResolver } from "mantine-form-zod-resolver";
@@ -19,7 +19,6 @@ import {
 } from "@mantine/core";
 import { IconArrowDown, IconBrandCashapp } from "@tabler/icons-react";
 import { currencies } from "@/constants/settings";
-import { formatMoney } from "@/utils/formatFunctions";
 import { Tables } from "@/types/db.types";
 
 interface ProjectModalFormProps {
@@ -54,7 +53,7 @@ export default function ProjectModalForm({
 
   // const { payoutProjectSalary, updateProject } = useWorkStore();
   // const { addExistingSingleCashFlow } = useFinanceStore();
-  const { locale } = useSettingsStore();
+  const { getLocalizedText, formatMoney } = useFormatter();
 
   async function onSubmit(values: z.infer<typeof schema>) {
     setIsProcessing(true);
@@ -89,13 +88,13 @@ export default function ProjectModalForm({
     setIsProcessing(false);
   }
 
-  const startValueString = formatMoney(startValue ?? 0, startCurrency, locale);
+  const startValueString = formatMoney(startValue ?? 0, startCurrency);
 
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
       <Stack>
         <Text>
-          {locale === "de-DE" ? "Startwert" : "Start Value"}: {startValueString}
+          {getLocalizedText("Startwert", "Start Value")}: {startValueString}
         </Text>
         <Divider />
         <Group justify="center">
@@ -103,14 +102,12 @@ export default function ProjectModalForm({
         </Group>
         <Divider />
         <NumberInput
-          label={locale === "de-DE" ? "Endwert" : "End Value"}
+          label={getLocalizedText("Endwert", "End Value")}
           {...form.getInputProps("endValue")}
         />
         <Select
-          label={locale === "de-DE" ? "Endwährung" : "End Currency"}
-          placeholder={
-            locale === "de-DE" ? "Währung auswählen" : "Select currency"
-          }
+          label={getLocalizedText("Endwährung", "End Currency")}
+          placeholder={getLocalizedText("Währung auswählen", "Select currency")}
           data={currencies}
           value={form.values.endCurrency}
           onChange={(value) =>
@@ -123,10 +120,10 @@ export default function ProjectModalForm({
           loading={isProcessing}
           leftSection={<IconBrandCashapp />}
         >
-          {locale === "de-DE" ? "Auszahlen" : "Payout"}
+          {getLocalizedText("Auszahlen", "Payout")}
         </Button>
         <Alert
-          title={locale === "de-DE" ? "Fehler" : "Error"}
+          title={getLocalizedText("Fehler", "Error")}
           color="red"
           hidden={!error}
         >

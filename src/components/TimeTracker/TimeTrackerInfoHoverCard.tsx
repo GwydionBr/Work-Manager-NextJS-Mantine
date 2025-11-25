@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Currency } from "@/types/settings.types";
 import { Text, Group, Badge, Stack, Divider, HoverCard } from "@mantine/core";
@@ -13,7 +13,6 @@ import {
   IconCheck,
   IconX,
 } from "@tabler/icons-react";
-import { formatMoney } from "@/utils/formatFunctions";
 import InfoActionIcon from "@/components/UI/ActionIcons/InfoActionIcon";
 import { TimerRoundingSettings } from "@/types/timeTracker.types";
 import { getRoundingLabel } from "@/utils/timeTrackerFunctions";
@@ -33,7 +32,7 @@ export default function TimeTrackerInfoHoverCard({
   salary,
   hourlyPayment,
 }: TimeTrackerInfoHoverCardProps) {
-  const { locale } = useSettingsStore();
+  const { locale, getLocalizedText, formatMoney } = useFormatter();
   const getCurrencyIcon = () => {
     return currency === "EUR" ? (
       <IconCurrencyEuro size={16} />
@@ -60,7 +59,7 @@ export default function TimeTrackerInfoHoverCard({
           <Group>
             <IconBuilding size={16} color="var(--mantine-color-blue-6)" />
             <Text size="sm" fw={600} c="blue">
-              {locale === "de-DE" ? "Projekt-Details" : "Project Details"}
+              {getLocalizedText("Projekt-Details", "Project Details")}
             </Text>
           </Group>
 
@@ -75,18 +74,18 @@ export default function TimeTrackerInfoHoverCard({
             <Group gap="xs">
               {getCurrencyIcon()}
               <Text size="sm" c="dimmed">
-                {locale === "de-DE" ? "Gehalt" : "Salary"}
+                {getLocalizedText("Gehalt", "Salary")}
               </Text>
             </Group>
             <Text size="sm" fw={600}>
-              {formatMoney(salary, currency, locale)}
+              {formatMoney(salary, currency)}
             </Text>
           </Group>
 
           {/* Payment Type */}
           <Group justify="space-between" align="center">
             <Text size="sm" c="dimmed">
-              {locale === "de-DE" ? "Zahlungsart" : "Payment Type"}
+              {getLocalizedText("Zahlungsart", "Payment Type")}
             </Text>
             <Badge
               color={hourlyPayment ? "green" : "blue"}
@@ -97,12 +96,9 @@ export default function TimeTrackerInfoHoverCard({
               }
             >
               {hourlyPayment
-                ? locale === "de-DE"
-                  ? "Stündlich"
-                  : "Hourly"
-                : locale === "de-DE"
-                  ? "Fest"
-                  : "Fixed"}
+                ? getLocalizedText("Stündlich", "Hourly")
+                : getLocalizedText("Fest", "Fixed")
+                }
             </Badge>
           </Group>
 
@@ -112,15 +108,13 @@ export default function TimeTrackerInfoHoverCard({
           <Group>
             <IconSettings size={16} color="var(--mantine-color-orange-6)" />
             <Text size="sm" fw={600} c="orange">
-              {locale === "de-DE"
-                ? "Rundungs-Einstellungen"
-                : "Rounding Settings"}
+              {getLocalizedText("Rundungs-Einstellungen", "Rounding Settings")}
             </Text>
           </Group>
 
           <Group justify="space-between" align="center">
             <Text size="sm" c="dimmed">
-              {locale === "de-DE" ? "Modus" : "Mode"}
+              {getLocalizedText("Modus", "Mode")}
             </Text>
             <Badge color="orange" variant="light" size="sm">
               {getRoundingLabel(
@@ -135,7 +129,7 @@ export default function TimeTrackerInfoHoverCard({
             <Group gap="xs">
               <IconClock size={16} />
               <Text size="sm" c="dimmed">
-                {locale === "de-DE" ? "Intervall" : "Interval"}
+                {getLocalizedText("Intervall", "Interval")}
               </Text>
             </Group>
             <Text size="sm" fw={600}>

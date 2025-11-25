@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Button, ButtonProps } from "@mantine/core";
 import { IconCheck } from "@tabler/icons-react";
@@ -24,7 +24,7 @@ export default function CreateButton({
   tooltipLabel,
   ...props
 }: CreateButtonProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
 
   return (
     <DelayedTooltip label={tooltipLabel}>
@@ -35,7 +35,7 @@ export default function CreateButton({
         onClick={onClick}
         {...props}
       >
-        {title || locale === "de-DE" ? "Erstellen" : "Create"}
+        {title || getLocalizedText("Erstellen", "Create")}
       </Button>
     </DelayedTooltip>
   );

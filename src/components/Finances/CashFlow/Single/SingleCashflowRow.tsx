@@ -2,7 +2,6 @@
 
 import { useMemo } from "react";
 import { useHover, useDisclosure } from "@mantine/hooks";
-import { useSettingsStore } from "@/stores/settingsStore";
 import { useFormatter } from "@/hooks/useFormatter";
 import { useUpdateSingleCashflowMutation } from "@/utils/queries/finances/use-single-cashflow";
 

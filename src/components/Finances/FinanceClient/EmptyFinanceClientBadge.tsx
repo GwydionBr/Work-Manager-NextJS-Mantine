@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useDisclosure, useHover } from "@mantine/hooks";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import { useFinanceClientQuery } from "@/utils/queries/finances/use-finance-client";
 
 import {
@@ -30,7 +30,7 @@ export default function EmptyFinanceClientBadge({
   onPopoverOpen,
   onPopoverClose,
 }: EmptyFinanceClientBadgeProps) {
-  const { getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const { hovered, ref } = useHover();
   const [
     isClientPopoverOpen,

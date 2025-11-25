@@ -2,7 +2,7 @@
 
 import { useDisclosure } from "@mantine/hooks";
 import { useState, useMemo, useEffect } from "react";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Group,
@@ -88,7 +88,7 @@ export default function ChartControls({
   dateRange,
   setDateRange,
 }: ChartControlsProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText, locale } = useFormatter();
   const [filterOpen, { toggle }] = useDisclosure(false);
   const [navigationMode, setNavigationMode] = useState<NavigationMode>("month");
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
@@ -119,7 +119,7 @@ export default function ChartControls({
       case "year":
         return year.toString();
       case "custom":
-        return locale === "de-DE" ? "Benutzerdefiniert" : "Custom";
+        return getLocalizedText("Benutzerdefiniert", "Custom");
       default:
         return "";
     }
@@ -297,7 +297,7 @@ export default function ChartControls({
               {/* Navigation Mode Selection */}
               <Group>
                 <Text size="sm" fw={500}>
-                  {locale === "de-DE" ? "Zeitperiode" : "Time Period"}:
+                  {getLocalizedText("Zeitperiode", "Time Period")}:
                 </Text>
                 <SegmentedControl
                   value={navigationMode}
@@ -305,20 +305,19 @@ export default function ChartControls({
                   data={[
                     {
                       value: "month",
-                      label: locale === "de-DE" ? "Monat" : "Month",
+                      label: getLocalizedText("Monat", "Month"),
                     },
                     {
                       value: "quarter",
-                      label: locale === "de-DE" ? "Quartal" : "Quarter",
+                      label: getLocalizedText("Quartal", "Quarter"),
                     },
                     {
                       value: "year",
-                      label: locale === "de-DE" ? "Jahr" : "Year",
+                      label: getLocalizedText("Jahr", "Year"),
                     },
                     {
                       value: "custom",
-                      label:
-                        locale === "de-DE" ? "Benutzerdefiniert" : "Custom",
+                      label: getLocalizedText("Benutzerdefiniert", "Custom"),
                     },
                   ]}
                   size="xs"
@@ -329,9 +328,7 @@ export default function ChartControls({
               <Group justify="space-between" align="flex-end">
                 <Group>
                   <Select
-                    label={
-                      locale === "de-DE" ? "Zeitintervall" : "Time Interval"
-                    }
+                    label={getLocalizedText("Zeitintervall", "Time Interval")}
                     value={interval}
                     onChange={(value) => setInterval(value as FinanceInterval)}
                     data={financeIntervals}
@@ -339,22 +336,28 @@ export default function ChartControls({
                     // disabled={navigationMode !== "custom"}
                     description={
                       navigationMode === "month"
-                        ? locale === "de-DE"
-                          ? "Alle Tage des Monats"
-                          : "All days of the month"
+                        ? getLocalizedText(
+                            "Alle Tage des Monats",
+                            "All days of the month"
+                          )
                         : navigationMode === "quarter"
-                          ? locale === "de-DE"
-                            ? "Alle Wochen des Quartals"
-                            : "All weeks of the quarter"
+                          ? getLocalizedText(
+                              "Alle Wochen des Quartals",
+                              "All weeks of the quarter"
+                            )
                           : navigationMode === "year"
-                            ? locale === "de-DE"
-                              ? "Alle Monate des Jahres"
-                              : "All months of the year"
-                            : "Automatically based on time period"
+                            ? getLocalizedText(
+                                "Alle Monate des Jahres",
+                                "All months of the year"
+                              )
+                            : getLocalizedText(
+                                "Automatically based on time period",
+                                "Automatically based on time period"
+                              )
                     }
                   />
                   <Select
-                    label={locale === "de-DE" ? "Diagrammtyp" : "Chart Type"}
+                    label={getLocalizedText("Diagrammtyp", "Chart Type")}
                     value={chartType}
                     onChange={(value) => setChartType(value as ChartType)}
                     data={chartTypeOptions}
@@ -375,7 +378,7 @@ export default function ChartControls({
 
                 <Group>
                   <Switch
-                    label={locale === "de-DE" ? "Netto anzeigen" : "Show Net"}
+                    label={getLocalizedText("Netto anzeigen", "Show Net")}
                     checked={showNet}
                     onChange={(event) =>
                       setShowNet(event.currentTarget.checked)
@@ -388,12 +391,11 @@ export default function ChartControls({
               {navigationMode === "custom" && (
                 <Group>
                   <LocaleDatePickerInput
-                    label={locale === "de-DE" ? "Von Datum" : "From Date"}
-                    placeholder={
-                      locale === "de-DE"
-                        ? "Startdatum auswählen"
-                        : "Select start date"
-                    }
+                    label={getLocalizedText("Von Datum", "From Date")}
+                    placeholder={getLocalizedText(
+                      "Startdatum auswählen",
+                      "Select start date"
+                    )}
                     value={dateRange.from}
                     onChange={(value: string | null) =>
                       setDateRange({
@@ -404,12 +406,11 @@ export default function ChartControls({
                     w={150}
                   />
                   <LocaleDatePickerInput
-                    label={locale === "de-DE" ? "Bis Datum" : "To Date"}
-                    placeholder={
-                      locale === "de-DE"
-                        ? "Enddatum auswählen"
-                        : "Select end date"
-                    }
+                    label={getLocalizedText("Bis Datum", "To Date")}
+                    placeholder={getLocalizedText(
+                      "Enddatum auswählen",
+                      "Select end date"
+                    )}
                     value={dateRange.to}
                     onChange={(value: string | null) =>
                       setDateRange({
@@ -435,7 +436,7 @@ export default function ChartControls({
                       }}
                       leftSection={<IconCalendar size={14} />}
                     >
-                      {locale === "de-DE" ? "Letztes Jahr" : "Last Year"}
+                      {getLocalizedText("Letztes Jahr", "Last Year")}
                     </Button>
                     <Button
                       variant="light"
@@ -450,7 +451,7 @@ export default function ChartControls({
                       }}
                       leftSection={<IconCalendar size={14} />}
                     >
-                      {locale === "de-DE" ? "Letzter Monat" : "Last Month"}
+                      {getLocalizedText("Letzter Monat", "Last Month")}
                     </Button>
                     <Button
                       variant="light"
@@ -465,7 +466,7 @@ export default function ChartControls({
                       }}
                       leftSection={<IconCalendar size={14} />}
                     >
-                      {locale === "de-DE" ? "Letzte Woche" : "Last Week"}
+                      {getLocalizedText("Letzte Woche", "Last Week")}
                     </Button>
                   </Group>
                 </Group>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useHover, useDisclosure } from "@mantine/hooks";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Card,
@@ -36,7 +36,7 @@ export default function FinanceCategoryRow({
   onDelete,
 }: FinanceCategoryRowProps) {
   const { hovered, ref } = useHover();
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const [
     isCategoryFormOpen,
     { open: openCategoryForm, close: closeCategoryForm },
@@ -75,11 +75,10 @@ export default function FinanceCategoryRow({
               {(styles) => (
                 <SelectActionIcon
                   onClick={() => {}}
-                  tooltipLabel={
-                    locale === "de-DE"
-                      ? "Kategorie auswählen"
-                      : "Select category"
-                  }
+                  tooltipLabel={getLocalizedText(
+                    "Kategorie auswählen",
+                    "Select category"
+                  )}
                   selected={isSelected}
                   style={styles}
                 />
@@ -123,7 +122,7 @@ export default function FinanceCategoryRow({
           <Group>
             <IconPencil />
             <Text>
-              {locale === "de-DE" ? "Kategorie bearbeiten" : "Edit category"}
+              {getLocalizedText("Kategorie bearbeiten", "Edit category")}
             </Text>
           </Group>
         }

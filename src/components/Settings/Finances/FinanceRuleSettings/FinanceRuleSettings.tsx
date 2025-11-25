@@ -1,14 +1,14 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Text } from "@mantine/core";
 
 export default function FinanceRuleSettings() {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return (
     <Text size="sm" fw={700}>
-      {locale === "de-DE" ? "Regeln" : "Rules"}
+      {getLocalizedText("Regeln", "Rules")}
     </Text>
   );
 }

@@ -1,14 +1,9 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { CalendarSession } from "@/types/workCalendar.types";
 import { alpha, Card, Stack, Text } from "@mantine/core";
-import {
-  formatMoney,
-  formatTime,
-  formatTimeSpan,
-} from "@/utils/formatFunctions";
 
 interface CalendarEventHoverCardProps {
   s: CalendarSession;
@@ -19,7 +14,7 @@ export default function CalendarEventHoverCard({
   s,
   color,
 }: CalendarEventHoverCardProps) {
-  const { locale, format24h } = useSettingsStore();
+  const { formatTimeSpan, formatTime, formatMoney } = useFormatter();
   const earnings = (s.salary * s.active_seconds) / 3600;
   return (
     <Card
@@ -35,18 +30,14 @@ export default function CalendarEventHoverCard({
       </Card.Section>
       <Stack pt="xs" gap="xs">
         <Text ta="center" size="xs" fw={500}>
-          {formatTimeSpan(
-            new Date(s.start_time),
-            new Date(s.end_time),
-            format24h
-          )}
+          {formatTimeSpan(new Date(s.start_time), new Date(s.end_time))}
         </Text>
         <Text ta="center" size="xs" fw={500}>
           {formatTime(s.active_seconds)}
         </Text>
         {earnings > 0 && (
           <Text ta="center" size="xs" fw={500}>
-            {formatMoney(earnings, s.currency, locale)}
+            {formatMoney(earnings, s.currency)}
           </Text>
         )}
         {s.memo && (

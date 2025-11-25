@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Group,
@@ -15,7 +15,7 @@ import LightSchemeButton from "@/components/Scheme/LightSchemeButton";
 import SystemSchemeButton from "@/components/Scheme/SystemSchemeButton";
 
 export default function SchemeToggle() {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -29,7 +29,7 @@ export default function SchemeToggle() {
   return (
     <Group justify="center">
       <Stack>
-        <Text>{locale === "de-DE" ? "Hell" : "Light"}</Text>
+        <Text>{getLocalizedText("Hell", "Light")}</Text>
         <LightSchemeButton
           onClick={() => setColorScheme("light")}
           active={currentColorScheme === "light"}
@@ -37,7 +37,7 @@ export default function SchemeToggle() {
         />
       </Stack>
       <Stack>
-        <Text>{locale === "de-DE" ? "Dunkel" : "Dark"}</Text>
+        <Text>{getLocalizedText("Dunkel", "Dark")}</Text>
         <DarkSchemeButton
           onClick={() => setColorScheme("dark")}
           active={currentColorScheme === "dark"}
@@ -46,7 +46,7 @@ export default function SchemeToggle() {
       </Stack>
       <Space w="xl" />
       <Stack>
-        <Text>{locale === "de-DE" ? "System" : "System"}</Text>
+        <Text>{getLocalizedText("System", "System")}</Text>
         <SystemSchemeButton
           onClick={() => setColorScheme("auto")}
           active={currentColorScheme === "auto"}

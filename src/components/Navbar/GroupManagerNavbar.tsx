@@ -2,6 +2,7 @@
 
 import { useGroupStore } from "@/stores/groupStore";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Group,
@@ -21,6 +22,7 @@ import classes from "./Navbar.module.css";
 import { SettingsTab } from "../Settings/SettingsModal";
 
 export default function FinanceNavbar() {
+  const { getLocalizedText } = useFormatter();
   const { groups, activeGroupId, isFetching, setActiveGroup } = useGroupStore();
   const activeGroup = useGroupStore((state) =>
     state.groups.find((g) => g.id === activeGroupId)
@@ -30,12 +32,14 @@ export default function FinanceNavbar() {
   return (
     <Box className={classes.main} w="250px">
       <Group className={classes.title} align="center" justify="space-between">
-        <Text>Group Manager</Text>
+        <Text>{getLocalizedText("Gruppenmanager", "Group Manager")}</Text>
         {!isFetching && (
           <Group gap={8}>
             <AdjustmentActionIcon
-              aria-label="Adjust group settings"
-              tooltipLabel="Adjust group settings"
+              tooltipLabel={getLocalizedText(
+                "Gruppeneinstellungen anpassen",
+                "Adjust group settings"
+              )}
               size="md"
               iconSize={20}
               onClick={() => {
@@ -49,7 +53,7 @@ export default function FinanceNavbar() {
       </Group>
       <Stack gap="sm" px="xs">
         <Text mt="sm" fz="sm" ta="center">
-          Active Group
+          {getLocalizedText("Aktive Gruppe", "Active Group")}
         </Text>
         {isFetching ? (
           <Skeleton height={25} w={200} mx="md" />
@@ -68,7 +72,9 @@ export default function FinanceNavbar() {
           />
         )}
         <Divider />
-        <Text fw={600}>Group Members</Text>
+        <Text fw={600}>
+          {getLocalizedText("Gruppenmitglieder", "Group Members")}
+        </Text>
         {isFetching && <Skeleton height={25} w={200} mx="md" />}
         <Stack gap="xs">
           {activeGroup?.members.map((member) => (
@@ -83,7 +89,9 @@ export default function FinanceNavbar() {
         {activeGroup?.invitedMembers &&
           activeGroup.invitedMembers.length > 0 && (
             <Stack gap="sm">
-              <Text fw={600}>Invited Members</Text>
+              <Text fw={600}>
+                {getLocalizedText("Eingeladene Mitglieder", "Invited Members")}
+              </Text>
               <Stack gap="xs">
                 {activeGroup.invitedMembers.map((member) => (
                   <MemberRow

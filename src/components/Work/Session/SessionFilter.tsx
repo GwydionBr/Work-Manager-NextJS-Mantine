@@ -1,7 +1,7 @@
 "use client";
 import dayjs from "dayjs";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Card } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
@@ -15,7 +15,7 @@ export default function SessionFilter({
   timeSpan,
   onTimeSpanChange,
 }: SessionFilterProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const today = dayjs();
 
   return (
@@ -24,13 +24,12 @@ export default function SessionFilter({
         clearable
         type="range"
         maxDate={today.add(1, "day").toDate()}
-        placeholder={
-          locale === "de-DE"
-            ? "Datum auswählen um nach zeitraum zu filtern"
-            : "Select date to filter by time period"
-        }
+        placeholder={getLocalizedText(
+          "Datum auswählen um nach zeitraum zu filtern",
+          "Select date to filter by time period"
+        )}
         allowSingleDateInRange
-        valueFormat={locale === "de-DE" ? "DD. MMM YYYY" : "MMM DD, YYYY"}
+        valueFormat={getLocalizedText("DD. MMM YYYY", "MMM DD, YYYY")}
         value={timeSpan}
         onChange={(value) => {
           onTimeSpanChange(value as [Date | null, Date | null]);
@@ -41,21 +40,21 @@ export default function SessionFilter({
               today.subtract(2, "day").format("YYYY-MM-DD"),
               today.format("YYYY-MM-DD"),
             ],
-            label: locale === "de-DE" ? "Letzte 2 Tage" : "Last 2 days",
+            label: getLocalizedText("Letzte 2 Tage", "Last 2 days"),
           },
           {
             value: [
               today.subtract(7, "day").format("YYYY-MM-DD"),
               today.format("YYYY-MM-DD"),
             ],
-            label: locale === "de-DE" ? "Letzte 7 Tage" : "Last 7 days",
+            label: getLocalizedText("Letzte 7 Tage", "Last 7 days"),
           },
           {
             value: [
               today.startOf("week").add(1, "day").format("YYYY-MM-DD"),
               today.endOf("week").add(1, "day").format("YYYY-MM-DD"),
             ],
-            label: locale === "de-DE" ? "Diese Woche" : "This week",
+            label: getLocalizedText("Diese Woche", "This week"),
           },
           {
             value: [
@@ -70,21 +69,21 @@ export default function SessionFilter({
                 .add(1, "day")
                 .format("YYYY-MM-DD"),
             ],
-            label: locale === "de-DE" ? "Letzte Woche" : "Last week",
+            label: getLocalizedText("Letzte Woche", "Last week"),
           },
           {
             value: [
               today.startOf("month").format("YYYY-MM-DD"),
               today.endOf("month").format("YYYY-MM-DD"),
             ],
-            label: locale === "de-DE" ? "Dieser Monat" : "This month",
+            label: getLocalizedText("Dieser Monat", "This month"),
           },
           {
             value: [
               today.subtract(1, "month").startOf("month").format("YYYY-MM-DD"),
               today.subtract(1, "month").endOf("month").format("YYYY-MM-DD"),
             ],
-            label: locale === "de-DE" ? "Letzter Monat" : "Last month",
+            label: getLocalizedText("Letzter Monat", "Last month"),
           },
         ]}
       />

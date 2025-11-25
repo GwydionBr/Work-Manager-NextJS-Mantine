@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Button, ButtonProps } from "@mantine/core";
 import { IconX } from "@tabler/icons-react";
@@ -20,7 +20,7 @@ export default function CancelButton({
   tooltipLabel,
   ...props
 }: CancelButtonProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
 
   return (
     <DelayedTooltip label={tooltipLabel}>
@@ -31,7 +31,7 @@ export default function CancelButton({
         onClick={onClick}
         {...props}
       >
-        {locale === "de-DE" ? "Abbrechen" : "Cancel"}
+        {getLocalizedText("Abbrechen", "Cancel")}
       </Button>
     </DelayedTooltip>
   );

@@ -2,7 +2,7 @@
 
 import dayjs from "dayjs";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { useWorkTimeEntryQuery } from "@/utils/queries/work/use-work-time_entry";
 
@@ -36,7 +36,7 @@ export default function CalendarHeader({
   referenceDate,
   handleZoomChange,
 }: CalendarHeaderProps) {
-  const { locale } = useSettingsStore();
+  const { locale, getLocalizedText } = useFormatter();
   const { isPending: isFetching } = useWorkTimeEntryQuery();
   const {
     viewMode,
@@ -160,7 +160,7 @@ export default function CalendarHeader({
                 type="range"
                 value={dateRange}
                 valueFormat={
-                  locale === "de-DE" ? "DD. MMM YYYY" : "MMM DD, YYYY"
+                  getLocalizedText("DD. MMM YYYY", "MMM DD, YYYY")
                 }
                 onChange={(value) => {
                   const [start, end] = value;
@@ -174,21 +174,21 @@ export default function CalendarHeader({
                       today.subtract(2, "day").format("YYYY-MM-DD"),
                       today.format("YYYY-MM-DD"),
                     ],
-                    label: locale === "de-DE" ? "Letzte 2 Tage" : "Last 2 days",
+                    label: getLocalizedText("Letzte 2 Tage", "Last 2 days"),
                   },
                   {
                     value: [
                       today.subtract(7, "day").format("YYYY-MM-DD"),
                       today.format("YYYY-MM-DD"),
                     ],
-                    label: locale === "de-DE" ? "Letzte 7 Tage" : "Last 7 days",
+                    label: getLocalizedText("Letzte 7 Tage", "Last 7 days"),
                   },
                   {
                     value: [
                       today.startOf("week").add(1, "day").format("YYYY-MM-DD"),
                       today.endOf("week").add(1, "day").format("YYYY-MM-DD"),
                     ],
-                    label: locale === "de-DE" ? "Diese Woche" : "This week",
+                    label: getLocalizedText("Diese Woche", "This week"),
                   },
                   {
                     value: [
@@ -203,14 +203,14 @@ export default function CalendarHeader({
                         .add(1, "day")
                         .format("YYYY-MM-DD"),
                     ],
-                    label: locale === "de-DE" ? "Letzte Woche" : "Last week",
+                    label: getLocalizedText("Letzte Woche", "Last week"),
                   },
                   {
                     value: [
                       today.startOf("month").format("YYYY-MM-DD"),
                       today.endOf("month").format("YYYY-MM-DD"),
                     ],
-                    label: locale === "de-DE" ? "Dieser Monat" : "This month",
+                    label: getLocalizedText("Dieser Monat", "This month"),
                   },
                   {
                     value: [
@@ -223,7 +223,7 @@ export default function CalendarHeader({
                         .endOf("month")
                         .format("YYYY-MM-DD"),
                     ],
-                    label: locale === "de-DE" ? "Letzter Monat" : "Last month",
+                    label: getLocalizedText("Letzter Monat", "Last month"),
                   },
                 ]}
               />

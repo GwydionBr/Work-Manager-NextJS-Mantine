@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   getRoundingInTimeFragments,
@@ -22,6 +23,7 @@ import {
 import { RoundingDirection } from "@/types/settings.types";
 
 export default function RoundingSettings() {
+  const { getLocalizedText } = useFormatter();
   const {
     locale,
     timerRoundingSettings,
@@ -52,11 +54,10 @@ export default function RoundingSettings() {
   return (
     <Stack>
       <Switch
-        label={
-          locale === "de-DE"
-            ? "Runden in Zeitabschnitten"
-            : "Round in time fragments"
-        }
+        label={getLocalizedText(
+          "Runden in Zeitabschnitten",
+          "Round in time fragments"
+        )}
         checked={timerRoundingSettings.roundInTimeFragments}
         onChange={(event) =>
           setRoundInTimeFragments(event.currentTarget.checked)
@@ -65,10 +66,8 @@ export default function RoundingSettings() {
       <Collapse in={!timerRoundingSettings.roundInTimeFragments}>
         <Group>
           <NumberInput
-            label={
-              locale === "de-DE" ? "Rundungsintervall" : "Rounding interval"
-            }
-            suffix={locale === "de-DE" ? " Minuten" : " minutes"}
+            label={getLocalizedText("Rundungsintervall", "Rounding interval")}
+            suffix={getLocalizedText(" Minuten", " minutes")}
             allowNegative={false}
             allowDecimal={false}
             allowLeadingZeros={false}
@@ -77,10 +76,12 @@ export default function RoundingSettings() {
           />
           <Select
             w={125}
-            label={locale === "de-DE" ? "Rundungsmodus" : "Rounding mode"}
+            label={getLocalizedText("Rundungsmodus", "Rounding mode")}
             data={roundingModes}
             value={timerRoundingSettings.roundingDirection}
-            onChange={(value) => setRoundingDirection(value as RoundingDirection)}
+            onChange={(value) =>
+              setRoundingDirection(value as RoundingDirection)
+            }
           />
           <Transition
             mounted={
@@ -95,7 +96,7 @@ export default function RoundingSettings() {
                 disabled={loading}
                 style={{ ...styles }}
               >
-                {locale === "de-DE" ? "Speichern" : "Save"}
+                {getLocalizedText("Speichern", "Save")}
               </Button>
             )}
           </Transition>
@@ -106,16 +107,14 @@ export default function RoundingSettings() {
           <Select
             w={200}
             data={roundingInTimeSections}
-            label={
-              locale === "de-DE"
-                ? "Zeitabschnittsintervall"
-                : "Time Fragment Interval"
-            }
-            placeholder={
-              locale === "de-DE"
-                ? "Intervall auswählen"
-                : "Select Default Rounding Amount"
-            }
+            label={getLocalizedText(
+              "Zeitabschnittsintervall",
+              "Time Fragment Interval"
+            )}
+            placeholder={getLocalizedText(
+              "Intervall auswählen",
+              "Select Default Rounding Amount"
+            )}
             value={timerRoundingSettings.timeFragmentInterval.toString()}
             onChange={(value) => setTimeFragmentInterval(Number(value))}
           />

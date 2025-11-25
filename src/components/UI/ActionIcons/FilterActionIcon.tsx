@@ -1,7 +1,6 @@
 import { ActionIcon, ActionIconProps } from "@mantine/core";
 import {
   IconFilter,
-  IconFilterFilled,
   IconFilterCheck,
 } from "@tabler/icons-react";
 import DelayedTooltip from "../DelayedTooltip";

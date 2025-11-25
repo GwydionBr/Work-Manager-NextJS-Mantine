@@ -1,23 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Text, Modal, Box, Group, Tabs } from "@mantine/core";
 import { IconSettings } from "@tabler/icons-react";
-import MoreActionIcon from "../../UI/ActionIcons/MoreActionIcon";
-import ModifyTime from "./ModifyTime";
-import ModifyRounding from "./ModifyRounding";
+import MoreActionIcon from "@/components/UI/ActionIcons/MoreActionIcon";
+import ModifyTime from "@/components/TimeTracker/ModifyTimeTracker/ModifyTime";
+import ModifyRounding from "@/components/TimeTracker/ModifyTimeTracker/ModifyRounding";
 
 import { TimerRoundingSettings, TimerState } from "@/types/timeTracker.types";
 
 interface ModifyTimeTrackerModalProps {
   modifyActiveSeconds: (delta: number) => void;
   modifyPausedSeconds: (delta: number) => void;
-  setTempTimerRounding: (
-    timerRoundingSettings: TimerRoundingSettings
-  ) => void;
-  activeTime: string; 
+  setTempTimerRounding: (timerRoundingSettings: TimerRoundingSettings) => void;
+  activeTime: string;
   pausedTime: string;
   state: TimerState;
   activeSeconds: number;
@@ -38,7 +36,7 @@ export default function ModifyTimeTrackerModal({
   storedPausedSeconds,
   timerRoundingSettings,
 }: ModifyTimeTrackerModalProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const [opened, setOpened] = useState(false);
 
   return (
@@ -46,7 +44,10 @@ export default function ModifyTimeTrackerModal({
       <MoreActionIcon
         onClick={() => setOpened(true)}
         aria-label="Modify Time Tracker"
-        tooltipLabel={locale === "de-DE" ? "Zeiterfassung anpassen" : "Modify Time Tracker"}
+        tooltipLabel={getLocalizedText(
+          "Zeiterfassung anpassen",
+          "Modify Time Tracker"
+        )}
       />
       <Modal
         opened={opened}
@@ -56,7 +57,12 @@ export default function ModifyTimeTrackerModal({
         title={
           <Group gap="xs">
             <IconSettings size={20} />
-            <Text fw={600}>{locale === "de-DE" ? "Zeiterfassung anpassen" : "Modify Time Tracker"}</Text>
+            <Text fw={600}>
+              {getLocalizedText(
+                "Zeiterfassung anpassen",
+                "Modify Time Tracker"
+              )}
+            </Text>
           </Group>
         }
         size="lg"
@@ -74,8 +80,10 @@ export default function ModifyTimeTrackerModal({
       >
         <Tabs defaultValue="time" variant="pills">
           <Tabs.List grow mb="md">
-            <Tabs.Tab value="time">{locale === "de-DE" ? "Zeit" : "Time"}</Tabs.Tab>
-            <Tabs.Tab value="rounding">{locale === "de-DE" ? "Rundung" : "Rounding"}</Tabs.Tab>
+            <Tabs.Tab value="time">{getLocalizedText("Zeit", "Time")}</Tabs.Tab>
+            <Tabs.Tab value="rounding">
+              {getLocalizedText("Rundung", "Rounding")}
+            </Tabs.Tab>
           </Tabs.List>
           <Tabs.Panel value="time">
             <ModifyTime

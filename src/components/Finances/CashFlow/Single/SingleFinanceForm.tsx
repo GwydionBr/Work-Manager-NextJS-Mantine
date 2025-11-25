@@ -2,7 +2,7 @@
 
 import { useForm } from "@mantine/form";
 import { useEffect } from "react";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { TextInput, Select, Stack } from "@mantine/core";
 import UpdateButton from "@/components/UI/Buttons/UpdateButton";
@@ -39,7 +39,7 @@ export default function SingleFinanceForm({
   isLoading,
   cashFlow,
 }: SingleFinanceFormProps) {
-  const { getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
 
   const schema = z.object({
     title: z
@@ -96,7 +96,7 @@ export default function SingleFinanceForm({
       <Stack>
         <TextInput
           withAsterisk
-          label="Name"
+          label={getLocalizedText("Name", "Name")}
           {...form.getInputProps("title")}
           data-autofocus
         />

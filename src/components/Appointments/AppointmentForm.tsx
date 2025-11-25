@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useForm } from "@mantine/form";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
 
 import { Select, Stack, Textarea, TextInput } from "@mantine/core";
@@ -32,7 +32,7 @@ export default function AppointmentForm({
   project,
   submitting,
 }: AppointmentFormProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const { data: timerProjects = [] } = useWorkProjectQuery();
   // Create conditional schema based on hourly_payment
   const schema = z.object({
@@ -66,18 +66,18 @@ export default function AppointmentForm({
       <Stack gap="lg">
         <Select
           allowDeselect={false}
-          label={locale === "de-DE" ? "Projekt" : "Project"}
+          label={getLocalizedText("Projekt", "Project")}
           value={form.values.timer_project_id}
           error={form.errors.timer_project_id}
           placeholder={
-            locale === "de-DE" ? "Projekt auswählen" : "Select project"
+            getLocalizedText("Projekt auswählen", "Select project")
           }
           data={projects}
           searchable
         />
         <TextInput
-          label={locale === "de-DE" ? "Titel" : "Title"}
-          placeholder={locale === "de-DE" ? "Titel eingeben" : "Title"}
+          label={getLocalizedText("Titel", "Title")}
+          placeholder={getLocalizedText("Titel eingeben", "Title")}
           withAsterisk
           error={form.errors.title}
           data-autofocus
@@ -85,20 +85,20 @@ export default function AppointmentForm({
         />
         <LocaleDateTimePicker
           withAsterisk
-          label={locale === "de-DE" ? "Startzeit" : "Start Time"}
+          label={getLocalizedText("Startzeit", "Start Time")}
           value={form.values.start_date}
           error={form.errors.start_date}
         />
         <LocaleDateTimePicker
           withAsterisk
-          label={locale === "de-DE" ? "Endzeit" : "End Time"}
+          label={getLocalizedText("Endzeit", "End Time")}
           value={form.values.end_date}
           error={form.errors.end_date}
         />
         <Textarea
-          label={locale === "de-DE" ? "Beschreibung" : "Description"}
+          label={getLocalizedText("Beschreibung", "Description")}
           placeholder={
-            locale === "de-DE" ? "Beschreibung eingeben" : "Description"
+            getLocalizedText("Beschreibung eingeben", "Description")
           }
           {...form.getInputProps("description")}
         />
@@ -109,7 +109,7 @@ export default function AppointmentForm({
             loading={submitting}
             mt="md"
             title={
-              locale === "de-DE" ? "Termin erstellen" : "Create Appointment"
+              getLocalizedText("Termin erstellen", "Create Appointment")
             }
           />
         ) : (
@@ -119,7 +119,7 @@ export default function AppointmentForm({
             loading={submitting}
             mt="md"
             title={
-              locale === "de-DE" ? "Termin aktualisieren" : "Update Appointment"
+              getLocalizedText("Termin aktualisieren", "Update Appointment")
             }
           />
         )}

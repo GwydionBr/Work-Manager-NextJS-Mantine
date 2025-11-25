@@ -1,7 +1,7 @@
 "use client";
 
 import { useFinanceCategoriesQuery } from "@/utils/queries/finances/use-finance-category";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Group,
@@ -74,7 +74,7 @@ export default function SessionFilter({
   onFilterLogicChange,
   onClearAllFilters,
 }: SessionFilterProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const { data: financeCategories = [] } = useFinanceCategoriesQuery();
 
   // Toggle between selecting all sessions or none
@@ -160,7 +160,7 @@ export default function SessionFilter({
       <Stack gap="xs" style={{ flex: 1 }}>
         <Group>
           <Checkbox
-            label={`${locale === "de-DE" ? "Alle auswählen" : "Select All"} (${unpaidSessions.length} ${locale === "de-DE" ? "unbezahlte Sitzungen" : "unpaid sessions"})`}
+            label={`${getLocalizedText("Alle auswählen", "Select All")} (${unpaidSessions.length} ${getLocalizedText("unbezahlte Sitzungen", "unpaid sessions")})`}
             checked={
               selectedSessions.length === unpaidSessions.length &&
               unpaidSessions.length > 0
@@ -176,16 +176,17 @@ export default function SessionFilter({
             {unpaidSessions.length > 0 && selectedSessions.length > 0 && (
               <Text size="sm" c="dimmed">
                 {selectedSessions.length}{" "}
-                {locale === "de-DE" ? "Sitzung" : "session"}
+                {getLocalizedText("Sitzung", "session")}
                 {selectedSessions.length > 1 ? "en" : ""}{" "}
-                {locale === "de-DE" ? "ausgewählt" : "selected"}
+                {getLocalizedText("ausgewählt", "selected")}
               </Text>
             )}
             {unpaidSessions.length === 0 && (
               <Text size="sm" c="dimmed">
-                {locale === "de-DE"
-                  ? "Alle Sitzungen bezahlt"
-                  : "All sessions paid"}
+                {getLocalizedText(
+                  "Alle Sitzungen bezahlt",
+                  "All sessions paid"
+                )}
               </Text>
             )}
           </Stack>
@@ -195,18 +196,18 @@ export default function SessionFilter({
         <Divider my="xs" />
         <Stack gap="xs">
           <Text size="sm" fw={500}>
-            {locale === "de-DE"
-              ? "Sitzungen nach Zeitrahmen filtern"
-              : "Select Sessions by Time Period"}
+            {getLocalizedText(
+              "Sitzungen nach Zeitrahmen filtern",
+              "Select Sessions by Time Period"
+            )}
           </Text>
           <Group gap="md" align="flex-end">
             <Select
-              label={locale === "de-DE" ? "Zeitrahmen" : "Time Period"}
-              placeholder={
-                locale === "de-DE"
-                  ? "Zeitrahmen auswählen"
-                  : "Select a time period"
-              }
+              label={getLocalizedText("Zeitrahmen", "Time Period")}
+              placeholder={getLocalizedText(
+                "Zeitrahmen auswählen",
+                "Select a time period"
+              )}
               data={timePresets.map((preset) => ({
                 value: preset.value,
                 label: preset.label,
@@ -219,16 +220,16 @@ export default function SessionFilter({
             {selectedTimePreset && !isOverview && (
               <Button size="sm" onClick={handleSelectAll} variant="light">
                 {selectedSessions.length === unpaidSessions.length
-                  ? `${locale === "de-DE" ? "Alle Sitzungen abwählen" : "Deselect all Sessions"}`
-                  : `${locale === "de-DE" ? "Alle unbezahlten Sitzungen auswählen" : "Select ${unpaidSessions.length} Unpaid Sessions"}`}
+                  ? `${getLocalizedText("Alle Sitzungen abwählen", "Deselect all Sessions")}`
+                  : `${getLocalizedText("Alle unbezahlten Sitzungen auswählen", "Select ${unpaidSessions.length} Unpaid Sessions")}`}
               </Button>
             )}
           </Group>
           {selectedTimePreset === "custom" && (
             <Stack gap="xs">
               <Text size="sm">
-                {locale === "de-DE" ? "Benutzerdefinierte Tage" : "Custom Days"}
-                : {timeFilterDays}
+                {getLocalizedText("Benutzerdefinierte Tage", "Custom Days")}:{" "}
+                {timeFilterDays}
               </Text>
               <Slider
                 value={timeFilterDays}
@@ -253,9 +254,9 @@ export default function SessionFilter({
               variant="light"
             >
               {unpaidSessions.length}{" "}
-              {locale === "de-DE" ? "unbezahlte Sitzungen" : "unpaid sessions"}
-              {locale === "de-DE" ? "in letzten" : "in last"} {timeFilterDays}{" "}
-              {locale === "de-DE" ? "Tagen" : "days"}
+              {getLocalizedText("unbezahlte Sitzungen", "unpaid sessions")}
+              {getLocalizedText("in letzten", "in last")} {timeFilterDays}{" "}
+              {getLocalizedText("Tagen", "days")}
             </Badge>
           </Collapse>
         </Stack>
@@ -266,22 +267,23 @@ export default function SessionFilter({
             <Divider my="xs" />
             <Stack gap="xs">
               <Text size="sm" fw={500}>
-                {locale === "de-DE"
-                  ? "Sitzungen nach Projektkriterien filtern"
-                  : "Filter Sessions by Project Criteria"}
+                {getLocalizedText(
+                  "Sitzungen nach Projektkriterien filtern",
+                  "Filter Sessions by Project Criteria"
+                )}
               </Text>
 
               {/* Filter Controls */}
               <Group gap="md" align="flex-end">
                 <MultiSelect
-                  label={
-                    locale === "de-DE"
-                      ? "Nach Ordner filtern"
-                      : "Filter by Folders"
-                  }
-                  placeholder={
-                    locale === "de-DE" ? "Ordner auswählen" : "Choose folders"
-                  }
+                  label={getLocalizedText(
+                    "Nach Ordner filtern",
+                    "Filter by Folders"
+                  )}
+                  placeholder={getLocalizedText(
+                    "Ordner auswählen",
+                    "Choose folders"
+                  )}
                   data={getFolders()}
                   value={filterState?.selectedFolders || []}
                   onChange={onFolderFilterChange}
@@ -289,14 +291,14 @@ export default function SessionFilter({
                   style={{ flex: 1 }}
                 />
                 <MultiSelect
-                  label={
-                    locale === "de-DE"
-                      ? "Nach Projekt filtern"
-                      : "Filter by Projects"
-                  }
-                  placeholder={
-                    locale === "de-DE" ? "Projekt auswählen" : "Choose projects"
-                  }
+                  label={getLocalizedText(
+                    "Nach Projekt filtern",
+                    "Filter by Projects"
+                  )}
+                  placeholder={getLocalizedText(
+                    "Projekt auswählen",
+                    "Choose projects"
+                  )}
                   data={getProjects()}
                   value={filterState?.selectedProjects || []}
                   onChange={onProjectFilterChange}
@@ -304,16 +306,14 @@ export default function SessionFilter({
                   style={{ flex: 1 }}
                 />
                 <MultiSelect
-                  label={
-                    locale === "de-DE"
-                      ? "Nach Kategorie filtern"
-                      : "Filter by Categories"
-                  }
-                  placeholder={
-                    locale === "de-DE"
-                      ? "Kategorie auswählen"
-                      : "Choose categories"
-                  }
+                  label={getLocalizedText(
+                    "Nach Kategorie filtern",
+                    "Filter by Categories"
+                  )}
+                  placeholder={getLocalizedText(
+                    "Kategorie auswählen",
+                    "Choose categories"
+                  )}
                   data={getCashFlowCategories()}
                   value={filterState?.selectedCategories || []}
                   onChange={onCategoryFilterChange}
@@ -336,23 +336,27 @@ export default function SessionFilter({
                     label={
                       <Text size="sm">
                         {filterState?.filterLogic === "AND"
-                          ? locale === "de-DE"
-                            ? "Alle Filter müssen zutreffen (UND)"
-                            : "All filters must match (AND)"
-                          : locale === "de-DE"
-                            ? "Ein Filter kann zutreffen (ODER)"
-                            : "Any filter can match (OR)"}
+                          ? getLocalizedText(
+                              "Alle Filter müssen zutreffen (UND)",
+                              "All filters must match (AND)"
+                            )
+                          : getLocalizedText(
+                              "Ein Filter kann zutreffen (ODER)",
+                              "Any filter can match (OR)"
+                            )}
                       </Text>
                     }
                   />
                   <Text size="xs" c="dimmed">
                     {filterState?.filterLogic === "AND"
-                      ? locale === "de-DE"
-                        ? "Sitzungen müssen allen ausgewählten Kriterien entsprechen"
-                        : "Sessions must belong to ALL selected criteria"
-                      : locale === "de-DE"
-                        ? "Sitzungen können einem der ausgewählten Kriterien entsprechen"
-                        : "Sessions can belong to ANY selected criteria"}
+                      ? getLocalizedText(
+                          "Sitzungen müssen allen ausgewählten Kriterien entsprechen",
+                          "Sessions must belong to ALL selected criteria"
+                        )
+                      : getLocalizedText(
+                          "Sitzungen können einem der ausgewählten Kriterien entsprechen",
+                          "Sessions can belong to ANY selected criteria"
+                        )}
                   </Text>
                 </Group>
               </Collapse>
@@ -364,11 +368,12 @@ export default function SessionFilter({
                     variant="light"
                   >
                     {unpaidSessions.length}{" "}
-                    {locale === "de-DE"
-                      ? "unbezahlte Sitzungen"
-                      : "unpaid sessions"}
-                    {locale === "de-DE" ? "in letzten" : "in last"}{" "}
-                    {timeFilterDays} {locale === "de-DE" ? "Tagen" : "days"}
+                    {getLocalizedText(
+                      "unbezahlte Sitzungen",
+                      "unpaid sessions"
+                    )}
+                    {getLocalizedText("in letzten", "in last")} {timeFilterDays}{" "}
+                    {getLocalizedText("Tagen", "days")}
                   </Badge>
                 </Stack>
               </Collapse>
@@ -384,8 +389,8 @@ export default function SessionFilter({
                         variant="light"
                       >
                         {selectedSessions.length === unpaidSessions.length
-                          ? `${locale === "de-DE" ? "Alle Sitzungen abwählen" : "Deselect all Sessions"}`
-                          : `${locale === "de-DE" ? "Alle unbezahlten Sitzungen auswählen" : "Select ${unpaidSessions.length} Unpaid Sessions"}`}
+                          ? `${getLocalizedText("Alle Sitzungen abwählen", "Deselect all Sessions")}`
+                          : `${getLocalizedText("Alle unbezahlten Sitzungen auswählen", "Select ${unpaidSessions.length} Unpaid Sessions")}`}
                       </Button>
                     )}
                     <Button
@@ -394,9 +399,10 @@ export default function SessionFilter({
                       color="red"
                       onClick={onClearAllFilters}
                     >
-                      {locale === "de-DE"
-                        ? "Alle Filter löschen"
-                        : "Clear All Filters"}
+                      {getLocalizedText(
+                        "Alle Filter löschen",
+                        "Clear All Filters"
+                      )}
                     </Button>
                   </Stack>
                 </Stack>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Button,
@@ -14,7 +14,7 @@ import Link from "next/link";
 import classes from "./NotFound.module.css";
 
 export default function NotFound() {
-  const { getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
 
   return (
     <Container className={classes.root}>

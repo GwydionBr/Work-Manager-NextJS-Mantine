@@ -5,6 +5,7 @@ import { useHotkeys, useDisclosure } from "@mantine/hooks";
 import { useRouter, usePathname } from "next/navigation";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   ActionIcon,
@@ -39,13 +40,9 @@ export default function ProjectNavbar() {
   const { setActiveProjectId } = useWorkStore();
   const { isPending: isProjectsPending } = useWorkProjectQuery();
 
-  const {
-    getLocalizedText,
-    setSelectedTab,
-    setIsModalOpen,
-    isWorkNavbarOpen,
-    toggleWorkNavbar,
-  } = useSettingsStore();
+  const { setSelectedTab, setIsModalOpen, isWorkNavbarOpen, toggleWorkNavbar } =
+    useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const router = useRouter();
   const pathname = usePathname();
   const [isOverview, setIsOverview] = useState<boolean>(false);
@@ -78,18 +75,15 @@ export default function ProjectNavbar() {
             <DelayedTooltip
               label={
                 <Stack align="center">
-                  <Text>Toggle Navbar</Text>
+                  <Text>
+                    {getLocalizedText("Navbar umschalten", "Toggle navbar")}
+                  </Text>
                   <Shortcut keys={["mod", "J"]} />
                 </Stack>
               }
             >
               <ActionIcon
                 onClick={() => toggleWorkNavbar()}
-                aria-label={
-                  isHydrated
-                    ? getLocalizedText("Navbar umschalten", "Toggle navbar")
-                    : "Toggle navbar"
-                }
                 variant="light"
                 style={styles}
               >

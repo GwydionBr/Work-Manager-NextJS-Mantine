@@ -10,6 +10,7 @@ import {
   useCreateWorkProjectMutation,
 } from "@/utils/queries/work/use-work-project";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   NumberInput,
@@ -92,8 +93,8 @@ export default function ProjectForm({
     defaultSalaryCurrency,
     defaultSalaryAmount,
     defaultProjectHourlyPayment,
-    getLocalizedText,
   } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const {
     data: financeCategories = [],
     isPending: isFetchingFinanceCategories,

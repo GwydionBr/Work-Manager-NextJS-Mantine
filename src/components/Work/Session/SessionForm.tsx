@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useForm } from "@mantine/form";
-import { useSettingsStore } from "@/stores/settingsStore";
 import { useWorkProjectQuery } from "@/utils/queries/work/use-work-project";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Select,
@@ -48,7 +48,7 @@ export default function SessionForm({
   onOpenProjectForm,
   onProjectChange,
 }: SessionFormProps) {
-  const { getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const { data: workProjects = [] } = useWorkProjectQuery();
   const [userChangedStartTime, setUserChangedStartTime] = useState(false);
   const [userChangedEndTime, setUserChangedEndTime] = useState(false);

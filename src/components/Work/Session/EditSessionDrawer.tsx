@@ -6,6 +6,7 @@ import {
   useDeleteWorkTimeEntryMutation,
 } from "@/utils/queries/work/use-work-time_entry";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Drawer, Flex, Group, Text, useDrawersStack, Box } from "@mantine/core";
 import { IconExclamationMark } from "@tabler/icons-react";
@@ -33,7 +34,8 @@ export default function EditSessionDrawer({
   onClose,
   project,
 }: TimerSessionModalProps) {
-  const { locale, timerRoundingSettings } = useSettingsStore();
+  const { timerRoundingSettings } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const {
     mutate: updateWorkTimeEntryMutation,
     isPending: isUpdatingWorkTimeEntry,
@@ -122,17 +124,16 @@ export default function EditSessionDrawer({
           title={
             <Group>
               <DeleteActionIcon
-                tooltipLabel={
-                  locale === "de-DE" ? "Sitzung löschen" : "Delete Session"
-                }
+                tooltipLabel={getLocalizedText(
+                  "Sitzung löschen",
+                  "Delete Session"
+                )}
                 onClick={() => {
                   drawerStack.open("delete-session");
                 }}
               />
               <Text>
-                {locale === "de-DE"
-                  ? "Sitzung bearbeiten"
-                  : "Edit Timer-Session"}
+                {getLocalizedText("Sitzung bearbeiten", "Edit Session")}
               </Text>
             </Group>
           }
@@ -167,7 +168,7 @@ export default function EditSessionDrawer({
           title={
             <Group>
               <Text>
-                {locale === "de-DE" ? "Projekt hinzufügen" : "Add Project"}
+                {getLocalizedText("Projekt hinzufügen", "Add Project")}
               </Text>
             </Group>
           }
@@ -184,7 +185,7 @@ export default function EditSessionDrawer({
         <Drawer
           {...drawerStack.register("category-form")}
           onClose={() => drawerStack.close("category-form")}
-          title={locale === "de-DE" ? "Kategorie hinzufügen" : "Add Category"}
+          title={getLocalizedText("Kategorie hinzufügen", "Add Category")}
         >
           <FinanceCategoryForm
             onClose={() => drawerStack.close("category-form")}
@@ -200,25 +201,27 @@ export default function EditSessionDrawer({
             <Group>
               <IconExclamationMark size={25} color="red" />
               <Text>
-                {locale === "de-DE" ? "Sitzung löschen" : "Delete Session"}
+                {getLocalizedText("Sitzung löschen", "Delete Session")}
               </Text>
             </Group>
           }
           size="md"
         >
           <Text>
-            {locale === "de-DE"
-              ? "Bist du dir sicher, dass du diese Sitzung löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden. "
-              : "Are you sure you want to delete this session? This action cannot be undone."}
+            {getLocalizedText(
+              "Bist du dir sicher, dass du diese Sitzung löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden. ",
+              "Are you sure you want to delete this session? This action cannot be undone. "
+            )}
           </Text>
           <Group mt="md" justify="flex-end" gap="sm">
             <CancelButton onClick={handleClose} color="teal" />
             <DeleteButton
               loading={isDeletingWorkTimeEntry}
               onClick={handleDelete}
-              tooltipLabel={
-                locale === "de-DE" ? "Sitzung löschen" : "Delete Session"
-              }
+              tooltipLabel={getLocalizedText(
+                "Sitzung löschen",
+                "Delete Session"
+              )}
             />
           </Group>
         </Drawer>

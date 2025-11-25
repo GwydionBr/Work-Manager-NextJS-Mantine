@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Card, Text, Badge, Group } from "@mantine/core";
 import {
@@ -47,49 +47,49 @@ export default function WorkStatisticCard({
   badge,
   badgeColor = "green",
 }: WorkStatisticCardProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   // Get title and default styling based on type
   const getCardConfig = () => {
     switch (type) {
       case "totalTime":
         return {
-          title: locale === "de-DE" ? "Gesamtzeit" : "Total Time",
+          title: getLocalizedText("Gesamtzeit", "Total Time"),
           defaultColor: "blue" as const,
           icon: IconClock,
         };
       case "totalSalary":
         return {
-          title: locale === "de-DE" ? "Gesamtgehalt" : "Total Salary",
+          title: getLocalizedText("Gesamtgehalt", "Total Salary"),
           defaultColor: "green" as const,
           icon: IconCash,
         };
       case "hourlyRate":
         return {
-          title: locale === "de-DE" ? "Stundenrate" : "Hourly Rate",
+          title: getLocalizedText("Stundenrate", "Hourly Rate"),
           defaultColor: "teal" as const,
           icon: IconTrendingUp,
         };
       case "bestPeriod":
         return {
-          title: locale === "de-DE" ? "Bester Tag" : "Best Period",
+          title: getLocalizedText("Bester Tag", "Best Period"),
           defaultColor: "green" as const,
           icon: IconTrophy,
         };
       case "worstPeriod":
         return {
-          title: locale === "de-DE" ? "Schlechteste Tag" : "Worst Period",
+          title: getLocalizedText("Schlechteste Tag", "Worst Period"),
           defaultColor: "red" as const,
           icon: IconAlertTriangle,
         };
       case "totalPeriods":
         return {
-          title: locale === "de-DE" ? "Gesamtperioden" : "Total Periods",
+          title: getLocalizedText("Gesamtperioden", "Total Periods"),
           defaultColor: "blue" as const,
           icon: IconCalendar,
         };
       default:
         return {
-          title: locale === "de-DE" ? "Statistik" : "Statistic",
+          title: getLocalizedText("Statistik", "Statistic"),
           defaultColor: "blue" as const,
           icon: IconClock,
         };

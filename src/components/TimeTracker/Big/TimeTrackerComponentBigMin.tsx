@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Box,
@@ -15,7 +15,7 @@ import { TimerRoundingSettings, TimerState } from "@/types/timeTracker.types";
 import StartActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/StartActionIcons";
 import StopActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/StopActionIcon";
 import CancelActionIcon from "@/components/TimeTracker/TimeTrackerActionIcons/CancelActionIcon";
-import XActionIcon from "@/components/UI/ActionIcons/XActionIcon";
+import XActionIcon from "@/components/UI/ActionIcons/XActionIcon";  
 import ModifyTimeTrackerModal from "@/components/TimeTracker/ModifyTimeTracker/ModifyTimeTrackerModal";
 import TimeTrackerInfoHoverCard from "@/components/TimeTracker/TimeTrackerInfoHoverCard";
 import { Currency } from "@/types/settings.types";
@@ -71,7 +71,7 @@ export default function TimeTrackerComponentBigMin({
   color,
   backgroundColor,
 }: TimeTrackerComponentBigMinProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
 
   return (
     <Card
@@ -122,7 +122,7 @@ export default function TimeTrackerComponentBigMin({
         >
           <Stack gap="xs" align="center">
             <Text size="xs" c="dimmed">
-              {locale === "de-DE" ? "Aktiv" : "Active"}
+              {getLocalizedText("Aktiv", "Active")}
             </Text>
             {!timerRoundingSettings?.roundInTimeFragments ? (
               <Stack>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import { getAllWorkTimeEntries } from "@/actions/work/workTimeEntry/get-all-work-time-entries";
 import { createWorkTimeEntry } from "@/actions/work/workTimeEntry/create-work-time-entry";
 import { updateWorkTimeEntries } from "@/actions/work/workTimeEntry/update-work-time-entries";
@@ -39,7 +39,7 @@ export const useWorkTimeEntryByProjectId = ({
 export const useCreateWorkTimeEntryMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["createWorkTimeEntry"],
     mutationFn: ({
@@ -121,7 +121,7 @@ export const useCreateWorkTimeEntryMutation = ({
 export const useUpdateWorkTimeEntryMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["updateWorkTimeEntry"],
     mutationFn: ({
@@ -238,7 +238,7 @@ export const useUpdateWorkTimeEntryMutation = ({
 export const useDeleteWorkTimeEntryMutation = ({
   ...props
 }: CustomMutationProps = {}) => {
-  const { getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return useMutation({
     mutationKey: ["deleteWorkTimeEntry"],
     mutationFn: deleteWorkTimeEntries,

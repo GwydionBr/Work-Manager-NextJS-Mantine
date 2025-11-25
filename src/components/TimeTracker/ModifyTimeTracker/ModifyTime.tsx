@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { TimerState } from "@/types/timeTracker.types";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Stack,
@@ -48,7 +49,7 @@ export default function ModifyTime({
   storedActiveSeconds,
   storedPausedSeconds,
 }: ModifyTimeProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const [activeTimeInput, setActiveTimeInput] = useState("");
   const [pausedTimeInput, setPausedTimeInput] = useState("");
   const [timeUnit, setTimeUnit] = useState<"seconds" | "minutes" | "hours">(
@@ -80,6 +81,21 @@ export default function ModifyTime({
         return value * 3600;
       default:
         return value;
+    }
+  };
+
+  const getLocalizedTimeUnit = (
+    unit: "seconds" | "minutes" | "hours"
+  ): string => {
+    switch (unit) {
+      case "seconds":
+        return getLocalizedText("Wert in Sekunden", "Value in Seconds");
+      case "minutes":
+        return getLocalizedText("Wert in Minuten", "Value in Minutes");
+      case "hours":
+        return getLocalizedText("Wert in Stunden", "Value in Hours");
+      default:
+        return getLocalizedText(`Wert in ${unit}`, `Value in ${unit}`);
     }
   };
 
@@ -123,7 +139,7 @@ export default function ModifyTime({
         <Group justify="space-between" mb="md">
           <Title order={4} c="dimmed">
             <IconClock size={18} style={{ marginRight: "8px" }} />
-            {locale === "de-DE" ? "Aktuelle Zeiten" : "Current Times"}
+            {getLocalizedText("Aktuelle Zeiten", "Current Times")}
           </Title>
         </Group>
 
@@ -141,7 +157,7 @@ export default function ModifyTime({
       <Card withBorder shadow="sm" radius="md" p="lg">
         <Title order={4} mb="md" c="dimmed">
           <IconClock size={18} style={{ marginRight: "8px" }} />
-          {locale === "de-DE" ? "Schnelle Anpassungen" : "Quick Adjustments"}
+          {getLocalizedText("Schnelle Anpassungen", "Quick Adjustments")}
         </Title>
 
         <Stack gap="md">
@@ -150,7 +166,7 @@ export default function ModifyTime({
             <Group mb="xs" gap="xs">
               <IconPlayerPlay size={16} color="var(--mantine-color-blue-6)" />
               <Text size="sm" fw={600} c="blue.7">
-                {locale === "de-DE" ? "Aktive Zeit" : "Active Time"}
+                {getLocalizedText("Aktive Zeit", "Active Time")}
               </Text>
             </Group>
             <Group gap="xs" justify="center">
@@ -205,7 +221,7 @@ export default function ModifyTime({
                 color="var(--mantine-color-orange-6)"
               />
               <Text size="sm" fw={600} c="orange.7">
-                {locale === "de-DE" ? "Pausierte Zeit" : "Paused Time"}
+                {getLocalizedText("Pausierte Zeit", "Paused Time")}
               </Text>
             </Group>
             <Group gap="xs" justify="center">
@@ -256,14 +272,15 @@ export default function ModifyTime({
       <Card withBorder shadow="sm" radius="md" p="lg">
         <Title order={4} mb="md" c="dimmed">
           <IconSettings size={18} style={{ marginRight: "8px" }} />
-          {locale === "de-DE"
-            ? "Benutzerdefinierte Anpassungen"
-            : "Custom Adjustments"}
+          {getLocalizedText(
+            "Benutzerdefinierte Anpassungen",
+            "Custom Adjustments"
+          )}
         </Title>
 
         <Stack gap="md">
           <Select
-            label={locale === "de-DE" ? "Zeit-Einheit" : "Time Unit"}
+            label={getLocalizedText("Zeit-Einheit", "Time Unit")}
             value={timeUnit}
             onChange={(value) =>
               setTimeUnit(value as "seconds" | "minutes" | "hours")
@@ -271,15 +288,15 @@ export default function ModifyTime({
             data={[
               {
                 value: "seconds",
-                label: locale === "de-DE" ? "Sekunden" : "Seconds",
+                label: getLocalizedText("Sekunden", "Seconds"),
               },
               {
                 value: "minutes",
-                label: locale === "de-DE" ? "Minuten" : "Minutes",
+                label: getLocalizedText("Minuten", "Minutes"),
               },
               {
                 value: "hours",
-                label: locale === "de-DE" ? "Stunden" : "Hours",
+                label: getLocalizedText("Stunden", "Hours"),
               },
             ]}
             styles={{
@@ -293,12 +310,11 @@ export default function ModifyTime({
           <Box>
             <Group gap="xs" align="end">
               <TextInput
-                label={
-                  locale === "de-DE"
-                    ? "Aktive Zeit ändern"
-                    : "Change Active Time"
-                }
-                placeholder={`Value in ${timeUnit === "seconds" ? "seconds" : timeUnit === "minutes" ? "minutes" : "hours"}`}
+                label={getLocalizedText(
+                  "Aktive Zeit ändern",
+                  "Change Active Time"
+                )}
+                placeholder={getLocalizedTimeUnit(timeUnit)}
                 value={activeTimeInput}
                 onChange={(event) =>
                   setActiveTimeInput(event.currentTarget.value)
@@ -325,7 +341,7 @@ export default function ModifyTime({
                 disabled={!activeTimeInput}
                 leftSection={<IconPlus size={16} />}
               >
-                {locale === "de-DE" ? "Anwenden" : "Apply"}
+                {getLocalizedText("Anwenden", "Apply")}
               </Button>
             </Group>
           </Box>
@@ -333,12 +349,11 @@ export default function ModifyTime({
           <Box>
             <Group gap="xs" align="end">
               <TextInput
-                label={
-                  locale === "de-DE"
-                    ? "Pausierte Zeit ändern"
-                    : "Change Paused Time"
-                }
-                placeholder={`Value in ${timeUnit === "seconds" ? "seconds" : timeUnit === "minutes" ? "minutes" : "hours"}`}
+                label={getLocalizedText(
+                  "Pausierte Zeit ändern",
+                  "Change Paused Time"
+                )}
+                placeholder={getLocalizedTimeUnit(timeUnit)}
                 value={pausedTimeInput}
                 onChange={(event) =>
                   setPausedTimeInput(event.currentTarget.value)
@@ -365,7 +380,7 @@ export default function ModifyTime({
                 disabled={!pausedTimeInput}
                 leftSection={<IconPlus size={16} />}
               >
-                {locale === "de-DE" ? "Anwenden" : "Apply"}
+                {getLocalizedText("Anwenden", "Apply")}
               </Button>
             </Group>
           </Box>
@@ -395,9 +410,10 @@ export default function ModifyTime({
             color="red"
             style={{ marginRight: "4px", verticalAlign: "middle" }}
           />
-          {locale === "de-DE"
-            ? "Hinweis: Negative Werte reduzieren die Zeit. Die Zeit kann nicht unter 0 fallen."
-            : "Note: Negative values reduce time. Time cannot fall below 0."}
+          {getLocalizedText(
+            "Hinweis: Negative Werte reduzieren die Zeit. Die Zeit kann nicht unter 0 fallen.",
+            "Note: Negative values reduce time. Time cannot fall below 0."
+          )}
         </Text>
       </Paper>
     </Stack>

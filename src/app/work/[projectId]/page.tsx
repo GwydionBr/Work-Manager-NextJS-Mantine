@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import { useState, useCallback, useEffect } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useProjectFiltering } from "@/hooks/useProjectFiltering";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import { usePayoutHourlyTimerProjectMutation } from "@/utils/queries/finances/use-payout";
 import { useWorkStore } from "@/stores/workManagerStore";
 import { useWorkTimeEntryByProjectId } from "@/utils/queries/work/use-work-time_entry";
@@ -77,7 +77,7 @@ export default function WorkProjectDetailsPage() {
     },
   });
 
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { locale, getLocalizedText } = useFormatter();
 
   // State for filter time span
   const [filterTimeSpan, setFilterTimeSpan] = useState<

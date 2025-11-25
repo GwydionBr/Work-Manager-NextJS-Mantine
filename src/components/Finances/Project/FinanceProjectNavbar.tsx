@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Card, CardProps, Divider, NavLink, Text } from "@mantine/core";
 import {
@@ -9,7 +9,6 @@ import {
   IconSquareRoundedCheck,
 } from "@tabler/icons-react";
 
-import { formatMoney } from "@/utils/formatFunctions";
 import { FinanceNavbarItems } from "@/types/finance.types";
 
 export enum FinanceProjectNavbarTab {
@@ -31,15 +30,15 @@ export default function FinanceProjectNavbar({
   items,
   ...props
 }: FinanceProjectNavbarProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText, formatMoney } = useFormatter();
   return (
     <Card withBorder shadow="sm" p="md" w={200} miw={190} radius="lg" {...props}>
       <NavLink
-        label={locale === "de-DE" ? "Alle" : "All"}
+        label={getLocalizedText("Alle", "All")}
         leftSection={<IconList />}
         description={
           <Text size="sm">
-            {formatMoney(items.all.totalAmount, "EUR", locale)} (
+            {formatMoney(items.all.totalAmount, "EUR")} (
             {items.all.projectCount})
           </Text>
         }
@@ -48,13 +47,13 @@ export default function FinanceProjectNavbar({
         disabled={items.all.projectCount === 0}
       />
       <NavLink
-        label={locale === "de-DE" ? "Bevorstehend" : "Upcoming"}
+        label={getLocalizedText("Bevorstehend", "Upcoming")}
         leftSection={
           <IconCalendarEvent color="light-dark(var(--mantine-color-blue-6), var(--mantine-color-blue-5))" />
         }
         description={
           <Text size="sm">
-            {formatMoney(items.upcoming.totalAmount, "EUR", locale)} (
+            {formatMoney(items.upcoming.totalAmount, "EUR")} (
             {items.upcoming.projectCount})
           </Text>
         }
@@ -63,13 +62,13 @@ export default function FinanceProjectNavbar({
         disabled={items.upcoming.projectCount === 0}
       />
       <NavLink
-        label={locale === "de-DE" ? "Überfällig" : "Overdue"}
+        label={getLocalizedText("Überfällig", "Overdue")}
         leftSection={
           <IconCalendarEvent color="light-dark(var(--mantine-color-red-6), var(--mantine-color-red-5))" />
         }
         description={
           <Text size="sm">
-            {formatMoney(items.overdue.totalAmount, "EUR", locale)} (
+            {formatMoney(items.overdue.totalAmount, "EUR")} (
             {items.overdue.projectCount})
           </Text>
         }
@@ -79,13 +78,13 @@ export default function FinanceProjectNavbar({
       />
       <Divider />
       <NavLink
-        label={locale === "de-DE" ? "Bezahlt" : "Paid"}
+        label={getLocalizedText("Bezahlt", "Paid")}
         leftSection={
           <IconSquareRoundedCheck color="light-dark(var(--mantine-color-green-6), var(--mantine-color-green-5))" />
         }
         description={
           <Text size="sm">
-            {formatMoney(items.paid.totalAmount, "EUR", locale)} (
+            {formatMoney(items.paid.totalAmount, "EUR")} (
             {items.paid.projectCount})
           </Text>
         }

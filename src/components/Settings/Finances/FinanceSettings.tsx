@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
-import { Grid, ScrollArea } from "@mantine/core";
+import { Grid } from "@mantine/core";
 import SettingsNavbar from "@/components/Navbar/SettingsNavbar";
 import FinanceCategorySettings from "./FinanceCategory/FinanceCategorySettings";
 import FinanceRuleSettings from "./FinanceRuleSettings/FinanceRuleSettings";
@@ -21,7 +21,7 @@ enum FinanceSettingType {
 }
 
 export default function FinanceSettings() {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const [activeSetting, setActiveSetting] = useState<FinanceSettingType>(
     FinanceSettingType.DEFAULT
   );
@@ -36,24 +36,24 @@ export default function FinanceSettings() {
         <SettingsNavbar
           items={[
             {
-              title: locale === "de-DE" ? "Standard" : "Default",
+              title: getLocalizedText("Standard", "Default"),
               onClick: () => setActiveSetting(FinanceSettingType.DEFAULT),
               active: activeSetting === FinanceSettingType.DEFAULT,
             },
             {
-              title: locale === "de-DE" ? "Kategorien" : "Categories",
+              title: getLocalizedText("Kategorien", "Categories"),
               icon: <IconCategory size={20} />,
               onClick: () => setActiveSetting(FinanceSettingType.CATEGORIES),
               active: activeSetting === FinanceSettingType.CATEGORIES,
             },
             {
-              title: locale === "de-DE" ? "Kunden" : "Clients",
+              title: getLocalizedText("Kunden", "Clients"),
               icon: <IconUsers size={20} />,
               onClick: () => setActiveSetting(FinanceSettingType.CLIENTS),
               active: activeSetting === FinanceSettingType.CLIENTS,
             },
             {
-              title: locale === "de-DE" ? "Bankkonten" : "Bank Accounts",
+              title: getLocalizedText("Bankkonten", "Bank Accounts"),
               icon: <IconBuildingBank size={20} />,
               onClick: () => setActiveSetting(FinanceSettingType.BANK_ACCOUNTS),
               active: activeSetting === FinanceSettingType.BANK_ACCOUNTS,

@@ -5,7 +5,7 @@ import {
   useFinanceChartData,
   type DateRange,
 } from "@/hooks/useFinanceChartData";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Stack, Paper, Text, Box } from "@mantine/core";
 import AnalysisChart from "../../Analysis/AnalysisChart";
@@ -43,7 +43,7 @@ export default function FinanceOverviewTab() {
   });
 
   // Get currency from settings
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   // Use custom hook for chart data and statistics
   const { chartData, stats } = useFinanceChartData(interval, dateRange);
 
@@ -72,9 +72,10 @@ export default function FinanceOverviewTab() {
         {chartData.length === 0 ? (
           <Stack align="center" justify="center" h={300}>
             <Text c="dimmed">
-              {locale === "de-DE"
-                ? "Keine Daten für den ausgewählten Zeitraum"
-                : "No data for the selected time period"}
+              {getLocalizedText(
+                "Keine Daten für den ausgewählten Zeitraum",
+                "No data for the selected time period"
+              )}
             </Text>
           </Stack>
         ) : (

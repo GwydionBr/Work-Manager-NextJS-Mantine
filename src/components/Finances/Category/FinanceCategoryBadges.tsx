@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Popover,
@@ -36,7 +36,7 @@ export default function FinanceCategoryBadges({
   onPopoverOpen,
   onPopoverClose,
 }: FinanceCategoryBadgesProps) {
-  const { getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const {
     data: financeCategories = [],
     isPending: isFinanceCategoriesPending,

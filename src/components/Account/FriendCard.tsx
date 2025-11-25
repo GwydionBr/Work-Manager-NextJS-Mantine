@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import { useOtherProfilesQuery } from "@/utils/queries/profile/use-profile";
 import {
   useCreateFriendshipMutation,
@@ -14,7 +14,7 @@ import FriendList from "./FriendList";
 import { IconUserSearch } from "@tabler/icons-react";
 
 export default function FriendCard() {
-  const { getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const { data: otherProfiles } = useOtherProfilesQuery();
   const { data: friends } = useFriendsQuery();
   const { mutate: createFriendship, isPending: isCreatingFriendship } =

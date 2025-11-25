@@ -1,16 +1,17 @@
 "use client";
 
+import { useFormatter } from "@/hooks/useFormatter";
+
 import { Box, Table, Text } from "@mantine/core";
 
 import { Tables } from "@/types/db.types";
-import { useSettingsStore } from "@/stores/settingsStore";
 
-interface FriendsTableProps {
+interface FriendStatusTableProps {
   friends: Tables<"profiles">[];
 }
 
-export default function FriendsTable({ friends }: FriendsTableProps) {
-  const { getLocalizedText } = useSettingsStore();
+export default function FriendStatusTable({ friends }: FriendStatusTableProps) {
+  const { getLocalizedText } = useFormatter();
   const rows = friends.map((friend) => (
     <Table.Tr key={friend.id}>
       <Table.Td>{friend.username}</Table.Td>

@@ -1,12 +1,17 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 import { useHover } from "@mantine/hooks";
 
-import { Group, Stack, Text, alpha, UnstyledButton, UnstyledButtonProps } from "@mantine/core";
+import {
+  Group,
+  Stack,
+  Text,
+  alpha,
+  UnstyledButton,
+  UnstyledButtonProps,
+} from "@mantine/core";
 import { IconChevronRight } from "@tabler/icons-react";
-
-import { formatDate, formatMoney } from "@/utils/formatFunctions";
 
 import { Currency } from "@/types/settings.types";
 import { WorkTimeEntry } from "@/types/work.types";
@@ -29,10 +34,12 @@ export default function QuickPayoutButton({
   handleClick,
   ...props
 }: QuickPayoutButtonProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText, formatDate, formatMoney } = useFormatter();
   const { hovered, ref } = useHover();
 
-  const unpaidTimeEntries = timeEntries.filter((timeEntry) => !timeEntry.single_cash_flow_id);
+  const unpaidTimeEntries = timeEntries.filter(
+    (timeEntry) => !timeEntry.single_cash_flow_id
+  );
   const unpaidTotal = unpaidTimeEntries.reduce(
     (acc, timeEntry) => acc + salary * (timeEntry.active_seconds / 3600),
     0
@@ -60,20 +67,19 @@ export default function QuickPayoutButton({
             <Text>{label}</Text>
             <Text size="xs" c="dimmed">
               {unpaidTimeEntries.length}{" "}
-              {locale === "de-DE" ? "Sitzungen" : "Sessions"}
+              {getLocalizedText("Sitzungen", "Sessions")}
             </Text>
           </Group>
           {timeSpan[0] && timeSpan[1] && (
             <Group>
               <Text size="xs" c="dimmed">
-                {formatDate(timeSpan[0], locale)} -{" "}
-                {formatDate(timeSpan[1], locale)}
+                {formatDate(timeSpan[0])} - {formatDate(timeSpan[1])}
               </Text>
             </Group>
           )}
         </Stack>
         <Group>
-          <Text>{formatMoney(unpaidTotal, currency, locale)}</Text>
+          <Text>{formatMoney(unpaidTotal, currency)}</Text>
           <IconChevronRight />
         </Group>
       </Group>

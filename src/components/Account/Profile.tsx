@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useForm } from "@mantine/form";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Button,
@@ -26,7 +26,7 @@ import {
 } from "@/utils/queries/profile/use-profile";
 
 export default function Profile() {
-  const { getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const { data: profile, isPending: isProfilePending } = useProfileQuery();
   const { data: otherProfiles } = useOtherProfilesQuery();
   const { mutate: updateProfile, isPending: isUpdating } =

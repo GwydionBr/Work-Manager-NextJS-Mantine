@@ -2,6 +2,7 @@
 
 import { useOtherProfilesQuery } from "@/utils/queries/profile/use-profile";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Card,
@@ -30,8 +31,9 @@ export default function InitializeProfile() {
     useUpdateProfileMutation();
   const { data: otherProfiles = [] } = useOtherProfilesQuery();
 
-  const { locale, setLocale, format24h, setFormat24h, getLocalizedText } =
+  const { locale, setLocale, format24h, setFormat24h } =
     useSettingsStore();
+  const { getLocalizedText } = useFormatter();
 
   const currentLocale = locales.find((l) => l.value === locale);
 

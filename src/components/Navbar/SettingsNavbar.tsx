@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, NavLink, Stack } from "@mantine/core";
+import { NavLink, Stack } from "@mantine/core";
 
 interface SettingsNavbarItem {
   title: string;

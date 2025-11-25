@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Accordion,
@@ -12,7 +12,6 @@ import {
 } from "@mantine/core";
 import { EarningsBreakdown } from "@/types/timerSession.types";
 import { areEarningsBreakdownEmpty } from "@/utils/sessionHelperFunctions";
-import { formatMoney } from "@/utils/formatFunctions";
 import { formatTime } from "@/utils/sessionHelperFunctions";
 import SelectActionIcon from "@/components/UI/ActionIcons/SelectActionIcon";
 
@@ -40,7 +39,7 @@ export default function CustomAccordionControl({
   onGroupToggle,
   ...props
 }: CustomAccordionControlProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText, formatMoney } = useFormatter();
 
   const groupSelectableIds = sessionIds.filter((id) => selectableIdSet.has(id));
   const selectedCount = groupSelectableIds.filter((id) =>
@@ -59,17 +58,17 @@ export default function CustomAccordionControl({
           {earnings.unpaid.some((e) => e.amount > 0) && (
             <Text size="sm" c="red">
               {earnings.unpaid
-                .map((e) => formatMoney(e.amount, e.currency, locale))
+                .map((e) => formatMoney(e.amount, e.currency))
                 .join(" ") + " "}
-              {locale === "de-DE" ? "unbezahlt" : "unpaid"}
+              {getLocalizedText("unbezahlt", "unpaid")}
             </Text>
           )}
           {earnings.paid.some((e) => e.amount > 0) && (
             <Text size="sm" c="dimmed">
               {earnings.paid
-                .map((e) => formatMoney(e.amount, e.currency, locale))
+                .map((e) => formatMoney(e.amount, e.currency))
                 .join(" ") + " "}
-              {locale === "de-DE" ? "bezahlt" : "paid"}
+              {getLocalizedText("bezahlt", "paid")}
             </Text>
           )}
         </Group>
@@ -92,7 +91,7 @@ export default function CustomAccordionControl({
                 onGroupToggle(groupSelectableIds);
               }}
               iconSize={24}
-              tooltipLabel="Select sessions"
+              tooltipLabel={getLocalizedText("Sitzungen auswählen", "Select sessions")}
               selected={allSelected}
               partiallySelected={partiallySelected}
               style={styles}

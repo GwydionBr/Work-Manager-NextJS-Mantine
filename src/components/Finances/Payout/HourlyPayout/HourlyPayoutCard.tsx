@@ -2,7 +2,7 @@
 
 import dayjs from "dayjs";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Text, Stack, Card, Group, Loader } from "@mantine/core";
 import { IconCashBanknotePlus } from "@tabler/icons-react";
@@ -20,7 +20,7 @@ export default function HourlyPayoutCard({
   isProcessing,
   handlePayoutClick,
 }: HourlyPayoutCardProps) {
-  const { getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
 
   const today = dayjs();
 

@@ -6,7 +6,7 @@ import {
   useDeleteWorkProjectMutation,
   useWorkProjectQuery,
 } from "@/utils/queries/work/use-work-project";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Box,
@@ -32,7 +32,7 @@ export default function EditProjectDrawer({
   opened,
   onClose,
 }: EditProjectDrawerProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   const { lastActiveProjectId } = useWorkStore();
   const { mutate: deleteProjectMutation, isPending: isDeleting } =
     useDeleteWorkProjectMutation();
@@ -90,13 +90,14 @@ export default function EditProjectDrawer({
           title={
             <Group gap="xs">
               <DeleteActionIcon
-                tooltipLabel={
-                  locale === "de-DE" ? "Projekt löschen" : "Delete Project"
-                }
+                tooltipLabel={getLocalizedText(
+                  "Projekt löschen",
+                  "Delete Project"
+                )}
                 onClick={() => drawersStack.open("delete-project")}
               />
               <Text fw={600}>
-                {locale === "de-DE" ? "Projekt bearbeiten" : "Edit project"}
+                {getLocalizedText("Projekt bearbeiten", "Edit project")}
               </Text>
             </Group>
           }
@@ -122,28 +123,27 @@ export default function EditProjectDrawer({
             <Group>
               <IconAlertTriangleFilled size={25} color="red" />
               <Text>
-                {locale === "de-DE" ? "Projekt löschen" : "Delete Project"}
+                {getLocalizedText("Projekt löschen", "Delete Project")}
               </Text>
             </Group>
           }
         >
           <Text>
-            {locale === "de-DE"
-              ? "Sind Sie sicher, dass Sie dieses Projekt löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
-              : "Are you sure you want to delete this project? This action cannot be undone."}
+            {getLocalizedText(
+              "Sind Sie sicher, dass Sie dieses Projekt löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+              "Are you sure you want to delete this project? This action cannot be undone."
+            )}
           </Text>
           <Group mt="md" justify="flex-end" gap="sm">
             <CancelButton
               onClick={() => drawersStack.close("delete-project")}
               color="teal"
-              tooltipLabel={locale === "de-DE" ? "Abbrechen" : "Cancel"}
+              tooltipLabel={getLocalizedText("Abbrechen", "Cancel")}
             />
             <DeleteButton
               onClick={handleDelete}
               color="red"
-              tooltipLabel={
-                locale === "de-DE" ? "Projekt löschen" : "Delete Project"
-              }
+              tooltipLabel={getLocalizedText("Projekt löschen", "Delete Project")}
               loading={isDeleting}
             />
           </Group>
@@ -156,7 +156,7 @@ export default function EditProjectDrawer({
             <Group>
               <IconCategoryPlus />
               <Text>
-                {locale === "de-DE" ? "Kategorie hinzufügen" : "Add Category"}
+                {getLocalizedText("Kategorie hinzufügen", "Add Category")}
               </Text>
             </Group>
           }

@@ -2,7 +2,7 @@
 
 import { useHover } from "@mantine/hooks";
 import { useFinanceClientQuery } from "@/utils/queries/finances/use-finance-client";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Group, Text, ThemeIcon, Card, Transition } from "@mantine/core";
 import {
@@ -12,8 +12,6 @@ import {
   IconArrowLeft,
   IconCheck,
 } from "@tabler/icons-react";
-
-import { formatMoney, formatDate } from "@/utils/formatFunctions";
 
 import { Currency } from "@/types/settings.types";
 import { Tables } from "@/types/db.types";
@@ -42,7 +40,7 @@ export default function FinanceAdjustmentRow({
   currency,
   handlePayout,
 }: FinanceAdjustmentRowProps) {
-  const { locale, getLocalizedText } = useSettingsStore();
+  const { getLocalizedText, formatMoney, formatDate } = useFormatter();
   const { data: financeClients = [] } = useFinanceClientQuery();
 
   const { hovered, ref } = useHover();
@@ -129,7 +127,7 @@ export default function FinanceAdjustmentRow({
           </ThemeIcon>
           <Group gap="xs">
             <Text size="sm" fw={500} c={isIncome ? "green" : "red"}>
-              {formatMoney(Math.abs(amount), currency, locale)}
+              {formatMoney(Math.abs(amount), currency)}
             </Text>
 
             {description && (
@@ -158,7 +156,7 @@ export default function FinanceAdjustmentRow({
                 ml={10}
                 size="sm"
                 onClick={() => handlePayout({ adjustmentId: id, isStartValue })}
-                tooltipLabel={locale === "de-DE" ? "Auszahlung" : "Payout"}
+                tooltipLabel={getLocalizedText("Auszahlung", "Payout")}
                 style={styles}
               />
             )}
@@ -169,7 +167,7 @@ export default function FinanceAdjustmentRow({
           {client && <FinanceClientBadge client={client} />}
 
           <Text size="xs" c="dimmed">
-            {formatDate(createdAt, locale)}
+            {formatDate(createdAt)}
           </Text>
         </Group>
       </Group>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Stack } from "@mantine/core";
 import SettingsRow from "../SettingsRow";
@@ -9,27 +9,25 @@ import WorkDefaultSettings from "./WorkDefaultSettings";
 import TimeTrackerSettings from "./TimeTrackerSettings";
 
 export default function WorkSettings() {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return (
     <Stack>
       <SettingsRow
-        title={locale === "de-DE" ? "Zeiterfassung" : "Time Tracker"}
+        title={getLocalizedText("Zeiterfassung", "Time Tracker")}
         children={<TimeTrackerSettings />}
       />
       <SettingsRow
-        title={
-          locale === "de-DE"
-            ? "Rundung der Zeiterfassung"
-            : "Time Tracker Rounding"
-        }
+        title={getLocalizedText(
+          "Rundung der Zeiterfassung",
+          "Time Tracker Rounding"
+        )}
         children={<SelectTimerRounding />}
       />
       <SettingsRow
-        title={
-          locale === "de-DE"
-            ? "Arbeitsmanager Einstellungen"
-            : "Work Manager Settings"
-        }
+        title={getLocalizedText(
+          "Arbeitsmanager Einstellungen",
+          "Work Manager Settings"
+        )}
         children={<WorkDefaultSettings />}
       />
     </Stack>

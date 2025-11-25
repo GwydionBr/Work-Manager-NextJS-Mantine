@@ -34,6 +34,7 @@ interface LocaleContextValue {
   // Shared values
   locale: Locale;
   isClient: boolean;
+  format24h: boolean;
 }
 
 const LocaleContext = createContext<LocaleContextValue | undefined>(undefined);
@@ -49,6 +50,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
 
   // During SSR, always use English to prevent hydration mismatch
   const currentLocale: Locale = isClient ? locale : "en-US";
+  const currentFormat24h = isClient ? format24h : true;
 
   const value = useMemo<LocaleContextValue>(() => {
     const formatDate = (date: Date): string => {
@@ -64,11 +66,11 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     };
 
     const formatDateTime = (date: Date): string => {
-      return formatDateTimeUtil(date, format24h);
+      return formatDateTimeUtil(date, currentFormat24h);
     };
 
     const formatTimeSpan = (start: Date, end: Date): string => {
-      return formatTimeSpanUtil(start, end, format24h);
+      return formatTimeSpanUtil(start, end, currentFormat24h);
     };
 
     const formatMoney = (amount: number, currency: Currency): string => {
@@ -93,9 +95,10 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
       getCurrencySymbol,
       getLocalizedText,
       locale: currentLocale,
+      format24h: currentFormat24h,
       isClient,
     };
-  }, [currentLocale, format24h, isClient]);
+  }, [currentLocale, currentFormat24h, isClient]);
 
   return (
     <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>

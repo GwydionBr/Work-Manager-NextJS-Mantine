@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useWorkStore } from "@/stores/workManagerStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Button, Flex, Stack, Tooltip, UnstyledButton } from "@mantine/core";
 import {
@@ -28,13 +29,14 @@ interface LinkData {
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { locale, setSelectedTab, setIsModalOpen } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
+  const { setSelectedTab, setIsModalOpen } = useSettingsStore();
   const { lastActiveProjectId } = useWorkStore();
 
   const profileLinksData = [
     {
       icon: IconUser,
-      label: locale === "de-DE" ? "Konto" : "Account",
+      label: getLocalizedText("Konto", "Account"),
       to: paths.account.accountPage(),
     },
   ];
@@ -42,14 +44,14 @@ export default function Navbar() {
   const mainLinksData = [
     {
       icon: IconBriefcase,
-      label: locale === "de-DE" ? "Arbeitsmanager" : "Work Manager",
+      label: getLocalizedText("Arbeitsmanager", "Work Manager"),
       to: lastActiveProjectId
         ? paths.work.workDetailsPage(lastActiveProjectId)
         : paths.work.workPage(),
     },
     {
       icon: IconCalendar,
-      label: locale === "de-DE" ? "Kalender" : "Work Calendar",
+      label: getLocalizedText("Kalender", "Work Calendar"),
       to: paths.workCalendar.workCalendarPage(),
     },
     // {
@@ -59,7 +61,7 @@ export default function Navbar() {
     // },
     {
       icon: IconBrandCashapp,
-      label: locale === "de-DE" ? "Finanzen" : "Finance",
+      label: getLocalizedText("Finanzen", "Finance"),
       to: paths.finances.financesPage(),
     },
     // {
@@ -135,7 +137,7 @@ export default function Navbar() {
           <Stack gap="xs">
             {profileLinks}
             <Tooltip
-              label={locale === "de-DE" ? "Einstellungen" : "Settings"}
+              label={getLocalizedText("Einstellungen", "Settings")}
               position="right"
               withArrow
               transitionProps={{ duration: 0 }}

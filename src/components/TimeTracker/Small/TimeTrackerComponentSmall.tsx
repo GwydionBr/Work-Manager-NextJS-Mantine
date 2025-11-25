@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import {
   Stack,
@@ -18,7 +18,7 @@ import TimeTrackerInfoHoverCard from "../TimeTrackerInfoHoverCard";
 import ModifyTimeTrackerModal from "../ModifyTimeTracker/ModifyTimeTrackerModal";
 
 import { TimerRoundingSettings, TimerState } from "@/types/timeTracker.types";
-import { Currency, RoundingDirection } from "@/types/settings.types";
+import { Currency } from "@/types/settings.types";
 
 interface TimeTrackerComponentSmallProps {
   showSmall: boolean;
@@ -45,9 +45,7 @@ interface TimeTrackerComponentSmallProps {
   cancelTimer: () => void;
   modifyActiveSeconds: (delta: number) => void;
   modifyPausedSeconds: (delta: number) => void;
-  setTempTimerRounding: (
-    timerRoundingSettings: TimerRoundingSettings
-  ) => void;
+  setTempTimerRounding: (timerRoundingSettings: TimerRoundingSettings) => void;
 }
 
 export default function TimeTrackerComponentSmall({
@@ -77,8 +75,7 @@ export default function TimeTrackerComponentSmall({
   modifyPausedSeconds,
   setTempTimerRounding,
 }: TimeTrackerComponentSmallProps) {
-  const { locale } =
-    useSettingsStore();
+  const { getLocalizedText } = useFormatter();
 
   return (
     <Stack
@@ -134,7 +131,7 @@ export default function TimeTrackerComponentSmall({
             }}
           >
             <Text fz={11} c="dimmed" ta="center">
-              {locale === "de-DE" ? "Aktiv" : "Active"}
+              {getLocalizedText("Aktiv", "Active")}
             </Text>
             <Text fz={11} fw={state === "running" ? 700 : 400} ta="center">
               {activeTime}
@@ -160,7 +157,7 @@ export default function TimeTrackerComponentSmall({
               }}
             >
               <Text fz={11} c="dimmed" ta="center">
-                {locale === "de-DE" ? "Pausiert" : "Paused"}
+                {getLocalizedText("Pausiert", "Paused")}
               </Text>
               <Text fz={11} fw={state === "paused" ? 700 : 400} ta="center">
                 {pausedTime}

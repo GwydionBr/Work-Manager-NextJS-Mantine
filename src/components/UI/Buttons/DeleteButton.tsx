@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useFormatter } from "@/hooks/useFormatter";
 
 import { Button, ButtonProps } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
@@ -22,7 +22,7 @@ export default function DeleteActionIcon({
   label,
   ...props
 }: DeleteButtonProps) {
-  const { locale } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
 
   return (
     <DelayedTooltip label={tooltipLabel}>
@@ -33,7 +33,7 @@ export default function DeleteActionIcon({
         onClick={onClick}
         {...props}
       >
-        {label ? label : locale === "de-DE" ? "Löschen" : "Delete"}
+        {label ? label : getLocalizedText("Löschen", "Delete")}
       </Button>
     </DelayedTooltip>
   );

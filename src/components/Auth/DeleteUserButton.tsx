@@ -36,7 +36,7 @@ export default function DeleteUserButton({ ...props }: DeleteUserButtonProps) {
       loading={isPending}
       {...props}
     >
-      Delete Account
+      {getLocalizedText("Konto löschen", "Delete Account")}
     </Button>
   );
 }

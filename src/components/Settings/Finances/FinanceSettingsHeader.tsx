@@ -1,4 +1,6 @@
-import { useSettingsStore } from "@/stores/settingsStore";
+"use client";
+
+import { useFormatter } from "@/hooks/useFormatter";
 
 import PlusActionIcon from "@/components/UI/ActionIcons/PlusActionIcon";
 import { Group, Modal, Text } from "@mantine/core";
@@ -46,7 +48,7 @@ export default function FinanceSettingsHeader({
   modalChildren = null,
   modalOnClose = () => {},
 }: FinanceSettingsHeaderProps) {
-  const { getLocalizedText } = useSettingsStore();
+  const { getLocalizedText } = useFormatter();
   return (
     <Group justify="space-between" w="100%">
       <PlusActionIcon onClick={onAdd} disabled={addDisabled} />
