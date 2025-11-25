@@ -28,7 +28,7 @@ import {
   IconList,
 } from "@tabler/icons-react";
 import DelayedTooltip from "@/components/UI/DelayedTooltip";
-import SingleCashflowRow from "@/components/Finances/CashFlow/Single/SingleCashflowRow";
+import SingleCashflowRow from "@/components/Finances/CashFlow/Single/SingleCashflowRow/SingleCashflowRow";
 import FinancesNavbar from "@/components/Finances/FinancesNavbar/FinancesNavbar";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 import { SettingsTab } from "@/components/Settings/SettingsModal";

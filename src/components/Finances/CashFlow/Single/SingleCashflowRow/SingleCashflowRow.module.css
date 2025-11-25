@@ -1,0 +1,53 @@
+.card {
+  cursor: pointer;
+  background-color: light-dark(
+    var(--mantine-color-white),
+    var(--mantine-color-dark-6)
+  );
+
+  &[data-hovered] {
+    background-color: light-dark(
+      var(--mantine-color-gray-0),
+      var(--mantine-color-dark-7)
+    );
+    border-color: var(--mantine-color-blue-6);
+  }
+
+  &[data-selected] {
+    background-color: light-dark(
+      var(--mantine-color-blue-0),
+      var(--mantine-color-dark-5)
+    );
+    border-color: var(--mantine-color-blue-5);
+  }
+}
+
+.checkboxContainer {
+  position: absolute;
+  top: var(--mantine-spacing-xs);
+  left: var(--mantine-spacing-sm);
+}
+
+.checkboxIcon {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition:
+    opacity 200ms ease,
+    transform 200ms ease;
+  pointer-events: none;
+
+  &[data-visible] {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+}
+
+.grid {
+  transition: margin 0.2s ease;
+  margin-left: 0;
+
+  &[data-selectedmodeactive] {
+    margin-left: 50px;
+  }
+}

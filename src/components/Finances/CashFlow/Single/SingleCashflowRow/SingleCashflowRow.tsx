@@ -11,7 +11,6 @@ import {
   Grid,
   Text,
   Group,
-  Transition,
   Box,
   Stack,
   ThemeIcon,
@@ -26,6 +25,8 @@ import {
   IconReceipt2,
   IconRepeat,
 } from "@tabler/icons-react";
+
+import classes from "./SingleCashflowRow.module.css";
 
 interface SingleCashflowRowProps extends CardProps {
   cashflow: SingleCashFlow;
@@ -78,19 +79,15 @@ export default function SingleCashflowRow({
 
   return (
     <Card
+      className={classes.card}
+      mod={{
+        hovered: hovered,
+        selected: isSelected,
+      }}
       withBorder
       shadow="sm"
       radius="md"
       p="xs"
-      bg={
-        hovered
-          ? "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))"
-          : "light-dark(var(--mantine-color-white), var(--mantine-color-dark-6))"
-      }
-      style={{
-        cursor: "pointer",
-        border: hovered ? "1px solid var(--mantine-color-blue-6)" : "",
-      }}
       onClick={(e) => {
         if (!isCategoryPopoverOpen) {
           if (selectedModeActive) {
@@ -103,26 +100,19 @@ export default function SingleCashflowRow({
       {...props}
       ref={ref}
     >
-      <Box pos="absolute" top="xs" right="xl">
-        <Transition
-          mounted={selectedModeActive}
-          transition="fade-right"
-          duration={200}
-        >
-          {(styles) => (
-            <SelectActionIcon
-              style={styles}
-              onClick={() => {
-                onToggleSelected;
-              }}
-              selected={isSelected}
-            />
-          )}
-        </Transition>
+      <Box className={classes.checkboxContainer}>
+        <SelectActionIcon
+          className={classes.checkboxIcon}
+          mod={{ visible: selectedModeActive }}
+          onClick={() => {
+            onToggleSelected;
+          }}
+          selected={isSelected}
+        />
       </Box>
       <Grid
-        ml={selectedModeActive ? 50 : 0}
-        style={{ transition: "margin 0.2s ease" }}
+        className={classes.grid}
+        mod={{ selectedmodeactive: selectedModeActive }}
       >
         <Grid.Col span={2}>
           <Group>
