@@ -5,7 +5,7 @@ import { useFormatter } from "@/hooks/useFormatter";
 
 import { TextInput, Stack, Textarea } from "@mantine/core";
 import { z } from "zod";
-import { zodResolver } from "mantine-form-zod-resolver";
+import { zod4Resolver } from "mantine-form-zod-resolver";
 import CancelButton from "@/components/UI/Buttons/CancelButton";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
 import UpdateButton from "@/components/UI/Buttons/UpdateButton";
@@ -51,7 +51,7 @@ export default function FinanceCategoryForm({
       title: category?.title || "",
       description: category?.description || "",
     },
-    validate: zodResolver(schema),
+    validate: zod4Resolver(schema),
   });
 
   const handleClose = () => {

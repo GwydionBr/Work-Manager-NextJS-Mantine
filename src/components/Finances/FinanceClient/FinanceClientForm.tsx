@@ -6,7 +6,7 @@ import { useFormatter } from "@/hooks/useFormatter";
 import { Fieldset, Select, Stack, TextInput } from "@mantine/core";
 
 import { z } from "zod";
-import { zodResolver } from "mantine-form-zod-resolver";
+import { zod4Resolver } from "mantine-form-zod-resolver";
 import { currencies } from "@/constants/settings";
 import CreateButton from "@/components/UI/Buttons/CreateButton";
 import UpdateButton from "@/components/UI/Buttons/UpdateButton";
@@ -62,7 +62,7 @@ export default function FinanceClientForm({
       address: client?.address || "",
       currency: client?.currency || "USD",
     },
-    validate: zodResolver(schema),
+    validate: zod4Resolver(schema),
   });
 
   const handleClose = () => {

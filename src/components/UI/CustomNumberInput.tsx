@@ -15,5 +15,5 @@ export default function CustomNumberInput(props: NumberInputProps) {
     return v;
   }, [value]);
 
-  return <NumberInput value={localValue} placeholder="0" {...rest} />;
+  return <NumberInput value={localValue} placeholder="0" allowLeadingZeros={false} {...rest} />;
 }
