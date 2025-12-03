@@ -1,11 +1,11 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { Tables, TablesUpdate } from "@/types/db.types";
+import { UpdateBankAccount, BankAccount } from "@/types/finance.types";
 
 export async function updateBankAccount(
-  bankAccount: TablesUpdate<"bank_account">
-): Promise<Tables<"bank_account">> {
+  bankAccount: UpdateBankAccount
+): Promise<BankAccount> {
   if (!bankAccount.id) {
     throw new Error("Bank account id is required");
   }

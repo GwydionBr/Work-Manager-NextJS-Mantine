@@ -1,9 +1,11 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { Tables, TablesInsert } from "@/types/db.types";
+import { InsertBankAccount, BankAccount } from "@/types/finance.types";
 
-export async function createBankAccount(bankAccount: TablesInsert<"bank_account">): Promise<Tables<"bank_account">> {
+export async function createBankAccount(
+  bankAccount: InsertBankAccount
+): Promise<BankAccount> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("bank_account")
