@@ -167,23 +167,22 @@ export default function FinanceCategorySettings() {
                 />
               </Group>
             </Collapse>
-            {!isFetchingCategories &&
-              financeCategories.map((category, index) => (
-                <FinanceCategoryRow
-                  key={category.id}
-                  category={category}
-                  selectedModeActive={selectedModeActive}
-                  isSelected={selectedCategories.includes(category.id)}
-                  onToggleSelected={(e) =>
-                    toggleCategorySelection(category.id, index, e.shiftKey)
-                  }
-                  onDelete={onDelete}
-                />
-              ))}
-            {isFetchingCategories &&
-              Array.from({ length: 3 }, (_, i) => (
-                <Skeleton key={i} w="100%" h={60} radius="md" maw={500} />
-              ))}
+            {isFetchingCategories
+              ? Array.from({ length: 3 }, (_, i) => (
+                  <Skeleton key={i} w="100%" h={60} radius="md" maw={500} />
+                ))
+              : financeCategories.map((category, index) => (
+                  <FinanceCategoryRow
+                    key={category.id}
+                    category={category}
+                    selectedModeActive={selectedModeActive}
+                    isSelected={selectedCategories.includes(category.id)}
+                    onToggleSelected={(e) =>
+                      toggleCategorySelection(category.id, index, e.shiftKey)
+                    }
+                    onDelete={onDelete}
+                  />
+                ))}
           </Stack>
         )}
       </Stack>
