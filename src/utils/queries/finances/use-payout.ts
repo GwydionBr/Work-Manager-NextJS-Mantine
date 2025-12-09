@@ -148,7 +148,7 @@ export const usePayoutHourlyTimerProjectMutation = ({
       context.client.setQueryData(
         ["singleCashFlows"],
         (old: SingleCashFlow[] | undefined) =>
-          old ? [data.singleCashFlow, ...old] : [data.singleCashFlow]
+          old ? [data.singleCashFlow, ...old] : undefined
       );
       context.client.setQueryData(
         ["payouts"],

@@ -7,6 +7,11 @@ export interface Payout extends Tables<"payout"> {
   timer_sessions: Tables<"timer_session">[];
 }
 
+// Bank Account Types
+export interface BankAccount extends Tables<"bank_account"> {}
+export interface InsertBankAccount extends TablesInsert<"bank_account"> {}
+export interface UpdateBankAccount extends TablesUpdate<"bank_account"> {}
+
 // Single Cash Flow Types
 export interface SingleCashFlow extends Tables<"single_cash_flow"> {
   categories: { finance_category: Tables<"finance_category"> }[];
