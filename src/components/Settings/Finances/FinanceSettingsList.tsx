@@ -43,6 +43,11 @@ interface FinanceSettingsListProps<T> {
   addIcon: React.ReactNode;
 }
 
+/**
+ *
+ * @param param0
+ * @returns
+ */
 export default function FinanceSettingsList<T>({
   items,
   isLoading,
