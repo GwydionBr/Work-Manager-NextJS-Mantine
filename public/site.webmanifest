@@ -1,6 +1,6 @@
 {
-  "name": "WorkManager",
-  "short_name": "WorkManager",
+  "name": "Work Manager",
+  "short_name": "WM",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -15,7 +15,7 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#4cd3a3",
-  "background_color": "#4cd3a3",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
   "display": "standalone"
 }
