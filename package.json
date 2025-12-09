@@ -7,9 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "test": "jest"
   },
   "overrides": {
     "react-is": "^19.0.0"
@@ -84,19 +82,7 @@
     "stylelint-config-standard-scss": "^14.0.0",
     "ts-jest": "^29.4.1",
     "typescript": "5.7.3",
-    "typescript-eslint": "^8.20.0",
-    "storybook": "^10.1.5",
-    "@storybook/nextjs": "^10.1.5",
-    "@storybook/addon-a11y": "^10.1.5",
-    "@storybook/addon-docs": "^10.1.5",
-    "@storybook/addon-onboarding": "^10.1.5",
-    "eslint-plugin-storybook": "^10.1.5"
+    "typescript-eslint": "^8.20.0"
   },
-  "packageManager": "yarn@4.6.0",
-  "eslintConfig": {
-    "extends": [
-      "plugin:storybook/recommended",
-      "plugin:storybook/recommended"
-    ]
-  }
+  "packageManager": "yarn@4.6.0"
 }
