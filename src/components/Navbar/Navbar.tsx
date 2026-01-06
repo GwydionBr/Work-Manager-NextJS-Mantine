@@ -54,21 +54,11 @@ export default function Navbar() {
       label: getLocalizedText("Kalender", "Work Calendar"),
       to: paths.workCalendar.workCalendarPage(),
     },
-    // {
-    //   icon: IconListCheck,
-    //   label: "Tasks",
-    //   to: paths.tasks.tasksPage(),
-    // },
     {
       icon: IconBrandCashapp,
       label: getLocalizedText("Finanzen", "Finance"),
       to: paths.finances.financesPage(),
     },
-    // {
-    //   icon: IconUsersGroup,
-    //   label: "Group Manager",
-    //   to: paths.groupManager.groupManagerPage(),
-    // },
   ];
 
   function createLinks(linksData: LinkData[]) {

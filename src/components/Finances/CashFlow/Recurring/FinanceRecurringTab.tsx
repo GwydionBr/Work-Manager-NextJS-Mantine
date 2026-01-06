@@ -4,6 +4,8 @@ import { useState, useEffect, useMemo } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useFormatter } from "@/hooks/useFormatter";
+import { useRecurringCashflowQuery } from "@/utils/queries/finances/use-recurring-cashflow";
+import { useProcessRecurringCashflows } from "@/hooks/useProcessRecurringCashflows";
 
 import {
   Stack,
@@ -34,8 +36,6 @@ import RecurringCashFlowRow from "./RecurringCashFlowRow";
 import AdjustmentActionIcon from "@/components/UI/ActionIcons/AdjustmentActionIcon";
 import { SettingsTab } from "@/components/Settings/SettingsModal";
 import { RecurringCashFlow } from "@/types/finance.types";
-import { useRecurringCashflowQuery } from "@/utils/queries/finances/use-recurring-cashflow";
-import { useProcessRecurringCashflows } from "@/hooks/useProcessRecurringCashflows";
 import FinancesNavbarDefaultCard from "@/components/Finances/FinancesNavbar/FinancesNavbarDefaultCard";
 import FinancesNavbarToolbar from "@/components/Finances/FinancesNavbar/FinancesNavbarToolbar";
 import FinancesNavbarNavList from "@/components/Finances/FinancesNavbar/FinancesNavbarNavList";
