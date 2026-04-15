@@ -26,8 +26,6 @@ export const metadata = {
 export default function RootLayout({ children }: { children: any }) {
   // const isProduction = process.env.NODE_ENV === "production";
 
-  return redirect("https://life-ruler.vercel.app/");
-
   return (
     <html lang="en" {...mantineHtmlProps}>
       <head>
@@ -55,7 +53,7 @@ export default function RootLayout({ children }: { children: any }) {
         )} */}
       </head>
       <body>
-        {/* <MantineProvider defaultColorScheme="auto" theme={mantineTheme}>
+        <MantineProvider defaultColorScheme="auto" theme={mantineTheme}>
           <ContextMenuProvider>
             <ModalsProvider>
               <App>
@@ -66,7 +64,7 @@ export default function RootLayout({ children }: { children: any }) {
               </App>
             </ModalsProvider>
           </ContextMenuProvider>
-        </MantineProvider> */}
+        </MantineProvider>
         {/* {isProduction && <div id="sitetran_translate_element" />} */}
       </body>
     </html>
